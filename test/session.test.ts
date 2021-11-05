@@ -1,0 +1,54 @@
+describe('session', () => {
+    const OLD_ENV = process.env;
+
+    beforeEach(() => {
+        jest.resetModules(); // Most important - it clears the cache
+        process.env = { ...OLD_ENV }; // Make a copy
+    });
+
+    afterAll(() => {
+        process.env = OLD_ENV; // Restore old environment
+    });
+
+    it('loads session to empty session when ENV is not defined', () => {
+        const session = require('../src/session').session;
+
+        expect(session).toEqual('');
+    });
+
+    it('loads token to empty when ENV is not defined', () => {
+        const token = require('../src/session').token;
+
+        expect(token).toEqual('');
+    });
+
+    it('loads baseUrl to /services when ENV is not defined', () => {
+        const baseUrl = require('../src/session').baseUrl;
+
+        expect(baseUrl).toEqual('/services');
+    });
+
+    it('loads the session from ENV', () => {
+        process.env.sessionID = 'd9406290-6c3d-41b7-a84d-58b4e060f931';
+
+        const session = require('../src/session').session;
+
+        expect(session).toEqual('d9406290-6c3d-41b7-a84d-58b4e060f931');
+    });
+
+    it('loads the token from ENV', () => {
+        process.env.tokenID = 'ba0709c6-e48e-4460-a9ad-6b2ea63678d6';
+
+        const token = require('../src/session').token;
+
+        expect(token).toEqual('ba0709c6-e48e-4460-a9ad-6b2ea63678d6');
+    });
+
+    it('loads the baseURL from ENV', () => {
+        process.env.baseUrl = 'https://dev.wappsto.com';
+
+        const baseUrl = require('../src/session').baseUrl;
+
+        expect(baseUrl).toEqual('https://dev.wappsto.com');
+    });
+});
