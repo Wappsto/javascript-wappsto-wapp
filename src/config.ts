@@ -111,9 +111,11 @@ export class Config {
         var self = this;
         this.data = new Data(this.id, this.name + '_config');
         if (this.created) {
-            wappsto.put('/2.0/data/' + this.id, this.data.toJSON()).then((response) => {
-                self.data = response.data;
-            });
+            wappsto
+                .put('/2.0/data/' + this.id, this.data.toJSON())
+                .then((response) => {
+                    self.data = response.data;
+                });
         } else {
             this.create_data();
         }
