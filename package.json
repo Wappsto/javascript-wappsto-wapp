@@ -15,7 +15,9 @@
     "build": "tsdx build",
     "test": "tsdx test",
     "lint": "tsdx lint",
+    "fix-lint": "tsdx lint --fix",
     "prepare": "tsdx build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s wapp -o dist/wappsto-wapp.js",
+    "doc": "typedoc --exclude **/*.test.ts src/index.ts",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
@@ -27,6 +29,7 @@
   },
   "prettier": {
     "printWidth": 80,
+    "tabWidth": 4,
     "semi": true,
     "singleQuote": true,
     "trailingComma": "es5"
@@ -52,6 +55,11 @@
     "pretty-quick": "^3.1.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.3.1",
+    "typedoc": "^0.22.7",
     "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.176",
+    "axios": "^0.24.0"
   }
 }
