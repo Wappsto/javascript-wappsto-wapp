@@ -1,8 +1,14 @@
-export const sum = (a: number, b: number) => {
-  if ('development' === process.env.NODE_ENV) {
-    console.log('boop');
-  }
-  return a + b;
-};
+import { Network } from './models/network';
+import { start, stop } from './console';
 
-console.log("start");
+export function network() {
+    return Network;
+}
+
+export function startLogging() {
+    start();
+}
+
+export function stopLogging() {
+    stop();
+}
