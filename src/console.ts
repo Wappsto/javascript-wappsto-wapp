@@ -31,7 +31,8 @@ function sendExtsync(key: string, ...args: any[]): any {
 }
 
 export function start(): void {
-    console = <any>{
+    /* eslint-disable no-native-reassign */
+    console = {
         log: (...args: any[]) => {
             sendExtsync('log', ...args);
             defaultConsole.log(...args);
@@ -48,7 +49,7 @@ export function start(): void {
             sendExtsync('warn', ...args);
             defaultConsole.warn(...args);
         },
-    };
+    } as any;
 
     process.on('uncaughtException', (err) => {
         const req = sendExtsync('error', [err.stack]);
