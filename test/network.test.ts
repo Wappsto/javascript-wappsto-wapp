@@ -3,6 +3,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
+import settings from '../src/settings';
 import { Network } from '../src/models/network';
 
 describe('network', () => {
@@ -61,6 +62,16 @@ describe('network', () => {
         let networks = await Network.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network?expand=3');
+        expect(networks[0]?.name).toEqual('test');
+    });
+
+    it('can create a new network from wappsto with verbose', async () => {
+        settings.verbose = true;
+        let networks = await Network.fetch();
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/network?expand=3&verbose=true'
+        );
         expect(networks[0]?.name).toEqual('test');
     });
 });

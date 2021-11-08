@@ -18,12 +18,12 @@ export class Network extends Model {
         this.name = name;
     }
 
-    getUrl(): string {
+    url(): string {
         return Network.endpoint;
     }
 
-    getAttributes(): string[] {
-        return ['meta', 'name', 'device'];
+    attributes(): string[] {
+        return ['name', 'device'];
     }
 
     public static fetch = async () => {
