@@ -1,6 +1,6 @@
 import { Network } from './models/network';
 import { start, stop } from './console';
-import { settings } from './settings';
+import settings from './settings';
 
 export function network() {
     return Network;
