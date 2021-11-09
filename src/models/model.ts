@@ -24,7 +24,7 @@ export class Model {
             } else {
                 url += '?';
             }
-            url += 'verbose=true&limit=1';
+            url += 'verbose=true';
         }
         return url;
     }
