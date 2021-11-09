@@ -1,7 +1,7 @@
 export interface IConnection {
     timestamp: string;
     online: boolean;
-};
+}
 
 export interface IMeta {
     id?: string;
@@ -12,7 +12,7 @@ export interface IMeta {
     manufacturer?: string;
     iot?: boolean;
     upgradable?: boolean;
-    connection?: IConnection,
+    connection?: IConnection;
     created?: string;
     updated?: string;
     revision?: number;

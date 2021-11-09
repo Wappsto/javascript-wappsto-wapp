@@ -1,17 +1,15 @@
-import { IMeta } from './meta';
-import { Device } from './device';
+import * as _ from 'lodash';
 import { Model } from './model';
-
-interface NetworkJSON {
-    meta: IMeta;
-    name?: string;
-    devices: Device[];
-}
+import { Device } from './device';
 
 export class Network extends Model {
     static endpoint = '/2.0/network';
     name?: string;
-    devices: Device[] = [];
+    device: Device[] = [];
+
+    get devices() {
+        return this.device;
+    }
 
     constructor(name?: string) {
         super();
@@ -36,23 +34,14 @@ export class Network extends Model {
         return networks;
     };
 
-    // fromJSON is used to convert an serialized version
-    // of the User to an instance of the class
-    static fromJSON(json: NetworkJSON | string): Network {
-        if (typeof json === 'string') {
-            // if it's a string, parse it first
-            return JSON.parse(json, Network.reviver);
-        } else {
-            // create an instance of the User class
-            let network = Object.create(Network.prototype);
-            // copy all the fields from the json object
-            return Object.assign(network, json);
-        }
-    }
-
-    // reviver can be passed as the second parameter to JSON.parse
-    // to automatically call User.fromJSON on the resulting value.
-    static reviver(key: string, value: any): any {
-        return key === '' ? Network.fromJSON(value) : value;
+    static fromJSON(json: any): Network {
+        let network = Object.create(Network.prototype);
+        let devices: Device[] = [];
+        json.device?.forEach((dev: any) => {
+            devices.push(Device.fromJSON(dev));
+        });
+        return Object.assign(network, _.omit(json, ['device']), {
+            device: devices,
+        });
     }
 }

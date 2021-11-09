@@ -24,7 +24,7 @@ export class Model {
             } else {
                 url += '?';
             }
-            url += 'verbose=true';
+            url += 'verbose=true&limit=1';
         }
         return url;
     }
@@ -57,8 +57,6 @@ export class Model {
 
     public static fetch = async (endpoint: string) => {
         try {
-            console.log(settings);
-            console.log(Model.handleQuery(endpoint));
             let response = await wappsto.get(Model.handleQuery(endpoint));
             return response.data;
         } catch (e) {

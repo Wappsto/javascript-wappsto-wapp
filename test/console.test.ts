@@ -13,13 +13,13 @@ describe('console', () => {
     it('can stop sending to wappsto', () => {
         start();
         stop();
-        console.log('test 2');
+        console.log('test start and stop');
         expect(mockedAxios.post).not.toHaveBeenCalled();
     });
 
     it('can send a log message to wappsto', () => {
         start();
-        console.log('test');
+        console.log('test start');
         expect(mockedAxios.post).toHaveBeenCalled();
     });
 });
