@@ -55,6 +55,17 @@ export class Model {
         }
     };
 
+    public refresh = async () => {
+        try {
+            let response = await wappsto.get(
+                this.getUrl('/' + this.meta.id)
+            );
+            this.parse(response.data);
+        } catch (e) {
+            printError(e);
+        }
+    };
+
     public static fetch = async (endpoint: string) => {
         try {
             let response = await wappsto.get(Model.handleQuery(endpoint));
