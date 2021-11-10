@@ -1,5 +1,5 @@
 import { start, stop } from './console';
-import settings from './settings';
+import settings from './util/settings';
 
 export * from './models';
 

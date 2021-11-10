@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import wappsto from '../util/http_wrapper';
 import { printError } from '../util/http_wrapper';
 import { IMeta } from './meta';
-import settings from '../settings';
+import settings from '../util/settings';
 
 export class Model {
     meta: IMeta = {};

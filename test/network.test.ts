@@ -3,7 +3,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
-import settings from '../src/settings';
+import settings from '../src/util/settings';
 import { Network } from '../src/models/network';
 
 describe('network', () => {
