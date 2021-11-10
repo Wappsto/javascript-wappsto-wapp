@@ -2,6 +2,7 @@ import { start, stop } from './console';
 import settings from './util/settings';
 
 export * from './models';
+export { default as request } from './util/http_wrapper';
 
 export function startLogging(): void {
     start();
