@@ -16,9 +16,20 @@ export function printError(error: any): void {
     }
 
     if (error.response) {
-        console.error(
-            `Wappsto: ${error.response.statusText} for ${error.config.url}`
-        );
+        if(error?.response?.data?.code) {
+            switch(error.response.data.code) {
+                case 400017:
+                    console.error(`Wappsto: You can't share with yourself`);
+                    break;
+                default:
+                    console.error(`Wappsto: ${error.response.data.message}`);
+                    break;
+            }
+        } else {
+            console.error(
+                `Wappsto: ${error.response.statusText} for ${error.config.url}`
+            );
+        }
         return;
     }
 
