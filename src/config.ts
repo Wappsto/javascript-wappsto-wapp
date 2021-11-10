@@ -1,4 +1,4 @@
-import wappsto from './axios_wrapper';
+import wappsto from './http_wrapper';
 import { Data } from './models/data';
 
 export class Config {

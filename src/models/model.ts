@@ -1,13 +1,11 @@
 import * as _ from 'lodash';
-import wappsto from '../axios_wrapper';
-import { printError } from '../axios_wrapper';
+import wappsto from '../http_wrapper';
+import { printError } from '../http_wrapper';
 import { IMeta } from './meta';
 import settings from '../settings';
 
 export class Model {
     meta: IMeta = {};
-
-    constructor() {}
 
     url(): string {
         return '';
@@ -78,9 +76,7 @@ export class Model {
         Object.assign(this, json);
     }
 
-    static fromJSON(json: any): any {
-        json = json;
-    }
+    static fromJSON(_: any): any {}
 
     toJSON(): any {
         let meta = Object.assign(
