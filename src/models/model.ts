@@ -4,6 +4,13 @@ import { printError } from '../util/http_wrapper';
 import { IMeta } from './meta';
 import settings from '../util/settings';
 
+interface IRestriction {
+    retrieve:boolean,
+    update:boolean,
+    delete:boolean,
+    create:boolean
+}
+
 export class Model {
     meta: IMeta = {};
 
@@ -57,6 +64,28 @@ export class Model {
         try {
             let response = await wappsto.get(this.getUrl('/' + this.meta.id));
             this.parse(response.data);
+        } catch (e) {
+            printError(e);
+        }
+    };
+
+    public shareWith = async (user:string, restriction:IRestriction={retrieve: true, update: true, delete: false, create: false}) => {
+        try {
+            let response = await wappsto.patch(`/acl/${this.meta.id}?propagate=true`, {
+                permission: [{
+                    meta: {id: user},
+                    restriction: [{
+                        method: {
+                            retrieve: restriction.retrieve,
+                            update: restriction.update,
+                            delete: restriction.delete,
+                            create: restriction.create,
+                        }
+                    }
+                    ]
+                }]
+            });
+            return response.data;
         } catch (e) {
             printError(e);
         }
