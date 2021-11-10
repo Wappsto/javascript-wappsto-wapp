@@ -57,9 +57,7 @@ export class Model {
 
     public refresh = async () => {
         try {
-            let response = await wappsto.get(
-                this.getUrl('/' + this.meta.id)
-            );
+            let response = await wappsto.get(this.getUrl('/' + this.meta.id));
             this.parse(response.data);
         } catch (e) {
             printError(e);

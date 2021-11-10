@@ -14,7 +14,7 @@ describe('network', () => {
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
         },
         name: 'test',
-        device: []
+        device: [],
     };
 
     beforeAll(() => {

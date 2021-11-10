@@ -21,7 +21,15 @@ export class User extends Model {
     }
 
     attributes(): string[] {
-        return ['first_name','lat_name','email','phone','name','nickname','language'];
+        return [
+            'first_name',
+            'lat_name',
+            'email',
+            'phone',
+            'name',
+            'nickname',
+            'language',
+        ];
     }
 
     public static fetch = async () => {
