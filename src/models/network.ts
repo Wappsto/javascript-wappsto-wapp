@@ -35,7 +35,7 @@ export class Network extends Model {
     };
 
     static fromJSON(json: any): Network {
-        let network = new Network;
+        let network = new Network();
         let devices: Device[] = [];
         json.device?.forEach((dev: any) => {
             devices.push(Device.fromJSON(dev));

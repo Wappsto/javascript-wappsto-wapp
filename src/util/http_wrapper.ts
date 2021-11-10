@@ -16,8 +16,8 @@ export function printError(error: any): void {
     }
 
     if (error.response) {
-        if(error?.response?.data?.code) {
-            switch(error.response.data.code) {
+        if (error?.response?.data?.code) {
+            switch (error.response.data.code) {
                 case 400017:
                     console.error(`Wappsto: You can't share with yourself`);
                     break;

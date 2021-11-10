@@ -34,7 +34,7 @@ export class State extends Model {
     };
 
     static fromJSON(json: any): State {
-        let state = new State;
+        let state = new State();
         return Object.assign(state, json);
     }
 }

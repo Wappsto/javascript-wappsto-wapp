@@ -5,10 +5,10 @@ import { IMeta } from './meta';
 import settings from '../util/settings';
 
 interface IRestriction {
-    retrieve:boolean,
-    update:boolean,
-    delete:boolean,
-    create:boolean
+    retrieve: boolean;
+    update: boolean;
+    delete: boolean;
+    create: boolean;
 }
 
 export class Model {
@@ -69,22 +69,36 @@ export class Model {
         }
     };
 
-    public shareWith = async (user:string, restriction:IRestriction={retrieve: true, update: true, delete: false, create: false}) => {
+    public shareWith = async (
+        user: string,
+        restriction: IRestriction = {
+            retrieve: true,
+            update: true,
+            delete: false,
+            create: false,
+        }
+    ) => {
         try {
-            let response = await wappsto.patch(`/acl/${this.meta.id}?propagate=true`, {
-                permission: [{
-                    meta: {id: user},
-                    restriction: [{
-                        method: {
-                            retrieve: restriction.retrieve,
-                            update: restriction.update,
-                            delete: restriction.delete,
-                            create: restriction.create,
-                        }
-                    }
-                    ]
-                }]
-            });
+            let response = await wappsto.patch(
+                `/acl/${this.meta.id}?propagate=true`,
+                {
+                    permission: [
+                        {
+                            meta: { id: user },
+                            restriction: [
+                                {
+                                    method: {
+                                        retrieve: restriction.retrieve,
+                                        update: restriction.update,
+                                        delete: restriction.delete,
+                                        create: restriction.create,
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                }
+            );
             return response.data;
         } catch (e) {
             printError(e);

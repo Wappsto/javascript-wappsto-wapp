@@ -80,7 +80,7 @@ export class Value extends Model {
     };
 
     static fromJSON(json: any): Value {
-        let value = new Value;
+        let value = new Value();
         let states: State[] = [];
         json.state?.forEach((val: any) => {
             states.push(State.fromJSON(val));
