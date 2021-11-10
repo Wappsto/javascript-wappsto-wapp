@@ -9,6 +9,12 @@ export class State extends Model {
     timestamp?: string;
     status_payment?: string;
 
+    constructor(type: string) {
+        super();
+
+        this.type = type;
+    }
+
     url(): string {
         return State.endpoint;
     }
@@ -21,7 +27,7 @@ export class State extends Model {
         let data: any[] = await Model.fetch(State.endpoint + '?expand=1');
         let states: State[] = [];
 
-        data?.forEach((json: any) => {
+        data.forEach((json: any) => {
             states.push(State.fromJSON(json));
         });
         return states;
