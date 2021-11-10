@@ -1,4 +1,4 @@
-import wappsto from './http_wrapper';
+import wappsto from './util/http_wrapper';
 import { Data } from './models/data';
 
 export class Config {

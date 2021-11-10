@@ -1,4 +1,4 @@
-import wappsto from './http_wrapper';
+import wappsto from './util/http_wrapper';
 
 const defaultConsole = Object.assign({}, console);
 

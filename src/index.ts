@@ -1,15 +1,7 @@
-import { Network } from './models/network';
-import { User } from './models/user';
 import { start, stop } from './console';
 import settings from './settings';
 
-export function network() {
-    return Network;
-}
-
-export function user() {
-    return User;
-}
+export * from './models';
 
 export function startLogging(): void {
     start();

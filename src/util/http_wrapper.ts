@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { session, baseUrl } from './session';
+import { session, baseUrl } from '../session';
 
 export default axios.create({
     baseURL: baseUrl,

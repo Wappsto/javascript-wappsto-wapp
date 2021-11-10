@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import wappsto from '../http_wrapper';
-import { printError } from '../http_wrapper';
+import wappsto from '../util/http_wrapper';
+import { printError } from '../util/http_wrapper';
 import { IMeta } from './meta';
 import settings from '../settings';
 
