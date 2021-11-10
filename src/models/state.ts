@@ -9,7 +9,7 @@ export class State extends Model {
     timestamp?: string;
     status_payment?: string;
 
-    constructor(type: string) {
+    constructor(type?: string) {
         super();
 
         this.type = type;
@@ -34,7 +34,7 @@ export class State extends Model {
     };
 
     static fromJSON(json: any): State {
-        let state = Object.create(State.prototype);
+        let state = new State;
         return Object.assign(state, json);
     }
 }

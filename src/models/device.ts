@@ -52,7 +52,7 @@ export class Device extends Model {
     };
 
     static fromJSON(json: any): Device {
-        let device = Object.create(Device.prototype);
+        let device = new Device;
         let values: Value[] = [];
         json.value?.forEach((val: any) => {
             values.push(Value.fromJSON(val));
