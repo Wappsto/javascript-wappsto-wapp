@@ -14,6 +14,7 @@ describe('network', () => {
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
         },
         name: 'test',
+        device: []
     };
 
     beforeAll(() => {
@@ -32,6 +33,7 @@ describe('network', () => {
         await network.create();
 
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/network', {
+            device: [],
             meta: {},
             name: 'test',
         });
