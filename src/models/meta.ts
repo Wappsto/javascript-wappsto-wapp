@@ -23,4 +23,6 @@ export interface IMeta {
     parent?: string;
     usage_daily?: any;
     product?: string;
+    deprecated?: boolean;
+    icon?: string;
 }
