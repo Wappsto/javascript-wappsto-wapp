@@ -44,20 +44,7 @@ export class Config {
             return this.data;
         }
         this.data_fetched = true;
-        var self = this;
-        await wappsto
-            .get('/2.0/data/' + this.id)
-            .then((response) => {
-                if (response.data.meta.type === 'attributelist') {
-                    self.create_data();
-                } else {
-                    self.created = true;
-                    self.data = response.data;
-                }
-            })
-            .catch(() => {
-                self.create_data();
-            });
+        await this.data.refresh();
         return this.data;
     };
 
@@ -65,16 +52,10 @@ export class Config {
         if (!this.id) {
             await this.get_id();
         }
-        var self = this;
-        wappsto
-            .post('/2.0/data', this.data)
-            .then((response) => {
-                self.created = true;
-                self.data = response.data;
-            })
-            .catch(() => {
-                this.data_fetched = false;
-            });
+
+        await this.data.create();
+        this.created = true;
+
         return this.data;
     };
 
@@ -89,7 +70,7 @@ export class Config {
 
     patch_data = async (path: string, value: string) => {
         let arrPath = path.split('.');
-        var data = this.data;
+        var data = this.data.data;
         arrPath.forEach(function (p) {
             if (p !== arrPath[arrPath.length - 1]) {
                 if (!data.data[p]) {
@@ -108,14 +89,9 @@ export class Config {
     };
 
     reset_data(): void {
-        var self = this;
         this.data = new Data(this.id, this.name + '_config');
         if (this.created) {
-            wappsto
-                .put('/2.0/data/' + this.id, this.data.toJSON())
-                .then((response) => {
-                    self.data = response.data;
-                });
+            this.data.update();
         } else {
             this.create_data();
         }
