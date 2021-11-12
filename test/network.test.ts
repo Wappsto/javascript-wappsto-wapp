@@ -33,9 +33,11 @@ describe('network', () => {
         await network.create();
 
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/network', {
-            device: [],
-            meta: {},
-            name: 'test',
+            body: {
+                device: [],
+                meta: {},
+                name: 'test',
+            },
         });
         expect(network.name).toEqual('test');
         expect(network.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
@@ -54,7 +56,7 @@ describe('network', () => {
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/network/' + network.meta.id,
-            response
+            { body: response }
         );
 
         response.name = oldName;
@@ -63,7 +65,9 @@ describe('network', () => {
     it('can create a new network from wappsto', async () => {
         let networks = await Network.fetch();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network?expand=3');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+            params: { expand: 3 },
+        });
         expect(networks[0]?.name).toEqual('test');
     });
 
@@ -71,9 +75,9 @@ describe('network', () => {
         settings.verbose = true;
         let networks = await Network.fetch();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/network?expand=3&verbose=true'
-        );
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+            params: { expand: 3, verbose: true },
+        });
         expect(networks[0]?.name).toEqual('test');
     });
 });

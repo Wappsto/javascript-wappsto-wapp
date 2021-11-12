@@ -22,26 +22,38 @@ export class Model {
         return [];
     }
 
-    private static handleQuery(url: string): string {
-        if (settings.verbose) {
-            if (url.includes('?')) {
-                url += '&';
-            } else {
-                url += '?';
-            }
-            url += 'verbose=true';
+    private static generateOptions(params?: any, body?: any): any {
+        let options: any = {
+            params: {},
+        };
+        if (params) {
+            Object.assign(options.params, params);
         }
-        return url;
+        if (settings.verbose) {
+            options.params['verbose'] = true;
+        }
+        if (body) {
+            options['body'] = body;
+        }
+        if (Object.keys(options.params).length === 0) {
+            options = _.omit(options, 'params');
+        }
+        return options;
     }
 
-    private getUrl(path: string): string {
-        let url = this.url() + path;
-        return Model.handleQuery(url);
+    private getUrl(path?: string): string {
+        if (path) {
+            return this.url() + '/' + path;
+        }
+        return this.url();
     }
 
     public create = async () => {
         try {
-            let response = await wappsto.post(this.getUrl(''), this.toJSON());
+            let response = await wappsto.post(
+                this.getUrl(),
+                Model.generateOptions({}, this.toJSON())
+            );
             this.parse(response.data);
         } catch (e) {
             printError(e);
@@ -51,8 +63,8 @@ export class Model {
     public update = async () => {
         try {
             let response = await wappsto.put(
-                this.getUrl('/' + this.meta.id),
-                this.toJSON()
+                this.getUrl(this.meta.id),
+                Model.generateOptions({}, this.toJSON())
             );
             this.parse(response.data);
         } catch (e) {
@@ -62,8 +74,23 @@ export class Model {
 
     public refresh = async () => {
         try {
-            let response = await wappsto.get(this.getUrl('/' + this.meta.id));
+            let response = await wappsto.get(
+                this.getUrl(this.meta.id),
+                Model.generateOptions()
+            );
             this.parse(response.data);
+        } catch (e) {
+            printError(e);
+        }
+    };
+
+    public findById = async (id: string) => {
+        try {
+            let response = await wappsto.get(
+                this.getUrl(''),
+                Model.generateOptions({ 'this.id': id })
+            );
+            return this.fromArray(response.data);
         } catch (e) {
             printError(e);
         }
@@ -80,24 +107,27 @@ export class Model {
     ) => {
         try {
             let response = await wappsto.patch(
-                `/acl/${this.meta.id}?propagate=true`,
-                {
-                    permission: [
-                        {
-                            meta: { id: user },
-                            restriction: [
-                                {
-                                    method: {
-                                        retrieve: restriction.retrieve,
-                                        update: restriction.update,
-                                        delete: restriction.delete,
-                                        create: restriction.create,
+                `/acl/${this.meta.id}`,
+                Model.generateOptions(
+                    { propagate: true },
+                    {
+                        permission: [
+                            {
+                                meta: { id: user },
+                                restriction: [
+                                    {
+                                        method: {
+                                            retrieve: restriction.retrieve,
+                                            update: restriction.update,
+                                            delete: restriction.delete,
+                                            create: restriction.create,
+                                        },
                                     },
-                                },
-                            ],
-                        },
-                    ],
-                }
+                                ],
+                            },
+                        ],
+                    }
+                )
             );
             return response.data;
         } catch (e) {
@@ -105,9 +135,12 @@ export class Model {
         }
     };
 
-    public static fetch = async (endpoint: string) => {
+    public static fetch = async (endpoint: string, params?: any) => {
         try {
-            let response = await wappsto.get(Model.handleQuery(endpoint));
+            let response = await wappsto.get(
+                endpoint,
+                Model.generateOptions(params)
+            );
             return response.data;
         } catch (e) {
             printError(e);
@@ -120,6 +153,8 @@ export class Model {
     }
 
     static fromJSON(_: any): any {}
+    fromArray(_: any): any {}
+    static fromArray(_: any): any {}
 
     toJSON(): any {
         let meta = Object.assign(

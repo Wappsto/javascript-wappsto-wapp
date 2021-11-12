@@ -34,8 +34,10 @@ describe('state', () => {
         await state.create();
 
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/state', {
-            meta: {},
-            type: 'Report',
+            body: {
+                meta: {},
+                type: 'Report',
+            },
         });
         expect(state.type).toEqual('Report');
         expect(state.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
@@ -54,7 +56,7 @@ describe('state', () => {
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/state/' + state.meta.id,
-            response
+            { body: response }
         );
 
         response.type = oldType;
@@ -63,7 +65,9 @@ describe('state', () => {
     it('can create a new state from wappsto', async () => {
         let states = await State.fetch();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state?expand=1');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state', {
+            params: { expand: 1 },
+        });
         expect(states[0]?.type).toEqual('Report');
     });
 
@@ -71,9 +75,9 @@ describe('state', () => {
         settings.verbose = true;
         let states = await State.fetch();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/state?expand=1&verbose=true'
-        );
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state', {
+            params: { expand: 1, verbose: true },
+        });
         expect(states[0]?.type).toEqual('Report');
     });
 });

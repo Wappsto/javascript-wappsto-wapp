@@ -24,7 +24,7 @@ export class State extends Model {
     }
 
     public static fetch = async () => {
-        let data: any[] = await Model.fetch(State.endpoint + '?expand=1');
+        let data: any[] = await Model.fetch(State.endpoint, {expand: 1});
         let states: State[] = [];
 
         data.forEach((json: any) => {
