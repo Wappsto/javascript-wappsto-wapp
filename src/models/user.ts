@@ -38,7 +38,10 @@ export class User extends Model {
     };
 
     public static fetch = async (): Promise<User[]> => {
-        let data: any = await Model.fetch(User.endpoint + '/me');
+        let data: any = await Model.fetch(User.endpoint);
         return User.fromArray(data);
     };
+
+    public create = async (): Promise<void> => {};
+    public update = async (): Promise<void> => {};
 }
