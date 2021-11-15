@@ -74,10 +74,17 @@ describe('network', () => {
     it('can create a new network from wappsto with verbose', async () => {
         settings.verbose = true;
         let networks = await Network.fetch();
+        settings.verbose = false;
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: { expand: 3, verbose: true },
         });
         expect(networks[0]?.name).toEqual('test');
+    });
+
+    it('can find a network by id', async () => {
+        let network = await Network.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network/b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(network.meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 });

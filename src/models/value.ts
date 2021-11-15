@@ -71,13 +71,21 @@ export class Value extends Model {
 
     public static fetch = async () => {
         let data: any[] = await Model.fetch(Value.endpoint + '?expand=1');
+        return Value.fromArray(data);
+    };
+
+    fromArray(data: any): Value[] {
+        return Value.fromArray(data);
+    }
+
+    static fromArray(data: any): Value[] {
         let values: Value[] = [];
 
         data?.forEach((json: any) => {
             values.push(Value.fromJSON(json));
         });
         return values;
-    };
+    }
 
     static fromJSON(json: any): Value {
         let value = new Value();

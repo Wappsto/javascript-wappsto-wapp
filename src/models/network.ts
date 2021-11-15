@@ -24,6 +24,10 @@ export class Network extends Model {
         return ['name', 'device'];
     }
 
+    static getUrl(): string {
+        return Network.endpoint;
+    }
+
     static fetch = async () => {
         let data: any[] = await Model.fetch(Network.endpoint, { expand: 3 });
         return Network.fromArray(data);

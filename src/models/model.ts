@@ -11,6 +11,8 @@ interface IRestriction {
     create: boolean;
 }
 
+type Constructor<T> = { new (): T; fromJSON(_: any): T };
+
 export class Model {
     meta: IMeta = {};
 
@@ -84,19 +86,22 @@ export class Model {
         }
     };
 
-    public findById = async (id: string) => {
+    static findById<T extends Model>(this: Constructor<T>, id: string) {
+        let tmp = new this();
+        tmp.findById(id);
+        return tmp;
+    }
+
+    public findById = async (id: string): Promise<any> => {
         try {
-            let response = await wappsto.get(
-                this.getUrl(''),
-                Model.generateOptions({ 'this.id': id })
-            );
-            return this.fromArray(response.data);
+            let response = await wappsto.get(this.getUrl(id));
+            this.parse(response.data);
         } catch (e) {
             printError(e);
         }
     };
 
-    public shareWith = async (
+    __shareWith = async (
         user: string,
         restriction: IRestriction = {
             retrieve: true,
@@ -109,7 +114,7 @@ export class Model {
             let response = await wappsto.patch(
                 `/acl/${this.meta.id}`,
                 Model.generateOptions(
-                    { propagate: true },
+                    {},
                     {
                         permission: [
                             {

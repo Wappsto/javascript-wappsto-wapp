@@ -43,13 +43,21 @@ export class Device extends Model {
 
     public static fetch = async () => {
         let data: any[] = await Model.fetch(Device.endpoint + '?expand=2');
+        return Device.fromArray(data);
+    };
+
+    fromArray(data: any): Device[] {
+        return Device.fromArray(data);
+    }
+
+    static fromArray(data: any): Device[] {
         let devices: Device[] = [];
 
         data?.forEach((json: any) => {
             devices.push(Device.fromJSON(json));
         });
         return devices;
-    };
+    }
 
     static fromJSON(json: any): Device {
         let device = new Device();

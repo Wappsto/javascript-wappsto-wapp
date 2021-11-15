@@ -22,19 +22,18 @@ To enable verbose mode in wappsto, the verbose mode needs to be set to true.
 Wappsto.verbose(true);
 ```
 
-### Share an object with an other user in wappsto
-
-To share an object in wappsto with an other user, you should call 'shareWith' on the object.
-
-```javascript
-let networks = Wappsto.network.fetch();
-networks[0].shareWith('my_friend@mail.test');
-```
-
 ### Raw requests
 
 It is possible to send your own requests to wappsto by using the 'request' object in wappsto.
 
 ```javascript
 let netwoks = await Wappsto.request.get('/network');
+```
+
+### Find a model by ID
+
+It is possible to find a spefic model using it ID.
+
+```javascript
+let network = await Wappsto.Network.findById('b23b41c1-0859-46de-9b11-128c6d44df72');
 ```
