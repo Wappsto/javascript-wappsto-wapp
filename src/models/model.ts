@@ -11,7 +11,11 @@ interface IRestriction {
     create: boolean;
 }
 
-type Constructor<T> = { new (): T; fromJSON(_: any): T };
+type Constructor<T> = {
+    new (): T;
+    fromJSON(json: any): T;
+    fromArray(data: any): T[];
+};
 
 export class Model {
     meta: IMeta = {};
@@ -50,7 +54,7 @@ export class Model {
         return this.url();
     }
 
-    public create = async () => {
+    public create = async (): Promise<void> => {
         try {
             let response = await wappsto.post(
                 this.getUrl(),
@@ -62,7 +66,7 @@ export class Model {
         }
     };
 
-    public update = async () => {
+    public update = async (): Promise<void> => {
         try {
             let response = await wappsto.put(
                 this.getUrl(this.meta.id),
@@ -74,7 +78,7 @@ export class Model {
         }
     };
 
-    public refresh = async () => {
+    public refresh = async (): Promise<void> => {
         try {
             let response = await wappsto.get(
                 this.getUrl(this.meta.id),
@@ -86,10 +90,16 @@ export class Model {
         }
     };
 
-    static findById<T extends Model>(this: Constructor<T>, id: string) {
-        let tmp = new this();
-        tmp.findById(id);
-        return tmp;
+    static findById<T extends Model>(
+        this: Constructor<T>,
+        id: string
+    ): Promise<T> {
+        return new Promise<T>((resolve) => {
+            let tmp = new this();
+            tmp.findById(id).then(() => {
+                resolve(tmp);
+            });
+        });
     }
 
     public findById = async (id: string): Promise<any> => {
@@ -140,7 +150,10 @@ export class Model {
         }
     };
 
-    public static fetch = async (endpoint: string, params?: any) => {
+    public static fetch = async (
+        endpoint: string,
+        params?: any
+    ): Promise<any[]> => {
         try {
             let response = await wappsto.get(
                 endpoint,
@@ -157,9 +170,23 @@ export class Model {
         Object.assign(this, json);
     }
 
-    static fromJSON(_: any): any {}
-    fromArray(_: any): any {}
-    static fromArray(_: any): any {}
+    fromArray<T extends Model>(this: Constructor<T>, data: any): T[] {
+        return this.fromArray(data);
+    }
+
+    static fromArray<T extends Model>(this: Constructor<T>, data: any): T[] {
+        let array: T[] = [];
+
+        data?.forEach((json: any) => {
+            array.push(this.fromJSON(json));
+        });
+        return array;
+    }
+
+    static fromJSON<T extends Model>(this: Constructor<T>, json: any): T {
+        let m = new this();
+        return Object.assign(m, json);
+    }
 
     toJSON(): any {
         let meta = Object.assign(

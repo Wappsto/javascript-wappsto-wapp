@@ -7,11 +7,14 @@ interface IDataMeta {
 
 export class Data extends Model {
     static endpoint = '/2.0/device';
-    data_meta: IDataMeta = {};
+    data_meta?: IDataMeta = {};
     data?: any = {};
 
     constructor(id?: string, type?: string) {
         super();
+        if (!this.data_meta) {
+            this.data_meta = {};
+        }
         this.data_meta.type = type;
         this.data_meta.id = id;
 
@@ -40,9 +43,4 @@ export class Data extends Model {
         });
         return datas;
     };
-
-    static fromJSON(json: any): Data {
-        let data = Object.create(Data.prototype);
-        return Object.assign(data, json);
-    }
 }

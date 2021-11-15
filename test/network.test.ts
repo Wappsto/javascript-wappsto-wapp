@@ -83,8 +83,12 @@ describe('network', () => {
     });
 
     it('can find a network by id', async () => {
-        let network = await Network.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network/b62e285a-5188-4304-85a0-3982dcb575bc');
+        let network = await Network.findById(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/network/b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
         expect(network.meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 });

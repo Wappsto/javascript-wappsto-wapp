@@ -32,9 +32,4 @@ export class State extends Model {
         });
         return states;
     };
-
-    static fromJSON(json: any): State {
-        let state = new State();
-        return Object.assign(state, json);
-    }
 }

@@ -32,13 +32,13 @@ export class User extends Model {
         ];
     }
 
-    public static fetch = async () => {
-        let data: any = await Model.fetch(User.endpoint + '/me');
-        return User.fromJSON(data);
+    public static me = async (): Promise<User> => {
+        let users = await User.fetch();
+        return users[0];
     };
 
-    static fromJSON(json: any): User {
-        let user = Object.create(User.prototype);
-        return Object.assign(user, json);
-    }
+    public static fetch = async (): Promise<User[]> => {
+        let data: any = await Model.fetch(User.endpoint + '/me');
+        return User.fromArray(data);
+    };
 }

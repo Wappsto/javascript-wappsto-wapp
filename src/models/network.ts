@@ -33,19 +33,6 @@ export class Network extends Model {
         return Network.fromArray(data);
     };
 
-    fromArray(data: any): Network[] {
-        return Network.fromArray(data);
-    }
-
-    static fromArray(data: any): Network[] {
-        let networks: Network[] = [];
-
-        data?.forEach((json: any) => {
-            networks.push(Network.fromJSON(json));
-        });
-        return networks;
-    }
-
     static fromJSON(json: any): Network {
         let network = new Network();
         let devices: Device[] = [];
