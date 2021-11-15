@@ -20,6 +20,9 @@ describe('console', () => {
     it('can send a log message to wappsto', () => {
         start();
         console.log('test start');
+        console.info('test start');
+        console.error('test start');
+        console.warn('test start');
         expect(mockedAxios.post).toHaveBeenCalled();
     });
 });
