@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { session, baseUrl } from '../session';
+import { printError } from './debug';
 
 export default axios.create({
     baseURL: baseUrl,
@@ -9,9 +10,9 @@ export default axios.create({
     },
 });
 
-export function printError(error: any): void {
+export function printHttpError(error: any): void {
     if (error.errno && error.errno === -111) {
-        console.error(`Wappsto: Failed to connect to ${error.address}`);
+        printError(`Failed to connect to ${error.address}`);
         return;
     }
 
@@ -19,22 +20,18 @@ export function printError(error: any): void {
         if (error?.response?.data?.code) {
             switch (error.response.data.code) {
                 case 400017:
-                    console.error(`Wappsto: You can't share with yourself`);
+                    printError(`You can't share with yourself`);
                     break;
                 default:
-                    console.error(`Wappsto: ${error.response.data.message}`);
+                    printError(error.response.data.message);
                     break;
             }
         } else {
-            console.error(
-                `Wappsto: ${error.response.statusText} for ${error.config.url}`
-            );
+            printError(`${error.response.statusText} for ${error.config.url}`);
         }
         return;
     }
 
-    console.error(
-        `Wappsto: Unknown Axios error: ${error.errno} (${error.code})`
-    );
+    printError(`Unknown HTTP error: ${error.errno} (${error.code})`);
     console.error(error);
 }
