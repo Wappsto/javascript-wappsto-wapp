@@ -27,7 +27,9 @@ export class Config {
             .get('/2.1/user/me')
             .then((response) => {
                 this.id = response.data.meta.id + '_' + this.name;
-                this.data.data_meta.id = this.id;
+                if (this.data.data_meta) {
+                    this.data.data_meta.id = this.id;
+                }
                 this.data.meta.redirect = this.id;
             })
             .catch(() => {
