@@ -3,8 +3,8 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
-import settings from '../src/util/settings';
-import { Network } from '../src/models/network';
+import 'reflect-metadata';
+import { Network, Device, Value, verbose } from '../src/index';
 
 describe('network', () => {
     let response = {
@@ -17,9 +17,13 @@ describe('network', () => {
         device: [],
     };
 
-    beforeAll(() => {
+    beforeEach(() => {
         mockedAxios.post.mockResolvedValue({ data: response });
         mockedAxios.get.mockResolvedValue({ data: [response] });
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     it('can create a new network class', () => {
@@ -35,11 +39,15 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/network', {
             body: {
                 device: [],
-                meta: {},
+                meta: {
+                    type: 'network',
+                    version: '2.0',
+                },
                 name: 'test',
             },
         });
         expect(network.name).toEqual('test');
+        expect(network.devices).toEqual([]);
         expect(network.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
@@ -72,9 +80,9 @@ describe('network', () => {
     });
 
     it('can create a new network from wappsto with verbose', async () => {
-        settings.verbose = true;
+        verbose(true);
         let networks = await Network.fetch();
-        settings.verbose = false;
+        verbose(false);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: { expand: 3, verbose: true },
@@ -87,8 +95,36 @@ describe('network', () => {
             'b62e285a-5188-4304-85a0-3982dcb575bc'
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/network/b62e285a-5188-4304-85a0-3982dcb575bc'
+            '/2.0/network/b62e285a-5188-4304-85a0-3982dcb575bc',
+            { params: { expand: 3 } }
         );
         expect(network.meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
+    it('can find a network by name', async () => {
+        let network = await Network.findByName('test');
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+            params: { expand: 3, quantity: 1, message: 'Find network by name' },
+        });
+        expect(network[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
+    it('can find device by name', async () => {
+        let network = new Network();
+        network.device.push(new Device());
+        network.device[0].name = 'test';
+
+        let device = network.findDeviceByName('test');
+        expect(device[0].name).toEqual('test');
+    });
+
+    it('can find value by name', async () => {
+        let network = new Network();
+        network.device.push(new Device());
+        network.device[0].value.push(new Value());
+        network.device[0].value[0].name = 'test';
+
+        let value = network.findValueByName('test');
+        expect(value[0].name).toEqual('test');
     });
 });

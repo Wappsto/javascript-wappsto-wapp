@@ -3,7 +3,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
-import { start, stop } from '../src/console';
+import { startLogging, stopLogging } from '../src/index';
 
 describe('console', () => {
     beforeEach(() => {
@@ -11,14 +11,14 @@ describe('console', () => {
     });
 
     it('can stop sending to wappsto', () => {
-        start();
-        stop();
+        startLogging();
+        stopLogging();
         console.log('test start and stop');
         expect(mockedAxios.post).not.toHaveBeenCalled();
     });
 
     it('can send a log message to wappsto', () => {
-        start();
+        startLogging();
         console.log('test start');
         console.info('test start');
         console.error('test start');

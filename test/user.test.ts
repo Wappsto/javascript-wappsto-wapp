@@ -3,8 +3,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
-import settings from '../src/util/settings';
-import { User } from '../src/models/user';
+import { User, verbose } from '../src/index';
 
 describe('user', () => {
     let response = {
@@ -17,8 +16,12 @@ describe('user', () => {
         last_name: 'last',
     };
 
-    beforeAll(() => {
+    beforeEach(() => {
         mockedAxios.get.mockResolvedValue({ data: [response] });
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     it('can not create a user on wappsto', async () => {
@@ -38,17 +41,22 @@ describe('user', () => {
     it('can create a new user from wappsto', async () => {
         let user = await User.me();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user', {});
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user', {
+            params: {
+                expand: 1,
+            },
+        });
         expect(user?.first_name).toEqual('first');
         expect(user?.last_name).toEqual('last');
     });
 
     it('can create a new user from wappsto with verbose', async () => {
-        settings.verbose = true;
+        verbose(true);
         let users = await User.fetch();
+        verbose(false);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user', {
-            params: { verbose: true },
+            params: { expand: 1, verbose: true },
         });
         expect(users[0]?.first_name).toEqual('first');
         expect(users[0]?.last_name).toEqual('last');

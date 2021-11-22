@@ -3,8 +3,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
-import settings from '../src/util/settings';
-import { State } from '../src/models/state';
+import { State, verbose } from '../src/index';
 
 describe('state', () => {
     let response = {
@@ -18,9 +17,13 @@ describe('state', () => {
         data: '0',
     };
 
-    beforeAll(() => {
+    beforeEach(() => {
         mockedAxios.post.mockResolvedValue({ data: response });
         mockedAxios.get.mockResolvedValue({ data: [response] });
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     it('can create a new state class', () => {
@@ -35,8 +38,13 @@ describe('state', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/state', {
             body: {
-                meta: {},
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                },
                 type: 'Report',
+                data: '',
+                timestamp: '',
             },
         });
         expect(state.type).toEqual('Report');
@@ -72,8 +80,9 @@ describe('state', () => {
     });
 
     it('can create a new state from wappsto with verbose', async () => {
-        settings.verbose = true;
+        verbose(true);
         let states = await State.fetch();
+        verbose(false);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state', {
             params: { expand: 1, verbose: true },
