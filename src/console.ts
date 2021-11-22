@@ -16,7 +16,7 @@ function sendExtsync(key: string, ...args: any[]): any {
     return req;
 }
 
-export function start(): void {
+export function startLogging(): void {
     /* eslint-disable no-native-reassign */
     console = {
         log: (...args: any[]) => {
@@ -45,6 +45,6 @@ export function start(): void {
     });
 }
 
-export function stop(): void {
+export function stopLogging(): void {
     Object.assign(console, defaultConsole);
 }
