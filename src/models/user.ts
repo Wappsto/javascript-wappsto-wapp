@@ -16,8 +16,8 @@ export class User extends Model {
     public?: any[];
     verified_email?: boolean;
 
-    url(): string {
-        return User.endpoint;
+    constructor() {
+        super('user', '2.1');
     }
 
     attributes(): string[] {
@@ -38,7 +38,7 @@ export class User extends Model {
     };
 
     public static fetch = async (): Promise<User[]> => {
-        let data: any = await Model.fetch(User.endpoint);
+        let data: any[] = await Model.fetch(User.endpoint, { expand: 1 });
         return User.fromArray(data);
     };
 
