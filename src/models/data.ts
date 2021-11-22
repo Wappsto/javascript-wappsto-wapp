@@ -6,12 +6,12 @@ interface IDataMeta {
 }
 
 export class Data extends Model {
-    static endpoint = '/2.0/device';
+    static endpoint = '/2.1/data';
     data_meta?: IDataMeta = {};
     data?: any = {};
 
     constructor(id?: string, type?: string) {
-        super();
+        super('data', '2.1');
         if (!this.data_meta) {
             this.data_meta = {};
         }
@@ -29,18 +29,8 @@ export class Data extends Model {
         return ['data_meta'];
     }
 
-    toJSON(): any {
-        let json = super.toJSON();
-        return Object.assign(json, this.data);
-    }
-
     public static fetch = async () => {
         let data: any[] = await Model.fetch(Data.endpoint);
-        let datas: Data[] = [];
-
-        data?.forEach((json: any) => {
-            datas.push(Data.fromJSON(json));
-        });
-        return datas;
+        return Data.fromArray(data);
     };
 }
