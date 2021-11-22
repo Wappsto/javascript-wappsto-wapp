@@ -3,20 +3,16 @@ import { Model } from './model';
 export class State extends Model {
     static endpoint = '/2.0/state';
 
-    data?: string;
+    data: string = '';
     status?: string;
-    type?: string;
-    timestamp?: string;
+    type: string = '';
+    timestamp: string = '';
     status_payment?: string;
 
     constructor(type?: string) {
-        super();
+        super('state');
 
-        this.type = type;
-    }
-
-    url(): string {
-        return State.endpoint;
+        this.type = type || '';
     }
 
     attributes(): string[] {
@@ -25,11 +21,6 @@ export class State extends Model {
 
     public static fetch = async () => {
         let data: any[] = await Model.fetch(State.endpoint, { expand: 1 });
-        let states: State[] = [];
-
-        data.forEach((json: any) => {
-            states.push(State.fromJSON(json));
-        });
-        return states;
+        return State.fromArray(data);
     };
 }
