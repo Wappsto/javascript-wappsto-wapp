@@ -25,4 +25,5 @@ export interface IMeta {
     product?: string;
     deprecated?: boolean;
     icon?: string;
+    trace?: string;
 }
