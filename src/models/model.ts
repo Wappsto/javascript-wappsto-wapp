@@ -1,34 +1,40 @@
 import * as _ from 'lodash';
+import { plainToClass } from 'class-transformer';
 import wappsto from '../util/http_wrapper';
-import { printError } from '../util/http_wrapper';
+import { printHttpError } from '../util/http_wrapper';
 import { IMeta } from './meta';
 import settings from '../util/settings';
+import { StreamModel } from './model.stream';
 
-interface IRestriction {
-    retrieve: boolean;
-    update: boolean;
-    delete: boolean;
-    create: boolean;
-}
+interface IModel {}
 
-type Constructor<T> = {
-    new (): T;
-    fromJSON(json: any): T;
-    fromArray(data: any): T[];
-};
-
-export class Model {
+export class Model extends StreamModel {
     meta: IMeta = {};
+    parent?: IModel;
+
+    constructor(type: string, version = '2.0') {
+        super();
+        this.meta.type = type;
+        this.meta.version = version;
+    }
 
     url(): string {
-        return '';
+        return `/${this.meta.version}/${this.meta.type}`;
+    }
+
+    path(): string {
+        if (this.meta.id) {
+            return `/${this.meta.type}/${this.meta.id}`;
+        } else {
+            return `/${this.meta.type}`;
+        }
     }
 
     attributes(): string[] {
         return [];
     }
 
-    private static generateOptions(params?: any, body?: any): any {
+    protected static generateOptions(params?: any, body?: any): any {
         let options: any = {
             params: {},
         };
@@ -62,7 +68,7 @@ export class Model {
             );
             this.parse(response.data);
         } catch (e) {
-            printError(e);
+            printHttpError(e);
         }
     };
 
@@ -74,11 +80,11 @@ export class Model {
             );
             this.parse(response.data);
         } catch (e) {
-            printError(e);
+            printHttpError(e);
         }
     };
 
-    public refresh = async (): Promise<void> => {
+    public get = async (): Promise<void> => {
         try {
             let response = await wappsto.get(
                 this.getUrl(this.meta.id),
@@ -86,67 +92,7 @@ export class Model {
             );
             this.parse(response.data);
         } catch (e) {
-            printError(e);
-        }
-    };
-
-    static findById<T extends Model>(
-        this: Constructor<T>,
-        id: string
-    ): Promise<T> {
-        return new Promise<T>((resolve) => {
-            let tmp = new this();
-            tmp.findById(id).then(() => {
-                resolve(tmp);
-            });
-        });
-    }
-
-    public findById = async (id: string): Promise<any> => {
-        try {
-            let response = await wappsto.get(this.getUrl(id));
-            this.parse(response.data);
-        } catch (e) {
-            printError(e);
-        }
-    };
-
-    __shareWith = async (
-        user: string,
-        restriction: IRestriction = {
-            retrieve: true,
-            update: true,
-            delete: false,
-            create: false,
-        }
-    ) => {
-        try {
-            let response = await wappsto.patch(
-                `/acl/${this.meta.id}`,
-                Model.generateOptions(
-                    {},
-                    {
-                        permission: [
-                            {
-                                meta: { id: user },
-                                restriction: [
-                                    {
-                                        method: {
-                                            retrieve: restriction.retrieve,
-                                            update: restriction.update,
-                                            delete: restriction.delete,
-                                            create: restriction.create,
-                                        },
-                                    },
-                                ],
-                            },
-                        ],
-                    }
-                )
-            );
-            return response.data;
-        } catch (e) {
-            printError(e);
+            printHttpError(e);
         }
     };
 
@@ -159,33 +105,28 @@ export class Model {
                 endpoint,
                 Model.generateOptions(params)
             );
-            return response.data;
+            console.log(response);
+            if (response.data.constructor.name === 'Array') {
+                return response.data;
+            } else {
+                return [response.data];
+            }
         } catch (e) {
-            printError(e);
+            printHttpError(e);
         }
         return [];
     };
 
-    parse(json: any): void {
+    parse(json: any): boolean {
+        let oldModel = this.toJSON();
         Object.assign(this, json);
+        let newModel = this.toJSON();
+
+        return !_.isEqual(oldModel, newModel);
     }
 
-    fromArray<T extends Model>(this: Constructor<T>, data: any): T[] {
-        return this.fromArray(data);
-    }
-
-    static fromArray<T extends Model>(this: Constructor<T>, data: any): T[] {
-        let array: T[] = [];
-
-        data?.forEach((json: any) => {
-            array.push(this.fromJSON(json));
-        });
-        return array;
-    }
-
-    static fromJSON<T extends Model>(this: Constructor<T>, json: any): T {
-        let m = new this();
-        return Object.assign(m, json);
+    static fromArray<T>(this: new () => T, json: any[]): T[] {
+        return plainToClass(this, json);
     }
 
     toJSON(): any {
