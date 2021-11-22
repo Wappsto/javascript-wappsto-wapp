@@ -9,3 +9,7 @@ export function printDebug(message: string): void {
 export function printError(message: string): void {
     console.error(`WAPPSTO ERROR: ${message}`);
 }
+
+export function printWarning(message: string): void {
+    console.warn(`WAPPSTO WARN: ${message}`);
+}

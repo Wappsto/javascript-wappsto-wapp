@@ -105,7 +105,7 @@ export class Model extends StreamModel {
                 endpoint,
                 Model.generateOptions(params)
             );
-            console.log(response);
+
             if (response.data.constructor.name === 'Array') {
                 return response.data;
             } else {

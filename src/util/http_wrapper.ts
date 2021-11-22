@@ -33,5 +33,4 @@ export function printHttpError(error: any): void {
     }
 
     printError(`Unknown HTTP error: ${error.errno} (${error.code})`);
-    console.error(error);
 }

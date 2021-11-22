@@ -1,5 +1,6 @@
 import { StreamEvent } from './stream';
 import StreamHandler from '../stream_handler';
+import { printError } from '../util/debug';
 
 type StreamCallback = () => void;
 
@@ -59,7 +60,7 @@ export class StreamModel {
                 });
                 break;
             default:
-                console.log('Unhandled event type: ' + event?.event);
+                printError('Unhandled stream event type: ' + event?.event);
                 break;
         }
     }
