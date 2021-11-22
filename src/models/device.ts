@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { Type } from 'class-transformer';
 import { Model } from './model';
 import { Value } from './value';
 
@@ -12,19 +12,16 @@ export class Device extends Model {
     communication?: string;
     version?: string;
     manufacturer?: string;
+    @Type(() => Value)
     value: Value[] = [];
 
     constructor(name?: string) {
-        super();
+        super('device');
         this.name = name;
     }
 
     get values() {
         return this.value;
-    }
-
-    url(): string {
-        return Device.endpoint;
     }
 
     attributes(): string[] {
@@ -41,32 +38,36 @@ export class Device extends Model {
         ];
     }
 
+    public findValueByName(name: string): Value[] {
+        return this.value.filter((val) => val.name === name);
+    }
+
+    public findValueByType(type: string): Value[] {
+        return this.value.filter((val) => val.type === type);
+    }
+
+    public static findByName = async (name: string) => {
+        let data: any = await Model.fetch(
+            `${Device.endpoint}?this_name=${name}`,
+            {
+                expand: 3,
+            }
+        );
+        return Device.fromArray(data);
+    };
+
+    public static findByProduct = async (product: string) => {
+        let data: any = await Model.fetch(
+            `${Device.endpoint}?this_product=${product}`,
+            {
+                expand: 3,
+            }
+        );
+        return Device.fromArray(data);
+    };
+
     public static fetch = async () => {
         let data: any[] = await Model.fetch(Device.endpoint + '?expand=2');
         return Device.fromArray(data);
     };
-
-    fromArray(data: any): Device[] {
-        return Device.fromArray(data);
-    }
-
-    static fromArray(data: any): Device[] {
-        let devices: Device[] = [];
-
-        data?.forEach((json: any) => {
-            devices.push(Device.fromJSON(json));
-        });
-        return devices;
-    }
-
-    static fromJSON(json: any): Device {
-        let device = new Device();
-        let values: Value[] = [];
-        json.value?.forEach((val: any) => {
-            values.push(Value.fromJSON(val));
-        });
-        return Object.assign(device, _.omit(json, ['value']), {
-            value: values,
-        });
-    }
 }
