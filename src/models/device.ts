@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
+import { PermissionModel } from './model.permission';
 import { Model } from './model';
 import { Value } from './value';
 
-export class Device extends Model {
+export class Device extends PermissionModel {
     static endpoint = '/2.0/device';
     name?: string;
     product?: string;
@@ -46,10 +47,21 @@ export class Device extends Model {
         return this.value.filter((val) => val.type === type);
     }
 
-    public static findByName = async (name: string) => {
-        let data: any = await Model.fetch(
-            `${Device.endpoint}?this_name=${name}`,
+    public static findByName = async (
+        name: string,
+        quantity: number = 1,
+        usage: string = ''
+    ) => {
+        if (usage === '') {
+            usage = `Find ${quantity} device with name ${name}`;
+        }
+
+        let data = await PermissionModel.request(
+            `${Device.endpoint}`,
+            quantity,
+            usage,
             {
+                this_name: name,
                 expand: 3,
             }
         );
@@ -67,7 +79,7 @@ export class Device extends Model {
     };
 
     public static fetch = async () => {
-        let data: any[] = await Model.fetch(Device.endpoint + '?expand=2');
+        let data: any[] = await Model.fetch(Device.endpoint, { expand: 3 });
         return Device.fromArray(data);
     };
 }
