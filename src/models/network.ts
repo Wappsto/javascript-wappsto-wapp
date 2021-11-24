@@ -35,13 +35,21 @@ export class Network extends PermissionModel {
         return values;
     }
 
+    public findValueByType(type: string): Value[] {
+        let values: Value[] = [];
+        this.device.forEach((dev) => {
+            values.concat(dev.findValueByType(type));
+        });
+        return values;
+    }
+
     static getUrl(): string {
         return Network.endpoint;
     }
 
     static findById = async (id: string) => {
         let data: any = await Model.fetch(`${Network.endpoint}/${id}`, {
-            expand: 3,
+            expand: 4,
         });
         return Network.fromArray(data)[0];
     };
@@ -52,23 +60,23 @@ export class Network extends PermissionModel {
         usage: string = ''
     ) => {
         if (usage === '') {
-            usage = `Find network ${quantity} with name ${name}`;
+            usage = `Find ${quantity} network with name ${name}`;
         }
 
         let data = await PermissionModel.request(
-            `${Network.endpoint}`,
+            Network.endpoint,
             quantity,
             usage,
             {
                 this_name: name,
-                expand: 3,
+                expand: 4,
             }
         );
         return Network.fromArray(data);
     };
 
     static fetch = async () => {
-        let data: any[] = await Model.fetch(Network.endpoint, { expand: 3 });
+        let data: any[] = await Model.fetch(Network.endpoint, { expand: 4 });
         return Network.fromArray(data);
     };
 }
