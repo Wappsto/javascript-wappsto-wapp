@@ -4338,6 +4338,16 @@
     "jest-get-type" "^27.3.1"
     "pretty-format" "^27.3.1"
 
+"jest-diff@^27.0.2":
+  "integrity" "sha512-PCeuAH4AWUo2O5+ksW4pL9v5xJAcIKPUPfIhZBcG1RKv/0+dvaWTQK1Nrau8d67dp65fOqbeMdoil+6PedyEPQ=="
+  "resolved" "https://registry.npmjs.org/jest-diff/-/jest-diff-27.3.1.tgz"
+  "version" "27.3.1"
+  dependencies:
+    "chalk" "^4.0.0"
+    "diff-sequences" "^27.0.6"
+    "jest-get-type" "^27.3.1"
+    "pretty-format" "^27.3.1"
+
 "jest-docblock@^25.3.0":
   "integrity" "sha512-aktF0kCar8+zxRHxQZwxMy70stc9R1mOmrLsT5VO3pIT0uzGRSDAXxSlz4NqQWpuLjPpuMhPRl7H+5FRsvIQAg=="
   "resolved" "https://registry.npmjs.org/jest-docblock/-/jest-docblock-25.3.0.tgz"
@@ -4638,6 +4648,13 @@
     "chalk" "^3.0.0"
     "jest-util" "^25.5.0"
     "string-length" "^3.1.0"
+
+"jest-websocket-mock@^2.2.1":
+  "integrity" "sha512-fhsGLXrPfs06PhHoxqOSA9yZ6Rb4qYrf4Wcm7/nfRzjlrf1gIeuhYUkzMRjjE0TMQ37SwkmeLanwrZY4ZaNp8g=="
+  "resolved" "https://registry.npmjs.org/jest-websocket-mock/-/jest-websocket-mock-2.2.1.tgz"
+  "version" "2.2.1"
+  dependencies:
+    "jest-diff" "^27.0.2"
 
 "jest-worker@^24.9.0":
   "integrity" "sha512-51PE4haMSXcHohnSMdM42anbvZANYTqMrr52tVKPqqsPJMzoP6FYYDVqahX/HrAoKEKz3uUPzSvKs9A3qR4iVw=="
@@ -5148,6 +5165,11 @@
   "version" "0.5.5"
   dependencies:
     "minimist" "^1.2.5"
+
+"mock-socket@^8||^9", "mock-socket@^9.0.8":
+  "integrity" "sha512-8Syqkaaa2SzRqW68DEsnZkKQicHP7hVzfj3uCvigB5TL79H1ljKbwmOcRIENkx0ZTyu/5W6u+Pk9Qy6JCp38Ww=="
+  "resolved" "https://registry.npmjs.org/mock-socket/-/mock-socket-9.0.8.tgz"
+  "version" "9.0.8"
 
 "module-deps@^6.2.3":
   "integrity" "sha512-fg7OZaQBcL4/L+AK5f4iVqf9OMbCclXfy/znXRxTVhJSeW5AIlS9AwheYwDaXM3lVW7OBeaeUEY3gbaC6cLlSA=="
