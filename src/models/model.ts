@@ -84,7 +84,7 @@ export class Model extends StreamModel {
         }
     };
 
-    public get = async (): Promise<void> => {
+    public load = async (): Promise<void> => {
         try {
             let response = await wappsto.get(
                 this.getUrl(this.meta.id),

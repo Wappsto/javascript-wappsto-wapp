@@ -46,7 +46,7 @@ export class Config {
             return this.data;
         }
         this.data_fetched = true;
-        await this.data.refresh();
+        await this.data.load();
         return this.data;
     };
 
