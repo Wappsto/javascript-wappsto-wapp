@@ -1,4 +1,5 @@
 import { Type } from 'class-transformer';
+import { PermissionModel } from './model.permission';
 import { Model } from './model';
 import { State } from './state';
 
@@ -28,7 +29,7 @@ interface ValueXml {
 type ValueStreamCallback = (data: string, timestamp: string) => void;
 type RefreshStreamCallback = () => void;
 
-export class Value extends Model {
+export class Value extends PermissionModel {
     static endpoint = '/2.0/value';
 
     name?: string;
@@ -70,7 +71,7 @@ export class Value extends Model {
     }
 
     public static fetch = async () => {
-        let data: any[] = await Model.fetch(Value.endpoint + '?expand=1');
+        let data: any[] = await Model.fetch(Value.endpoint, { expand: 2 });
         return Value.fromArray(data);
     };
 
@@ -164,10 +165,21 @@ export class Value extends Model {
         });
     }
 
-    public static findByName = async (name: string) => {
-        let data: any = await Model.fetch(
-            `${Value.endpoint}?this_name=${name}`,
+    static findByName = async (
+        name: string,
+        quantity: number = 1,
+        usage: string = ''
+    ) => {
+        if (usage === '') {
+            usage = `Find ${quantity} value with name ${name}`;
+        }
+
+        let data = await PermissionModel.request(
+            Value.endpoint,
+            quantity,
+            usage,
             {
+                this_name: name,
                 expand: 2,
             }
         );
@@ -175,12 +187,10 @@ export class Value extends Model {
     };
 
     public static findByType = async (type: string) => {
-        let data: any = await Model.fetch(
-            `${Value.endpoint}?this_type=${type}`,
-            {
-                expand: 2,
-            }
-        );
+        let data: any = await Model.fetch(Value.endpoint, {
+            this_type: type,
+            expand: 2,
+        });
         return Value.fromArray(data);
     };
 }
