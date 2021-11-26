@@ -65,7 +65,7 @@
     "@types/lodash": "^4.14.176",
     "@types/ws": "^8.2.0",
     "axios": "^0.24.0",
-    "class-transformer": "^0.4.0",
+    "class-transformer": "^0.5.1",
     "isomorphic-ws": "^4.0.1",
     "reflect-metadata": "^0.1.13",
     "universal-websocket-client": "^1.0.2",
