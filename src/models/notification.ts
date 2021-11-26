@@ -53,6 +53,19 @@ export class Notification extends Model {
         return ['read'];
     }
 
+    public getIds(): string[] {
+        let ids: string[] = [];
+        if (this.base?.ids) {
+            ids = this.base.ids;
+        }
+        if (ids.length === 0) {
+            if (this.custom?.data?.selected) {
+                ids = this.custom.data.selected.map((m) => m.meta.id);
+            }
+        }
+        return ids;
+    }
+
     public static fetch = async () => {
         let data: any[] = await Model.fetch(Notification.endpoint, {
             expand: 1,
@@ -64,7 +77,7 @@ export class Notification extends Model {
     public static findByMessage = async (
         message: string
     ): Promise<Notification[]> => {
-        let data: any = await Model.fetch(`${Notification.endpoint}`, {
+        let data: any = await Model.fetch(Notification.endpoint, {
             'this_custom.message': message,
             expand: 1,
         });
@@ -74,8 +87,20 @@ export class Notification extends Model {
     public static findByCode = async (
         code: number
     ): Promise<Notification[]> => {
-        let data: any = await Model.fetch(`${Notification.endpoint}`, {
+        let data: any = await Model.fetch(Notification.endpoint, {
             'this_base.code': code,
+            expand: 1,
+        });
+        return Notification.fromArray(data);
+    };
+
+    public static findByIdentifier = async (
+        identifier: string
+    ): Promise<Notification[]> => {
+        console.log(identifier);
+        let data: any = await Model.fetch(Notification.endpoint, {
+            'this_base.identifier': identifier,
+            //'this_base.code': 1100003,
             expand: 1,
         });
         return Notification.fromArray(data);

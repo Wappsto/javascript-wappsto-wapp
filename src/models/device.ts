@@ -57,7 +57,7 @@ export class Device extends PermissionModel {
         }
 
         let data = await PermissionModel.request(
-            `${Device.endpoint}`,
+            Device.endpoint,
             quantity,
             usage,
             {
@@ -69,17 +69,25 @@ export class Device extends PermissionModel {
     };
 
     public static findByProduct = async (product: string) => {
-        let data: any = await Model.fetch(
-            `${Device.endpoint}?this_product=${product}`,
-            {
-                expand: 3,
-            }
-        );
+        let data: any = await Model.fetch(Device.endpoint, {
+            this_product: product,
+            expand: 3,
+        });
         return Device.fromArray(data);
     };
 
-    public static fetch = async () => {
-        let data: any[] = await Model.fetch(Device.endpoint, { expand: 3 });
+    public static fetch = async (name: string = '', parentUrl: string = '') => {
+        let params = { expand: 3 };
+        let url = Device.endpoint;
+        if (name !== '') {
+            Object.assign(params, {
+                this_name: name,
+            });
+        }
+        if (parentUrl !== '') {
+            url = parentUrl + '/device';
+        }
+        let data: any[] = await Model.fetch(url, params);
         return Device.fromArray(data);
     };
 }

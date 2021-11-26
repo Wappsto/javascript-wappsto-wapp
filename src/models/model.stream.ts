@@ -13,6 +13,12 @@ interface IStreamCallbacks {
 export class StreamModel {
     streamCallback: IStreamCallbacks = {} as IStreamCallbacks;
 
+    constructor() {
+        this.streamCallback.change = [];
+        this.streamCallback.delete = [];
+        this.streamCallback.create = [];
+    }
+
     public parse(_: any): boolean {
         return false;
     }

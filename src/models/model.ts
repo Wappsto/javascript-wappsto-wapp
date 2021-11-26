@@ -6,9 +6,11 @@ import { IMeta } from './meta';
 import settings from '../util/settings';
 import { StreamModel } from './model.stream';
 
-interface IModel {}
+interface IModel {
+    getUrl(): string;
+}
 
-export class Model extends StreamModel {
+export class Model extends StreamModel implements IModel {
     meta: IMeta = {};
     parent?: IModel;
 
@@ -53,9 +55,11 @@ export class Model extends StreamModel {
         return options;
     }
 
-    private getUrl(path?: string): string {
-        if (path) {
-            return this.url() + '/' + path;
+    public getUrl(): string {
+        if (this.meta.id) {
+            return this.url() + '/' + this.meta.id;
+        } else if (this.parent) {
+            return this.parent.getUrl() + '/' + this.meta.type;
         }
         return this.url();
     }
@@ -75,7 +79,7 @@ export class Model extends StreamModel {
     public update = async (): Promise<void> => {
         try {
             let response = await wappsto.put(
-                this.getUrl(this.meta.id),
+                this.getUrl(),
                 Model.generateOptions({}, this.toJSON())
             );
             this.parse(response.data);
@@ -87,7 +91,7 @@ export class Model extends StreamModel {
     public load = async (): Promise<void> => {
         try {
             let response = await wappsto.get(
-                this.getUrl(this.meta.id),
+                this.getUrl(),
                 Model.generateOptions()
             );
             this.parse(response.data);
@@ -106,9 +110,9 @@ export class Model extends StreamModel {
                 Model.generateOptions(params)
             );
 
-            if (response.data.constructor.name === 'Array') {
+            if (_.isArray(response?.data)) {
                 return response.data;
-            } else {
+            } else if (response.data) {
                 return [response.data];
             }
         } catch (e) {
@@ -118,6 +122,9 @@ export class Model extends StreamModel {
     };
 
     parse(json: any): boolean {
+        if (_.isArray(json)) {
+            json = json[0];
+        }
         let oldModel = this.toJSON();
         Object.assign(this, json);
         let newModel = this.toJSON();

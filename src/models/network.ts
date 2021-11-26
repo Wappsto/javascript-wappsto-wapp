@@ -30,7 +30,7 @@ export class Network extends PermissionModel {
     public findValueByName(name: string): Value[] {
         let values: Value[] = [];
         this.device.forEach((dev) => {
-            values.concat(dev.findValueByName(name));
+            values = values.concat(dev.findValueByName(name));
         });
         return values;
     }
@@ -38,9 +38,39 @@ export class Network extends PermissionModel {
     public findValueByType(type: string): Value[] {
         let values: Value[] = [];
         this.device.forEach((dev) => {
-            values.concat(dev.findValueByType(type));
+            values = values.concat(dev.findValueByType(type));
         });
         return values;
+    }
+
+    public async createDevice(
+        name: string,
+        product: string,
+        serial: string,
+        description: string,
+        protocol: string,
+        communication: string,
+        version: string,
+        manufacturer: string
+    ): Promise<Device> {
+        let devices = await Device.fetch(name, this.getUrl());
+        if (devices.length !== 0) {
+            return devices[0];
+        }
+
+        let device = new Device();
+        device.name = name;
+        device.product = product;
+        device.serial = serial;
+        device.description = description;
+        device.protocol = protocol;
+        device.communication = communication;
+        device.version = version;
+        device.manufacturer = manufacturer;
+        device.parent = this;
+        await device.create();
+
+        return device;
     }
 
     static getUrl(): string {
