@@ -241,4 +241,58 @@ describe('network', () => {
         expect(device.manufacturer).toEqual('manufacturer');
         expect(device.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
+
+    it('can return device as a child', async () => {
+        mockedAxios.get.mockResolvedValue({
+            data: [{
+                communication: 'communication',
+                description: 'description',
+                manufacturer: 'manufacturer',
+                meta: {
+                    type: 'device',
+                    version: '2.0',
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273'
+                },
+                name: 'Device Name',
+                product: 'product',
+                protocol: 'protocol',
+                serial: 'serial',
+                value: [],
+                version: 'version',
+            }]
+        });
+
+        let network = new Network();
+        network.meta.id = 'network_id';
+        let device = await network.createDevice(
+            'Device Name',
+            'product',
+            'serial',
+            'description',
+            'protocol',
+            'communication',
+            'version',
+            'manufacturer'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/network/network_id/device',
+            {
+                params: {
+                    expand: 3,
+                    this_name: 'Device Name',
+                },
+            }
+        );
+
+        expect(device.name).toEqual('Device Name');
+        expect(device.product).toEqual('product');
+        expect(device.serial).toEqual('serial');
+        expect(device.description).toEqual('description');
+        expect(device.protocol).toEqual('protocol');
+        expect(device.communication).toEqual('communication');
+        expect(device.version).toEqual('version');
+        expect(device.manufacturer).toEqual('manufacturer');
+        expect(device.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
 });
