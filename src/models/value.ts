@@ -3,7 +3,7 @@ import { PermissionModel } from './model.permission';
 import { Model } from './model';
 import { State } from './state';
 
-interface ValueNumber {
+export interface IValueNumber {
     min: number;
     max: number;
     step: number;
@@ -11,17 +11,17 @@ interface ValueNumber {
     si_unit?: string;
 }
 
-interface ValueString {
+export interface IValueString {
     max: number;
     encoding?: string;
 }
 
-interface ValueBlob {
+export interface IValueBlob {
     max: number;
     encoding?: string;
 }
 
-interface ValueXml {
+export interface IValueXml {
     max: number;
     encoding?: string;
 }
@@ -37,10 +37,10 @@ export class Value extends PermissionModel {
     type?: string;
     period?: string;
     delta?: string;
-    number?: ValueNumber;
-    string?: ValueString;
-    blob?: ValueBlob;
-    xml?: ValueXml;
+    number?: IValueNumber;
+    string?: IValueString;
+    blob?: IValueBlob;
+    xml?: IValueXml;
     status?: string;
     @Type(() => State)
     state: State[] = [];
@@ -70,8 +70,19 @@ export class Value extends PermissionModel {
         ];
     }
 
-    public static fetch = async () => {
-        let data: any[] = await Model.fetch(Value.endpoint, { expand: 2 });
+    public static fetch = async (name: string = '', parentUrl: string = '') => {
+        let params = { expand: 2 };
+        let url = Value.endpoint;
+        if (name !== '') {
+            Object.assign(params, {
+                this_name: name,
+            });
+        }
+        if (parentUrl !== '') {
+            url = parentUrl + '/value';
+        }
+
+        let data: any[] = await Model.fetch(url, params);
         return Value.fromArray(data);
     };
 

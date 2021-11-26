@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { Model } from './model';
-import { Value } from './value';
+import { Value, IValueNumber, IValueString, IValueBlob, IValueXml } from './value';
+import { printError } from '../util/debug';
 
 export class Device extends PermissionModel {
     static endpoint = '/2.0/device';
@@ -45,6 +46,79 @@ export class Device extends PermissionModel {
 
     public findValueByType(type: string): Value[] {
         return this.value.filter((val) => val.type === type);
+    }
+
+    public async createValue(
+        name: string,
+        permission: string,
+        type: string,
+        period: string,
+        delta: string,
+        status: string,
+        number: IValueNumber | undefined = undefined,
+        string: IValueString | undefined = undefined,
+        blob: IValueBlob | undefined = undefined,
+        xml: IValueXml | undefined = undefined
+    ): Promise<Value> {
+        let values = await Value.fetch(name, this.getUrl());
+        if (values.length !== 0) {
+            return values[0];
+        }
+
+        let value = new Value();
+        value.name = name;
+        value.permission = permission;
+        value.type = type;
+        value.period = period;
+        value.delta = delta;
+        value.status = status;
+        if (number) {
+            value.number = number;
+        } else if (string) {
+            value.string = string;
+        } else if (blob) {
+            value.blob = blob;
+        } else if (xml) {
+            value.xml = xml;
+        } else {
+            printError('You must suply a valid type');
+        }
+        value.parent = this;
+        await value.create();
+
+        return value;
+    }
+
+    public async createNumberValue(
+        name: string,
+        permission: string,
+        type: string,
+        period: string,
+        delta: string,
+        status: string,
+        min: number,
+        max: number,
+        step: number,
+        unit: string,
+        si_unit: string = ''
+    ): Promise<Value> {
+        let valueNumber = {} as IValueNumber;
+        valueNumber.min = min;
+        valueNumber.max = max;
+        valueNumber.step = step;
+        valueNumber.unit = unit;
+        valueNumber.si_unit = si_unit;
+
+
+        return this.createValue(
+            name,
+            permission,
+            type,
+            period,
+            delta,
+            status,
+            valueNumber
+        );
     }
 
     public static findByName = async (
