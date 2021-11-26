@@ -244,22 +244,24 @@ describe('network', () => {
 
     it('can return device as a child', async () => {
         mockedAxios.get.mockResolvedValue({
-            data: [{
-                communication: 'communication',
-                description: 'description',
-                manufacturer: 'manufacturer',
-                meta: {
-                    type: 'device',
-                    version: '2.0',
-                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273'
+            data: [
+                {
+                    communication: 'communication',
+                    description: 'description',
+                    manufacturer: 'manufacturer',
+                    meta: {
+                        type: 'device',
+                        version: '2.0',
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                    },
+                    name: 'Device Name',
+                    product: 'product',
+                    protocol: 'protocol',
+                    serial: 'serial',
+                    value: [],
+                    version: 'version',
                 },
-                name: 'Device Name',
-                product: 'product',
-                protocol: 'protocol',
-                serial: 'serial',
-                value: [],
-                version: 'version',
-            }]
+            ],
         });
 
         let network = new Network();
