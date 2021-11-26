@@ -41,7 +41,7 @@ describe('user', () => {
     it('can create a new user from wappsto', async () => {
         let user = await User.me();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
             params: {
                 expand: 1,
             },
@@ -55,7 +55,7 @@ describe('user', () => {
         let users = await User.fetch();
         verbose(false);
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
             params: { expand: 1, verbose: true },
         });
         expect(users[0]?.first_name).toEqual('first');
