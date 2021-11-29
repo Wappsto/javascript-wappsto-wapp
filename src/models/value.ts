@@ -127,6 +127,28 @@ export class Value extends PermissionModel {
         }
     }
 
+    public createState = async (
+        type: string,
+        data: string,
+        timestamp: string
+    ) => {
+        if (!['Report', 'Control'].includes(type)) {
+            throw new Error('Invalid value for state type');
+        }
+
+        let states = await State.fetch(type, this.getUrl());
+        if (states.length !== 0) {
+            return states[0];
+        }
+
+        let state = new State(type);
+        state.data = data;
+        state.timestamp = timestamp;
+        await state.create();
+
+        return state;
+    };
+
     private findStateAndData(type: string): string | undefined {
         let state = this.findState(type);
         if (state) {

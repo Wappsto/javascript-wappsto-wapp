@@ -19,8 +19,19 @@ export class State extends Model {
         return ['data', 'status', 'type', 'timestamp', 'status_payment'];
     }
 
-    public static fetch = async () => {
-        let data: any[] = await Model.fetch(State.endpoint, { expand: 1 });
+    public static fetch = async (type: string = '', parentUrl: string = '') => {
+        let params = { expand: 1 };
+        let url = State.endpoint;
+        if (type !== '') {
+            Object.assign(params, {
+                this_type: type,
+            });
+        }
+        if (parentUrl !== '') {
+            url = parentUrl + '/state';
+        }
+
+        let data: any[] = await Model.fetch(url, params);
         return State.fromArray(data);
     };
 }

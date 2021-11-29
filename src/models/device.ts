@@ -66,8 +66,9 @@ export class Device extends PermissionModel {
         blob: IValueBlob | undefined = undefined,
         xml: IValueXml | undefined = undefined
     ): Promise<Value> {
-        if(!["r","w","rw","wr"].includes(permission)) {
-            throw new Error('Invalid value for permission');
+        permission = permission.toLowerCase();
+        if (!['r', 'w', 'rw', 'wr'].includes(permission)) {
+            throw new Error('Invalid value for value permission');
         }
 
         let values = await Value.fetch(name, this.getUrl());

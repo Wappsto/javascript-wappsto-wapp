@@ -98,7 +98,6 @@ export class Notification extends Model {
     public static findByIdentifier = async (
         identifier: string
     ): Promise<Notification[]> => {
-        console.log(identifier);
         let data: any = await Model.fetch(Notification.endpoint, {
             'this_base.identifier': identifier,
             //'this_base.code': 1100003,

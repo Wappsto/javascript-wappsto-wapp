@@ -60,7 +60,6 @@ export class PermissionModel extends Model {
             StreamHandler.subscribeService('/notification', async (event) => {
                 if (event.meta_object?.type === 'notification') {
                     let notification = Notification.fromArray([event.data]);
-                    console.log(notification);
                     if (!notification || !notification[0]) {
                         return;
                     }
