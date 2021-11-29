@@ -180,7 +180,6 @@ class StreamHandler {
         let paths: string[] = [];
         let services: string[] = [];
         if (type === 'message') {
-            console.log(event);
             let items: string[] = event.path
                 .split('/')
                 .filter((s) => s.length > 0);
@@ -257,8 +256,6 @@ class StreamHandler {
         };
 
         this.socket.onmessage = function (ev: any): void {
-            printDebug('New Stream message');
-
             let message;
             if (ev.type === 'message') {
                 try {
@@ -273,8 +270,13 @@ class StreamHandler {
 
             if (message.jsonrpc) {
                 if (message.result) {
-                    printDebug(`Stream rpc result: ${message.result.value}`);
-                    console.log(message.result.value);
+                    if (message.result.value !== true) {
+                        printDebug(
+                            `Stream rpc result: ${JSON.stringify(
+                                message.result.value
+                            )}`
+                        );
+                    }
                 } else {
                     printError(
                         `Stream rpc error: ${JSON.stringify(message.error)}`

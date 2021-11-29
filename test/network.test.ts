@@ -135,7 +135,10 @@ describe('network', () => {
             },
             path: '/notification/',
             data: {
-                base: { ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'] },
+                base: {
+                    identifier: 'network-1-Find 1 network with name test',
+                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                },
             },
         });
 

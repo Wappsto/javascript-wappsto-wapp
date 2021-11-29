@@ -1,7 +1,13 @@
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { Model } from './model';
-import { Value, IValueNumber, IValueString, IValueBlob, IValueXml } from './value';
+import {
+    Value,
+    IValueNumber,
+    IValueString,
+    IValueBlob,
+    IValueXml,
+} from './value';
 import { printError } from '../util/debug';
 
 export class Device extends PermissionModel {
@@ -108,7 +114,6 @@ export class Device extends PermissionModel {
         valueNumber.step = step;
         valueNumber.unit = unit;
         valueNumber.si_unit = si_unit;
-
 
         return this.createValue(
             name,

@@ -30,6 +30,7 @@ interface IBase {
     priority: number;
     ids: string[];
     info: any[];
+    identifier: string;
 }
 
 export class Notification extends Model {
