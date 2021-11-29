@@ -53,7 +53,7 @@ describe('value', () => {
             },
         });
         expect(value.name).toEqual('test');
-        expect(value.state).toEqual([]);
+        expect(value.states).toEqual([]);
         expect(value.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 

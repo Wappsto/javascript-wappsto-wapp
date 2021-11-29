@@ -73,10 +73,6 @@ export class Network extends PermissionModel {
         return device;
     }
 
-    static getUrl(): string {
-        return Network.endpoint;
-    }
-
     static findById = async (id: string) => {
         let data: any = await Model.fetch(`${Network.endpoint}/${id}`, {
             expand: 4,

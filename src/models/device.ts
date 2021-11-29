@@ -66,6 +66,10 @@ export class Device extends PermissionModel {
         blob: IValueBlob | undefined = undefined,
         xml: IValueXml | undefined = undefined
     ): Promise<Value> {
+        if(!["r","w","rw","wr"].includes(permission)) {
+            throw new Error('Invalid value for permission');
+        }
+
         let values = await Value.fetch(name, this.getUrl());
         if (values.length !== 0) {
             return values[0];
@@ -123,6 +127,87 @@ export class Device extends PermissionModel {
             delta,
             status,
             valueNumber
+        );
+    }
+
+    public async createStringValue(
+        name: string,
+        permission: string,
+        type: string,
+        period: string,
+        delta: string,
+        status: string,
+        max: number,
+        encoding: string = ''
+    ): Promise<Value> {
+        let stringNumber = {} as IValueString;
+        stringNumber.max = max;
+        stringNumber.encoding = encoding;
+
+        return this.createValue(
+            name,
+            permission,
+            type,
+            period,
+            delta,
+            status,
+            undefined,
+            stringNumber
+        );
+    }
+
+    public async createBlobValue(
+        name: string,
+        permission: string,
+        type: string,
+        period: string,
+        delta: string,
+        status: string,
+        max: number,
+        encoding: string = ''
+    ): Promise<Value> {
+        let blobNumber = {} as IValueBlob;
+        blobNumber.max = max;
+        blobNumber.encoding = encoding;
+
+        return this.createValue(
+            name,
+            permission,
+            type,
+            period,
+            delta,
+            status,
+            undefined,
+            undefined,
+            blobNumber
+        );
+    }
+
+    public async createXmlValue(
+        name: string,
+        permission: string,
+        type: string,
+        period: string,
+        delta: string,
+        status: string,
+        max: number,
+        encoding: string = ''
+    ): Promise<Value> {
+        let xmlNumber = {} as IValueXml;
+        xmlNumber.max = max;
+        xmlNumber.encoding = encoding;
+
+        return this.createValue(
+            name,
+            permission,
+            type,
+            period,
+            delta,
+            status,
+            undefined,
+            undefined,
+            undefined,
+            xmlNumber
         );
     }
 

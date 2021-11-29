@@ -51,7 +51,7 @@ describe('device', () => {
             },
         });
         expect(device.name).toEqual('test');
-        expect(device.value).toEqual([]);
+        expect(device.values).toEqual([]);
         expect(device.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
