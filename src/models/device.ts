@@ -233,11 +233,23 @@ export class Device extends PermissionModel {
         return Device.fromArray(data);
     };
 
-    public static findByProduct = async (product: string) => {
-        let data: any = await Model.fetch(Device.endpoint, {
-            this_product: product,
-            expand: 3,
-        });
+    public static findByProduct = async (
+        product: string,
+        quantity: number = 1,
+        usage: string = ''
+    ) => {
+        if (usage === '') {
+            usage = `Find ${quantity} device with product ${product}`;
+        }
+        let data = await PermissionModel.request(
+            Device.endpoint,
+            quantity,
+            usage,
+            {
+                this_product: product,
+                expand: 3,
+            }
+        );
         return Device.fromArray(data);
     };
 

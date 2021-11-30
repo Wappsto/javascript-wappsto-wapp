@@ -97,7 +97,7 @@ describe('device', () => {
     });
 
     it('can find a device by name', async () => {
-        mockedAxios.get.mockResolvedValue([]);
+        mockedAxios.get.mockResolvedValue({ data: [] });
 
         let r = Device.findByName('test');
         await server.connected;
@@ -134,6 +134,41 @@ describe('device', () => {
             },
         });
         expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
+    it('can find a device by product', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        base: {
+                            identifier:
+                                'device-1-Find 1 device with product test',
+                            ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({ data: [response] });
+
+        let devices = await Device.findByProduct('test');
+
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
+            params: {
+                expand: 1,
+                'this_base.identifier':
+                    'device-1-Find 1 device with product test',
+            },
+        });
+
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+            params: {
+                expand: 3,
+                id: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                this_product: 'test',
+            },
+        });
+        expect(devices[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
     it('can create a new number value as a child', async () => {
@@ -205,6 +240,195 @@ describe('device', () => {
         expect(value.number?.step).toEqual(1);
         expect(value.number?.unit).toEqual('unit');
         expect(value.number?.si_unit).toEqual('si_unit');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can create a new string value as a child', async () => {
+        mockedAxios.get.mockResolvedValue({ data: [] });
+        mockedAxios.post.mockResolvedValue({
+            data: [{ meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
+        });
+
+        let device = new Device();
+        device.meta.id = 'device_id';
+        let value = await device.createStringValue(
+            'Value Name',
+            'rw',
+            'type',
+            'period',
+            'delta',
+            'status',
+            10,
+            'encoding'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/device/device_id/value',
+            {
+                params: {
+                    expand: 2,
+                    this_name: 'Value Name',
+                },
+            }
+        );
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/device/device_id/value',
+            {
+                body: {
+                    permission: 'rw',
+                    type: 'type',
+                    period: 'period',
+                    meta: {
+                        type: 'value',
+                        version: '2.0',
+                    },
+                    name: 'Value Name',
+                    delta: 'delta',
+                    status: 'status',
+                    string: {
+                        max: 10,
+                        encoding: 'encoding',
+                    },
+                    state: [],
+                },
+            }
+        );
+
+        expect(value.name).toEqual('Value Name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('type');
+        expect(value.period).toEqual('period');
+        expect(value.delta).toEqual('delta');
+        expect(value.status).toEqual('status');
+        expect(value.string?.max).toEqual(10);
+        expect(value.string?.encoding).toEqual('encoding');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can create a new blob value as a child', async () => {
+        mockedAxios.get.mockResolvedValue({ data: [] });
+        mockedAxios.post.mockResolvedValue({
+            data: [{ meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
+        });
+
+        let device = new Device();
+        device.meta.id = 'device_id';
+        let value = await device.createBlobValue(
+            'Value Name',
+            'rw',
+            'type',
+            'period',
+            'delta',
+            'status',
+            10,
+            'encoding'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/device/device_id/value',
+            {
+                params: {
+                    expand: 2,
+                    this_name: 'Value Name',
+                },
+            }
+        );
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/device/device_id/value',
+            {
+                body: {
+                    permission: 'rw',
+                    type: 'type',
+                    period: 'period',
+                    meta: {
+                        type: 'value',
+                        version: '2.0',
+                    },
+                    name: 'Value Name',
+                    delta: 'delta',
+                    status: 'status',
+                    blob: {
+                        max: 10,
+                        encoding: 'encoding',
+                    },
+                    state: [],
+                },
+            }
+        );
+
+        expect(value.name).toEqual('Value Name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('type');
+        expect(value.period).toEqual('period');
+        expect(value.delta).toEqual('delta');
+        expect(value.status).toEqual('status');
+        expect(value.blob?.max).toEqual(10);
+        expect(value.blob?.encoding).toEqual('encoding');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can create a new xml value as a child', async () => {
+        mockedAxios.get.mockResolvedValue({ data: [] });
+        mockedAxios.post.mockResolvedValue({
+            data: [{ meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
+        });
+
+        let device = new Device();
+        device.meta.id = 'device_id';
+        let value = await device.createXmlValue(
+            'Value Name',
+            'rw',
+            'type',
+            'period',
+            'delta',
+            'status',
+            10,
+            'encoding'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/device/device_id/value',
+            {
+                params: {
+                    expand: 2,
+                    this_name: 'Value Name',
+                },
+            }
+        );
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/device/device_id/value',
+            {
+                body: {
+                    permission: 'rw',
+                    type: 'type',
+                    period: 'period',
+                    meta: {
+                        type: 'value',
+                        version: '2.0',
+                    },
+                    name: 'Value Name',
+                    delta: 'delta',
+                    status: 'status',
+                    xml: {
+                        max: 10,
+                        encoding: 'encoding',
+                    },
+                    state: [],
+                },
+            }
+        );
+
+        expect(value.name).toEqual('Value Name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('type');
+        expect(value.period).toEqual('period');
+        expect(value.delta).toEqual('delta');
+        expect(value.status).toEqual('status');
+        expect(value.xml?.max).toEqual(10);
+        expect(value.xml?.encoding).toEqual('encoding');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
