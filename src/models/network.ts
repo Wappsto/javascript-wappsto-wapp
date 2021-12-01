@@ -15,7 +15,7 @@ export async function createNetwork(name: string): Promise<Network> {
     await network.create();
 
     return network;
-};
+}
 
 export class Network extends PermissionModel {
     static endpoint = '/2.0/network';
