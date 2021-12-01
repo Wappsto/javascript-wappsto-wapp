@@ -1,4 +1,4 @@
-export { Network } from './network';
+export { createNetwork, Network } from './network';
 export { Device } from './device';
 export { Value } from './value';
 export { State } from './state';

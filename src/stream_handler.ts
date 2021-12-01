@@ -7,7 +7,7 @@ import { isUUID } from './util/uuid';
 var WebSocket = require('universal-websocket-client');
 
 type SignalHandler = (event: string) => void;
-type ServiceHandler = (event: any) => void;
+type ServiceHandler = (event: any) => Promise<true | undefined>;
 
 interface StreamModelHash {
     [key: string]: StreamModel[];
@@ -211,7 +211,13 @@ class StreamHandler {
         });
         services.forEach((path) => {
             this.services[path]?.forEach((callback: ServiceHandler) => {
-                callback(event);
+                callback(event).then((res) => {
+                    if (res === true) {
+                        this.services[path] = this.services[path].filter(
+                            (item) => item !== callback
+                        );
+                    }
+                });
             });
         });
     }

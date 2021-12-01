@@ -4,6 +4,19 @@ import { Model } from './model';
 import { Device } from './device';
 import { Value } from './value';
 
+export async function createNetwork(name: string): Promise<Network> {
+    let networks = await Network.fetch(name);
+    if (networks.length !== 0) {
+        return networks[0];
+    }
+
+    let network = new Network();
+    network.name = name;
+    await network.create();
+
+    return network;
+};
+
 export class Network extends PermissionModel {
     static endpoint = '/2.0/network';
     name?: string;
@@ -55,6 +68,7 @@ export class Network extends PermissionModel {
     ): Promise<Device> {
         let devices = await Device.fetch(name, this.getUrl());
         if (devices.length !== 0) {
+            devices[0].parent = this;
             return devices[0];
         }
 
@@ -101,8 +115,14 @@ export class Network extends PermissionModel {
         return Network.fromArray(data);
     };
 
-    static fetch = async () => {
-        let data: any[] = await Model.fetch(Network.endpoint, { expand: 4 });
+    static fetch = async (name: string = '', params: any = {}) => {
+        Object.assign(params, { expand: 4 });
+        if (name !== '') {
+            Object.assign(params, {
+                'this_name=': name,
+            });
+        }
+        let data: any[] = await Model.fetch(Network.endpoint, params);
         return Network.fromArray(data);
     };
 }

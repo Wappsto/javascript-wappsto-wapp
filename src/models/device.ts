@@ -60,7 +60,6 @@ export class Device extends PermissionModel {
         type: string,
         period: string,
         delta: string,
-        status: string,
         number: IValueNumber | undefined = undefined,
         string: IValueString | undefined = undefined,
         blob: IValueBlob | undefined = undefined,
@@ -82,7 +81,6 @@ export class Device extends PermissionModel {
         value.type = type;
         value.period = period;
         value.delta = delta;
-        value.status = status;
         if (number) {
             value.number = number;
         } else if (string) {
@@ -106,19 +104,18 @@ export class Device extends PermissionModel {
         type: string,
         period: string,
         delta: string,
-        status: string,
         min: number,
         max: number,
         step: number,
         unit: string,
-        si_unit: string = ''
+        si_conversion: string = ''
     ): Promise<Value> {
         let valueNumber = {} as IValueNumber;
         valueNumber.min = min;
         valueNumber.max = max;
         valueNumber.step = step;
         valueNumber.unit = unit;
-        valueNumber.si_unit = si_unit;
+        valueNumber.si_conversion = si_conversion;
 
         return this.createValue(
             name,
@@ -126,7 +123,6 @@ export class Device extends PermissionModel {
             type,
             period,
             delta,
-            status,
             valueNumber
         );
     }
@@ -137,7 +133,6 @@ export class Device extends PermissionModel {
         type: string,
         period: string,
         delta: string,
-        status: string,
         max: number,
         encoding: string = ''
     ): Promise<Value> {
@@ -151,7 +146,6 @@ export class Device extends PermissionModel {
             type,
             period,
             delta,
-            status,
             undefined,
             stringNumber
         );
@@ -163,7 +157,6 @@ export class Device extends PermissionModel {
         type: string,
         period: string,
         delta: string,
-        status: string,
         max: number,
         encoding: string = ''
     ): Promise<Value> {
@@ -177,7 +170,6 @@ export class Device extends PermissionModel {
             type,
             period,
             delta,
-            status,
             undefined,
             undefined,
             blobNumber
@@ -190,7 +182,6 @@ export class Device extends PermissionModel {
         type: string,
         period: string,
         delta: string,
-        status: string,
         max: number,
         encoding: string = ''
     ): Promise<Value> {
@@ -204,7 +195,6 @@ export class Device extends PermissionModel {
             type,
             period,
             delta,
-            status,
             undefined,
             undefined,
             undefined,
@@ -258,7 +248,7 @@ export class Device extends PermissionModel {
         let url = Device.endpoint;
         if (name !== '') {
             Object.assign(params, {
-                this_name: name,
+                'this_name=': name,
             });
         }
         if (parentUrl !== '') {

@@ -8,7 +8,7 @@ export interface IValueNumber {
     max: number;
     step: number;
     unit?: string;
-    si_unit?: string;
+    si_conversion?: string;
 }
 
 export interface IValueString {
@@ -75,7 +75,7 @@ export class Value extends PermissionModel {
         let url = Value.endpoint;
         if (name !== '') {
             Object.assign(params, {
-                this_name: name,
+                'this_name=': name,
             });
         }
         if (parentUrl !== '') {

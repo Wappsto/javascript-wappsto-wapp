@@ -42,8 +42,9 @@ describe('network', () => {
         let network = new Network('test');
         await network.create();
 
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/network', {
-            body: {
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/network',
+            {
                 device: [],
                 meta: {
                     type: 'network',
@@ -51,7 +52,8 @@ describe('network', () => {
                 },
                 name: 'test',
             },
-        });
+            {}
+        );
         expect(network.name).toEqual('test');
         expect(network.devices).toEqual([]);
         expect(network.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
@@ -72,7 +74,8 @@ describe('network', () => {
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/network/' + network.meta.id,
-            { body: response }
+            response,
+            {}
         );
 
         response.name = oldName;
@@ -208,7 +211,7 @@ describe('network', () => {
             {
                 params: {
                     expand: 3,
-                    this_name: 'Device Name',
+                    'this_name=': 'Device Name',
                 },
             }
         );
@@ -216,22 +219,21 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/network/network_id/device',
             {
-                body: {
-                    communication: 'communication',
-                    description: 'description',
-                    manufacturer: 'manufacturer',
-                    meta: {
-                        type: 'device',
-                        version: '2.0',
-                    },
-                    name: 'Device Name',
-                    product: 'product',
-                    protocol: 'protocol',
-                    serial: 'serial',
-                    value: [],
-                    version: 'version',
+                communication: 'communication',
+                description: 'description',
+                manufacturer: 'manufacturer',
+                meta: {
+                    type: 'device',
+                    version: '2.0',
                 },
-            }
+                name: 'Device Name',
+                product: 'product',
+                protocol: 'protocol',
+                serial: 'serial',
+                value: [],
+                version: 'version',
+            },
+            {}
         );
 
         expect(device.name).toEqual('Device Name');
@@ -285,7 +287,7 @@ describe('network', () => {
             {
                 params: {
                     expand: 3,
-                    this_name: 'Device Name',
+                    'this_name=': 'Device Name',
                 },
             }
         );

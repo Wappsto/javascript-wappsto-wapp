@@ -3,6 +3,7 @@ import { Model } from './model';
 import { Notification } from './notification';
 import { printDebug } from '../util/debug';
 import StreamHandler from '../stream_handler';
+import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 
 export class PermissionModel extends Model {
     private static getPermissionHash(
@@ -12,6 +13,58 @@ export class PermissionModel extends Model {
     ): string {
         return `${type}-${quantity}-${message}`;
     }
+
+    public create = async (): Promise<void> => {
+        return new Promise<void>(async (resolve, reject) => {
+            let id = 'request access to save data under users account';
+            try {
+                await this._create();
+                resolve();
+            } catch (error) {
+                let data = getErrorResponse(error);
+
+                if (!data) {
+                    printHttpError(error);
+                    reject(error);
+                    return;
+                }
+
+                if (data.code === 400008) {
+                    printDebug('Requesting permission to add data to user');
+                    StreamHandler.subscribeService(
+                        '/notification',
+                        async (event) => {
+                            if (event.meta_object?.type === 'notification') {
+                                let notification = Notification.fromArray([
+                                    event.data,
+                                ]);
+                                if (!notification || !notification[0]) {
+                                    return;
+                                }
+                                if (notification[0]?.base?.code === 1100013) {
+                                    try {
+                                        this._create({
+                                            identifier: id,
+                                        });
+                                        resolve();
+                                        return true;
+                                    } catch (e) {
+                                        printDebug(
+                                            'Failed to get permission to save data under users account'
+                                        );
+                                    }
+                                }
+                            }
+                            return undefined;
+                        }
+                    );
+                } else {
+                    printHttpError(error);
+                    reject(data);
+                }
+            }
+        });
+    };
 
     public static request = async (
         endpoint: string,
@@ -49,7 +102,6 @@ export class PermissionModel extends Model {
                         });
                         let result = await Model.fetch(endpoint, params);
                         resolve(result);
-                        return;
                     }
                 }
             }
@@ -73,8 +125,10 @@ export class PermissionModel extends Model {
                         });
                         let result = await Model.fetch(endpoint, params);
                         resolve(result);
+                        return true;
                     }
                 }
+                return undefined;
             });
         });
     };

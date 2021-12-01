@@ -40,8 +40,9 @@ describe('device', () => {
         let device = new Device('test');
         await device.create();
 
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/device', {
-            body: {
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/device',
+            {
                 meta: {
                     type: 'device',
                     version: '2.0',
@@ -49,7 +50,8 @@ describe('device', () => {
                 name: 'test',
                 value: [],
             },
-        });
+            {}
+        );
         expect(device.name).toEqual('test');
         expect(device.values).toEqual([]);
         expect(device.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
@@ -68,7 +70,8 @@ describe('device', () => {
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/device/' + device.meta.id,
-            { body: response }
+            response,
+            {}
         );
 
         response.name = oldName;
@@ -185,12 +188,11 @@ describe('device', () => {
             'type',
             'period',
             'delta',
-            'status',
             0,
             1,
             1,
             'unit',
-            'si_unit'
+            'si_conversion'
         );
 
         expect(mockedAxios.get).toHaveBeenCalledWith(
@@ -198,7 +200,7 @@ describe('device', () => {
             {
                 params: {
                     expand: 2,
-                    this_name: 'Value Name',
+                    'this_name=': 'Value Name',
                 },
             }
         );
@@ -206,27 +208,25 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             {
-                body: {
-                    permission: 'rw',
-                    type: 'type',
-                    period: 'period',
-                    meta: {
-                        type: 'value',
-                        version: '2.0',
-                    },
-                    name: 'Value Name',
-                    delta: 'delta',
-                    status: 'status',
-                    number: {
-                        min: 0,
-                        max: 1,
-                        step: 1,
-                        unit: 'unit',
-                        si_unit: 'si_unit',
-                    },
-                    state: [],
+                permission: 'rw',
+                type: 'type',
+                period: 'period',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
                 },
-            }
+                name: 'Value Name',
+                delta: 'delta',
+                number: {
+                    min: 0,
+                    max: 1,
+                    step: 1,
+                    unit: 'unit',
+                    si_conversion: 'si_conversion',
+                },
+                state: [],
+            },
+            {}
         );
 
         expect(value.name).toEqual('Value Name');
@@ -234,12 +234,11 @@ describe('device', () => {
         expect(value.type).toEqual('type');
         expect(value.period).toEqual('period');
         expect(value.delta).toEqual('delta');
-        expect(value.status).toEqual('status');
         expect(value.number?.min).toEqual(0);
         expect(value.number?.max).toEqual(1);
         expect(value.number?.step).toEqual(1);
         expect(value.number?.unit).toEqual('unit');
-        expect(value.number?.si_unit).toEqual('si_unit');
+        expect(value.number?.si_conversion).toEqual('si_conversion');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
@@ -257,7 +256,6 @@ describe('device', () => {
             'type',
             'period',
             'delta',
-            'status',
             10,
             'encoding'
         );
@@ -267,7 +265,7 @@ describe('device', () => {
             {
                 params: {
                     expand: 2,
-                    this_name: 'Value Name',
+                    'this_name=': 'Value Name',
                 },
             }
         );
@@ -275,24 +273,22 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             {
-                body: {
-                    permission: 'rw',
-                    type: 'type',
-                    period: 'period',
-                    meta: {
-                        type: 'value',
-                        version: '2.0',
-                    },
-                    name: 'Value Name',
-                    delta: 'delta',
-                    status: 'status',
-                    string: {
-                        max: 10,
-                        encoding: 'encoding',
-                    },
-                    state: [],
+                permission: 'rw',
+                type: 'type',
+                period: 'period',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
                 },
-            }
+                name: 'Value Name',
+                delta: 'delta',
+                string: {
+                    max: 10,
+                    encoding: 'encoding',
+                },
+                state: [],
+            },
+            {}
         );
 
         expect(value.name).toEqual('Value Name');
@@ -300,7 +296,6 @@ describe('device', () => {
         expect(value.type).toEqual('type');
         expect(value.period).toEqual('period');
         expect(value.delta).toEqual('delta');
-        expect(value.status).toEqual('status');
         expect(value.string?.max).toEqual(10);
         expect(value.string?.encoding).toEqual('encoding');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
@@ -320,7 +315,6 @@ describe('device', () => {
             'type',
             'period',
             'delta',
-            'status',
             10,
             'encoding'
         );
@@ -330,7 +324,7 @@ describe('device', () => {
             {
                 params: {
                     expand: 2,
-                    this_name: 'Value Name',
+                    'this_name=': 'Value Name',
                 },
             }
         );
@@ -338,24 +332,22 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             {
-                body: {
-                    permission: 'rw',
-                    type: 'type',
-                    period: 'period',
-                    meta: {
-                        type: 'value',
-                        version: '2.0',
-                    },
-                    name: 'Value Name',
-                    delta: 'delta',
-                    status: 'status',
-                    blob: {
-                        max: 10,
-                        encoding: 'encoding',
-                    },
-                    state: [],
+                permission: 'rw',
+                type: 'type',
+                period: 'period',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
                 },
-            }
+                name: 'Value Name',
+                delta: 'delta',
+                blob: {
+                    max: 10,
+                    encoding: 'encoding',
+                },
+                state: [],
+            },
+            {}
         );
 
         expect(value.name).toEqual('Value Name');
@@ -363,7 +355,6 @@ describe('device', () => {
         expect(value.type).toEqual('type');
         expect(value.period).toEqual('period');
         expect(value.delta).toEqual('delta');
-        expect(value.status).toEqual('status');
         expect(value.blob?.max).toEqual(10);
         expect(value.blob?.encoding).toEqual('encoding');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
@@ -383,7 +374,6 @@ describe('device', () => {
             'type',
             'period',
             'delta',
-            'status',
             10,
             'encoding'
         );
@@ -393,7 +383,7 @@ describe('device', () => {
             {
                 params: {
                     expand: 2,
-                    this_name: 'Value Name',
+                    'this_name=': 'Value Name',
                 },
             }
         );
@@ -401,24 +391,22 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             {
-                body: {
-                    permission: 'rw',
-                    type: 'type',
-                    period: 'period',
-                    meta: {
-                        type: 'value',
-                        version: '2.0',
-                    },
-                    name: 'Value Name',
-                    delta: 'delta',
-                    status: 'status',
-                    xml: {
-                        max: 10,
-                        encoding: 'encoding',
-                    },
-                    state: [],
+                permission: 'rw',
+                type: 'type',
+                period: 'period',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
                 },
-            }
+                name: 'Value Name',
+                delta: 'delta',
+                xml: {
+                    max: 10,
+                    encoding: 'encoding',
+                },
+                state: [],
+            },
+            {}
         );
 
         expect(value.name).toEqual('Value Name');
@@ -426,7 +414,6 @@ describe('device', () => {
         expect(value.type).toEqual('type');
         expect(value.period).toEqual('period');
         expect(value.delta).toEqual('delta');
-        expect(value.status).toEqual('status');
         expect(value.xml?.max).toEqual(10);
         expect(value.xml?.encoding).toEqual('encoding');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
@@ -446,13 +433,12 @@ describe('device', () => {
                     },
                     name: 'Value Name',
                     delta: 'delta',
-                    status: 'status',
                     number: {
                         min: 0,
                         max: 1,
                         step: 1,
                         unit: 'unit',
-                        si_unit: 'si_unit',
+                        si_conversion: 'si_conversion',
                     },
                 },
             ],
@@ -466,12 +452,11 @@ describe('device', () => {
             'type',
             'period',
             'delta',
-            'status',
             0,
             1,
             1,
             'unit',
-            'si_unit'
+            'si_conversion'
         );
 
         expect(mockedAxios.get).toHaveBeenCalledWith(
@@ -479,7 +464,7 @@ describe('device', () => {
             {
                 params: {
                     expand: 2,
-                    this_name: 'Value Name',
+                    'this_name=': 'Value Name',
                 },
             }
         );
@@ -489,12 +474,11 @@ describe('device', () => {
         expect(value.type).toEqual('type');
         expect(value.period).toEqual('period');
         expect(value.delta).toEqual('delta');
-        expect(value.status).toEqual('status');
         expect(value.number?.min).toEqual(0);
         expect(value.number?.max).toEqual(1);
         expect(value.number?.step).toEqual(1);
         expect(value.number?.unit).toEqual('unit');
-        expect(value.number?.si_unit).toEqual('si_unit');
+        expect(value.number?.si_conversion).toEqual('si_conversion');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 });

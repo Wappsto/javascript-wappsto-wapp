@@ -24,7 +24,7 @@ export class State extends Model {
         let url = State.endpoint;
         if (type !== '') {
             Object.assign(params, {
-                this_type: type,
+                'this_type=': type,
             });
         }
         if (parentUrl !== '') {

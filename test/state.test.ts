@@ -17,11 +17,6 @@ describe('state', () => {
         data: '0',
     };
 
-    beforeEach(() => {
-        mockedAxios.post.mockResolvedValue({ data: response });
-        mockedAxios.get.mockResolvedValue({ data: [response] });
-    });
-
     afterEach(() => {
         jest.clearAllMocks();
     });
@@ -33,11 +28,13 @@ describe('state', () => {
     });
 
     it('can create a state on wappsto', async () => {
+        mockedAxios.post.mockResolvedValue({ data: response });
         let state = new State('Report');
         await state.create();
 
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/state', {
-            body: {
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/state',
+            {
                 meta: {
                     type: 'state',
                     version: '2.0',
@@ -46,7 +43,8 @@ describe('state', () => {
                 data: '',
                 timestamp: '',
             },
-        });
+            {}
+        );
         expect(state.type).toEqual('Report');
         expect(state.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
@@ -64,13 +62,15 @@ describe('state', () => {
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/state/' + state.meta.id,
-            { body: response }
+            response,
+            {}
         );
 
         response.type = oldType;
     });
 
     it('can create a new state from wappsto', async () => {
+        mockedAxios.get.mockResolvedValue({ data: [response] });
         let states = await State.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state', {
@@ -80,6 +80,7 @@ describe('state', () => {
     });
 
     it('can create a new state from wappsto with verbose', async () => {
+        mockedAxios.get.mockResolvedValue({ data: [response] });
         verbose(true);
         let states = await State.fetch();
         verbose(false);

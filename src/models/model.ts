@@ -36,7 +36,7 @@ export class Model extends StreamModel implements IModel {
         return [];
     }
 
-    protected static generateOptions(params?: any, body?: any): any {
+    protected static generateOptions(params?: any): any {
         let options: any = {
             params: {},
         };
@@ -45,9 +45,6 @@ export class Model extends StreamModel implements IModel {
         }
         if (settings.verbose) {
             options.params['verbose'] = true;
-        }
-        if (body) {
-            options['body'] = body;
         }
         if (Object.keys(options.params).length === 0) {
             options = _.omit(options, 'params');
@@ -64,13 +61,18 @@ export class Model extends StreamModel implements IModel {
         return this.url();
     }
 
-    public create = async (): Promise<void> => {
+    protected _create = async (params: any = {}): Promise<void> => {
+        let response = await wappsto.post(
+            this.getUrl(),
+            this.toJSON(),
+            Model.generateOptions(params)
+        );
+        this.parse(response.data);
+    };
+
+    public create = async (params: any = {}): Promise<void> => {
         try {
-            let response = await wappsto.post(
-                this.getUrl(),
-                Model.generateOptions({}, this.toJSON())
-            );
-            this.parse(response.data);
+            await this._create(params);
         } catch (e) {
             printHttpError(e);
         }
@@ -80,7 +82,8 @@ export class Model extends StreamModel implements IModel {
         try {
             let response = await wappsto.put(
                 this.getUrl(),
-                Model.generateOptions({}, this.toJSON())
+                this.toJSON(),
+                Model.generateOptions()
             );
             this.parse(response.data);
         } catch (e) {

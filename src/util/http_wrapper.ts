@@ -10,6 +10,14 @@ export default axios.create({
     },
 });
 
+export function getErrorResponse(error: any): any {
+    if (axios.isAxiosError(error)) {
+        return error?.response?.data;
+    } else {
+        return error;
+    }
+}
+
 export function printHttpError(error: any): void {
     if (error.errno && error.errno === -111) {
         printError(`Failed to connect to ${error.address}`);
@@ -24,6 +32,7 @@ export function printHttpError(error: any): void {
                     break;
                 default:
                     printError(error.response.data.message);
+                    console.log(error.response.data);
                     break;
             }
         } else {
