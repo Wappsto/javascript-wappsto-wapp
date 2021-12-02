@@ -117,7 +117,9 @@ describe('network', () => {
     });
 
     it('can find a network by name', async () => {
-        mockedAxios.get.mockResolvedValueOnce({data: []}).mockResolvedValueOnce({data: []});
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
         //mockedAxios.post.mockResolvedValueOnce('');
 
         let r = Network.findByName('test');
@@ -237,7 +239,7 @@ describe('network', () => {
     });
 
     it('can create a new network', async () => {
-        mockedAxios.get.mockResolvedValueOnce({data:[]});
+        mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post.mockResolvedValueOnce({
             data: [
                 {
@@ -254,15 +256,12 @@ describe('network', () => {
 
         let network = await createNetwork('Network Name');
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/network',
-            {
-                params: {
-                    expand: 4,
-                    'this_name=': 'Network Name',
-                },
-            }
-        );
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+            params: {
+                expand: 4,
+                'this_name=': 'Network Name',
+            },
+        });
 
         expect(network.name).toEqual('Network Name');
         expect(network.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');

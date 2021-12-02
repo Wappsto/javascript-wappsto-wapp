@@ -177,13 +177,40 @@ describe('device', () => {
 
     it('can create a new number value as a child', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
-        mockedAxios.post.mockResolvedValueOnce({
-            data: [{ meta: { type: 'value', version: '2.0', id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
-        }).mockResolvedValueOnce({
-            data: [{ meta: { type: 'state', version: '2.0', id: '8d0468c2-ed7c-4897-ae87-bc17490733f7' } }],
-        }).mockResolvedValueOnce({
-            data: [{ meta: { type: 'state', version: '2.0', id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b' } }],
-        });
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.0',
+                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.0',
+                            id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
+                        },
+                    },
+                ],
+            });
 
         let device = new Device();
         device.meta.id = 'device_id';
@@ -227,11 +254,11 @@ describe('device', () => {
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
-                    type: "state",
-                    version: "2.0",
+                    type: 'state',
+                    version: '2.0',
                 },
                 data: '',
-                type: "Report",
+                type: 'Report',
             }),
             {}
         );
@@ -240,11 +267,11 @@ describe('device', () => {
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
-                    type: "state",
-                    version: "2.0",
+                    type: 'state',
+                    version: '2.0',
                 },
                 data: '',
-                type: "Control",
+                type: 'Control',
             }),
             {}
         );
@@ -264,13 +291,40 @@ describe('device', () => {
 
     it('can create a new string value as a child', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
-        mockedAxios.post.mockResolvedValueOnce({
-            data: [{ meta: { type: 'value', version: '2.0', id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
-        }).mockResolvedValueOnce({
-            data: [{ meta: { type: 'state', version: '2.0', id: '8d0468c2-ed7c-4897-ae87-bc17490733f7' } }],
-        }).mockResolvedValueOnce({
-            data: [{ meta: { type: 'state', version: '2.0', id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b' } }],
-        });
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.0',
+                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.0',
+                            id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
+                        },
+                    },
+                ],
+            });
 
         let device = new Device();
         device.meta.id = 'device_id';
@@ -308,11 +362,11 @@ describe('device', () => {
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
-                    type: "state",
-                    version: "2.0",
+                    type: 'state',
+                    version: '2.0',
                 },
                 data: '',
-                type: "Report",
+                type: 'Report',
             }),
             {}
         );
@@ -321,11 +375,11 @@ describe('device', () => {
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
-                    type: "state",
-                    version: "2.0",
+                    type: 'state',
+                    version: '2.0',
                 },
                 data: '',
-                type: "Control",
+                type: 'Control',
             }),
             {}
         );
@@ -342,11 +396,29 @@ describe('device', () => {
 
     it('can create a new blob value as a child', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
-        mockedAxios.post.mockResolvedValueOnce({
-            data: [{ meta: { type: 'value', version: '2.0', id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
-        }).mockResolvedValueOnce({
-            data: [{ meta: { type: 'state', version: '2.0', id: '8d0468c2-ed7c-4897-ae87-bc17490733f7' } }],
-        });
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.0',
+                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                        },
+                    },
+                ],
+            });
 
         let device = new Device();
         device.meta.id = 'device_id';
@@ -384,11 +456,11 @@ describe('device', () => {
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
-                    type: "state",
-                    version: "2.0",
+                    type: 'state',
+                    version: '2.0',
                 },
                 data: '',
-                type: "Report",
+                type: 'Report',
             }),
             {}
         );
@@ -405,11 +477,29 @@ describe('device', () => {
 
     it('can create a new xml value as a child', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
-        mockedAxios.post.mockResolvedValueOnce({
-            data: [{ meta: { type: 'value', version: '2.0', id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
-        }).mockResolvedValueOnce({
-            data: [{ meta: { type: 'state', version: '2.0', id: '8d0468c2-ed7c-4897-ae87-bc17490733f7' } }],
-        });
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.0',
+                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                        },
+                    },
+                ],
+            });
 
         let device = new Device();
         device.meta.id = 'device_id';
@@ -447,11 +537,11 @@ describe('device', () => {
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
-                    type: "state",
-                    version: "2.0",
+                    type: 'state',
+                    version: '2.0',
                 },
                 data: '',
-                type: "Control",
+                type: 'Control',
             }),
             {}
         );
@@ -465,7 +555,7 @@ describe('device', () => {
         expect(value.xml?.encoding).toEqual('encoding');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
-/*
+    /*
     it('can return value as a child', async () => {
         mockedAxios.get.mockResolvedValueOnce({
             data: [

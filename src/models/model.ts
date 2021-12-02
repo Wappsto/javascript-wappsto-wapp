@@ -105,11 +105,7 @@ export class Model extends StreamModel implements IModel {
 
     public delete = async (): Promise<void> => {
         try {
-            await wappsto.delete(
-                this.getUrl(),
-                Model.generateOptions()
-            );
-
+            await wappsto.delete(this.getUrl(), Model.generateOptions());
         } catch (e) {
             printHttpError(e);
         }
@@ -125,7 +121,7 @@ export class Model extends StreamModel implements IModel {
                 Model.generateOptions(params)
             );
 
-            if(response?.data) {
+            if (response?.data) {
                 if (_.isArray(response?.data)) {
                     return response.data;
                 } else if (response.data) {

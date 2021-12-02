@@ -87,7 +87,7 @@ export class Network extends PermissionModel {
 
         let newJson = device.toJSON();
 
-        if(!_.isEqual(oldJson, newJson)) {
+        if (!_.isEqual(oldJson, newJson)) {
             if (devices.length !== 0) {
                 await device.update();
             } else {

@@ -99,7 +99,7 @@ export class Device extends PermissionModel {
 
         let newJson = value.toJSON();
 
-        if(!_.isEqual(oldJson, newJson)) {
+        if (!_.isEqual(oldJson, newJson)) {
             if (values.length !== 0) {
                 await value.update();
             } else {
@@ -108,10 +108,10 @@ export class Device extends PermissionModel {
             }
         }
 
-        if(['r','rw','wr'].includes(permission)) {
+        if (['r', 'rw', 'wr'].includes(permission)) {
             await value.createState('Report');
         }
-        if(['w','rw','wr'].includes(permission)) {
+        if (['w', 'rw', 'wr'].includes(permission)) {
             await value.createState('Control');
         }
 

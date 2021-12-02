@@ -129,8 +129,8 @@ export class Value extends PermissionModel {
 
     public createState = async (
         type: string,
-        data: string='',
-        timestamp: string=new Date().toISOString()
+        data: string = '',
+        timestamp: string = new Date().toISOString()
     ) => {
         if (!['Report', 'Control'].includes(type)) {
             throw new Error('Invalid value for state type');
@@ -138,7 +138,7 @@ export class Value extends PermissionModel {
 
         let create = false;
         let state = this.findState(type);
-        if(!state) {
+        if (!state) {
             state = new State(type);
             create = true;
         }
