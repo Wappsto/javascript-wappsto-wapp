@@ -6,7 +6,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
 import 'reflect-metadata';
 import { Value, verbose } from '../src/index';
-import StreamHandler from '../src/stream_handler';
+import { openStream } from '../src/models/stream';
 
 describe('value', () => {
     let response = {
@@ -22,7 +22,7 @@ describe('value', () => {
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
     beforeAll(() => {
-        StreamHandler.url = 'ws://localhost:12345';
+        openStream.websocketUrl = 'ws://localhost:12345';
     });
 
     beforeEach(() => {});

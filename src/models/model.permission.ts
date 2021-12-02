@@ -1,8 +1,7 @@
-//import wappsto from '../util/http_wrapper';
 import { Model } from './model';
 import { Notification } from './notification';
 import { printDebug } from '../util/debug';
-import StreamHandler from '../stream_handler';
+import { openStream } from './stream';
 import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 
 export class PermissionModel extends Model {
@@ -31,7 +30,7 @@ export class PermissionModel extends Model {
 
                 if (data.code === 400008) {
                     printDebug('Requesting permission to add data to user');
-                    StreamHandler.subscribeService(
+                    openStream.subscribeService(
                         '/notification',
                         async (event) => {
                             if (event.meta_object?.type === 'notification') {
@@ -109,7 +108,7 @@ export class PermissionModel extends Model {
             printDebug(
                 `Waiting for permission to access users data: ${message}`
             );
-            StreamHandler.subscribeService('/notification', async (event) => {
+            openStream.subscribeService('/notification', async (event) => {
                 if (event.meta_object?.type === 'notification') {
                     let notification = Notification.fromArray([event.data]);
                     if (!notification || !notification[0]) {

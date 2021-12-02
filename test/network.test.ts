@@ -6,7 +6,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 
 import 'reflect-metadata'; // eslint-disable-line
 import { createNetwork, Network, Device, Value, verbose } from '../src/index'; // eslint-disable-line
-import StreamHandler from '../src/stream_handler'; // eslint-disable-line
+import { openStream } from '../src/models/stream'; // eslint-disable-line
 
 describe('network', () => {
     let response = {
@@ -22,7 +22,7 @@ describe('network', () => {
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
     beforeAll(() => {
-        StreamHandler.url = 'ws://localhost:12345';
+        openStream.websocketUrl = 'ws://localhost:12345';
     });
 
     afterEach(() => {

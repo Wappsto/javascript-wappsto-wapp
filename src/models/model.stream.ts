@@ -1,6 +1,6 @@
-import { StreamEvent } from './stream';
-import StreamHandler from '../stream_handler';
+import { StreamEvent, openStream } from './stream';
 import { printError } from '../util/debug';
+import { PermissionModel } from './model.permission';
 
 type StreamCallback = () => void;
 
@@ -10,10 +10,11 @@ interface IStreamCallbacks {
     create: StreamCallback[];
 }
 
-export class StreamModel {
+export class StreamModel extends PermissionModel {
     streamCallback: IStreamCallbacks = {} as IStreamCallbacks;
 
-    constructor() {
+    constructor(type: string, version = '2.0') {
+        super(type, version);
         this.streamCallback.change = [];
         this.streamCallback.delete = [];
         this.streamCallback.create = [];
@@ -27,22 +28,18 @@ export class StreamModel {
         return '';
     }
 
-    private subscribe(): void {
-        StreamHandler.subscribe(this);
-    }
-
     public onChange(callback: StreamCallback): void {
-        this.subscribe();
+        openStream.subscribe(this);
         this.streamCallback.change.push(callback);
     }
 
     public onDelete(callback: StreamCallback): void {
-        this.subscribe();
+        openStream.subscribe(this);
         this.streamCallback.delete.push(callback);
     }
 
     public onCreate(callback: StreamCallback): void {
-        this.subscribe();
+        openStream.subscribe(this);
         this.streamCallback.create.push(callback);
     }
 

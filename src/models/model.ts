@@ -4,18 +4,16 @@ import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { IMeta } from './meta';
 import settings from '../util/settings';
-import { StreamModel } from './model.stream';
 
 interface IModel {
     getUrl(): string;
 }
 
-export class Model extends StreamModel implements IModel {
+export class Model implements IModel {
     meta: IMeta = {};
     parent?: IModel;
 
     constructor(type: string, version = '2.0') {
-        super();
         this.meta.type = type;
         this.meta.version = version;
     }
