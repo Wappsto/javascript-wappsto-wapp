@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { Model } from './model';
@@ -143,15 +144,21 @@ export class Value extends PermissionModel {
             create = true;
         }
 
+        let oldJson = state.toJSON();
+
         state.data = data;
         state.timestamp = timestamp;
         state.parent = this;
 
-        if (create) {
-            await state.create();
-            this.state.push(state);
-        } else {
-            await state.update();
+        let newJson = state.toJSON();
+
+        if (!_.isEqual(oldJson, newJson)) {
+            if (create) {
+                await state.create();
+                this.state.push(state);
+            } else {
+                await state.update();
+            }
         }
 
         return state;
