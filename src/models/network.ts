@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { Model } from './model';
@@ -66,13 +67,14 @@ export class Network extends PermissionModel {
         version: string,
         manufacturer: string
     ): Promise<Device> {
-        let devices = await Device.fetch(name, this.getUrl());
+        let device = new Device();
+        let devices = this.findDeviceByName(name);
         if (devices.length !== 0) {
-            devices[0].parent = this;
-            return devices[0];
+            device = devices[0];
         }
 
-        let device = new Device();
+        let oldJson = device.toJSON();
+
         device.name = name;
         device.product = product;
         device.serial = serial;
@@ -82,7 +84,17 @@ export class Network extends PermissionModel {
         device.version = version;
         device.manufacturer = manufacturer;
         device.parent = this;
-        await device.create();
+
+        let newJson = device.toJSON();
+
+        if(!_.isEqual(oldJson, newJson)) {
+            if (devices.length !== 0) {
+                await device.update();
+            } else {
+                await device.create();
+                this.device.push(device);
+            }
+        }
 
         return device;
     }

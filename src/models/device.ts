@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { Model } from './model';
@@ -70,12 +71,14 @@ export class Device extends PermissionModel {
             throw new Error('Invalid value for value permission');
         }
 
-        let values = await Value.fetch(name, this.getUrl());
+        let value = new Value();
+        let values = this.findValueByName(name);
         if (values.length !== 0) {
-            return values[0];
+            value = values[0];
         }
 
-        let value = new Value();
+        let oldJson = value.toJSON();
+
         value.name = name;
         value.permission = permission;
         value.type = type;
@@ -93,7 +96,24 @@ export class Device extends PermissionModel {
             printError('You must suply a valid type');
         }
         value.parent = this;
-        await value.create();
+
+        let newJson = value.toJSON();
+
+        if(!_.isEqual(oldJson, newJson)) {
+            if (values.length !== 0) {
+                await value.update();
+            } else {
+                await value.create();
+                this.value.push(value);
+            }
+        }
+
+        if(['r','rw','wr'].includes(permission)) {
+            await value.createState('Report');
+        }
+        if(['w','rw','wr'].includes(permission)) {
+            await value.createState('Control');
+        }
 
         return value;
     }

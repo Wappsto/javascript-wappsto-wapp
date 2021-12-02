@@ -91,13 +91,25 @@ export class Model extends StreamModel implements IModel {
         }
     };
 
-    public load = async (): Promise<void> => {
+    public refresh = async (): Promise<void> => {
         try {
             let response = await wappsto.get(
                 this.getUrl(),
                 Model.generateOptions()
             );
             this.parse(response.data);
+        } catch (e) {
+            printHttpError(e);
+        }
+    };
+
+    public delete = async (): Promise<void> => {
+        try {
+            await wappsto.delete(
+                this.getUrl(),
+                Model.generateOptions()
+            );
+
         } catch (e) {
             printHttpError(e);
         }
@@ -113,10 +125,14 @@ export class Model extends StreamModel implements IModel {
                 Model.generateOptions(params)
             );
 
-            if (_.isArray(response?.data)) {
-                return response.data;
-            } else if (response.data) {
-                return [response.data];
+            if(response?.data) {
+                if (_.isArray(response?.data)) {
+                    return response.data;
+                } else if (response.data) {
+                    return [response.data];
+                }
+            } else {
+                return [];
             }
         } catch (e) {
             printHttpError(e);
