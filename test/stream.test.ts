@@ -20,6 +20,13 @@ describe('stream', () => {
         await server.connected;
 
         server.send({
+            jsonrpc: '2.0',
+            result: {
+                value: 'hello'
+            }
+        });
+
+        server.send({
             meta_object: {
                 type: 'event',
             },
@@ -45,6 +52,11 @@ describe('stream', () => {
         await server.connected;
 
         server.send({
+            jsonrpc: '2.0',
+            error: 'stream error'
+        });
+
+        server.send([{
             meta_object: {
                 type: 'event',
             },
@@ -54,7 +66,7 @@ describe('stream', () => {
                 data: '1',
                 timestamp: '2',
             },
-        });
+        }]);
 
         expect(fun).toHaveBeenCalledWith('1', '2');
     });
@@ -183,5 +195,36 @@ describe('stream', () => {
         });
 
         expect(fun).toHaveBeenCalledWith('1', '2');
+    });
+
+    it('can handle extsync requests', async () => {
+        let fun = jest.fn();
+        fun.mockReturnValue(new Promise<boolean>((resolve) => {resolve(true)}));
+        openStream.subscribeService('extsync_request', fun);
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                request: 'request'
+            }
+        });
+
+        expect(fun).toHaveBeenCalledWith({"request": "request"});
+        expect(fun.mock.calls.length).toBe(1);
+        await new Promise((r) => setTimeout(r, 1000));
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                response: 'reponse'
+            }
+        });
+
+        expect(fun.mock.calls.length).toBe(1);
     });
 });

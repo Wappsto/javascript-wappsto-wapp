@@ -228,23 +228,26 @@ export class Stream extends Model {
 
             services.push(`/${items[0]}`);
         } else {
-            paths.push(type);
+            services.push(type);
         }
-
         paths.forEach((path) => {
             this.models[path]?.forEach((model: StreamModel) => {
                 model.handleStream(event);
             });
         });
         services.forEach((path) => {
-            this.services[path]?.forEach((callback: ServiceHandler) => {
-                callback(event).then((res) => {
-                    if (res === true) {
-                        this.services[path] = this.services[path].filter(
-                            (item) => item !== callback
-                        );
-                    }
-                });
+            let tmpList = this.services[path];
+            tmpList?.forEach((callback: ServiceHandler) => {
+                let p = callback(event);
+                if(p) {
+                    p.then((res) => {
+                        if (res === true) {
+                            this.services[path] = this.services[path].filter(
+                                (item) => item !== callback
+                            );
+                        }
+                    });
+                }
             });
         });
     }
@@ -343,13 +346,11 @@ export class Stream extends Model {
         };
 
         this.socket.onerror = function (event: any) {
-            printError('Stream Error');
             try {
                 self.handleEvent('error', event);
             } catch (e) {
-                self.handleEvent('error', {});
+                printError('Stream error: ' + self.websocketUrl);
             }
-            printError('Stream error: ' + self.websocketUrl);
         };
 
         this.socket.onclose = function (event: CloseEvent) {

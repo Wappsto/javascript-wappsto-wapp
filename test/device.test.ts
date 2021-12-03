@@ -5,7 +5,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
 import 'reflect-metadata';
-import { Device, verbose } from '../src/index';
+import { Device, Value, verbose } from '../src/index';
 import { openStream } from '../src/models/stream';
 
 describe('device', () => {
@@ -555,9 +555,9 @@ describe('device', () => {
         expect(value.xml?.encoding).toEqual('encoding');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
-    /*
+
     it('can return value as a child', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
+        mockedAxios.put.mockResolvedValueOnce({
             data: [
                 {
                     permission: 'rw',
@@ -580,9 +580,13 @@ describe('device', () => {
                 },
             ],
         });
+        mockedAxios.post.mockResolvedValue({data:{}});
 
         let device = new Device();
         device.meta.id = 'device_id';
+        let val = new Value();
+        val.name = 'Value Name';
+        device.value.push(val);
         let value = await device.createNumberValue(
             'Value Name',
             'rw',
@@ -596,14 +600,27 @@ describe('device', () => {
             'si_conversion'
         );
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
-            {
-                params: {
-                    expand: 2,
-                    'this_name=': 'Value Name',
+            expect.objectContaining({
+                permission: 'rw',
+                type: 'type',
+                period: 'period',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
                 },
-            }
+                name: 'Value Name',
+                delta: 'delta',
+                number: {
+                    min: 0,
+                    max: 1,
+                    step: 1,
+                    unit: 'unit',
+                    si_conversion: 'si_conversion',
+                },
+            }),
+            {}
         );
 
         expect(value.name).toEqual('Value Name');
@@ -618,5 +635,5 @@ describe('device', () => {
         expect(value.number?.si_conversion).toEqual('si_conversion');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
-*/
+
 });
