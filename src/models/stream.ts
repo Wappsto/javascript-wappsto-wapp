@@ -239,7 +239,7 @@ export class Stream extends Model {
             let tmpList = this.services[path];
             tmpList?.forEach((callback: ServiceHandler) => {
                 let p = callback(event);
-                if(p) {
+                if (p) {
                     p.then((res) => {
                         if (res === true) {
                             this.services[path] = this.services[path].filter(

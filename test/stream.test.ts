@@ -22,8 +22,8 @@ describe('stream', () => {
         server.send({
             jsonrpc: '2.0',
             result: {
-                value: 'hello'
-            }
+                value: 'hello',
+            },
         });
 
         server.send({
@@ -53,20 +53,22 @@ describe('stream', () => {
 
         server.send({
             jsonrpc: '2.0',
-            error: 'stream error'
+            error: 'stream error',
         });
 
-        server.send([{
-            meta_object: {
-                type: 'event',
+        server.send([
+            {
+                meta_object: {
+                    type: 'event',
+                },
+                event: 'update',
+                path: '/network/9a51cbd4-afb3-4628-9c8b-df64a0d729e9/device/c5fe846f-d6d8-413a-abb5-620519dd6b75/value/6c06b63e-39ec-44a5-866a-c081aafb6726/state/cda4d978-39e9-47bf-8497-9813b0f94973',
+                data: {
+                    data: '1',
+                    timestamp: '2',
+                },
             },
-            event: 'update',
-            path: '/network/9a51cbd4-afb3-4628-9c8b-df64a0d729e9/device/c5fe846f-d6d8-413a-abb5-620519dd6b75/value/6c06b63e-39ec-44a5-866a-c081aafb6726/state/cda4d978-39e9-47bf-8497-9813b0f94973',
-            data: {
-                data: '1',
-                timestamp: '2',
-            },
-        }]);
+        ]);
 
         expect(fun).toHaveBeenCalledWith('1', '2');
     });
@@ -199,7 +201,11 @@ describe('stream', () => {
 
     it('can handle extsync requests', async () => {
         let fun = jest.fn();
-        fun.mockReturnValue(new Promise<boolean>((resolve) => {resolve(true)}));
+        fun.mockReturnValue(
+            new Promise<boolean>((resolve) => {
+                resolve(true);
+            })
+        );
         openStream.subscribeService('extsync_request', fun);
         await server.connected;
 
@@ -208,11 +214,11 @@ describe('stream', () => {
                 type: 'extsync',
             },
             extsync: {
-                request: 'request'
-            }
+                request: 'request',
+            },
         });
 
-        expect(fun).toHaveBeenCalledWith({"request": "request"});
+        expect(fun).toHaveBeenCalledWith({ request: 'request' });
         expect(fun.mock.calls.length).toBe(1);
         await new Promise((r) => setTimeout(r, 1000));
 
@@ -221,8 +227,8 @@ describe('stream', () => {
                 type: 'extsync',
             },
             extsync: {
-                response: 'reponse'
-            }
+                response: 'reponse',
+            },
         });
 
         expect(fun.mock.calls.length).toBe(1);

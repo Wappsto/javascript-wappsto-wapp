@@ -580,7 +580,7 @@ describe('device', () => {
                 },
             ],
         });
-        mockedAxios.post.mockResolvedValue({data:{}});
+        mockedAxios.post.mockResolvedValue({ data: {} });
 
         let device = new Device();
         device.meta.id = 'device_id';
@@ -635,5 +635,4 @@ describe('device', () => {
         expect(value.number?.si_conversion).toEqual('si_conversion');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
-
 });
