@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
+import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { State } from './state';
 
@@ -30,7 +31,7 @@ export interface IValueXml {
 type ValueStreamCallback = (data: string, timestamp: string) => void;
 type RefreshStreamCallback = () => void;
 
-export class Value extends PermissionModel {
+export class Value extends StreamModel {
     static endpoint = '/2.0/value';
 
     name?: string;

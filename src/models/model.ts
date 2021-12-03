@@ -59,7 +59,7 @@ export class Model implements IModel {
         return this.url();
     }
 
-    protected _create = async (params: any = {}): Promise<void> => {
+    public _create = async (params: any = {}): Promise<void> => {
         let response = await wappsto.post(
             this.getUrl(),
             this.toJSON(),
@@ -141,7 +141,6 @@ export class Model implements IModel {
         let oldModel = this.toJSON();
         Object.assign(this, json);
         let newModel = this.toJSON();
-
         return !_.isEqual(oldModel, newModel);
     }
 

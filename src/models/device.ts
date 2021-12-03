@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
+import { StreamModel } from './model.stream';
 import { Model } from './model';
 import {
     Value,
@@ -11,7 +12,7 @@ import {
 } from './value';
 import { printError } from '../util/debug';
 
-export class Device extends PermissionModel {
+export class Device extends StreamModel {
     static endpoint = '/2.0/device';
     name?: string;
     product?: string;

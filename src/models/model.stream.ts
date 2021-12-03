@@ -20,14 +20,6 @@ export class StreamModel extends PermissionModel {
         this.streamCallback.create = [];
     }
 
-    public parse(_: any): boolean {
-        return false;
-    }
-
-    path(): string {
-        return '';
-    }
-
     public onChange(callback: StreamCallback): void {
         openStream.subscribe(this);
         this.streamCallback.change.push(callback);

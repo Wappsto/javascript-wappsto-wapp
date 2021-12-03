@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
+import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { Device } from './device';
 import { Value } from './value';
@@ -18,7 +19,7 @@ export async function createNetwork(name: string): Promise<Network> {
     return network;
 }
 
-export class Network extends PermissionModel {
+export class Network extends StreamModel {
     static endpoint = '/2.0/network';
     name?: string;
     @Type(() => Device)

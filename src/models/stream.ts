@@ -49,6 +49,7 @@ export class Stream extends Model {
     handlers: StreamSignalHash = {};
     subscriptions: string[] = [];
     opened: boolean = false;
+    backoff: number = 1000;
 
     constructor() {
         super('stream', '2.1');
@@ -102,12 +103,13 @@ export class Stream extends Model {
 
             let openTimeout: ReturnType<typeof setTimeout> = setTimeout(() => {
                 self.reconnect();
-            }, 5000);
+            }, 1000 + this.backoff);
 
             let socket = new WebSocket(this.websocketUrl);
 
             if (socket) {
                 socket.onopen = () => {
+                    this.backoff = 1000;
                     this.socket = socket;
                     clearTimeout(openTimeout);
                     this.addListeners();
@@ -180,6 +182,7 @@ export class Stream extends Model {
     }
 
     private reconnect() {
+        this.backoff = this.backoff * 2;
         printDebug('Stream Reconnecting');
         this.close();
         this.open().then(() => {
@@ -282,7 +285,7 @@ export class Stream extends Model {
             printDebug('Starting reconnect');
             setTimeout(function () {
                 self.reconnect();
-            }, 5000);
+            }, self.backoff);
         };
 
         this.socket.onmessage = function (ev: any): void {

@@ -1,6 +1,7 @@
 import { Model } from './model';
+import { StreamModel } from './model.stream';
 
-export class State extends Model {
+export class State extends StreamModel {
     static endpoint = '/2.0/state';
 
     data: string = '';
