@@ -54,7 +54,6 @@ export class Stream extends Model {
     constructor() {
         super('stream', '2.1');
         this.websocketUrl = `${baseUrl}/2.1/websocket/open`;
-        this.websocketUrl = this.websocketUrl.replace(/^http/, 'ws');
 
         if (
             !this.websocketUrl.startsWith('http') &&
@@ -65,6 +64,7 @@ export class Stream extends Model {
         ) {
             this.websocketUrl = window.location.origin + this.websocketUrl;
         }
+        this.websocketUrl = this.websocketUrl.replace(/^http/, 'ws');
 
         this.websocketUrl += '?X-Session=' + session;
     }
