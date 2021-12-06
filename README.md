@@ -6,6 +6,40 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
 
 Here are some examlples on how to use the library.
 
+### Create a new Network
+
+To create a new network you need to call 'createNetwork'. If there is an Network with the same name, the exsisting network will be returned.
+
+```javascript
+let network = await Wappsto.createNetwork('new network name');
+```
+
+### Create a new device
+
+To create a new device under an existing network, you should call createDevice. If a device exsists with the given name, the existing device will be returned,
+
+```javascript
+let device = network.createDevice('name', 'product', 'serial', 'description', 'protocol', 'communication', 'version', 'manufacturer');
+```
+
+### Create a new value
+
+To create a new value under an exsisting device, you should call createValue. There are some helper functions to create number, string, bloc and xml values.
+There will also be created the states nedded based on the permission. The only allowed values for permission is 'r', 'w' and 'rw'.
+
+To create a number value:
+
+```javascript
+let value = device.createNumberValue('name', 'rw', 'type', 'period', 'delta', 0, 10, 1, 'unit', 'si_conversion');
+```
+
+To create a string value:
+
+```javascript
+let value = device.createStringValue('name', 'rw', 'type', 'period', 'delta', 10, 'encoding');
+```
+
+
 ### Background loggering
 
 The debug log from the background wapp can be turn on like this:
