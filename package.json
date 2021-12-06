@@ -1,74 +1,74 @@
 {
-  "version": "0.2.0",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "engines": {
-    "node": ">=10"
-  },
-  "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test --coverage",
-    "lint": "tsdx lint",
-    "fix-lint": "tsdx lint --fix",
-    "prepare": "tsdx build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
-    "doc": "typedoc --exclude **/*.test.ts src/index.ts",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
-  },
-  "peerDependencies": {},
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
-  "prettier": {
-    "printWidth": 80,
-    "tabWidth": 4,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
-  "name": "wappsto-wapp",
-  "author": "Andreas Bomholtz",
-  "module": "dist/wappsto-wapp.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/wappsto-wapp.cjs.production.min.js",
-      "limit": "10 KB"
+    "version": "0.2.0",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+    "files": [
+        "dist",
+        "src"
+    ],
+    "engines": {
+        "node": ">=10"
     },
-    {
-      "path": "dist/wappsto-wapp.esm.js",
-      "limit": "10 KB"
+    "scripts": {
+        "start": "tsdx watch",
+        "build": "tsdx build",
+        "test": "tsdx test --coverage",
+        "lint": "tsdx lint",
+        "fix-lint": "tsdx lint --fix",
+        "prepare": "tsdx build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
+        "doc": "typedoc --exclude **/*.test.ts src/index.ts",
+        "size": "size-limit",
+        "analyze": "size-limit --why"
+    },
+    "peerDependencies": {},
+    "husky": {
+        "hooks": {
+            "pre-commit": "tsdx lint"
+        }
+    },
+    "prettier": {
+        "printWidth": 80,
+        "tabWidth": 4,
+        "semi": true,
+        "singleQuote": true,
+        "trailingComma": "es5"
+    },
+    "name": "wappsto-wapp",
+    "author": "Andreas Bomholtz",
+    "module": "dist/wappsto-wapp.esm.js",
+    "size-limit": [
+        {
+            "path": "dist/wappsto-wapp.cjs.production.min.js",
+            "limit": "10 KB"
+        },
+        {
+            "path": "dist/wappsto-wapp.esm.js",
+            "limit": "10 KB"
+        }
+    ],
+    "devDependencies": {
+        "@types/jest": "^27.0.2",
+        "browserify": "^17.0.0",
+        "eslint-plugin-prettier": "^3.4.1",
+        "husky": "^7.0.4",
+        "jest-websocket-mock": "^2.2.1",
+        "mock-socket": "^9.0.8",
+        "prettier": "^2.4.1",
+        "pretty-quick": "^3.1.1",
+        "tsdx": "^0.14.1",
+        "tslib": "^2.3.1",
+        "typedoc": "^0.22.7",
+        "typescript": "^4.4.4"
+    },
+    "dependencies": {
+        "@types/lodash": "^4.14.176",
+        "@types/ws": "^8.2.0",
+        "axios": "^0.24.0",
+        "class-transformer": "^0.5.1",
+        "isomorphic-ws": "^4.0.1",
+        "reflect-metadata": "^0.1.13",
+        "universal-websocket-client": "^1.0.2",
+        "ws": "^7.5.5"
     }
-  ],
-  "devDependencies": {
-    "@types/jest": "^27.0.2",
-    "browserify": "^17.0.0",
-    "eslint-plugin-prettier": "^3.4.1",
-    "husky": "^7.0.4",
-    "jest-websocket-mock": "^2.2.1",
-    "mock-socket": "^9.0.8",
-    "prettier": "^2.4.1",
-    "pretty-quick": "^3.1.1",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.3.1",
-    "typedoc": "^0.22.7",
-    "typescript": "^4.4.4"
-  },
-  "dependencies": {
-    "@types/lodash": "^4.14.176",
-    "@types/ws": "^8.2.0",
-    "axios": "^0.24.0",
-    "class-transformer": "^0.5.1",
-    "isomorphic-ws": "^4.0.1",
-    "reflect-metadata": "^0.1.13",
-    "universal-websocket-client": "^1.0.2",
-    "ws": "^7.5.5"
-  }
 }
