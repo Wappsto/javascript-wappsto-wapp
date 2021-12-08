@@ -22,7 +22,7 @@ function readCookie(name: string) {
 function get(key: string) {
     let result = null;
     if (typeof window !== 'undefined') {
-        window.sessionStorage.getItem(key);
+        result = window.sessionStorage.getItem(key);
         if (!result) {
             result = readCookie(key);
         }
