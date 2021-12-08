@@ -11,7 +11,7 @@ export class Config {
     constructor(name: string) {
         this.name = name;
         this.data = new Data();
-/*
+        /*
         Data.findById(name + '_config').then((data) => {
 
         });
@@ -22,7 +22,7 @@ export class Config {
             }
         });*/
     }
-/*
+    /*
     public set = async (name: string, item: any): Promise<void> => {
         this.data.set(name, item);
         this.data.update();

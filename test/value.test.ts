@@ -8,7 +8,6 @@ import 'reflect-metadata';
 import { Value, verbose } from '../src/index';
 import { openStream } from '../src/models/stream';
 
-
 describe('value', () => {
     let response = {
         meta: {

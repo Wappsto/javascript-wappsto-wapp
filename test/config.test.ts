@@ -5,7 +5,7 @@ describe('config', () => {
         let c = new Config('test');
         expect(c.name).toEqual('test');
     });
-/*
+    /*
     it('can add a new item', async () => {
         let c = new Config('test');
         c.set('key', 'item');

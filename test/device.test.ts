@@ -225,7 +225,7 @@ describe('device', () => {
             max: 1,
             step: 1,
             unit: 'unit',
-            si_conversion: 'si_conversion'
+            si_conversion: 'si_conversion',
         });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -336,7 +336,7 @@ describe('device', () => {
             period: 'period',
             delta: 'delta',
             max: 10,
-            encoding: 'encoding'
+            encoding: 'encoding',
         });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -430,7 +430,7 @@ describe('device', () => {
             period: 'period',
             delta: 'delta',
             max: 10,
-            encoding: 'encoding'
+            encoding: 'encoding',
         });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -511,7 +511,7 @@ describe('device', () => {
             period: 'period',
             delta: 'delta',
             xsd: 'xsd',
-            namespace: 'namespace'
+            namespace: 'namespace',
         });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -581,7 +581,9 @@ describe('device', () => {
                 },
             ],
         });
-        mockedAxios.post.mockResolvedValueOnce({ data: {} }).mockResolvedValueOnce({ data: {} });
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: {} })
+            .mockResolvedValueOnce({ data: {} });
 
         let device = new Device();
         device.meta.id = 'device_id';
@@ -598,7 +600,7 @@ describe('device', () => {
             max: 1,
             step: 1,
             unit: 'unit',
-            si_conversion: 'si_conversion'
+            si_conversion: 'si_conversion',
         });
 
         expect(mockedAxios.put).toHaveBeenCalledWith(

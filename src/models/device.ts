@@ -104,7 +104,6 @@ export class Device extends StreamModel implements IDevice {
 
         if (['r', 'rw', 'wr'].includes(params.permission)) {
             await value.createState({ type: 'Report' });
-
         }
         if (['w', 'rw', 'wr'].includes(params.permission)) {
             await value.createState({ type: 'Control' });

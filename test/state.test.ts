@@ -5,7 +5,6 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
 import { State, verbose } from '../src/index';
 
-
 describe('state', () => {
     let response = {
         meta: {

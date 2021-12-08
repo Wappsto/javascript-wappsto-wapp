@@ -7,7 +7,6 @@ import 'reflect-metadata'; // eslint-disable-line
 import { createNetwork, Network, Device, Value, verbose } from '../src/index'; // eslint-disable-line
 import { openStream } from '../src/models/stream';
 
-
 describe('network', () => {
     let response = {
         meta: {
@@ -248,7 +247,7 @@ describe('network', () => {
             protocol: 'protocol',
             communication: 'communication',
             version: 'version',
-            manufacturer: 'manufacturer'
+            manufacturer: 'manufacturer',
         });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -347,7 +346,7 @@ describe('network', () => {
             protocol: 'protocol',
             communication: 'communication',
             version: 'version',
-            manufacturer: 'manufacturer'
+            manufacturer: 'manufacturer',
         });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
