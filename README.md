@@ -11,7 +11,9 @@ Here are some examlples on how to use the library.
 To create a new network you need to call 'createNetwork'. If there is an Network with the same name, the exsisting network will be returned.
 
 ```javascript
-let network = await Wappsto.createNetwork('new network name');
+let network = await Wappsto.createNetwork({
+	name: 'new network name'
+});
 ```
 
 ### Create a new device
@@ -19,7 +21,16 @@ let network = await Wappsto.createNetwork('new network name');
 To create a new device under an existing network, you should call createDevice. If a device exsists with the given name, the existing device will be returned,
 
 ```javascript
-let device = network.createDevice('name', 'product', 'serial', 'description', 'protocol', 'communication', 'version', 'manufacturer');
+let device = network.createDevice({
+	name. 'Device Name',
+	product: 'Great Product',
+	serial: 'SG123456',
+	description: 'My great new device',
+	protocol: 'WAPP-JS',
+	communication: 'wapp',
+	version: '1.0.0',
+	manufacturer: 'My Self'
+});
 ```
 
 ### Create a new value
@@ -30,15 +41,61 @@ There will also be created the states nedded based on the permission. The only a
 To create a number value:
 
 ```javascript
-let value = device.createNumberValue('name', 'rw', 'type', 'period', 'delta', 0, 10, 1, 'unit', 'si_conversion');
+let value = device.createNumberValue({
+	name: 'Value Name',
+	permission: 'rw',
+	type: 'Counter',
+	period: '1h',
+	delta: '1',
+	min: 0,
+	max: 10,
+	step: 1,
+	unit: 'count',
+	si_conversion: 'c'
+});
 ```
 
 To create a string value:
 
 ```javascript
-let value = device.createStringValue('name', 'rw', 'type', 'period', 'delta', 10, 'encoding');
+let value = device.createStringValue({
+	name: 'Value Name',
+	permission: 'rw',
+	type: 'debug',
+	max: 10,
+	encoding: 'debug string'
+});
 ```
 
+### To report a change in the value
+
+To send a new data point to wappsto, just call the 'report' function on the value.
+
+```javascript
+value.report('1');
+```
+
+### To change a value on another networks value
+
+To send a new data point to another value, just call the 'control' function on the value.
+
+```javascript
+value.control('1');
+```
+
+### Listing for changes on values
+
+You can register onControl and onReport to receive events when the value changes.
+
+```javascript
+value.onReport((value, data, timestamp) => {
+	console.log(`${value.name} changed it's report value to ${data}`);
+});
+
+value.onControl((value, data, timestamp) => {
+	console.log(`Request to change ${value.name} to ${data}`);
+});
+```
 
 ### Background loggering
 
