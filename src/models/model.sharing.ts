@@ -22,26 +22,24 @@ export class SharingModel extends Model {
         try {
             let response = await wappsto.patch(
                 `/acl/${this.meta.id}`,
-                Model.generateOptions(
-                    {},
-                    {
-                        permission: [
-                            {
-                                meta: { id: user },
-                                restriction: [
-                                    {
-                                        method: {
-                                            retrieve: restriction.retrieve,
-                                            update: restriction.update,
-                                            delete: restriction.delete,
-                                            create: restriction.create,
-                                        },
+                {
+                    permission: [
+                        {
+                            meta: { id: user },
+                            restriction: [
+                                {
+                                    method: {
+                                        retrieve: restriction.retrieve,
+                                        update: restriction.update,
+                                        delete: restriction.delete,
+                                        create: restriction.create,
                                     },
-                                ],
-                            },
-                        ],
-                    }
-                )
+                                },
+                            ],
+                        },
+                    ],
+                },
+                Model.generateOptions({})
             );
             return response.data;
         } catch (e) {

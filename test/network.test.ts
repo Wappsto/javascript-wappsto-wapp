@@ -2,11 +2,11 @@ import WS from 'jest-websocket-mock';
 import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
-
+mockedAxios.create = jest.fn(() => mockedAxios); // eslint-disable-line
 import 'reflect-metadata'; // eslint-disable-line
 import { createNetwork, Network, Device, Value, verbose } from '../src/index'; // eslint-disable-line
-import { openStream } from '../src/models/stream'; // eslint-disable-line
+import { openStream } from '../src/models/stream';
+
 
 describe('network', () => {
     let response = {
@@ -17,6 +17,38 @@ describe('network', () => {
         },
         name: 'test',
         device: [],
+    };
+    let responseFull = {
+        meta: {
+            type: 'network',
+            version: '2.0',
+            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+        },
+        name: 'Network Name',
+        device: [
+            {
+                meta: {
+                    id: 'device_id',
+                },
+                name: 'Device Name',
+                value: [
+                    {
+                        meta: {
+                            id: 'value_id',
+                        },
+                        name: 'Value Name',
+                        state: [
+                            {
+                                meta: {
+                                    id: 'state_id',
+                                },
+                                type: 'Control',
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
     };
 
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
@@ -81,14 +113,25 @@ describe('network', () => {
     });
 
     it('can create a new network from wappsto', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
 
         let networks = await Network.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: { expand: 4 },
         });
-        expect(networks[0]?.name).toEqual('test');
+        expect(networks[0]?.name).toEqual('Network Name');
+        expect(networks[0]?.device[0]?.name).toEqual('Device Name');
+        expect(networks[0]?.device[0]?.value[0]?.name).toEqual('Value Name');
+        expect(networks[0]?.device[0]?.value[0]?.state[0]?.type).toEqual(
+            'Control'
+        );
+        expect(networks[0]?.toJSON).toBeDefined();
+        expect(networks[0]?.device[0]?.toJSON).toBeDefined();
+        expect(networks[0]?.device[0]?.value[0]?.toJSON).toBeDefined();
+        expect(
+            networks[0]?.device[0]?.value[0]?.state[0]?.toJSON
+        ).toBeDefined();
     });
 
     it('can create a new network from wappsto with verbose', async () => {
@@ -160,22 +203,23 @@ describe('network', () => {
     });
 
     it('can find device by name', async () => {
-        let network = new Network();
-        network.device.push(new Device());
-        network.device[0].name = 'test';
+        mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
 
-        let device = network.findDeviceByName('test');
-        expect(device[0].name).toEqual('test');
+        let networks = await Network.fetch();
+
+        let device = networks[0].findDeviceByName('Device Name');
+        expect(device[0].name).toEqual('Device Name');
+        expect(device[0].toJSON).toBeDefined();
     });
 
     it('can find value by name', async () => {
-        let network = new Network();
-        network.device.push(new Device());
-        network.device[0].value.push(new Value());
-        network.device[0].value[0].name = 'test';
+        mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
 
-        let value = network.findValueByName('test');
-        expect(value[0].name).toEqual('test');
+        let networks = await Network.fetch();
+
+        let value = networks[0]?.findValueByName('Value Name');
+        expect(value[0].name).toEqual('Value Name');
+        expect(value[0].toJSON).toBeDefined();
     });
 
     it('can find value by type', async () => {
@@ -196,16 +240,16 @@ describe('network', () => {
 
         let network = new Network();
         network.meta.id = 'network_id';
-        let device = await network.createDevice(
-            'Device Name',
-            'product',
-            'serial',
-            'description',
-            'protocol',
-            'communication',
-            'version',
-            'manufacturer'
-        );
+        let device = await network.createDevice({
+            name: 'Device Name',
+            product: 'product',
+            serial: 'serial',
+            description: 'description',
+            protocol: 'protocol',
+            communication: 'communication',
+            version: 'version',
+            manufacturer: 'manufacturer'
+        });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/network/network_id/device',
@@ -236,6 +280,7 @@ describe('network', () => {
         expect(device.version).toEqual('version');
         expect(device.manufacturer).toEqual('manufacturer');
         expect(device.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+        expect(device.toJSON).toBeDefined();
     });
 
     it('can create a new network', async () => {
@@ -294,16 +339,16 @@ describe('network', () => {
 
         let network = new Network();
         network.meta.id = 'network_id';
-        let device = await network.createDevice(
-            'Device Name',
-            'product',
-            'serial',
-            'description',
-            'protocol',
-            'communication',
-            'version',
-            'manufacturer'
-        );
+        let device = await network.createDevice({
+            name: 'Device Name',
+            product: 'product',
+            serial: 'serial',
+            description: 'description',
+            protocol: 'protocol',
+            communication: 'communication',
+            version: 'version',
+            manufacturer: 'manufacturer'
+        });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/network/network_id/device',

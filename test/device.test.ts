@@ -137,6 +137,7 @@ describe('device', () => {
                 this_name: 'test',
             },
         });
+        expect(device[0].toJSON).toBeDefined();
         expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
@@ -214,18 +215,18 @@ describe('device', () => {
 
         let device = new Device();
         device.meta.id = 'device_id';
-        let value = await device.createNumberValue(
-            'Value Name',
-            'rw',
-            'type',
-            'period',
-            'delta',
-            0,
-            1,
-            1,
-            'unit',
-            'si_conversion'
-        );
+        let value = await device.createNumberValue({
+            name: 'Value Name',
+            permission: 'rw',
+            type: 'type',
+            period: 'period',
+            delta: 'delta',
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'unit',
+            si_conversion: 'si_conversion'
+        });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
@@ -328,15 +329,15 @@ describe('device', () => {
 
         let device = new Device();
         device.meta.id = 'device_id';
-        let value = await device.createStringValue(
-            'Value Name',
-            'wr',
-            'type',
-            'period',
-            'delta',
-            10,
-            'encoding'
-        );
+        let value = await device.createStringValue({
+            name: 'Value Name',
+            permission: 'wr',
+            type: 'type',
+            period: 'period',
+            delta: 'delta',
+            max: 10,
+            encoding: 'encoding'
+        });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
@@ -422,15 +423,15 @@ describe('device', () => {
 
         let device = new Device();
         device.meta.id = 'device_id';
-        let value = await device.createBlobValue(
-            'Value Name',
-            'r',
-            'type',
-            'period',
-            'delta',
-            10,
-            'encoding'
-        );
+        let value = await device.createBlobValue({
+            name: 'Value Name',
+            permission: 'r',
+            type: 'type',
+            period: 'period',
+            delta: 'delta',
+            max: 10,
+            encoding: 'encoding'
+        });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
@@ -503,15 +504,15 @@ describe('device', () => {
 
         let device = new Device();
         device.meta.id = 'device_id';
-        let value = await device.createXmlValue(
-            'Value Name',
-            'w',
-            'type',
-            'period',
-            'delta',
-            10,
-            'encoding'
-        );
+        let value = await device.createXmlValue({
+            name: 'Value Name',
+            permission: 'w',
+            type: 'type',
+            period: 'period',
+            delta: 'delta',
+            xsd: 'xsd',
+            namespace: 'namespace'
+        });
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
@@ -526,8 +527,8 @@ describe('device', () => {
                 name: 'Value Name',
                 delta: 'delta',
                 xml: {
-                    max: 10,
-                    encoding: 'encoding',
+                    xsd: 'xsd',
+                    namespace: 'namespace',
                 },
             }),
             {}
@@ -551,8 +552,8 @@ describe('device', () => {
         expect(value.type).toEqual('type');
         expect(value.period).toEqual('period');
         expect(value.delta).toEqual('delta');
-        expect(value.xml?.max).toEqual(10);
-        expect(value.xml?.encoding).toEqual('encoding');
+        expect(value.xml?.xsd).toEqual('xsd');
+        expect(value.xml?.namespace).toEqual('namespace');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
@@ -580,25 +581,25 @@ describe('device', () => {
                 },
             ],
         });
-        mockedAxios.post.mockResolvedValue({ data: {} });
+        mockedAxios.post.mockResolvedValueOnce({ data: {} }).mockResolvedValueOnce({ data: {} });
 
         let device = new Device();
         device.meta.id = 'device_id';
         let val = new Value();
         val.name = 'Value Name';
         device.value.push(val);
-        let value = await device.createNumberValue(
-            'Value Name',
-            'rw',
-            'type',
-            'period',
-            'delta',
-            0,
-            1,
-            1,
-            'unit',
-            'si_conversion'
-        );
+        let value = await device.createNumberValue({
+            name: 'Value Name',
+            permission: 'rw',
+            type: 'type',
+            period: 'period',
+            delta: 'delta',
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'unit',
+            si_conversion: 'si_conversion'
+        });
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',

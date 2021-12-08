@@ -3,7 +3,20 @@ import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
-import { State } from './state';
+import { State, IState } from './state';
+import { printDebug } from '../util/debug';
+
+export interface IValue {
+    name: string;
+    permission: string;
+    type?: string;
+    period?: string;
+    delta?: string;
+    number?: IValueNumber;
+    string?: IValueString;
+    blob?: IValueBlob;
+    xml?: IValueXml;
+}
 
 export interface IValueNumber {
     min: number;
@@ -11,6 +24,9 @@ export interface IValueNumber {
     step: number;
     unit?: string;
     si_conversion?: string;
+    mapping?: any;
+    ordered_mapping?: boolean;
+    meaningful_zero?: boolean;
 }
 
 export interface IValueString {
@@ -24,18 +40,22 @@ export interface IValueBlob {
 }
 
 export interface IValueXml {
-    max: number;
-    encoding?: string;
+    xsd?: string;
+    namespace?: string;
 }
 
-type ValueStreamCallback = (data: string, timestamp: string) => void;
+type ValueStreamCallback = (
+    value: Value,
+    data: string,
+    timestamp: string
+) => void;
 type RefreshStreamCallback = () => void;
 
-export class Value extends StreamModel {
+export class Value extends StreamModel implements IValue {
     static endpoint = '/2.0/value';
 
-    name?: string;
-    permission?: string;
+    name: string;
+    permission: string;
     type?: string;
     period?: string;
     delta?: string;
@@ -49,7 +69,8 @@ export class Value extends StreamModel {
 
     constructor(name?: string) {
         super('value');
-        this.name = name;
+        this.name = name || '';
+        this.permission = '';
     }
 
     get states() {
@@ -123,37 +144,32 @@ export class Value extends StreamModel {
         if (state) {
             state.onChange(() => {
                 if (state) {
-                    callback(state.data, state.timestamp);
+                    callback(this, state.data, state.timestamp);
                 }
             });
         }
     }
 
-    public createState = async (
-        type: string,
-        data: string = '',
-        timestamp: string = new Date().toISOString()
-    ) => {
-        if (!['Report', 'Control'].includes(type)) {
+    public createState = async (params: IState) => {
+        if (!['Report', 'Control'].includes(params.type)) {
             throw new Error('Invalid value for state type');
         }
 
         let create = false;
-        let state = this.findState(type);
+        let state = this.findState(params.type);
         if (!state) {
-            state = new State(type);
+            state = new State(params.type);
             create = true;
+        } else {
+            printDebug(`Using existing state with id ${state.meta.id}`);
         }
 
         let oldJson = state.toJSON();
-
-        state.data = data;
-        state.timestamp = timestamp;
+        state.parse(params);
         state.parent = this;
-
         let newJson = state.toJSON();
 
-        if (!_.isEqual(oldJson, newJson)) {
+        if (create || !_.isEqual(oldJson, newJson)) {
             if (create) {
                 await state.create();
                 this.state.push(state);

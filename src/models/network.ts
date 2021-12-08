@@ -3,25 +3,43 @@ import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
-import { Device } from './device';
+import { Device, IDevice } from './device';
 import { Value } from './value';
+import { printDebug } from '../util/debug';
 
-export async function createNetwork(name: string): Promise<Network> {
+interface INetwork {
+    name: string;
+    description?: string;
+}
+
+export async function createNetwork(
+    name: string | INetwork,
+    description: string | undefined = undefined
+): Promise<Network> {
+    if (typeof name !== 'string') {
+        let options: INetwork = name;
+        description = options.description;
+        name = options.name;
+    }
     let networks = await Network.fetch(name);
     if (networks.length !== 0) {
+        printDebug(`Using existing network with id ${networks[0].meta.id}`);
+        debugger;
         return networks[0];
     }
 
     let network = new Network();
     network.name = name;
+    network.description = description;
     await network.create();
 
     return network;
 }
 
-export class Network extends StreamModel {
+export class Network extends StreamModel implements INetwork {
     static endpoint = '/2.0/network';
-    name?: string;
+    name: string;
+    description?: string;
     @Type(() => Device)
     device: Device[] = [];
 
@@ -31,11 +49,11 @@ export class Network extends StreamModel {
 
     constructor(name?: string) {
         super('network');
-        this.name = name;
+        this.name = name || '';
     }
 
     attributes(): string[] {
-        return ['name', 'device'];
+        return ['name', 'device', 'description'];
     }
 
     public findDeviceByName(name: string): Device[] {
@@ -58,34 +76,17 @@ export class Network extends StreamModel {
         return values;
     }
 
-    public async createDevice(
-        name: string,
-        product: string,
-        serial: string,
-        description: string,
-        protocol: string,
-        communication: string,
-        version: string,
-        manufacturer: string
-    ): Promise<Device> {
+    public async createDevice(params: IDevice): Promise<Device> {
         let device = new Device();
-        let devices = this.findDeviceByName(name);
+        let devices = this.findDeviceByName(params.name);
         if (devices.length !== 0) {
+            printDebug(`Using existing device with id ${devices[0]?.meta.id}`);
             device = devices[0];
         }
 
         let oldJson = device.toJSON();
-
-        device.name = name;
-        device.product = product;
-        device.serial = serial;
-        device.description = description;
-        device.protocol = protocol;
-        device.communication = communication;
-        device.version = version;
-        device.manufacturer = manufacturer;
+        device.parse(params);
         device.parent = this;
-
         let newJson = device.toJSON();
 
         if (!_.isEqual(oldJson, newJson)) {

@@ -5,16 +5,28 @@ import { StreamModel } from './model.stream';
 import { Model } from './model';
 import {
     Value,
+    IValue,
     IValueNumber,
     IValueString,
     IValueBlob,
     IValueXml,
 } from './value';
-import { printError } from '../util/debug';
+import { printDebug } from '../util/debug';
 
-export class Device extends StreamModel {
+export interface IDevice {
+    name: string;
+    product?: string;
+    serial?: string;
+    description?: string;
+    protocol?: string;
+    communication?: string;
+    version?: string;
+    manufacturer?: string;
+}
+
+export class Device extends StreamModel implements IDevice {
     static endpoint = '/2.0/device';
-    name?: string;
+    name: string;
     product?: string;
     serial?: string;
     description?: string;
@@ -27,7 +39,7 @@ export class Device extends StreamModel {
 
     constructor(name?: string) {
         super('device');
-        this.name = name;
+        this.name = name || '';
     }
 
     get values() {
@@ -56,46 +68,27 @@ export class Device extends StreamModel {
         return this.value.filter((val) => val.type === type);
     }
 
-    public async createValue(
-        name: string,
-        permission: string,
-        type: string,
-        period: string,
-        delta: string,
-        number: IValueNumber | undefined = undefined,
-        string: IValueString | undefined = undefined,
-        blob: IValueBlob | undefined = undefined,
-        xml: IValueXml | undefined = undefined
-    ): Promise<Value> {
-        permission = permission.toLowerCase();
-        if (!['r', 'w', 'rw', 'wr'].includes(permission)) {
+    public async createValue(params: IValue): Promise<Value> {
+        if (
+            !params.permission ||
+            !['r', 'w', 'rw', 'wr'].includes(params.permission.toLowerCase())
+        ) {
             throw new Error('Invalid value for value permission');
         }
+        params.permission = params.permission.toLowerCase();
 
         let value = new Value();
-        let values = this.findValueByName(name);
+        let values = this.findValueByName(params.name);
         if (values.length !== 0) {
+            printDebug(`Using existing value with id ${values[0].meta.id}`);
             value = values[0];
         }
 
         let oldJson = value.toJSON();
-
-        value.name = name;
-        value.permission = permission;
-        value.type = type;
-        value.period = period;
-        value.delta = delta;
-        if (number) {
-            value.number = number;
-        } else if (string) {
-            value.string = string;
-        } else if (blob) {
-            value.blob = blob;
-        } else if (xml) {
-            value.xml = xml;
-        } else {
-            printError('You must suply a valid type');
+        if (!params.number && !params.string && !params.blob && !params.xml) {
+            throw new Error('You must suply a valid type');
         }
+        value.parse(params);
         value.parent = this;
 
         let newJson = value.toJSON();
@@ -109,118 +102,61 @@ export class Device extends StreamModel {
             }
         }
 
-        if (['r', 'rw', 'wr'].includes(permission)) {
-            await value.createState('Report');
+        if (['r', 'rw', 'wr'].includes(params.permission)) {
+            await value.createState({ type: 'Report' });
+
         }
-        if (['w', 'rw', 'wr'].includes(permission)) {
-            await value.createState('Control');
+        if (['w', 'rw', 'wr'].includes(params.permission)) {
+            await value.createState({ type: 'Control' });
         }
 
         return value;
     }
 
-    public async createNumberValue(
-        name: string,
-        permission: string,
-        type: string,
-        period: string,
-        delta: string,
-        min: number,
-        max: number,
-        step: number,
-        unit: string,
-        si_conversion: string = ''
-    ): Promise<Value> {
-        let valueNumber = {} as IValueNumber;
-        valueNumber.min = min;
-        valueNumber.max = max;
-        valueNumber.step = step;
-        valueNumber.unit = unit;
-        valueNumber.si_conversion = si_conversion;
+    public async createNumberValue(params: any): Promise<Value> {
+        let numberValue = {} as IValueNumber;
+        numberValue.min = params.min;
+        numberValue.max = params.max;
+        numberValue.step = params.step;
+        numberValue.unit = params.unit;
+        numberValue.si_conversion = params.si_conversion;
+        numberValue.mapping = params.mapping;
+        numberValue.ordered_mapping = params.ordered_mapping;
+        numberValue.meaningful_zero = params.meaningful_zero;
 
-        return this.createValue(
-            name,
-            permission,
-            type,
-            period,
-            delta,
-            valueNumber
-        );
+        params.number = numberValue;
+
+        return this.createValue(params);
     }
 
-    public async createStringValue(
-        name: string,
-        permission: string,
-        type: string,
-        period: string,
-        delta: string,
-        max: number,
-        encoding: string = ''
-    ): Promise<Value> {
-        let stringNumber = {} as IValueString;
-        stringNumber.max = max;
-        stringNumber.encoding = encoding;
+    public async createStringValue(params: any): Promise<Value> {
+        let stringValue = {} as IValueString;
+        stringValue.max = params.max;
+        stringValue.encoding = params.encoding;
 
-        return this.createValue(
-            name,
-            permission,
-            type,
-            period,
-            delta,
-            undefined,
-            stringNumber
-        );
+        params.string = stringValue;
+
+        return this.createValue(params);
     }
 
-    public async createBlobValue(
-        name: string,
-        permission: string,
-        type: string,
-        period: string,
-        delta: string,
-        max: number,
-        encoding: string = ''
-    ): Promise<Value> {
-        let blobNumber = {} as IValueBlob;
-        blobNumber.max = max;
-        blobNumber.encoding = encoding;
+    public async createBlobValue(params: any): Promise<Value> {
+        let blobValue = {} as IValueBlob;
+        blobValue.max = params.max;
+        blobValue.encoding = params.encoding;
 
-        return this.createValue(
-            name,
-            permission,
-            type,
-            period,
-            delta,
-            undefined,
-            undefined,
-            blobNumber
-        );
+        params.blob = blobValue;
+
+        return this.createValue(params);
     }
 
-    public async createXmlValue(
-        name: string,
-        permission: string,
-        type: string,
-        period: string,
-        delta: string,
-        max: number,
-        encoding: string = ''
-    ): Promise<Value> {
-        let xmlNumber = {} as IValueXml;
-        xmlNumber.max = max;
-        xmlNumber.encoding = encoding;
+    public async createXmlValue(params: any): Promise<Value> {
+        let xmlValue = {} as IValueXml;
+        xmlValue.xsd = params.xsd;
+        xmlValue.namespace = params.namespace;
 
-        return this.createValue(
-            name,
-            permission,
-            type,
-            period,
-            delta,
-            undefined,
-            undefined,
-            undefined,
-            xmlNumber
-        );
+        params.xml = xmlValue;
+
+        return this.createValue(params);
     }
 
     public static findByName = async (

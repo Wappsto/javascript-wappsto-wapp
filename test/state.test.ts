@@ -5,6 +5,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
 import { State, verbose } from '../src/index';
 
+
 describe('state', () => {
     let response = {
         meta: {
@@ -34,15 +35,14 @@ describe('state', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/state',
-            {
+            expect.objectContaining({
                 meta: {
                     type: 'state',
                     version: '2.0',
                 },
                 type: 'Report',
                 data: '',
-                timestamp: '',
-            },
+            }),
             {}
         );
         expect(state.type).toEqual('Report');

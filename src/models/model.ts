@@ -139,7 +139,7 @@ export class Model implements IModel {
             json = json[0];
         }
         let oldModel = this.toJSON();
-        Object.assign(this, json);
+        Object.assign(this, _.pick(json, this.attributes().concat(['meta'])));
         let newModel = this.toJSON();
         return !_.isEqual(oldModel, newModel);
     }

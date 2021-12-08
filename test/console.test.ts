@@ -5,6 +5,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
 import { startLogging, stopLogging } from '../src/index';
 
+
 describe('console', () => {
     beforeEach(() => {
         mockedAxios.post.mockResolvedValue({});

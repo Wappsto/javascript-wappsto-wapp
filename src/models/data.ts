@@ -29,8 +29,23 @@ export class Data extends Model {
         return ['data_meta'];
     }
 
+    set(name: string, item: any): void {
+        this.data[name] = item;
+    }
+
+    get(name: string): any {
+        return this.data[name];
+    }
+
     public static fetch = async () => {
         let data: any[] = await Model.fetch(Data.endpoint);
+        return Data.fromArray(data);
+    };
+
+    public static findById = async (id: string) => {
+        let data: any[] = await Model.fetch(Data.endpoint, {
+            'this_data_meta.id': id,
+        });
         return Data.fromArray(data);
     };
 }

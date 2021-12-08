@@ -8,6 +8,7 @@ import 'reflect-metadata';
 import { Value, verbose } from '../src/index';
 import { openStream } from '../src/models/stream';
 
+
 describe('value', () => {
     let response = {
         meta: {
@@ -16,6 +17,7 @@ describe('value', () => {
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
         },
         name: 'test',
+        permission: '',
         state: [],
     };
 
@@ -50,6 +52,7 @@ describe('value', () => {
                     version: '2.0',
                 },
                 name: 'test',
+                permission: '',
                 state: [],
             },
             {}

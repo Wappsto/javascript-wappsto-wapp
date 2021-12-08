@@ -1,13 +1,18 @@
 import { Model } from './model';
 import { StreamModel } from './model.stream';
 
-export class State extends StreamModel {
+export interface IState {
+    type: string;
+    data?: string;
+    timestamp?: string;
+}
+export class State extends StreamModel implements IState {
     static endpoint = '/2.0/state';
 
     data: string = '';
     status?: string;
     type: string = '';
-    timestamp: string = '';
+    timestamp: string = new Date().toISOString();
     status_payment?: string;
 
     constructor(type?: string) {

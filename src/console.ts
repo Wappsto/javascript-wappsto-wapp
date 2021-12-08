@@ -17,7 +17,6 @@ function sendExtsync(key: string, ...args: any[]): any {
 }
 
 export function startLogging(): void {
-    /* eslint-disable no-native-reassign */
     console = {
         log: (...args: any[]) => {
             sendExtsync('log', ...args);
