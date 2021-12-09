@@ -25,17 +25,9 @@ export class State extends StreamModel implements IState {
         return ['data', 'status', 'type', 'timestamp', 'status_payment'];
     }
 
-    public static fetch = async (type: string = '', parentUrl: string = '') => {
+    public static fetch = async () => {
         let params = { expand: 1 };
         let url = State.endpoint;
-        if (type !== '') {
-            Object.assign(params, {
-                'this_type=': type,
-            });
-        }
-        if (parentUrl !== '') {
-            url = parentUrl + '/state';
-        }
 
         let data: any[] = await Model.fetch(url, params);
         return State.fromArray(data);

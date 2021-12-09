@@ -5,7 +5,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
 import 'reflect-metadata';
-import { Value, verbose } from '../src/index';
+import { Value, State, verbose } from '../src/index';
 import { openStream } from '../src/models/stream';
 
 describe('value', () => {
@@ -141,5 +141,46 @@ describe('value', () => {
             },
         });
         expect(value[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
+    it('can send a report', () => {
+        mockedAxios.put.mockResolvedValue({ data: [] });
+
+        let value = new Value();
+        value.meta.id = 'value_id';
+        let state = new State('Report');
+        state.meta.id = 'state_id';
+        value.state.push(state);
+
+        value.report(10);
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            '/2.0/state/state_id',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                    id: 'state_id'
+                },
+                type: 'Report',
+                data: '10',
+            }),
+            {}
+        );
+
+        value.report('test','timestamp');
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            '/2.0/state/state_id',
+            {
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                    id: 'state_id'
+                },
+                type: 'Report',
+                data: 'test',
+                timestamp: 'timestamp'
+            },
+            {}
+        );
     });
 });
