@@ -2,7 +2,7 @@ import { StreamEvent, openStream } from './stream';
 import { printError } from '../util/debug';
 import { PermissionModel } from './model.permission';
 
-type StreamCallback = () => void;
+type StreamCallback = (model: StreamModel) => void;
 
 interface IStreamCallbacks {
     change: StreamCallback[];
@@ -39,19 +39,19 @@ export class StreamModel extends PermissionModel {
         switch (event?.event) {
             case 'create':
                 this.streamCallback.create.forEach((cb) => {
-                    cb();
+                    cb(this);
                 });
                 break;
             case 'update':
                 if (this.parse(event.data)) {
                     this.streamCallback.change.forEach((cb) => {
-                        cb();
+                        cb(this);
                     });
                 }
                 break;
             case 'delete':
                 this.streamCallback.delete.forEach((cb) => {
-                    cb();
+                    cb(this);
                 });
                 break;
             default:

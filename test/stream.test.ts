@@ -138,7 +138,7 @@ describe('stream', () => {
             },
         });
 
-        expect(fun).toHaveBeenCalledWith();
+        expect(fun).toHaveBeenCalledWith(value);
     });
 
     it('can handle a stream error', async () => {

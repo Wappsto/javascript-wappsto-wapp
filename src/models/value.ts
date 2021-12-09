@@ -49,7 +49,7 @@ type ValueStreamCallback = (
     data: string,
     timestamp: string
 ) => void;
-type RefreshStreamCallback = () => void;
+type RefreshStreamCallback = (value: Value) => void;
 
 export class Value extends StreamModel implements IValue {
     static endpoint = '/2.0/value';
@@ -230,7 +230,7 @@ export class Value extends StreamModel implements IValue {
     public onRefresh(callback: RefreshStreamCallback): void {
         this.onChange(() => {
             if (this.status === 'update') {
-                callback();
+                callback(this);
                 this.status = '';
             }
         });
