@@ -155,6 +155,46 @@ describe('value', () => {
         expect(value[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
+    it('can find a value by type', async () => {
+        mockedAxios.get.mockResolvedValue([]);
+
+        let r = Value.findByType('test');
+        await server.connected;
+
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
+            params: {
+                expand: 1,
+                'this_base.identifier': 'value-1-Find 1 value with type test',
+            },
+        });
+        mockedAxios.get.mockResolvedValue({ data: [response] });
+        await new Promise((r) => setTimeout(r, 100));
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                base: {
+                    identifier: 'value-1-Find 1 value with type test',
+                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                },
+            },
+        });
+
+        let value = await r;
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
+            params: {
+                expand: 2,
+                quantity: 1,
+                message: 'Find 1 value with type test',
+                identifier: 'value-1-Find 1 value with type test',
+                this_type: 'test',
+            },
+        });
+        expect(value[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
     it('can send a report', () => {
         mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })

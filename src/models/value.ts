@@ -257,11 +257,24 @@ export class Value extends StreamModel implements IValue {
         return Value.fromArray(data);
     };
 
-    public static findByType = async (type: string) => {
-        let data: any = await Model.fetch(Value.endpoint, {
-            this_type: type,
-            expand: 2,
-        });
+    static findByType = async (
+        type: string,
+        quantity: number = 1,
+        usage: string = ''
+    ) => {
+        if (usage === '') {
+            usage = `Find ${quantity} value with type ${type}`;
+        }
+
+        let data = await PermissionModel.request(
+            Value.endpoint,
+            quantity,
+            usage,
+            {
+                this_type: type,
+                expand: 2,
+            }
+        );
         return Value.fromArray(data);
     };
 }

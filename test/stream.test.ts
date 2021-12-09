@@ -221,7 +221,7 @@ describe('stream', () => {
 
         expect(fun).toHaveBeenCalledWith({ request: 'request' });
         expect(fun.mock.calls.length).toBe(1);
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 100));
 
         server.send({
             meta_object: {

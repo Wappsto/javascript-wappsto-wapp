@@ -108,6 +108,7 @@ export class PermissionModel extends Model {
             printDebug(
                 `Waiting for permission to access users data: ${message}`
             );
+
             openStream.subscribeService('/notification', async (event) => {
                 if (event.meta_object?.type === 'notification') {
                     let notification = Notification.fromArray([event.data]);
