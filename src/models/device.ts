@@ -112,7 +112,7 @@ export class Device extends StreamModel implements IDevice {
         return value;
     }
 
-    public async createNumberValue(params: any): Promise<Value> {
+    public async createNumberValue(params: IValue & IValueNumber): Promise<Value> {
         let numberValue = {} as IValueNumber;
         numberValue.min = params.min;
         numberValue.max = params.max;
@@ -128,7 +128,7 @@ export class Device extends StreamModel implements IDevice {
         return this.createValue(params);
     }
 
-    public async createStringValue(params: any): Promise<Value> {
+    public async createStringValue(params: IValue & IValueString): Promise<Value> {
         let stringValue = {} as IValueString;
         stringValue.max = params.max;
         stringValue.encoding = params.encoding;
@@ -138,7 +138,7 @@ export class Device extends StreamModel implements IDevice {
         return this.createValue(params);
     }
 
-    public async createBlobValue(params: any): Promise<Value> {
+    public async createBlobValue(params: IValue & IValueBlob): Promise<Value> {
         let blobValue = {} as IValueBlob;
         blobValue.max = params.max;
         blobValue.encoding = params.encoding;
@@ -148,7 +148,7 @@ export class Device extends StreamModel implements IDevice {
         return this.createValue(params);
     }
 
-    public async createXmlValue(params: any): Promise<Value> {
+    public async createXmlValue(params: IValue & IValueXml): Promise<Value> {
         let xmlValue = {} as IValueXml;
         xmlValue.xsd = params.xsd;
         xmlValue.namespace = params.namespace;
