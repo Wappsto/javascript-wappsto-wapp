@@ -93,17 +93,9 @@ export class Value extends StreamModel implements IValue {
         ];
     }
 
-    public static fetch = async (name: string = '', parentUrl: string = '') => {
+    public static fetch = async () => {
         let params = { expand: 2 };
         let url = Value.endpoint;
-        if (name !== '') {
-            Object.assign(params, {
-                'this_name=': name,
-            });
-        }
-        if (parentUrl !== '') {
-            url = parentUrl + '/value';
-        }
 
         let data: any[] = await Model.fetch(url, params);
         return Value.fromArray(data);
@@ -119,19 +111,19 @@ export class Value extends StreamModel implements IValue {
         return res;
     }
 
-    private get_time(): string {
+    private getTime(): string {
         return new Date().toISOString();
     }
 
     private findStateAndUpdate(
         type: string,
-        data: string,
+        data: string | number,
         timestamp: string | undefined
     ): void {
         let state = this.findState(type);
         if (state) {
-            state.data = data;
-            state.timestamp = timestamp || this.get_time();
+            state.data = data.toString();
+            state.timestamp = timestamp || this.getTime();
             state.update();
         }
     }
@@ -189,6 +181,14 @@ export class Value extends StreamModel implements IValue {
         return undefined;
     }
 
+    private findStateAndTimestamp(type: string): string | undefined {
+        let state = this.findState(type);
+        if (state) {
+            return state.timestamp;
+        }
+        return undefined;
+    }
+
     public getReportData(): string | undefined {
         return this.findStateAndData('Report');
     }
@@ -197,19 +197,19 @@ export class Value extends StreamModel implements IValue {
         return this.findStateAndData('Control');
     }
 
-    public getData(): string | undefined {
-        let res = this.getReportData();
-        if (res) {
-            return res;
-        }
-        return this.getControlData();
+    public getControlTimestamp(): string | undefined {
+        return this.findStateAndTimestamp('Control');
     }
 
-    public report(data: string, timestamp: string | undefined): void {
+    public getReportTimestamp(): string | undefined {
+        return this.findStateAndTimestamp('Report');
+    }
+
+    public report(data: string | number, timestamp: string | undefined = undefined): void {
         this.findStateAndUpdate('Report', data, timestamp);
     }
 
-    public control(data: string, timestamp: string | undefined): void {
+    public control(data: string | number, timestamp: string | undefined = undefined): void {
         this.findStateAndUpdate('Control', data, timestamp);
     }
 
