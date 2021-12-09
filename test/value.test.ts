@@ -67,12 +67,12 @@ describe('value', () => {
 
         let oldName = response.name;
         response.name = 'new name';
-        mockedAxios.put.mockResolvedValue({ data: response });
+        mockedAxios.patch.mockResolvedValue({ data: response });
 
         value.name = 'new name';
         await value.update();
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/value/' + value.meta.id,
             response,
             {}
@@ -102,6 +102,18 @@ describe('value', () => {
         });
         expect(values[0]?.name).toEqual('test');
     });
+/*
+    it('can create a state', async () => {
+        mockedAxios.get.mockResolvedValue({ data: [] });
+        let value = new Value();
+        value.meta.id = 'value_id';
+
+        let state = value.createState({
+            type: 'Report',
+        });
+
+
+    });*/
 
     it('can find a value by name', async () => {
         mockedAxios.get.mockResolvedValue([]);
@@ -144,7 +156,7 @@ describe('value', () => {
     });
 
     it('can send a report', () => {
-        mockedAxios.put
+        mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
 
@@ -155,7 +167,7 @@ describe('value', () => {
         value.state.push(state);
 
         value.report(10);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/state_id',
             expect.objectContaining({
                 meta: {
@@ -171,7 +183,7 @@ describe('value', () => {
         expect(value.getReportData()).toBe('10');
 
         value.report('test', 'timestamp');
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/state_id',
             {
                 meta: {
@@ -189,7 +201,7 @@ describe('value', () => {
     });
 
     it('can send a control', () => {
-        mockedAxios.put
+        mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
 
@@ -200,7 +212,7 @@ describe('value', () => {
         value.state.push(state);
 
         value.control(10);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/state_id',
             expect.objectContaining({
                 meta: {
@@ -216,7 +228,7 @@ describe('value', () => {
 
         expect(value.getControlData()).toBe('10');
         value.control('test', 'timestamp');
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/state_id',
             {
                 meta: {

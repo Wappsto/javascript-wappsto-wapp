@@ -78,7 +78,7 @@ export class Model implements IModel {
 
     public update = async (): Promise<void> => {
         try {
-            let response = await wappsto.put(
+            let response = await wappsto.patch(
                 this.getUrl(),
                 this.toJSON(),
                 Model.generateOptions()

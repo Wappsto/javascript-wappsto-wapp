@@ -35,7 +35,7 @@ describe('user', () => {
         let user = new User();
         await user.update();
 
-        expect(mockedAxios.put).not.toHaveBeenCalled();
+        expect(mockedAxios.patch).not.toHaveBeenCalled();
     });
 
     it('can create a new user from wappsto', async () => {

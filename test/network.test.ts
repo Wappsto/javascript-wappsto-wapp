@@ -97,12 +97,12 @@ describe('network', () => {
 
         let oldName = response.name;
         response.name = 'new name';
-        mockedAxios.put.mockResolvedValueOnce({ data: response });
+        mockedAxios.patch.mockResolvedValueOnce({ data: response });
 
         network.name = 'new name';
         await network.update();
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/network/' + network.meta.id,
             response,
             {}
@@ -332,7 +332,7 @@ describe('network', () => {
                 },
             ],
         });
-        mockedAxios.put.mockResolvedValueOnce({
+        mockedAxios.patch.mockResolvedValueOnce({
             data: [{ meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
         });
 

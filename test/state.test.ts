@@ -54,12 +54,12 @@ describe('state', () => {
 
         let oldType = response.type;
         response.type = 'Control';
-        mockedAxios.put.mockResolvedValue({ data: response });
+        mockedAxios.patch.mockResolvedValue({ data: response });
 
         state.type = 'Control';
         await state.update();
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/' + state.meta.id,
             response,
             {}

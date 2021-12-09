@@ -64,12 +64,12 @@ describe('device', () => {
 
         let oldName = response.name;
         response.name = 'new name';
-        mockedAxios.put.mockResolvedValueOnce({ data: response });
+        mockedAxios.patch.mockResolvedValueOnce({ data: response });
 
         device.name = 'new name';
         await device.update();
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/device/' + device.meta.id,
             response,
             {}
@@ -558,7 +558,7 @@ describe('device', () => {
     });
 
     it('can return value as a child', async () => {
-        mockedAxios.put.mockResolvedValueOnce({
+        mockedAxios.patch.mockResolvedValueOnce({
             data: [
                 {
                     permission: 'rw',
@@ -603,7 +603,7 @@ describe('device', () => {
             si_conversion: 'si_conversion',
         });
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             expect.objectContaining({
                 permission: 'rw',
