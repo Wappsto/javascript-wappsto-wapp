@@ -54,7 +54,9 @@ export class Stream extends Model {
     constructor() {
         super('stream', '2.1');
         this.websocketUrl = `${baseUrl}`;
-        if (!this.websocketUrl.endsWith('/')){
+        if (
+            !this.websocketUrl.endsWith('/')
+        ) {
             this.websocketUrl += `/`;
         }
         this.websocketUrl += `2.1/websocket/open`;
