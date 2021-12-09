@@ -18,11 +18,11 @@ export class Model implements IModel {
         this.meta.version = version;
     }
 
-    url(): string {
+    public url(): string {
         return `/${this.meta.version}/${this.meta.type}`;
     }
 
-    path(): string {
+    public path(): string {
         if (this.meta.id) {
             return `/${this.meta.type}/${this.meta.id}`;
         } else {
@@ -30,7 +30,7 @@ export class Model implements IModel {
         }
     }
 
-    attributes(): string[] {
+    public attributes(): string[] {
         return [];
     }
 
@@ -134,7 +134,7 @@ export class Model implements IModel {
         return [];
     };
 
-    parse(json: any): boolean {
+    public parse(json: any): boolean {
         if (_.isArray(json)) {
             json = json[0];
         }
@@ -148,7 +148,7 @@ export class Model implements IModel {
         return plainToClass(this, json);
     }
 
-    toJSON(): any {
+    public toJSON(): any {
         let meta = Object.assign(
             {},
             _.pick(this.meta, ['id', 'type', 'version'])
