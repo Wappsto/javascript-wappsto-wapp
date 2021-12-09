@@ -23,6 +23,6 @@ describe('console', () => {
         console.info('test start');
         console.error('test start');
         console.warn('test start');
-        expect(mockedAxios.post).toHaveBeenCalled();
+        expect(mockedAxios.post).toHaveBeenCalledTimes(4);
     });
 });
