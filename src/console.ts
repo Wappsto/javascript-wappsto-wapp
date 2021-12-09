@@ -10,31 +10,22 @@ function sendExtsync(key: string, ...args: any[]): any {
         time,
     });
 
-    const req = wappsto
-        .post('/2.1/extsync/wappsto/editor/console', data)
+    wappsto
+        .post('/2.0/extsync/wappsto/editor/console', data)
         .catch(function () {});
-    return req;
 }
 
 export function startLogging(): void {
-    console = {
-        log: (...args: any[]) => {
-            sendExtsync('log', ...args);
+    let newFunc = function (name: string) {
+        return function (...args: any[]) {
+            sendExtsync(name, arguments);
             defaultConsole.log(...args);
-        },
-        error: (...args: any[]) => {
-            sendExtsync('error', ...args);
-            defaultConsole.error(...args);
-        },
-        info: (...args: any[]) => {
-            sendExtsync('info', ...args);
-            defaultConsole.info(...args);
-        },
-        warn: (...args: any[]) => {
-            sendExtsync('warn', ...args);
-            defaultConsole.warn(...args);
-        },
-    } as any;
+        };
+    };
+    console.log = newFunc('log');
+    console.info = newFunc('info');
+    console.error = newFunc('error');
+    console.warn = newFunc('warn');
 
     process.on('uncaughtException', (err) => {
         const req = sendExtsync('error', [err.stack]);
