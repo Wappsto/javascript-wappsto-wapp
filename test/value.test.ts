@@ -144,7 +144,7 @@ describe('value', () => {
     });
 
     it('can send a report', () => {
-        mockedAxios.put.mockResolvedValue({ data: [] });
+        mockedAxios.put.mockResolvedValueOnce({ data: [] }).mockResolvedValueOnce({ data: [] });
 
         let value = new Value();
         value.meta.id = 'value_id';
@@ -166,6 +166,7 @@ describe('value', () => {
             }),
             {}
         );
+        expect(value.getReportData()).toBe('10');
 
         value.report('test','timestamp');
         expect(mockedAxios.put).toHaveBeenCalledWith(
@@ -182,5 +183,49 @@ describe('value', () => {
             },
             {}
         );
+        expect(value.getReportTimestamp()).toBe('timestamp');
+    });
+
+    it('can send a control', () => {
+        mockedAxios.put.mockResolvedValueOnce({ data: [] }).mockResolvedValueOnce({ data: [] });
+
+        let value = new Value();
+        value.meta.id = 'value_id';
+        let state = new State('Control');
+        state.meta.id = 'state_id';
+        value.state.push(state);
+
+        value.control(10);
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            '/2.0/state/state_id',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                    id: 'state_id'
+                },
+                type: 'Control',
+                data: '10',
+            }),
+            {}
+        );
+
+        expect(value.getControlData()).toBe('10');
+        value.control('test','timestamp');
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            '/2.0/state/state_id',
+            {
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                    id: 'state_id'
+                },
+                type: 'Control',
+                data: 'test',
+                timestamp: 'timestamp'
+            },
+            {}
+        );
+        expect(value.getControlTimestamp()).toBe('timestamp');
     });
 });
