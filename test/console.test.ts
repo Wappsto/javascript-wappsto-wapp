@@ -1,5 +1,6 @@
 import axios from 'axios';
 jest.mock('axios');
+console.log = jest.fn();
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */

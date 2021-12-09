@@ -1,3 +1,4 @@
+console.error = jest.fn();
 import WS from 'jest-websocket-mock';
 import { Value, State } from '../src/index';
 import { openStream } from '../src/models/stream';
