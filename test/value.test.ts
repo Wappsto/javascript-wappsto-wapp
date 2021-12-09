@@ -144,7 +144,9 @@ describe('value', () => {
     });
 
     it('can send a report', () => {
-        mockedAxios.put.mockResolvedValueOnce({ data: [] }).mockResolvedValueOnce({ data: [] });
+        mockedAxios.put
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
 
         let value = new Value();
         value.meta.id = 'value_id';
@@ -159,7 +161,7 @@ describe('value', () => {
                 meta: {
                     type: 'state',
                     version: '2.0',
-                    id: 'state_id'
+                    id: 'state_id',
                 },
                 type: 'Report',
                 data: '10',
@@ -168,18 +170,18 @@ describe('value', () => {
         );
         expect(value.getReportData()).toBe('10');
 
-        value.report('test','timestamp');
+        value.report('test', 'timestamp');
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/state/state_id',
             {
                 meta: {
                     type: 'state',
                     version: '2.0',
-                    id: 'state_id'
+                    id: 'state_id',
                 },
                 type: 'Report',
                 data: 'test',
-                timestamp: 'timestamp'
+                timestamp: 'timestamp',
             },
             {}
         );
@@ -187,7 +189,9 @@ describe('value', () => {
     });
 
     it('can send a control', () => {
-        mockedAxios.put.mockResolvedValueOnce({ data: [] }).mockResolvedValueOnce({ data: [] });
+        mockedAxios.put
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
 
         let value = new Value();
         value.meta.id = 'value_id';
@@ -202,7 +206,7 @@ describe('value', () => {
                 meta: {
                     type: 'state',
                     version: '2.0',
-                    id: 'state_id'
+                    id: 'state_id',
                 },
                 type: 'Control',
                 data: '10',
@@ -211,18 +215,18 @@ describe('value', () => {
         );
 
         expect(value.getControlData()).toBe('10');
-        value.control('test','timestamp');
+        value.control('test', 'timestamp');
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/state/state_id',
             {
                 meta: {
                     type: 'state',
                     version: '2.0',
-                    id: 'state_id'
+                    id: 'state_id',
                 },
                 type: 'Control',
                 data: 'test',
-                timestamp: 'timestamp'
+                timestamp: 'timestamp',
             },
             {}
         );

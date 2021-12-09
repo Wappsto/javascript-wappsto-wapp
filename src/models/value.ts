@@ -205,11 +205,17 @@ export class Value extends StreamModel implements IValue {
         return this.findStateAndTimestamp('Report');
     }
 
-    public report(data: string | number, timestamp: string | undefined = undefined): void {
+    public report(
+        data: string | number,
+        timestamp: string | undefined = undefined
+    ): void {
         this.findStateAndUpdate('Report', data, timestamp);
     }
 
-    public control(data: string | number, timestamp: string | undefined = undefined): void {
+    public control(
+        data: string | number,
+        timestamp: string | undefined = undefined
+    ): void {
         this.findStateAndUpdate('Control', data, timestamp);
     }
 
