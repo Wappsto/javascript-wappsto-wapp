@@ -6,7 +6,7 @@ function sendExtsync(key: string, ...args: any[]): any {
     const time = new Date().toISOString();
     const data = JSON.stringify({
         key: key,
-        arguments: args,
+        arguments: args[0],
         time: time,
     });
 
