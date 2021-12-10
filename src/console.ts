@@ -5,9 +5,9 @@ const defaultConsole = Object.assign({}, console);
 function sendExtsync(key: string, ...args: any[]): any {
     const time = new Date().toISOString();
     const data = JSON.stringify({
-        key,
-        args,
-        time,
+        key: key,
+        arguments: args,
+        time: time,
     });
 
     wappsto
