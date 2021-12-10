@@ -278,7 +278,6 @@ export class Stream extends Model {
             `Sending a ${method} message to ${url}: ${JSON.stringify(hash)}`
         );
         this.socket?.send(JSON.stringify(hash));
-        //this.socket?.send(0x9);
     }
 
     private addListeners() {

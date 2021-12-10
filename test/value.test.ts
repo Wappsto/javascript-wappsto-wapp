@@ -39,7 +39,7 @@ describe('value', () => {
     });
 
     it('can create a value on wappsto', async () => {
-        mockedAxios.post.mockResolvedValue({ data: response });
+        mockedAxios.post.mockResolvedValueOnce({ data: response });
         let value = new Value('test');
         await value.create();
 
@@ -62,12 +62,13 @@ describe('value', () => {
     });
 
     it('can update a value on wappsto', async () => {
+        mockedAxios.post.mockResolvedValueOnce({ data: response });
         let value = new Value('test');
         await value.create();
 
         let oldName = response.name;
         response.name = 'new name';
-        mockedAxios.patch.mockResolvedValue({ data: response });
+        mockedAxios.patch.mockResolvedValueOnce({ data: response });
 
         value.name = 'new name';
         await value.update();
@@ -82,7 +83,7 @@ describe('value', () => {
     });
 
     it('can create a new value from wappsto', async () => {
-        mockedAxios.get.mockResolvedValue({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
         let values = await Value.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
@@ -92,7 +93,7 @@ describe('value', () => {
     });
 
     it('can create a new value from wappsto with verbose', async () => {
-        mockedAxios.get.mockResolvedValue({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
         verbose(true);
         let values = await Value.fetch();
         verbose(false);
@@ -102,21 +103,40 @@ describe('value', () => {
         });
         expect(values[0]?.name).toEqual('test');
     });
-    /*
-    it('can create a state', async () => {
-        mockedAxios.get.mockResolvedValue({ data: [] });
+
+    it('can return an old state when creating', async () => {
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
         let value = new Value();
         value.meta.id = 'value_id';
+        let oldState = new State('Report');
+        oldState.meta.id = 'state_id';
+        value.state.push(oldState);
 
-        let state = value.createState({
+        let state = await value.createState({
             type: 'Report',
+            data: 'new',
+            timestamp: 'timestamp',
         });
 
-
-    });*/
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/state_id',
+            {
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                    id: 'state_id',
+                },
+                type: 'Report',
+                data: 'new',
+                timestamp: 'timestamp',
+            },
+            {}
+        );
+        expect(state.meta.id).toBe('state_id');
+    });
 
     it('can find a value by name', async () => {
-        mockedAxios.get.mockResolvedValue([]);
+        mockedAxios.get.mockResolvedValueOnce([]);
 
         let r = Value.findByName('test');
         await server.connected;
@@ -127,7 +147,7 @@ describe('value', () => {
                 'this_base.identifier': 'value-1-Find 1 value with name test',
             },
         });
-        mockedAxios.get.mockResolvedValue({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
         server.send({
             meta_object: {
                 type: 'notification',
@@ -156,7 +176,10 @@ describe('value', () => {
     });
 
     it('can find a value by type', async () => {
-        mockedAxios.get.mockResolvedValue([]);
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [response] });
 
         let r = Value.findByType('test');
         await server.connected;
@@ -167,7 +190,7 @@ describe('value', () => {
                 'this_base.identifier': 'value-1-Find 1 value with type test',
             },
         });
-        mockedAxios.get.mockResolvedValue({ data: [response] });
+
         await new Promise((r) => setTimeout(r, 100));
         server.send({
             meta_object: {
@@ -221,6 +244,7 @@ describe('value', () => {
             {}
         );
         expect(value.getReportData()).toBe('10');
+        expect(value.getControlData()).toBe(undefined);
 
         value.report('test', 'timestamp');
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -238,6 +262,7 @@ describe('value', () => {
             {}
         );
         expect(value.getReportTimestamp()).toBe('timestamp');
+        expect(value.getControlTimestamp()).toBe(undefined);
     });
 
     it('can send a control', () => {
@@ -267,6 +292,8 @@ describe('value', () => {
         );
 
         expect(value.getControlData()).toBe('10');
+        expect(value.getReportData()).toBe(undefined);
+
         value.control('test', 'timestamp');
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/state_id',
@@ -283,5 +310,6 @@ describe('value', () => {
             {}
         );
         expect(value.getControlTimestamp()).toBe('timestamp');
+        expect(value.getReportTimestamp()).toBe(undefined);
     });
 });
