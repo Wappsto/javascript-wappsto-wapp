@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { session, baseUrl } from '../session';
-import { printError } from './debug';
+import { printError, printDebug } from './debug';
 
 export default axios.create({
     baseURL: baseUrl,
@@ -30,9 +30,14 @@ export function printHttpError(error: any): void {
                 case 400017:
                     printError(`You can't share with yourself`);
                     break;
+                case 507000000:
+                    printError(
+                        'Timeout, waiting for response on extsync request'
+                    );
+                    break;
                 default:
                     printError(error.response.data.message);
-                    console.log(error.response.data);
+                    printDebug(error.response.data);
                     break;
             }
         } else {
@@ -42,5 +47,5 @@ export function printHttpError(error: any): void {
     }
 
     printError(`Unknown HTTP error: ${error.errno} (${error.code})`);
-    console.log(error);
+    printDebug(error);
 }

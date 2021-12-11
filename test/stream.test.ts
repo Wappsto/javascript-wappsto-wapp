@@ -1,7 +1,17 @@
 console.error = jest.fn();
 import WS from 'jest-websocket-mock';
+import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios); // eslint-disable-line
 import { Value, State } from '../src/index';
-import { openStream } from '../src/models/stream';
+import {
+    openStream,
+    sendToForeground,
+    sendToBackground,
+    fromBackground,
+    fromForeground,
+} from '../src/models/stream';
 
 describe('stream', () => {
     let server = new WS('ws://localhost:12345', { jsonProtocol: true });
@@ -207,7 +217,7 @@ describe('stream', () => {
                 resolve(true);
             })
         );
-        openStream.subscribeService('extsync_request', fun);
+        openStream.subscribeService('extsync/request', fun);
         await server.connected;
 
         server.send({
@@ -218,7 +228,7 @@ describe('stream', () => {
                 request: 'request',
             },
         });
-
+        await new Promise((r) => setTimeout(r, 100));
         expect(fun).toHaveBeenCalledWith({ request: 'request' });
         expect(fun.mock.calls.length).toBe(1);
         await new Promise((r) => setTimeout(r, 100));
@@ -233,5 +243,67 @@ describe('stream', () => {
         });
 
         expect(fun.mock.calls.length).toBe(1);
+    });
+
+    it('can send to background and foreground', async () => {
+        let msg = { test: 'test message' };
+        let res = { result: 'true' };
+        let fun = jest.fn();
+        fun.mockReturnValue(
+            new Promise<boolean>((resolve) => {
+                resolve(true);
+            })
+        );
+
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: res })
+            .mockResolvedValueOnce({ data: res });
+
+        sendToForeground(msg).then((result) => {
+            expect(result).toBe(res);
+        });
+        fromForeground(fun);
+        sendToBackground(msg).then((result) => {
+            expect(result).toBe(res);
+        });
+        fromBackground(fun);
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                request: 'request',
+                body: '{"type": "foreground","message": {"test": "foreground"}}',
+            },
+        });
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                request: 'request',
+                body: '{"type": "background","message": {"test": "background"}}',
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 100));
+
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
+            message: {
+                test: 'test message',
+            },
+            type: 'foreground',
+        });
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
+            message: {
+                test: 'test message',
+            },
+            type: 'background',
+        });
+        expect(fun).toHaveBeenCalledWith({ test: 'foreground' });
+        expect(fun).toHaveBeenCalledWith({ test: 'background' });
+        expect(fun.mock.calls.length).toBe(2);
     });
 });

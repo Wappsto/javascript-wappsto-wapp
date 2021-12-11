@@ -4,11 +4,14 @@ import { session, baseUrl } from '../session';
 import { StreamModel } from './model.stream';
 import { printDebug, printError } from '../util/debug';
 import { isUUID } from '../util/uuid';
+import wappsto from '../util/http_wrapper';
+import { printHttpError } from '../util/http_wrapper';
 
 var WebSocket = require('universal-websocket-client');
 
 type SignalHandler = (event: string) => void;
 type ServiceHandler = (event: any) => Promise<true | undefined>;
+type RequestHandler = (event: any) => Promise<any>;
 
 interface StreamModelHash {
     [key: string]: StreamModel[];
@@ -102,7 +105,7 @@ export class Stream extends Model {
             }
             this.opened = true;
 
-            printDebug('Open WebSocket on ' + this.websocketUrl);
+            printDebug(`Open WebSocket on ${this.websocketUrl}`);
             this.ignoreReconnect = false;
 
             let openTimeout: ReturnType<typeof setTimeout> = setTimeout(() => {
@@ -149,13 +152,12 @@ export class Stream extends Model {
 
     public subscribe(model: StreamModel): void {
         this.open().then(() => {
-            printDebug('Subscribe new model to stream');
             if (!this.models[model.path()]) {
                 this.models[model.path()] = [];
             }
             this.models[model.path()].push(model);
 
-            printDebug('Add subscription ' + model.path());
+            printDebug(`Add subscription: ${model.path()}`);
 
             this.addSubscription(model.path());
         });
@@ -163,13 +165,15 @@ export class Stream extends Model {
 
     public subscribeService(service: string, callback: ServiceHandler): void {
         this.open().then(() => {
-            printDebug('Subscribe new service to stream');
+            if (service[0] !== '/') {
+                service = '/' + service;
+            }
             if (!this.services[service]) {
                 this.services[service] = [];
             }
             this.services[service].push(callback);
 
-            printDebug('Add service subscription ' + service);
+            printDebug(`Add service subscription: ${service}`);
 
             this.addSubscription(service);
         });
@@ -177,12 +181,35 @@ export class Stream extends Model {
 
     public addSignalHandler(type: string, handler: SignalHandler): void {
         this.open().then(() => {
-            printDebug('Add Signal Handler to stream');
+            printDebug(`Add Signal Handler: ${type}`);
             if (!this.handlers[type]) {
                 this.handlers[type] = [];
             }
             this.handlers[type].push(handler);
         });
+    }
+
+    public async sendRequest(msg: any): Promise<any> {
+        let result = {};
+        try {
+            let response = await wappsto.post('/2.0/extsync/request', msg);
+            result = response.data;
+        } catch (e) {
+            printHttpError(e);
+        }
+        return result;
+    }
+
+    public async sendResponse(event: any, msg: any): Promise<void> {
+        try {
+            let data = {
+                code: 200,
+                body: msg,
+            };
+            await wappsto.patch(`/2.0/extsync/response/${event.meta.id}`, data);
+        } catch (e) {
+            printHttpError(e);
+        }
     }
 
     private reconnect() {
@@ -232,8 +259,9 @@ export class Stream extends Model {
 
             services.push(`/${items[0]}`);
         } else {
-            services.push(type);
+            services.push(`/${type}`);
         }
+
         paths.forEach((path) => {
             this.models[path]?.forEach((model: StreamModel) => {
                 model.handleStream(event);
@@ -332,14 +360,15 @@ export class Stream extends Model {
             }
 
             messages.forEach((msg: StreamEvent) => {
+                printDebug(JSON.stringify(msg));
                 if (msg.meta_object?.type === 'extsync') {
                     const newData = msg.extsync || msg.data;
                     if (newData.request) {
-                        self.handleMessage('extsync_request', newData);
+                        self.handleMessage('extsync/request', newData);
                     } else if (
                         newData.uri !== 'extsync/wappsto/editor/console'
                     ) {
-                        self.handleMessage('extsync_request', newData);
+                        self.handleMessage('extsync', newData);
                     }
                     return;
                 }
@@ -383,3 +412,55 @@ export class Stream extends Model {
 let openStream: Stream = new Stream();
 
 export { openStream };
+
+async function sendRequest(type: string, msg: any): Promise<any> {
+    let data = {
+        type: type,
+        message: msg,
+    };
+    return await openStream.sendRequest(data);
+}
+
+export async function sendToForeground(msg: any): Promise<any> {
+    return sendRequest('foreground', msg);
+}
+
+export async function sendToBackground(msg: any): Promise<any> {
+    return sendRequest('background', msg);
+}
+
+function handleRequest(type: string, callback: RequestHandler): void {
+    openStream.subscribeService(
+        '/extsync/request',
+        async (event: any): Promise<undefined> => {
+            try {
+                let data = JSON.parse(event.body);
+                if (data.type === type) {
+                    let res = {};
+                    let p = callback(data.message);
+                    if (p) {
+                        if (p.then) {
+                            p.then((res: any) => {
+                                openStream.sendResponse(event, res);
+                            });
+                        } else {
+                            res = p;
+                        }
+                    }
+                    openStream.sendResponse(event, res);
+                }
+            } catch (e) {
+                printError('Failed to parse event body');
+            }
+            return undefined;
+        }
+    );
+}
+
+export function fromForeground(callback: RequestHandler): void {
+    handleRequest('foreground', callback);
+}
+
+export function fromBackground(callback: RequestHandler): void {
+    handleRequest('background', callback);
+}
