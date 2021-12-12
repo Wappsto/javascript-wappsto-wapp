@@ -17,7 +17,6 @@ describe('value', () => {
         },
         name: 'test',
         permission: '',
-        state: [],
     };
 
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
@@ -52,7 +51,6 @@ describe('value', () => {
                 },
                 name: 'test',
                 permission: '',
-                state: [],
             },
             {}
         );

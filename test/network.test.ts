@@ -15,7 +15,6 @@ describe('network', () => {
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
         },
         name: 'test',
-        device: [],
     };
     let responseFull = {
         meta: {
@@ -75,7 +74,6 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/network',
             {
-                device: [],
                 meta: {
                     type: 'network',
                     version: '2.0',
@@ -282,7 +280,6 @@ describe('network', () => {
                 product: 'product',
                 protocol: 'protocol',
                 serial: 'serial',
-                value: [],
                 version: 'version',
             },
             {}
@@ -311,7 +308,6 @@ describe('network', () => {
                         id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     },
                     name: 'Network Name',
-                    device: [],
                 },
             ],
         });
@@ -345,7 +341,6 @@ describe('network', () => {
                     product: 'product',
                     protocol: 'protocol',
                     serial: 'serial',
-                    value: [],
                     version: 'version',
                 },
             ],
@@ -381,7 +376,6 @@ describe('network', () => {
                 product: 'product',
                 protocol: 'protocol',
                 serial: 'serial',
-                value: [],
                 version: 'version',
             },
             {}

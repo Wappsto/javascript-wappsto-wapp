@@ -16,7 +16,6 @@ describe('device', () => {
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
         },
         name: 'test',
-        value: [],
     };
 
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
@@ -48,7 +47,6 @@ describe('device', () => {
                     version: '2.0',
                 },
                 name: 'test',
-                value: [],
             },
             {}
         );
