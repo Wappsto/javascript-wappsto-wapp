@@ -23,13 +23,23 @@ export class OAuth extends Model {
 
             openStream.subscribeService(
                 '/oauth',
-                async (event: any): Promise<undefined> => {
+                async (event: any): Promise<true | undefined> => {
+                    if (event) {
+                        return true;
+                    }
                     return;
                 }
             );
 
             if (oauth?.code === 436000002) {
                 // configure oauth
+                if (typeof window !== 'undefined' && window.open) {
+                    window.open(
+                        oauth.data.request,
+                        `OAuth - ${oauth.message}`,
+                        'popup,height=300,width=300'
+                    );
+                }
             }
         });
     };

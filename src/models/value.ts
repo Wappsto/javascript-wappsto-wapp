@@ -89,7 +89,6 @@ export class Value extends StreamModel implements IValue {
             'blob',
             'xml',
             'status',
-            'state',
         ];
     }
 

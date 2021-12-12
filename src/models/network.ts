@@ -53,7 +53,7 @@ export class Network extends StreamModel implements INetwork {
     }
 
     attributes(): string[] {
-        return ['name', 'device', 'description'];
+        return ['name', 'description'];
     }
 
     public findDeviceByName(name: string): Device[] {

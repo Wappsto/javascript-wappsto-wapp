@@ -114,23 +114,41 @@ describe('network', () => {
     it('can create a new network from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
 
-        let networks = await Network.fetch();
+        let network = await createNetwork({ name: 'Wapp Network' });
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
-            params: { expand: 4 },
+            params: { expand: 4, 'this_name=': 'Wapp Network' },
         });
-        expect(networks[0]?.name).toEqual('Network Name');
-        expect(networks[0]?.device[0]?.name).toEqual('Device Name');
-        expect(networks[0]?.device[0]?.value[0]?.name).toEqual('Value Name');
-        expect(networks[0]?.device[0]?.value[0]?.state[0]?.type).toEqual(
-            'Control'
-        );
-        expect(networks[0]?.toJSON).toBeDefined();
-        expect(networks[0]?.device[0]?.toJSON).toBeDefined();
-        expect(networks[0]?.device[0]?.value[0]?.toJSON).toBeDefined();
-        expect(
-            networks[0]?.device[0]?.value[0]?.state[0]?.toJSON
-        ).toBeDefined();
+        expect(network?.name).toEqual('Network Name');
+        expect(network?.device[0]?.name).toEqual('Device Name');
+        expect(network?.device[0]?.value[0]?.name).toEqual('Value Name');
+        expect(network?.device[0]?.value[0]?.state[0]?.type).toEqual('Control');
+        expect(network?.toJSON).toBeDefined();
+        expect(network?.device[0]?.toJSON).toBeDefined();
+        expect(network?.device[0]?.value[0]?.toJSON).toBeDefined();
+        expect(network?.device[0]?.value[0]?.state[0]?.toJSON).toBeDefined();
+
+        let device = await network.createDevice({ name: 'Device Name' });
+        expect(device?.name).toEqual('Device Name');
+        expect(device?.value[0]?.name).toEqual('Value Name');
+        expect(device?.value[0]?.state[0]?.type).toEqual('Control');
+        expect(device?.toJSON).toBeDefined();
+        expect(device?.value[0]?.toJSON).toBeDefined();
+        expect(device?.value[0]?.state[0]?.toJSON).toBeDefined();
+
+        let value = await device.createNumberValue({
+            name: 'Valuse Name',
+            permission: 'rw',
+            type: 'temperature',
+            min: 0,
+            max: 100,
+            step: 1,
+            unit: 'c',
+        });
+        expect(value?.name).toEqual('Value Name');
+        expect(value?.state[0]?.type).toEqual('Control');
+        expect(value?.toJSON).toBeDefined();
+        expect(value?.state[0]?.toJSON).toBeDefined();
     });
 
     it('can create a new network from wappsto with verbose', async () => {

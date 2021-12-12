@@ -56,7 +56,6 @@ export class Device extends StreamModel implements IDevice {
             'communication',
             'version',
             'manufacturer',
-            'value',
         ];
     }
 
@@ -92,7 +91,6 @@ export class Device extends StreamModel implements IDevice {
         value.parent = this;
 
         let newJson = value.toJSON();
-
         if (!_.isEqual(oldJson, newJson)) {
             if (values.length !== 0) {
                 await value.update();

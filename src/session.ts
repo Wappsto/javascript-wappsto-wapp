@@ -1,7 +1,11 @@
 //import { isUUID } from './util/uuid';
 
 /**
- * @param {cookie name}
+ * Reads a cookie with the giving name.
+ *
+ * @param {name The name of the cookie to read}
+ *
+ * @return The content of the cookie if found, else null
  */
 function readCookie(name: string) {
     const nameEQ = name + '=';
