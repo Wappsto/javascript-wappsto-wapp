@@ -10,7 +10,7 @@ function sendExtsync(key: string, ...args: any[]): any {
         time: time,
     });
 
-    wappsto
+    return wappsto
         .post('/2.0/extsync/wappsto/editor/console', data)
         .catch(function () {});
 }
