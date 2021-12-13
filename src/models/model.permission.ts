@@ -15,7 +15,6 @@ export class PermissionModel extends Model {
 
     public create = async (): Promise<void> => {
         return new Promise<void>(async (resolve, reject) => {
-            let id = 'request access to save data under users account';
             try {
                 await this._create();
                 resolve();
@@ -28,7 +27,7 @@ export class PermissionModel extends Model {
                     return;
                 }
 
-                if (data.code === 400008) {
+                if (data.code === 400008 || data.code === 400013) {
                     printDebug('Requesting permission to add data to user');
                     openStream.subscribeService(
                         '/notification',
@@ -42,8 +41,9 @@ export class PermissionModel extends Model {
                                 }
                                 if (notification[0]?.base?.code === 1100013) {
                                     try {
-                                        this._create({
-                                            identifier: id,
+                                        printDebug('Got permission to create data under users account');
+                                        await this._create({
+                                            identifier: 'request access to save data under users account',
                                         });
                                         resolve();
                                         return true;
@@ -123,6 +123,7 @@ export class PermissionModel extends Model {
                         Object.assign(params, {
                             id: ids.reverse().slice(0, quantity),
                         });
+                        printDebug(`Got permission to ${JSON.stringify(params.id)}`);
                         let result = await Model.fetch(endpoint, params);
                         resolve(result);
                         return true;
