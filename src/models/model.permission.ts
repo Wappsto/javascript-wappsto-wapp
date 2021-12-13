@@ -115,9 +115,11 @@ export class PermissionModel extends Model {
                     if (!notification || !notification[0]) {
                         return;
                     }
+
                     let ids = notification[0].getIds();
                     if (
-                        notification[0].base?.identifier === id &&
+                        notification[0].base?.code === 1100004 &&
+                        //notification[0].base?.identifier === id &&
                         ids.length >= quantity
                     ) {
                         Object.assign(params, {
