@@ -114,10 +114,8 @@ describe('network', () => {
 
     it('can create a new network from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
-        mockedAxios.post
-            .mockResolvedValueOnce({ data: [] });
-        mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         let network = await createNetwork({ name: 'Wapp Network' });
         let device = await network.createDevice({ name: 'Device Name' });
@@ -146,7 +144,6 @@ describe('network', () => {
         expect(network?.device[0]?.toJSON).toBeDefined();
         expect(network?.device[0]?.value[0]?.toJSON).toBeDefined();
         expect(network?.device[0]?.value[0]?.state[0]?.toJSON).toBeDefined();
-
 
         expect(device?.name).toEqual('Device Name');
         expect(device?.value[0]?.name).toEqual('Value Name');

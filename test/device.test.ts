@@ -31,14 +31,17 @@ describe('device', () => {
     it('can create a new device class', () => {
         const name = 'Test Device';
         let device = new Device(name);
+
         expect(device.name).toEqual(name);
     });
 
     it('can create a device on wappsto', async () => {
         mockedAxios.post.mockResolvedValueOnce({ data: response });
+
         let device = new Device('test');
         await device.create();
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device',
             {
@@ -57,16 +60,17 @@ describe('device', () => {
 
     it('can update a device on wappsto', async () => {
         mockedAxios.post.mockResolvedValueOnce({ data: response });
-        let device = new Device('test');
-        await device.create();
-
-        let oldName = response.name;
-        response.name = 'new name';
         mockedAxios.patch.mockResolvedValueOnce({ data: response });
 
+        let device = new Device('test');
+        await device.create();
+        let oldName = response.name;
+        response.name = 'new name';
         device.name = 'new name';
         await device.update();
 
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/device/' + device.meta.id,
             response,
@@ -78,8 +82,10 @@ describe('device', () => {
 
     it('can create a new device from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+
         let devices = await Device.fetch();
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
             params: { expand: 3 },
         });
@@ -88,10 +94,12 @@ describe('device', () => {
 
     it('can create a new device from wappsto with verbose', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+
         verbose(true);
         let devices = await Device.fetch();
         verbose(false);
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
             params: { expand: 3, verbose: true },
         });
@@ -99,19 +107,14 @@ describe('device', () => {
     });
 
     it('can find a device by name', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [response] })
+            .mockResolvedValueOnce({ data: [response] });
 
         let r = Device.findByName('test');
         await server.connected;
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
-            params: {
-                expand: 1,
-                'this_base.identifier': 'device-1-Find 1 device with name test',
-            },
-        });
-
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
         server.send({
             meta_object: {
                 type: 'notification',
@@ -127,6 +130,14 @@ describe('device', () => {
         });
 
         let device = await r;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
+            params: {
+                expand: 1,
+                'this_base.identifier': 'device-1-Find 1 device with name test',
+            },
+        });
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
             params: {
                 expand: 3,
@@ -157,6 +168,7 @@ describe('device', () => {
 
         let devices = await Device.findByProduct('test');
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
             params: {
                 expand: 1,
@@ -164,7 +176,6 @@ describe('device', () => {
                     'device-1-Find 1 device with product test',
             },
         });
-
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
             params: {
                 expand: 3,
@@ -176,7 +187,6 @@ describe('device', () => {
     });
 
     it('can create a new number value as a child', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post
             .mockResolvedValueOnce({
                 data: [
@@ -227,6 +237,7 @@ describe('device', () => {
             si_conversion: 'si_conversion',
         });
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             expect.objectContaining({
@@ -249,7 +260,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
@@ -262,7 +272,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
@@ -275,7 +284,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(value.name).toEqual('Value Name');
         expect(value.permission).toEqual('rw');
         expect(value.type).toEqual('type');
@@ -290,7 +298,6 @@ describe('device', () => {
     });
 
     it('can create a new string value as a child', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post
             .mockResolvedValueOnce({
                 data: [
@@ -338,6 +345,7 @@ describe('device', () => {
             encoding: 'encoding',
         });
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             expect.objectContaining({
@@ -357,7 +365,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
@@ -370,7 +377,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
@@ -383,7 +389,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(value.name).toEqual('Value Name');
         expect(value.permission).toEqual('wr');
         expect(value.type).toEqual('type');
@@ -395,7 +400,6 @@ describe('device', () => {
     });
 
     it('can create a new blob value as a child', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post
             .mockResolvedValueOnce({
                 data: [
@@ -432,6 +436,7 @@ describe('device', () => {
             encoding: 'encoding',
         });
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             expect.objectContaining({
@@ -451,7 +456,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
@@ -464,7 +468,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(value.name).toEqual('Value Name');
         expect(value.permission).toEqual('r');
         expect(value.type).toEqual('type');
@@ -476,7 +479,6 @@ describe('device', () => {
     });
 
     it('can create a new xml value as a child', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post
             .mockResolvedValueOnce({
                 data: [
@@ -513,6 +515,7 @@ describe('device', () => {
             namespace: 'namespace',
         });
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             expect.objectContaining({
@@ -532,7 +535,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
@@ -545,7 +547,6 @@ describe('device', () => {
             }),
             {}
         );
-
         expect(value.name).toEqual('Value Name');
         expect(value.permission).toEqual('w');
         expect(value.type).toEqual('type');
@@ -602,6 +603,8 @@ describe('device', () => {
             si_conversion: 'si_conversion',
         });
 
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             expect.objectContaining({

@@ -23,15 +23,18 @@ describe('state', () => {
 
     it('can create a new state class', () => {
         let state = new State('Report');
+
         expect(state.type).toEqual('Report');
         expect(state.url()).toEqual('/2.0/state');
     });
 
     it('can create a state on wappsto', async () => {
         mockedAxios.post.mockResolvedValue({ data: response });
+
         let state = new State('Report');
         await state.create();
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/state',
             expect.objectContaining({
@@ -49,16 +52,16 @@ describe('state', () => {
     });
 
     it('can update a state on wappsto', async () => {
-        let state = new State('Report');
-        await state.create();
-
-        let oldType = response.type;
-        response.type = 'Control';
         mockedAxios.patch.mockResolvedValue({ data: response });
 
+        let state = new State('Report');
+        await state.create();
+        let oldType = response.type;
+        response.type = 'Control';
         state.type = 'Control';
         await state.update();
 
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/' + state.meta.id,
             response,
@@ -70,8 +73,10 @@ describe('state', () => {
 
     it('can create a new state from wappsto', async () => {
         mockedAxios.get.mockResolvedValue({ data: [response] });
+
         let states = await State.fetch();
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state', {
             params: { expand: 1 },
         });
@@ -80,10 +85,12 @@ describe('state', () => {
 
     it('can create a new state from wappsto with verbose', async () => {
         mockedAxios.get.mockResolvedValue({ data: [response] });
+
         verbose(true);
         let states = await State.fetch();
         verbose(false);
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state', {
             params: { expand: 1, verbose: true },
         });
