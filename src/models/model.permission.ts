@@ -80,7 +80,8 @@ export class PermissionModel extends Model {
                 quantity,
                 message
             );
-            let notifications = await Notification.findByIdentifier(id);
+            //let notifications = await Notification.findByIdentifier(id);
+            let notifications = await Notification.findByCode(1100004,);
             if (notifications.length === 0) {
                 Object.assign(params, {
                     quantity: quantity,
@@ -93,7 +94,7 @@ export class PermissionModel extends Model {
                 for (let i = 0; i < notifications.length; i++) {
                     let n = notifications[i];
                     let ids = n?.getIds();
-                    if (n?.base?.identifier === id && ids.length >= quantity) {
+                    if (ids.length >= quantity) { //n?.base?.identifier === id &&
                         printDebug(
                             `Found permission notification - returning old result: ${JSON.stringify(
                                 ids
