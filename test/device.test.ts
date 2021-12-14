@@ -162,6 +162,26 @@ describe('device', () => {
         expect(devices[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
+    it('will throw an error when the permission is wrong', async () => {
+        let device = new Device();
+        try {
+            await device.createValue({ name: 'name', permission: 'wrong' });
+            expect(true).toBe(false);
+        } catch (e: any) {
+            expect(e.message).toBe('Invalid value for value permission');
+        }
+    });
+
+    it('will throw an error when the value type is missing', async () => {
+        let device = new Device();
+        try {
+            await device.createValue({ name: 'name', permission: 'rw' });
+            expect(true).toBe(false);
+        } catch (e: any) {
+            expect(e.message).toBe('You must suply a valid type');
+        }
+    });
+
     it('can create a new number value as a child', async () => {
         mockedAxios.post
             .mockResolvedValueOnce({

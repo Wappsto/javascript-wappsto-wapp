@@ -82,15 +82,15 @@ export class Device extends StreamModel implements IDevice {
             printDebug(`Using existing value with id ${values[0].meta.id}`);
             value = values[0];
         }
-
-        let oldJson = value.toJSON();
         if (!params.number && !params.string && !params.blob && !params.xml) {
             throw new Error('You must suply a valid type');
         }
+
+        let oldJson = value.toJSON();
         value.parse(params);
         value.parent = this;
-
         let newJson = value.toJSON();
+
         if (!_.isEqual(oldJson, newJson)) {
             if (values.length !== 0) {
                 await value.update();
@@ -201,17 +201,9 @@ export class Device extends StreamModel implements IDevice {
         return Device.fromArray(data);
     };
 
-    public static fetch = async (name: string = '', parentUrl: string = '') => {
+    public static fetch = async () => {
         let params = { expand: 3 };
         let url = Device.endpoint;
-        if (name !== '') {
-            Object.assign(params, {
-                'this_name=': name,
-            });
-        }
-        if (parentUrl !== '') {
-            url = parentUrl + '/device';
-        }
         let data: any[] = await Model.fetch(url, params);
         return Device.fromArray(data);
     };

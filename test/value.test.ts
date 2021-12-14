@@ -110,12 +110,12 @@ describe('value', () => {
         expect(values[0]?.name).toEqual('test');
     });
 
-    it('will throw an error when teh state type s wrong', async () => {
+    it('will throw an error when the state type is wrong', async () => {
         let value = new Value();
         try {
-            await value.createState({type: 'wrong'});
+            await value.createState({ type: 'wrong' });
             expect(true).toBe(false);
-        } catch(e: any) {
+        } catch (e: any) {
             expect(e.message).toBe('Invalid value for state type');
         }
     });
