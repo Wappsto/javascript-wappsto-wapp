@@ -119,6 +119,7 @@ describe('device', () => {
             path: '/notification/',
             data: {
                 base: {
+                    code: 1100004,
                     identifier: 'device-1-Find 1 device with name test',
                     ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
                 },

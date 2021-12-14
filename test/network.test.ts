@@ -71,6 +71,7 @@ describe('network', () => {
         let network = new Network('test');
         await network.create();
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/network',
             {
@@ -89,17 +90,19 @@ describe('network', () => {
 
     it('can update a network on wappsto', async () => {
         mockedAxios.post.mockResolvedValueOnce({ data: response });
+        mockedAxios.patch.mockResolvedValueOnce({ data: response });
 
         let network = new Network('test');
         await network.create();
 
         let oldName = response.name;
         response.name = 'new name';
-        mockedAxios.patch.mockResolvedValueOnce({ data: response });
 
         network.name = 'new name';
         await network.update();
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/network/' + network.meta.id,
             response,
@@ -111,8 +114,26 @@ describe('network', () => {
 
     it('can create a new network from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] });
 
         let network = await createNetwork({ name: 'Wapp Network' });
+        let device = await network.createDevice({ name: 'Device Name' });
+        let value = await device.createNumberValue({
+            name: 'Value Name',
+            permission: 'rw',
+            type: 'temperature',
+            min: 0,
+            max: 100,
+            step: 1,
+            unit: 'c',
+        });
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: { expand: 4, 'this_name=': 'Wapp Network' },
@@ -126,7 +147,7 @@ describe('network', () => {
         expect(network?.device[0]?.value[0]?.toJSON).toBeDefined();
         expect(network?.device[0]?.value[0]?.state[0]?.toJSON).toBeDefined();
 
-        let device = await network.createDevice({ name: 'Device Name' });
+
         expect(device?.name).toEqual('Device Name');
         expect(device?.value[0]?.name).toEqual('Value Name');
         expect(device?.value[0]?.state[0]?.type).toEqual('Control');
@@ -134,15 +155,6 @@ describe('network', () => {
         expect(device?.value[0]?.toJSON).toBeDefined();
         expect(device?.value[0]?.state[0]?.toJSON).toBeDefined();
 
-        let value = await device.createNumberValue({
-            name: 'Valuse Name',
-            permission: 'rw',
-            type: 'temperature',
-            min: 0,
-            max: 100,
-            step: 1,
-            unit: 'c',
-        });
         expect(value?.name).toEqual('Value Name');
         expect(value?.state[0]?.type).toEqual('Control');
         expect(value?.toJSON).toBeDefined();
@@ -156,6 +168,7 @@ describe('network', () => {
         let networks = await Network.fetch();
         verbose(false);
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: { expand: 4, verbose: true },
         });
@@ -164,9 +177,12 @@ describe('network', () => {
 
     it('can find a network by id', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+
         let network = await Network.findById(
             'b62e285a-5188-4304-85a0-3982dcb575bc'
         );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.0/network/b62e285a-5188-4304-85a0-3982dcb575bc',
             { params: { expand: 4 } }
@@ -177,20 +193,13 @@ describe('network', () => {
     it('can find a network by name', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [response] });
         //mockedAxios.post.mockResolvedValueOnce('');
 
         let r = Network.findByName('test');
         await server.connected;
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
-            params: {
-                expand: 1,
-                'this_base.identifier':
-                    'network-1-Find 1 network with name test',
-            },
-        });
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
         server.send({
             meta_object: {
                 type: 'notification',
@@ -198,6 +207,7 @@ describe('network', () => {
             path: '/notification/',
             data: {
                 base: {
+                    code: 1100004,
                     identifier: 'network-1-Find 1 network with name test',
                     ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
                 },
@@ -205,6 +215,15 @@ describe('network', () => {
         });
 
         let network = await r;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
+            params: {
+                expand: 1,
+                'this_base.identifier':
+                    'network-1-Find 1 network with name test',
+            },
+        });
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: {
                 expand: 4,
@@ -221,8 +240,9 @@ describe('network', () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
 
         let networks = await Network.fetch();
-
         let device = networks[0].findDeviceByName('Device Name');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(device[0].name).toEqual('Device Name');
         expect(device[0].toJSON).toBeDefined();
     });
@@ -231,8 +251,9 @@ describe('network', () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
 
         let networks = await Network.fetch();
-
         let value = networks[0]?.findValueByName('Value Name');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(value[0].name).toEqual('Value Name');
         expect(value[0].toJSON).toBeDefined();
     });
@@ -242,13 +263,12 @@ describe('network', () => {
         network.device.push(new Device());
         network.device[0].value.push(new Value());
         network.device[0].value[0].type = 'test';
-
         let value = network.findValueByType('test');
+
         expect(value[0].type).toEqual('test');
     });
 
     it('can create a new device as a child', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post.mockResolvedValueOnce({
             data: [{ meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
         });
@@ -266,6 +286,7 @@ describe('network', () => {
             manufacturer: 'manufacturer',
         });
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/network/network_id/device',
             {
@@ -314,13 +335,14 @@ describe('network', () => {
 
         let network = await createNetwork('Network Name');
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: {
                 expand: 4,
                 'this_name=': 'Network Name',
             },
         });
-
         expect(network.name).toEqual('Network Name');
         expect(network.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
@@ -345,9 +367,6 @@ describe('network', () => {
                 },
             ],
         });
-        mockedAxios.patch.mockResolvedValueOnce({
-            data: [{ meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
-        });
 
         let network = new Network();
         network.meta.id = 'network_id';
@@ -361,6 +380,8 @@ describe('network', () => {
             version: 'version',
             manufacturer: 'manufacturer',
         });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/network/network_id/device',

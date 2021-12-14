@@ -153,6 +153,7 @@ describe('value', () => {
             path: '/notification/',
             data: {
                 base: {
+                    code: 1100004,
                     identifier: 'value-1-Find 1 value with name test',
                     ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
                 },
@@ -197,6 +198,7 @@ describe('value', () => {
             path: '/notification/',
             data: {
                 base: {
+                    code: 1100004,
                     identifier: 'value-1-Find 1 value with type test',
                     ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
                 },
