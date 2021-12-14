@@ -80,33 +80,21 @@ export class PermissionModel extends Model {
                 quantity,
                 message
             );
-            //let notifications = await Notification.findByIdentifier(id);
-            let notifications = await Notification.findByCode(1100004,);
-            if (notifications.length === 0) {
-                Object.assign(params, {
-                    quantity: quantity,
-                    message: message,
-                    identifier: id,
-                });
-                Model.fetch(endpoint, params);
+
+            Object.assign(params, {
+                quantity: quantity,
+                message: message,
+                identifier: id,
+            });
+            let result = await Model.fetch(endpoint, params);
+
+            if (result.length === 0) {
                 printDebug(`Requesting new access to users data: ${message}`);
             } else {
-                for (let i = 0; i < notifications.length; i++) {
-                    let n = notifications[i];
-                    let ids = n?.getIds();
-                    if (ids.length >= quantity) { //n?.base?.identifier === id &&
-                        printDebug(
-                            `Found permission notification - returning old result: ${JSON.stringify(
-                                ids
-                            )}`
-                        );
-                        Object.assign(params, {
-                            id: ids.reverse().slice(0, quantity),
-                        });
-                        let result = await Model.fetch(endpoint, params);
-                        resolve(result);
-                    }
-                }
+                printDebug(
+                    `Found permission notification - returning old result`
+                );
+                resolve(result);
             }
 
             printDebug(

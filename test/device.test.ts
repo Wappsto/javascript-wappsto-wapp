@@ -109,7 +109,6 @@ describe('device', () => {
     it('can find a device by name', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [response] })
             .mockResolvedValueOnce({ data: [response] });
 
         let r = Device.findByName('test');
@@ -131,13 +130,7 @@ describe('device', () => {
 
         let device = await r;
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
-            params: {
-                expand: 1,
-                'this_base.identifier': 'device-1-Find 1 device with name test',
-            },
-        });
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
             params: {
                 expand: 3,
@@ -152,35 +145,18 @@ describe('device', () => {
     });
 
     it('can find a device by product', async () => {
-        mockedAxios.get
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        base: {
-                            identifier:
-                                'device-1-Find 1 device with product test',
-                            ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
-                        },
-                    },
-                ],
-            })
-            .mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 
         let devices = await Device.findByProduct('test');
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
-            params: {
-                expand: 1,
-                'this_base.identifier':
-                    'device-1-Find 1 device with product test',
-            },
-        });
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
             params: {
                 expand: 3,
-                id: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
                 this_product: 'test',
+                identifier: 'device-1-Find 1 device with product test',
+                message: 'Find 1 device with product test',
+                quantity: 1,
             },
         });
         expect(devices[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');

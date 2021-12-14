@@ -190,9 +190,7 @@ describe('network', () => {
     it('can find a network by name', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [response] });
-        //mockedAxios.post.mockResolvedValueOnce('');
 
         let r = Network.findByName('test');
         await server.connected;
@@ -213,14 +211,7 @@ describe('network', () => {
 
         let network = await r;
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
-            params: {
-                expand: 1,
-                'this_base.identifier':
-                    'network-1-Find 1 network with name test',
-            },
-        });
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: {
                 expand: 4,

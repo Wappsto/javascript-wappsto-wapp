@@ -146,7 +146,6 @@ describe('value', () => {
     it('can find a value by name', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [response] })
             .mockResolvedValueOnce({ data: [response] });
 
         let r = Value.findByName('test');
@@ -166,13 +165,7 @@ describe('value', () => {
         });
         let value = await r;
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
-            params: {
-                expand: 1,
-                'this_base.identifier': 'value-1-Find 1 value with name test',
-            },
-        });
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
             params: {
                 expand: 2,
@@ -187,7 +180,6 @@ describe('value', () => {
 
     it('can find a value by type', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [response] });
 
@@ -209,13 +201,7 @@ describe('value', () => {
         });
         let value = await r;
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/notification', {
-            params: {
-                expand: 1,
-                'this_base.identifier': 'value-1-Find 1 value with type test',
-            },
-        });
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
             params: {
                 expand: 2,
