@@ -141,6 +141,27 @@ value.onControl((value, data, timestamp) => {
 });
 ```
 
+### Sending messages to and from the background
+
+It is possible to send messages to and from the background and the foreground.
+
+```javascript
+Wappsto.fromBackground((msg) => {
+	console.log("Message from the background: "+msg);
+	return "Hello back";
+});
+
+Wappsto.fromForeground((msg) => {
+	console.log("Message from the foreground: "+msg);
+	return "Hello front";
+});
+
+let backgroundResult = await Wappsto.sendToBackground("hello");
+console.log("Result from background: "+backgroundResult);
+let foregroundResult = await Wappsto.sendToForeground("hello");
+console.log("Result from foreground: "+foregroundResult);
+```
+
 ### Background loggering
 
 The debug log from the background wapp can be turn on like this:
