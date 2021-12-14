@@ -18,7 +18,7 @@ let network = await Wappsto.createNetwork({
 
 ### Create a new device
 
-To create a new device under an existing network, you should call createDevice. If a device exsists with the given name, the existing device will be returned,
+To create a new device under an existing network, you should call createDevice. If a device exsists with the given name, the existing device will be returned.
 
 ```javascript
 let device = network.createDevice({
@@ -35,7 +35,7 @@ let device = network.createDevice({
 
 ### Create a new value
 
-To create a new value under an exsisting device, you should call createValue. There are some helper functions to create number, string, bloc and xml values.
+To create a new value under an exsisting device, you should call createValue. If a value exsists with the given name, the existing value will be returned. There are some helper functions to create number, string, blob and xml values.
 There will also be created the states nedded based on the permission. The only allowed values for permission is 'r', 'w' and 'rw'.
 
 To create a number value:
@@ -65,6 +65,50 @@ let value = device.createStringValue({
 	max: 10,
 	encoding: 'debug string'
 });
+```
+
+### To request access to an exsisting object from the user
+
+To request access to an exsisting object, a request have to be send. You can request a single object or multiple objects of the same type.
+
+#### Find a network by name
+
+To request access to a network with a spefict name, use 'findByName'.
+
+```javascript
+let networks = await Wappsto.Network.findByName('Network name');
+```
+
+### Find a device by name
+
+To request access to a device with a spefict name, use 'findByName'.
+
+```javascript
+let devices = await Wappsto.Device.findByName('Device name');
+```
+
+### Find a device by product
+
+To request access to a device with a spefict product, use 'findByProduct'.
+
+```javascript
+let devices = await Wappsto.Device.findByProduct('Product name');
+```
+
+### Find a value by name
+
+To request access to a value with a spefict name, use 'findByName'.
+
+```javascript
+let values = await Wappsto.Value.findByName('Value name');
+```
+
+### Find a value by type
+
+To request access to a value with a spefict type, use 'findByType'.
+
+```javascript
+let values = await Wappsto.Value.findByType('Type name');
 ```
 
 ### To report a change in the value
