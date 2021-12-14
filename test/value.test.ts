@@ -110,6 +110,16 @@ describe('value', () => {
         expect(values[0]?.name).toEqual('test');
     });
 
+    it('will throw an error when teh state type s wrong', async () => {
+        let value = new Value();
+        try {
+            await value.createState({type: 'wrong'});
+            expect(true).toBe(false);
+        } catch(e: any) {
+            expect(e.message).toBe('Invalid value for state type');
+        }
+    });
+
     it('can return an old state when creating', async () => {
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
