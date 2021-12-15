@@ -41,11 +41,9 @@ export class OAuth extends Model {
             );
 
             if (oauth?.code === 436000002) {
-                printDebug('OAuth is missing');
                 // configure oauth
                 if (typeof window !== 'undefined' && window.open) {
                     printDebug('Open new window with oauth request');
-                    debugger;
                     let w = window.open(
                         oauth?.data?.request,
                         `OAuth - ${oauth.message}`,

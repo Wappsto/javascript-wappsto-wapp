@@ -10,7 +10,7 @@ import { printHttpError } from '../util/http_wrapper';
 var WebSocket = require('universal-websocket-client');
 
 type SignalHandler = (event: string) => void;
-type ServiceHandler = (event: any) => Promise<true | undefined>;
+type ServiceHandler = (event: any) => Promise<true | undefined> | boolean;
 type RequestHandler = (event: any) => Promise<any>;
 
 interface StreamModelHash {
@@ -230,6 +230,18 @@ export class Stream extends Model {
         });
     }
 
+    private filterCallback(
+        callback: ServiceHandler,
+        path: string,
+        result: boolean | undefined
+    ): void {
+        if (result === true) {
+            this.services[path] = this.services[path].filter(
+                (item) => item !== callback
+            );
+        }
+    }
+
     private handleMessage(
         type: string,
         event: StreamEvent,
@@ -256,8 +268,11 @@ export class Stream extends Model {
                     '/' + items.slice(items.length - 3, items.length).join('/')
                 );
             }
-
-            services.push(`/${items[0]}`);
+            items.forEach((i) => {
+                if (!isUUID(i)) {
+                    services.push(`/${i}`);
+                }
+            });
         } else {
             services.push(`/${type}`);
         }
@@ -272,13 +287,13 @@ export class Stream extends Model {
             tmpList?.forEach((callback: ServiceHandler) => {
                 let p = callback(event);
                 if (p) {
-                    p.then((res) => {
-                        if (res === true) {
-                            this.services[path] = this.services[path].filter(
-                                (item) => item !== callback
-                            );
-                        }
-                    });
+                    if (p === true) {
+                        this.filterCallback(callback, path, p);
+                    } else {
+                        p.then((res) => {
+                            this.filterCallback(callback, path, res);
+                        });
+                    }
                 }
             });
         });
