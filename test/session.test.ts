@@ -54,7 +54,7 @@ describe('session', () => {
 
     it('loads the session from Cookie', () => {
         window.document.cookie =
-            'sessionID=d9406290-6c3d-41b7-a84d-58b4e060f931;';
+            'sessionID=d9406290-6c3d-41b7-a84d-58b4e060f931; x-session=ab86cca5-16b0-4179-9dfc-0a139c274352;';
 
         const session = require('../src/session').session;
 
