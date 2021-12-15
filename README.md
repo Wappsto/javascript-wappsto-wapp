@@ -162,6 +162,14 @@ let foregroundResult = await Wappsto.sendToForeground("hello");
 console.log("Result from foreground: "+foregroundResult);
 ```
 
+### OAuth
+
+To get an already created OAuth token, call the getToken with the gived name of the oauth.
+
+```javascript
+let token = await Wappsto.OAuth.getToken('oauth name');
+```
+
 ### Background loggering
 
 The debug log from the background wapp can be turn on like this:
