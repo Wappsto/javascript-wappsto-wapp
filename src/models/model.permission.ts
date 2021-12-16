@@ -85,7 +85,7 @@ export class PermissionModel extends Model {
                 quantity: quantity,
                 message: message,
                 identifier: id,
-                method: ['retrieve', 'update']
+                method: ['retrieve', 'update'],
             });
             let result = await Model.fetch(endpoint, params);
 
@@ -111,7 +111,8 @@ export class PermissionModel extends Model {
 
                     let ids = notification[0].getIds();
                     if (
-                        (notification[0].base?.code === 1100004 || notification[0].base?.code === 1100013) &&
+                        (notification[0].base?.code === 1100004 ||
+                            notification[0].base?.code === 1100013) &&
                         //notification[0].base?.identifier === id &&
                         ids.length >= quantity
                     ) {

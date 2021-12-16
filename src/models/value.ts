@@ -63,7 +63,6 @@ export interface ILogResponse {
     data: any;
     more: boolean;
     type: string;
-
 }
 
 export class Value extends StreamModel implements IValue {
@@ -250,10 +249,16 @@ export class Value extends StreamModel implements IValue {
         });
     }
 
-    private findStateAndLog = async(type: string, request: ILogRequest): Promise<ILogResponse> => {
+    private findStateAndLog = async (
+        type: string,
+        request: ILogRequest
+    ): Promise<ILogResponse> => {
         let state = this.findState(type);
         if (state) {
-            let response = await Model.fetch(`/2.1/log/${state.meta.id}/state`, request);
+            let response = await Model.fetch(
+                `/2.1/log/${state.meta.id}/state`,
+                request
+            );
             return response[0];
         }
         return {
@@ -264,17 +269,21 @@ export class Value extends StreamModel implements IValue {
             },
             data: [],
             more: false,
-            type: 'state'
+            type: 'state',
         };
     };
 
-    public getReportLog = async(request: ILogRequest): Promise<ILogResponse> => {
+    public getReportLog = async (
+        request: ILogRequest
+    ): Promise<ILogResponse> => {
         return this.findStateAndLog('Report', request);
-    }
+    };
 
-    public getControlLog = async(request: ILogRequest): Promise<ILogResponse> => {
+    public getControlLog = async (
+        request: ILogRequest
+    ): Promise<ILogResponse> => {
         return this.findStateAndLog('Control', request);
-    }
+    };
 
     static findByName = async (
         name: string,
