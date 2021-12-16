@@ -138,7 +138,7 @@ describe('device', () => {
                 message: 'Find 1 device with name test',
                 identifier: 'device-1-Find 1 device with name test',
                 this_name: 'test',
-                method: ['retrieve', 'update']
+                method: ['retrieve', 'update'],
             },
         });
         expect(device[0].toJSON).toBeDefined();
@@ -158,7 +158,7 @@ describe('device', () => {
                 identifier: 'device-1-Find 1 device with product test',
                 message: 'Find 1 device with product test',
                 quantity: 1,
-                method: ['retrieve', 'update']
+                method: ['retrieve', 'update'],
             },
         });
         expect(devices[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');

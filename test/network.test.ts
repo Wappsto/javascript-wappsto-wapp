@@ -245,7 +245,7 @@ describe('network', () => {
                 message: 'Find 1 network with name test',
                 identifier: 'network-1-Find 1 network with name test',
                 this_name: 'test',
-                method: ['retrieve', 'update']
+                method: ['retrieve', 'update'],
             },
         });
         expect(network[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
