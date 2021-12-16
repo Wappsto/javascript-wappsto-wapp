@@ -22,7 +22,7 @@ export class State extends StreamModel implements IState {
     }
 
     attributes(): string[] {
-        return ['data', 'status', 'type', 'timestamp', 'status_payment'];
+        return ['data', 'status', 'type', 'timestamp'];
     }
 
     public static fetch = async () => {
