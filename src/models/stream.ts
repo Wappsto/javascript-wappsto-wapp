@@ -76,10 +76,6 @@ export class Stream extends Model {
         this.websocketUrl += '?X-Session=' + session;
     }
 
-    attributes(): string[] {
-        return [];
-    }
-
     private open(): Promise<void> {
         return new Promise<void>((resolve, _) => {
             let self = this;

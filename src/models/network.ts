@@ -24,7 +24,6 @@ export async function createNetwork(
     let networks = await Network.fetch(name);
     if (networks.length !== 0) {
         printDebug(`Using existing network with id ${networks[0].meta.id}`);
-        debugger;
         return networks[0];
     }
 
