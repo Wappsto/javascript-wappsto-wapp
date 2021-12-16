@@ -37,7 +37,7 @@ export function printHttpError(error: any): void {
                     break;
                 default:
                     printError(error.response.data.message);
-                    printDebug(error.response.data);
+                    printDebug(JSON.stringify(error.response.data));
                     break;
             }
         } else {
@@ -47,5 +47,5 @@ export function printHttpError(error: any): void {
     }
 
     printError(`Unknown HTTP error: ${error.errno} (${error.code})`);
-    printDebug(error);
+    printDebug(JSON.stringify(error));
 }
