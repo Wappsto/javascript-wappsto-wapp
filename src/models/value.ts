@@ -3,8 +3,16 @@ import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
+import { IMeta } from './meta';
 import { State, IState } from './state';
 import { printDebug } from '../util/debug';
+
+type ValueStreamCallback = (
+    value: Value,
+    data: string,
+    timestamp: string
+) => void;
+type RefreshStreamCallback = (value: Value) => void;
 
 export interface IValue {
     name: string;
@@ -44,12 +52,19 @@ export interface IValueXml {
     namespace?: string;
 }
 
-type ValueStreamCallback = (
-    value: Value,
-    data: string,
-    timestamp: string
-) => void;
-type RefreshStreamCallback = (value: Value) => void;
+export interface ILogRequest {
+    count?: number;
+    start?: Date;
+    end?: Date;
+}
+
+export interface ILogResponse {
+    meta: IMeta;
+    data: any;
+    more: boolean;
+    type: string;
+
+}
 
 export class Value extends StreamModel implements IValue {
     static endpoint = '/2.0/value';
@@ -233,6 +248,32 @@ export class Value extends StreamModel implements IValue {
                 this.status = '';
             }
         });
+    }
+
+    private findStateAndLog = async(type: string, request: ILogRequest): Promise<ILogResponse> => {
+        let state = this.findState(type);
+        if (state) {
+            let response = await Model.fetch(`/2.1/log/${state.meta.id}/state`, request);
+            return response[0];
+        }
+        return {
+            meta: {
+                id: '',
+                type: 'log',
+                version: '2.1',
+            },
+            data: [],
+            more: false,
+            type: 'state'
+        };
+    };
+
+    public getReportLog = async(request: ILogRequest): Promise<ILogResponse> => {
+        return this.findStateAndLog('Report', request);
+    }
+
+    public getControlLog = async(request: ILogRequest): Promise<ILogResponse> => {
+        return this.findStateAndLog('Control', request);
     }
 
     static findByName = async (
