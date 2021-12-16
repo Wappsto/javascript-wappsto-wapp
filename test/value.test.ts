@@ -183,6 +183,7 @@ describe('value', () => {
                 message: 'Find 1 value with name test',
                 identifier: 'value-1-Find 1 value with name test',
                 this_name: 'test',
+                method: ['retrieve', 'update']
             },
         });
         expect(value[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
@@ -219,6 +220,7 @@ describe('value', () => {
                 message: 'Find 1 value with type test',
                 identifier: 'value-1-Find 1 value with type test',
                 this_type: 'test',
+                method: ['retrieve', 'update']
             },
         });
         expect(value[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');

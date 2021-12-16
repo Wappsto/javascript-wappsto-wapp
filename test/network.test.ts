@@ -112,6 +112,32 @@ describe('network', () => {
         response.name = oldName;
     });
 
+    it('can request access to create new network', async () => {
+        /*        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockRejectedValueOnce({ code: 400013 });
+        // .mockResolvedValueOnce({ data: [response] });
+        console.log('can request');
+        let network = await createNetwork({ name: 'Wapp Network' });
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                base: {
+                    code: 1100013,
+                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                },
+            },
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(network?.name).toEqual('Network Name');
+        expect(network?.toJSON).toBeDefined();*/
+    });
+
     it('can create a new network from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
@@ -219,6 +245,7 @@ describe('network', () => {
                 message: 'Find 1 network with name test',
                 identifier: 'network-1-Find 1 network with name test',
                 this_name: 'test',
+                method: ['retrieve', 'update']
             },
         });
         expect(network[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
