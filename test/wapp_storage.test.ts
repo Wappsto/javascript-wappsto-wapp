@@ -1,9 +1,9 @@
-import { Config } from '../src/config';
+import { WappStorage } from '../src/wapp_storage';
 
-describe('config', () => {
+describe('WappStorage', () => {
     it('can create a new instance', () => {
-        let c = new Config('test');
-        expect(c.name).toEqual('test');
+        let ws = new WappStorage('test');
+        expect(ws.name).toEqual('test');
     });
     /*
     it('can add a new item', async () => {

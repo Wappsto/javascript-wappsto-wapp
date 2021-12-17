@@ -3,7 +3,7 @@ import { plainToClass } from 'class-transformer';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { IMeta } from './meta';
-import settings from '../util/settings';
+import { config } from '../util/config';
 
 interface IModel {
     getUrl(): string;
@@ -41,7 +41,7 @@ export class Model implements IModel {
         if (params) {
             Object.assign(options.params, params);
         }
-        if (settings.verbose) {
+        if (config().verbose) {
             options.params['verbose'] = true;
         }
         if (Object.keys(options.params).length === 0) {

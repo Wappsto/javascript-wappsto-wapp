@@ -1,6 +1,6 @@
 import { Data } from './models/data';
 
-export class Config {
+export class WappStorage {
     name = '';
     id = '';
     data: Data;

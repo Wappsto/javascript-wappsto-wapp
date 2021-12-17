@@ -4,7 +4,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios); // eslint-disable-line
 import 'reflect-metadata'; // eslint-disable-line
-import { createNetwork, Network, Device, Value, verbose } from '../src/index'; // eslint-disable-line
+import { createNetwork, Network, Device, Value, config } from '../src/index'; // eslint-disable-line
 import { openStream } from '../src/models/stream';
 
 describe('network', () => {
@@ -187,9 +187,9 @@ describe('network', () => {
     it('can create a new network from wappsto with verbose', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 
-        verbose(true);
+        config({ verbose: true });
         let networks = await Network.fetch();
-        verbose(false);
+        config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {

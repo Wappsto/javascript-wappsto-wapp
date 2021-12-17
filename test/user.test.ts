@@ -3,7 +3,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
-import { User, verbose } from '../src/index';
+import { User, config } from '../src/index';
 
 describe('user', () => {
     let response = {
@@ -51,9 +51,9 @@ describe('user', () => {
     });
 
     it('can create a new user from wappsto with verbose', async () => {
-        verbose(true);
+        config({ verbose: true });
         let users = await User.fetch();
-        verbose(false);
+        config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
             params: { expand: 1, verbose: true },

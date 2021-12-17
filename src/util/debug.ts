@@ -1,7 +1,7 @@
-import settings from '../util/settings';
+import { config } from '../util/config';
 
 export function printDebug(message: string): void {
-    if (settings.debug) {
+    if (config().debug) {
         console.log(`WAPPSTO DEBUG: ${message}`);
     }
 }

@@ -5,7 +5,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 /* eslint-disable import/first */
 import 'reflect-metadata';
-import { Device, Value, verbose } from '../src/index';
+import { Device, Value, config } from '../src/index';
 import { openStream } from '../src/models/stream';
 
 describe('device', () => {
@@ -95,9 +95,9 @@ describe('device', () => {
     it('can create a new device from wappsto with verbose', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 
-        verbose(true);
+        config({ verbose: true });
         let devices = await Device.fetch();
-        verbose(false);
+        config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
