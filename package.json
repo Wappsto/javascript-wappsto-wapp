@@ -13,6 +13,7 @@
     "scripts": {
         "start": "tsdx watch",
         "build": "tsdx build",
+	"pretest": "tsdx lint",
         "test": "tsdx test --coverage",
         "lint": "tsdx lint",
         "fix-lint": "tsdx lint --fix",
