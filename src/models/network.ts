@@ -100,8 +100,33 @@ export class Network extends StreamModel implements INetwork {
         return device;
     }
 
+    static find = async (
+        params: Record<string, any>,
+        quantity: number = 1,
+        usage: string = ''
+    ) => {
+        if (usage === '') {
+            usage = `Find ${quantity} network`;
+        }
+
+        let query: Record<string, any> = {
+            expand: 4,
+        };
+        for (let key in params) {
+            query[`this_${key}`] = params[key];
+        }
+
+        let data = await PermissionModel.request(
+            Network.endpoint,
+            quantity,
+            usage,
+            query
+        );
+        return Network.fromArray(data);
+    };
+
     static findById = async (id: string) => {
-        let data: any = await Model.fetch(`${Network.endpoint}/${id}`, {
+        let data = await Model.fetch(`${Network.endpoint}/${id}`, {
             expand: 4,
         });
         return Network.fromArray(data)[0];
@@ -115,27 +140,20 @@ export class Network extends StreamModel implements INetwork {
         if (usage === '') {
             usage = `Find ${quantity} network with name ${name}`;
         }
-
-        let data = await PermissionModel.request(
-            Network.endpoint,
-            quantity,
-            usage,
-            {
-                this_name: name,
-                expand: 4,
-            }
-        );
-        return Network.fromArray(data);
+        return Network.find({ name: name }, quantity, usage);
     };
 
-    static fetch = async (name: string = '', params: any = {}) => {
+    static fetch = async (
+        name: string = '',
+        params: Record<string, any> = {}
+    ) => {
         Object.assign(params, { expand: 4 });
         if (name !== '') {
             Object.assign(params, {
                 'this_name=': name,
             });
         }
-        let data: any[] = await Model.fetch(Network.endpoint, params);
+        let data = await Model.fetch(Network.endpoint, params);
         return Network.fromArray(data);
     };
 }

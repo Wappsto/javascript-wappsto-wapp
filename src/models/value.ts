@@ -32,7 +32,7 @@ export interface IValueNumber {
     step: number;
     unit?: string;
     si_conversion?: string;
-    mapping?: any;
+    mapping?: Record<string, any>;
     ordered_mapping?: boolean;
     meaningful_zero?: boolean;
 }
@@ -60,7 +60,7 @@ export interface ILogRequest {
 
 export interface ILogResponse {
     meta: IMeta;
-    data: any;
+    data: Record<string, any>;
     more: boolean;
     type: string;
 }
@@ -110,7 +110,7 @@ export class Value extends StreamModel implements IValue {
         let params = { expand: 2 };
         let url = Value.endpoint;
 
-        let data: any[] = await Model.fetch(url, params);
+        let data = await Model.fetch(url, params);
         return Value.fromArray(data);
     };
 
@@ -259,7 +259,7 @@ export class Value extends StreamModel implements IValue {
                 `/2.1/log/${state.meta.id}/state`,
                 request
             );
-            return response[0];
+            return response[0] as ILogResponse;
         }
         return {
             meta: {

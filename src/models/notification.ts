@@ -3,14 +3,15 @@ import { Model } from './model';
 interface ICustomData {
     all: boolean;
     future: boolean;
-    selected: any[];
+    selected: Record<string, any>[];
 }
+
 interface ICustom {
     type: string;
     quantity: number;
-    limitation: any[];
-    method: any[];
-    option: any;
+    limitation: Record<string, any>[];
+    method: Record<string, any>[];
+    option: Record<string, any>;
     message: string;
     name_installation: string;
     title_installation: string | null;
@@ -29,7 +30,7 @@ interface IBase {
     type_ids: string;
     priority: number;
     ids: string[];
-    info: any[];
+    info: Record<string, any>[];
     identifier: string;
 }
 
@@ -68,7 +69,7 @@ export class Notification extends Model {
     }
 
     public static fetch = async () => {
-        let data: any[] = await Model.fetch(Notification.endpoint, {
+        let data = await Model.fetch(Notification.endpoint, {
             expand: 1,
             verbose: 'identifier',
         });
@@ -78,7 +79,7 @@ export class Notification extends Model {
     public static findByMessage = async (
         message: string
     ): Promise<Notification[]> => {
-        let data: any = await Model.fetch(Notification.endpoint, {
+        let data = await Model.fetch(Notification.endpoint, {
             'this_custom.message': message,
             expand: 1,
         });
@@ -88,7 +89,7 @@ export class Notification extends Model {
     public static findByCode = async (
         code: number
     ): Promise<Notification[]> => {
-        let data: any = await Model.fetch(Notification.endpoint, {
+        let data = await Model.fetch(Notification.endpoint, {
             'this_base.code': code,
             expand: 1,
         });
@@ -98,7 +99,7 @@ export class Notification extends Model {
     public static findByIdentifier = async (
         identifier: string
     ): Promise<Notification[]> => {
-        let data: any = await Model.fetch(Notification.endpoint, {
+        let data = await Model.fetch(Notification.endpoint, {
             'this_base.identifier': identifier,
             //'this_base.code': 1100003,
             expand: 1,

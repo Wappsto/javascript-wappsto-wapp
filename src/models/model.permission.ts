@@ -72,9 +72,9 @@ export class PermissionModel extends Model {
         endpoint: string,
         quantity: number,
         message: string,
-        params?: any
-    ): Promise<any[]> => {
-        return new Promise<any[]>(async (resolve) => {
+        params?: Record<string, any>
+    ): Promise<Record<string, any>[]> => {
+        return new Promise<Record<string, any>[]>(async (resolve) => {
             let id = PermissionModel.getPermissionHash(
                 endpoint.split('/')[2],
                 quantity,
@@ -120,7 +120,7 @@ export class PermissionModel extends Model {
                             id: ids.reverse().slice(0, quantity),
                         });
                         printDebug(
-                            `Got permission to ${JSON.stringify(params.id)}`
+                            `Got permission to ${JSON.stringify(params?.id)}`
                         );
                         let result = await Model.fetch(endpoint, params);
                         resolve(result);

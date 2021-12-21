@@ -21,7 +21,7 @@ export interface IMeta {
     size?: number;
     path?: string;
     parent?: string;
-    usage_daily?: any;
+    usage_daily?: Record<string, any>;
     product?: string;
     deprecated?: boolean;
     icon?: string;

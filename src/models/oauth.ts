@@ -10,7 +10,7 @@ export class OAuth extends Model {
     installation?: string;
     token?: string;
     secret_token?: string;
-    params?: any;
+    params?: Record<string, any>;
 
     constructor(name: string) {
         super('2.0', 'oauth');
@@ -18,7 +18,7 @@ export class OAuth extends Model {
     }
 
     public getToken = async () => {
-        return new Promise<any>(async (resolve) => {
+        return new Promise<Record<string, any>>(async (resolve) => {
             let data = await Model.fetch(`/2.0/oauth_connect/${this.name}`, {});
             let oauth = data[0];
 
@@ -30,7 +30,9 @@ export class OAuth extends Model {
             printDebug('OAuth token is not valid, waiting for token on stream');
             openStream.subscribeService(
                 '/oauth_connect',
-                async (event: any): Promise<true | undefined> => {
+                async (
+                    event: Record<string, any>
+                ): Promise<true | undefined> => {
                     if (event?.data?.name === this.name) {
                         printDebug('Got OAuth token from stream');
                         resolve(event?.data?.params);
@@ -41,6 +43,7 @@ export class OAuth extends Model {
             );
 
             if (oauth?.code === 436000002) {
+                printDebug('OAuth is missing');
                 // configure oauth
                 if (typeof window !== 'undefined' && window.open) {
                     printDebug('Open new window with oauth request');
@@ -49,6 +52,7 @@ export class OAuth extends Model {
                         `OAuth - ${oauth.message}`,
                         'popup'
                     );
+
                     console.log(w);
                 } else {
                     printDebug('OAuth running without window');

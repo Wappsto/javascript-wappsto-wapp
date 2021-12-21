@@ -34,8 +34,10 @@ export class Model implements IModel {
         return [];
     }
 
-    protected static generateOptions(params?: any): any {
-        let options: any = {
+    protected static generateOptions(
+        params?: Record<string, any>
+    ): Record<string, any> {
+        let options: Record<string, any> = {
             params: {},
         };
         if (params) {
@@ -59,7 +61,9 @@ export class Model implements IModel {
         return this.url();
     }
 
-    public _create = async (params: any = {}): Promise<void> => {
+    public _create = async (
+        params: Record<string, any> = {}
+    ): Promise<void> => {
         let response = await wappsto.post(
             this.getUrl(),
             this.toJSON(),
@@ -68,7 +72,7 @@ export class Model implements IModel {
         this.parse(response.data);
     };
 
-    public create = async (params: any = {}): Promise<void> => {
+    public create = async (params: Record<string, any> = {}): Promise<void> => {
         try {
             await this._create(params);
         } catch (e) {
@@ -111,8 +115,8 @@ export class Model implements IModel {
 
     public static fetch = async (
         endpoint: string,
-        params?: any
-    ): Promise<any[]> => {
+        params?: Record<string, any>
+    ): Promise<Record<string, any>[]> => {
         try {
             let response = await wappsto.get(
                 endpoint,
@@ -134,7 +138,7 @@ export class Model implements IModel {
         return [];
     };
 
-    public parse(json: any): boolean {
+    public parse(json: Record<string, any>): boolean {
         if (_.isArray(json)) {
             json = json[0];
         }
@@ -144,11 +148,11 @@ export class Model implements IModel {
         return !_.isEqual(oldModel, newModel);
     }
 
-    static fromArray<T>(this: new () => T, json: any[]): T[] {
+    static fromArray<T>(this: new () => T, json: Record<string, any>[]): T[] {
         return plainToClass(this, json);
     }
 
-    public toJSON(): any {
+    public toJSON(): Record<string, any> {
         let meta = Object.assign(
             {},
             _.pick(this.meta, ['id', 'type', 'version'])

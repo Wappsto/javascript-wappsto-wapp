@@ -3,7 +3,7 @@ import WS from 'jest-websocket-mock';
 import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios); // eslint-disable-line
+mockedAxios.create = jest.fn(() => mockedAxios);
 import { Value, State } from '../src/index';
 import {
     openStream,
