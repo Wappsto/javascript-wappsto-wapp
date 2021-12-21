@@ -5,6 +5,7 @@ export {
     sendToBackground,
     fromBackground,
     fromForeground,
+    onWebHook,
 } from './stream';
 export { Device } from './device';
 export { Value } from './value';

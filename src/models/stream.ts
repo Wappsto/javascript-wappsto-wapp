@@ -208,6 +208,38 @@ export class Stream extends Model {
         }
     }
 
+    public onRequest(handler: RequestHandler, internal: boolean): void {
+        this.subscribeService(
+            '/extsync/request',
+            async (event: any): Promise<any> => {
+                try {
+                    let res;
+                    if (
+                        (internal && event.uri !== 'extsync/') ||
+                        (!internal && event.uri === 'extsync/')
+                    ) {
+                        return;
+                    }
+                    let p = handler(event.body);
+                    if (p) {
+                        if (p.then) {
+                            p.then((res: any) => {
+                                this.sendResponse(event, res);
+                            });
+                            return;
+                        } else {
+                            res = p;
+                        }
+                    }
+                    this.sendResponse(event, res);
+                } catch (e) {
+                    printError('An error happend when calling request handler');
+                    printError(JSON.stringify(e));
+                }
+            }
+        );
+    }
+
     private reconnect() {
         this.backoff = this.backoff * 2;
         printDebug('Stream Reconnecting');
@@ -441,31 +473,17 @@ export async function sendToBackground(msg: any): Promise<any> {
 }
 
 function handleRequest(type: string, callback: RequestHandler): void {
-    openStream.subscribeService(
-        '/extsync/request',
-        async (event: any): Promise<undefined> => {
-            try {
-                let data = JSON.parse(event.body);
-                if (data.type === type) {
-                    let res = {};
-                    let p = callback(data.message);
-                    if (p) {
-                        if (p.then) {
-                            p.then((res: any) => {
-                                openStream.sendResponse(event, res);
-                            });
-                        } else {
-                            res = p;
-                        }
-                    }
-                    openStream.sendResponse(event, res);
-                }
-            } catch (e) {
-                printError('Failed to parse event body');
+    openStream.onRequest(async (event: any) => {
+        try {
+            let data = JSON.parse(event);
+            if (data.type === type) {
+                return callback(data.message);
             }
-            return undefined;
+        } catch (e) {
+            printDebug('Failed to parse event - Foreground/Background handler');
         }
-    );
+        return undefined;
+    }, true);
 }
 
 export function fromForeground(callback: RequestHandler): void {
@@ -474,4 +492,8 @@ export function fromForeground(callback: RequestHandler): void {
 
 export function fromBackground(callback: RequestHandler): void {
     handleRequest('background', callback);
+}
+
+export function onWebHook(handler: RequestHandler): void {
+    openStream.onRequest(handler, false);
 }

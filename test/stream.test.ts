@@ -4,7 +4,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { Value, State } from '../src/index';
+import { Value, State, onWebHook } from '../src/index';
 import {
     openStream,
     sendToForeground,
@@ -238,7 +238,7 @@ describe('stream', () => {
                 resolve(true);
             })
         );
-        openStream.subscribeService('extsync/request', fun);
+        onWebHook(fun);
         await server.connected;
 
         server.send({
@@ -247,10 +247,13 @@ describe('stream', () => {
             },
             extsync: {
                 request: 'request',
+                uri: 'extsync/request',
+                body: 'test',
             },
         });
+
         await new Promise((r) => setTimeout(r, 100));
-        expect(fun).toHaveBeenCalledWith({ request: 'request' });
+        expect(fun).toHaveBeenCalledWith('test');
         expect(fun.mock.calls.length).toBe(1);
         await new Promise((r) => setTimeout(r, 100));
 
@@ -260,6 +263,8 @@ describe('stream', () => {
             },
             extsync: {
                 response: 'reponse',
+                uri: 'extsync/request',
+                body: 'test',
             },
         });
 
@@ -296,6 +301,7 @@ describe('stream', () => {
             },
             extsync: {
                 request: 'request',
+                uri: 'extsync/',
                 body: '{"type": "foreground","message": {"test": "foreground"}}',
             },
         });
@@ -305,6 +311,7 @@ describe('stream', () => {
             },
             extsync: {
                 request: 'request',
+                uri: 'extsync/',
                 body: '{"type": "background","message": {"test": "background"}}',
             },
         });
