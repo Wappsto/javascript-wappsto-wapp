@@ -4,7 +4,8 @@ node_modules
 .rts2_cache_cjs
 .rts2_cache_esm
 .rts2_cache_umd
-dist
+dist/*
+!dist/wappsto-wapp.js
 coverage
 *~
 \#*\#
