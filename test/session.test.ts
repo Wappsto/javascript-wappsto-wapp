@@ -16,10 +16,10 @@ describe('session', () => {
         expect(session).toEqual('');
     });
 
-    it('loads token to empty when ENV is not defined', () => {
-        const token = require('../src/session').token;
+    it('loads extSyncToken to empty when ENV is not defined', () => {
+        const extSyncToken = require('../src/session').extSyncToken;
 
-        expect(token).toEqual('');
+        expect(extSyncToken).toEqual('');
     });
 
     it('loads baseUrl to /services when ENV is not defined', () => {
@@ -36,12 +36,12 @@ describe('session', () => {
         expect(session).toEqual('d9406290-6c3d-41b7-a84d-58b4e060f931');
     });
 
-    it('loads the token from ENV', () => {
+    it('loads the extSyncToken from ENV', () => {
         process.env.tokenID = 'ba0709c6-e48e-4460-a9ad-6b2ea63678d6';
 
-        const token = require('../src/session').token;
+        const extSyncToken = require('../src/session').extSyncToken;
 
-        expect(token).toEqual('ba0709c6-e48e-4460-a9ad-6b2ea63678d6');
+        expect(extSyncToken).toEqual('ba0709c6-e48e-4460-a9ad-6b2ea63678d6');
     });
 
     it('loads the baseURL from ENV', () => {

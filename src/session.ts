@@ -42,7 +42,7 @@ function get(key: string) {
 
 export const baseUrl: string = get('baseUrl') || '/services';
 export const session: string = get('sessionID') || '';
-export const token: string = get('tokenID') || '';
+export const extSyncToken: string = get('tokenID') || '';
 /*
 if (!isUUID(session)) {
     console.error("Wappsto: Invalid SESSION - You need to define 'sessionID'");
