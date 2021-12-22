@@ -1,4 +1,4 @@
-import wappsto from '../util/http_wrapper';
+/*import wappsto from '../util/http_wrapper';
 import { Model } from './model';
 import { printHttpError } from '../util/http_wrapper';
 
@@ -46,4 +46,4 @@ export class SharingModel extends Model {
             printHttpError(e);
         }
     };
-}
+}*/
