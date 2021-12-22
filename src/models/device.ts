@@ -160,51 +160,68 @@ export class Device extends StreamModel implements IDevice {
         return this.createValue(params);
     }
 
+    static find = async (
+        params: Record<string, any>,
+        quantity: number | 'all' = 1,
+        usage: string = ''
+    ) => {
+        if (usage === '') {
+            usage = `Find ${quantity} device`;
+        }
+
+        let query: Record<string, any> = {
+            expand: 3,
+        };
+        for (let key in params) {
+            query[`this_${key}`] = params[key];
+        }
+
+        let data = await PermissionModel.request(
+            Device.endpoint,
+            quantity,
+            usage,
+            query
+        );
+        return Device.fromArray(data);
+    };
+
     public static findByName = async (
         name: string,
-        quantity: number = 1,
+        quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
         if (usage === '') {
             usage = `Find ${quantity} device with name ${name}`;
         }
+        return Device.find({ name: name }, quantity, usage);
+    };
 
-        let data = await PermissionModel.request(
-            Device.endpoint,
-            quantity,
-            usage,
-            {
-                this_name: name,
-                expand: 3,
-            }
-        );
-        return Device.fromArray(data);
+    public static findAllByName = async (name: string, usage: string = '') => {
+        return Device.findByName(name, 'all', usage);
     };
 
     public static findByProduct = async (
         product: string,
-        quantity: number = 1,
+        quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
         if (usage === '') {
             usage = `Find ${quantity} device with product ${product}`;
         }
-        let data = await PermissionModel.request(
-            Device.endpoint,
-            quantity,
-            usage,
-            {
-                this_product: product,
-                expand: 3,
-            }
-        );
-        return Device.fromArray(data);
+        return Device.find({ product: product }, quantity, usage);
+    };
+
+    public static findAllByProduct = async (
+        product: string,
+        usage: string = ''
+    ) => {
+        return Device.findByProduct(product, 'all', usage);
     };
 
     public static fetch = async () => {
         let params = { expand: 3 };
         let url = Device.endpoint;
-        let data: any[] = await Model.fetch(url, params);
+        let data = await Model.fetch(url, params);
         return Device.fromArray(data);
     };
 }

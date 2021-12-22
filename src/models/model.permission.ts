@@ -7,7 +7,7 @@ import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 export class PermissionModel extends Model {
     private static getPermissionHash(
         type: string,
-        quantity: number,
+        quantity: number | 'all',
         message: string
     ): string {
         return `${type}-${quantity}-${message}`;
@@ -70,7 +70,7 @@ export class PermissionModel extends Model {
 
     public static request = async (
         endpoint: string,
-        quantity: number,
+        quantity: number | 'all',
         message: string,
         params?: Record<string, any>
     ): Promise<Record<string, any>[]> => {
@@ -114,11 +114,17 @@ export class PermissionModel extends Model {
                         (notification[0].base?.code === 1100004 ||
                             notification[0].base?.code === 1100013) &&
                         //notification[0].base?.identifier === id &&
-                        ids.length >= quantity
+                        (quantity === 'all' || ids.length >= quantity)
                     ) {
-                        Object.assign(params, {
-                            id: ids.reverse().slice(0, quantity),
-                        });
+                        if (quantity === 'all') {
+                            Object.assign(params, {
+                                id: ids,
+                            });
+                        } else {
+                            Object.assign(params, {
+                                id: ids.reverse().slice(0, quantity),
+                            });
+                        }
                         printDebug(
                             `Got permission to ${JSON.stringify(params?.id)}`
                         );

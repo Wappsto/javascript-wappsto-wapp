@@ -285,45 +285,58 @@ export class Value extends StreamModel implements IValue {
         return this.findStateAndLog('Control', request);
     };
 
+    static find = async (
+        params: Record<string, any>,
+        quantity: number | 'all' = 1,
+        usage: string = ''
+    ) => {
+        if (usage === '') {
+            usage = `Find ${quantity} value`;
+        }
+
+        let query: Record<string, any> = {
+            expand: 2,
+        };
+        for (let key in params) {
+            query[`this_${key}`] = params[key];
+        }
+
+        let data = await PermissionModel.request(
+            Value.endpoint,
+            quantity,
+            usage,
+            query
+        );
+        return Value.fromArray(data);
+    };
+
     static findByName = async (
         name: string,
-        quantity: number = 1,
+        quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
         if (usage === '') {
             usage = `Find ${quantity} value with name ${name}`;
         }
-
-        let data = await PermissionModel.request(
-            Value.endpoint,
-            quantity,
-            usage,
-            {
-                this_name: name,
-                expand: 2,
-            }
-        );
-        return Value.fromArray(data);
+        return Value.find({ name: name }, quantity, usage);
     };
 
     static findByType = async (
         type: string,
-        quantity: number = 1,
+        quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
         if (usage === '') {
             usage = `Find ${quantity} value with type ${type}`;
         }
+        return Value.find({ type: type }, quantity, usage);
+    };
 
-        let data = await PermissionModel.request(
-            Value.endpoint,
-            quantity,
-            usage,
-            {
-                this_type: type,
-                expand: 2,
-            }
-        );
-        return Value.fromArray(data);
+    static findAllByName = async (name: string, usage: string = '') => {
+        return Value.findByName(name, 'all', usage);
+    };
+
+    static findAllByType = async (type: string, usage: string = '') => {
+        return Value.findByType(type, 'all', usage);
     };
 }

@@ -102,7 +102,7 @@ export class Network extends StreamModel implements INetwork {
 
     static find = async (
         params: Record<string, any>,
-        quantity: number = 1,
+        quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
         if (usage === '') {
@@ -134,13 +134,17 @@ export class Network extends StreamModel implements INetwork {
 
     static findByName = async (
         name: string,
-        quantity: number = 1,
+        quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
         if (usage === '') {
             usage = `Find ${quantity} network with name ${name}`;
         }
         return Network.find({ name: name }, quantity, usage);
+    };
+
+    static findAllByName = async (name: string, usage: string = '') => {
+        return Network.findByName(name, 'all', usage);
     };
 
     static fetch = async (

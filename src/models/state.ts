@@ -22,14 +22,14 @@ export class State extends StreamModel implements IState {
     }
 
     attributes(): string[] {
-        return ['data', 'status', 'type', 'timestamp'];
+        return ['data', 'type', 'timestamp'];
     }
 
     public static fetch = async () => {
         let params = { expand: 1 };
         let url = State.endpoint;
 
-        let data: any[] = await Model.fetch(url, params);
+        let data = await Model.fetch(url, params);
         return State.fromArray(data);
     };
 }
