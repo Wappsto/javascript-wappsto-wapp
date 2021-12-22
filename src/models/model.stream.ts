@@ -15,9 +15,7 @@ export class StreamModel extends PermissionModel {
 
     constructor(type: string, version = '2.0') {
         super(type, version);
-        this.streamCallback.change = [];
-        this.streamCallback.delete = [];
-        this.streamCallback.create = [];
+        this.clearAllCallbacks();
     }
 
     public onChange(callback: StreamCallback): void {
@@ -33,6 +31,12 @@ export class StreamModel extends PermissionModel {
     public onCreate(callback: StreamCallback): void {
         openStream.subscribe(this);
         this.streamCallback.create.push(callback);
+    }
+
+    public clearAllCallbacks(): void {
+        this.streamCallback.change = [];
+        this.streamCallback.delete = [];
+        this.streamCallback.create = [];
     }
 
     handleStream(event: StreamEvent): void {
