@@ -285,14 +285,16 @@ describe('stream', () => {
             .mockResolvedValueOnce({ data: res })
             .mockResolvedValueOnce({ data: res });
 
+        fromForeground(fun);
         sendToForeground(msg).then((result) => {
             expect(result).toBe(res);
         });
-        fromForeground(fun);
+
+        fromBackground(fun);
         sendToBackground(msg).then((result) => {
             expect(result).toBe(res);
         });
-        fromBackground(fun);
+
         await server.connected;
 
         server.send({
@@ -318,6 +320,7 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 100));
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
             message: {
                 test: 'test message',
@@ -333,5 +336,70 @@ describe('stream', () => {
         expect(fun).toHaveBeenCalledWith({ test: 'foreground' });
         expect(fun).toHaveBeenCalledWith({ test: 'background' });
         expect(fun.mock.calls.length).toBe(2);
+    });
+
+    it('can use webhook and sendToForeground ', async () => {
+        let msg = { test: 'test message' };
+        let res = { result: 'true' };
+        let funWeb = jest.fn();
+        funWeb.mockReturnValue(
+            new Promise<boolean>((resolve) => {
+                resolve(true);
+            })
+        );
+        let funFore = jest.fn();
+        funFore.mockReturnValue(
+            new Promise<boolean>((resolve) => {
+                resolve(true);
+            })
+        );
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: res })
+            .mockResolvedValueOnce({ data: res })
+            .mockResolvedValueOnce({ data: res });
+
+        onWebHook(funWeb);
+        fromForeground(funFore);
+        sendToForeground(msg).then((result) => {
+            expect(result).toBe(res);
+        });
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                request: 'request',
+                uri: 'extsync/request',
+                body: 'test',
+            },
+        });
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                request: 'request',
+                uri: 'extsync/',
+                body: '{"type": "foreground","message": {"test": "foreground"}}',
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 100));
+
+        expect(funWeb.mock.calls.length).toBe(1);
+        expect(funFore.mock.calls.length).toBe(1);
+        expect(funWeb).toHaveBeenCalledWith('test');
+        expect(funFore).toHaveBeenCalledWith({ test: 'foreground' });
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
+            message: {
+                test: 'test message',
+            },
+            type: 'foreground',
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
     });
 });

@@ -53,6 +53,7 @@ export class Stream extends Model {
     subscriptions: string[] = [];
     opened: boolean = false;
     backoff: number = 1000;
+    waiting: any = [];
 
     constructor() {
         super('stream', '2.1');
@@ -84,18 +85,8 @@ export class Stream extends Model {
                 resolve();
                 return;
             } else {
-                let wait = () => {
-                    setTimeout(() => {
-                        if (this.socket) {
-                            resolve();
-                        } else {
-                            wait();
-                        }
-                    }, 1000);
-                };
-
                 if (this.opened) {
-                    wait();
+                    this.waiting.push(resolve);
                     return;
                 }
             }
@@ -117,6 +108,10 @@ export class Stream extends Model {
                     clearTimeout(openTimeout);
                     this.addListeners();
                     resolve();
+                    this.waiting.forEach((r: any) => {
+                        r();
+                    });
+                    this.waiting = [];
                 };
             }
         });
@@ -139,7 +134,7 @@ export class Stream extends Model {
 
         this.subscriptions.push(subscription);
 
-        this.send_message(
+        this.sendMessage(
             'POST',
             '/services/2.1/websocket/open/subscription',
             subscription
@@ -218,6 +213,9 @@ export class Stream extends Model {
                         (internal && event.uri !== 'extsync/') ||
                         (!internal && event.uri === 'extsync/')
                     ) {
+                        printDebug(
+                            `Discarding extsync event (${internal} - ${event.uri})`
+                        );
                         return;
                     }
                     let p = handler(event.body);
@@ -245,7 +243,7 @@ export class Stream extends Model {
         printDebug('Stream Reconnecting');
         this.close();
         this.open().then(() => {
-            this.send_message('PATCH', '/services/2.1/websocket/open', {
+            this.sendMessage('PATCH', '/services/2.1/websocket/open', {
                 subscription: this.subscriptions,
             });
         });
@@ -327,7 +325,7 @@ export class Stream extends Model {
         });
     }
 
-    private send_message(
+    private sendMessage(
         method: string,
         url: string,
         body: any | undefined = undefined
