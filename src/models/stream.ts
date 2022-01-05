@@ -191,10 +191,14 @@ export class Stream extends Model {
         return result;
     }
 
-    public async sendResponse(event: any, msg: any): Promise<void> {
+    public async sendResponse(
+        event: any,
+        code: number,
+        msg: any
+    ): Promise<void> {
         try {
             let data = {
-                code: 200,
+                code: code,
                 body: msg,
             };
             await wappsto.patch(`/2.0/extsync/response/${event.meta.id}`, data);
@@ -222,15 +226,18 @@ export class Stream extends Model {
                     if (p) {
                         if (p.then) {
                             p.then((res: any) => {
-                                this.sendResponse(event, res);
+                                this.sendResponse(event, 200, res);
+                            }).catch((res: any) => {
+                                this.sendResponse(event, 400, res);
                             });
                             return;
                         } else {
                             res = p;
                         }
                     }
-                    this.sendResponse(event, res);
+                    this.sendResponse(event, 200, res);
                 } catch (e) {
+                    this.sendResponse(event, 501, e);
                     printError('An error happend when calling request handler');
                     printError(JSON.stringify(e));
                 }
@@ -463,11 +470,11 @@ async function sendRequest(type: string, msg: any): Promise<any> {
 }
 
 export async function sendToForeground(msg: any): Promise<any> {
-    return sendRequest('foreground', msg);
+    return sendRequest('background', msg);
 }
 
 export async function sendToBackground(msg: any): Promise<any> {
-    return sendRequest('background', msg);
+    return sendRequest('foreground', msg);
 }
 
 function handleRequest(type: string, callback: RequestHandler): void {

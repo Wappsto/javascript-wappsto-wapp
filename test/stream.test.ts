@@ -274,8 +274,14 @@ describe('stream', () => {
     it('can send to background and foreground', async () => {
         let msg = { test: 'test message' };
         let res = { result: 'true' };
-        let fun = jest.fn();
-        fun.mockReturnValue(
+        let funF = jest.fn();
+        funF.mockReturnValue(
+            new Promise<boolean>((resolve) => {
+                resolve(true);
+            })
+        );
+        let funB = jest.fn();
+        funB.mockReturnValue(
             new Promise<boolean>((resolve) => {
                 resolve(true);
             })
@@ -285,12 +291,12 @@ describe('stream', () => {
             .mockResolvedValueOnce({ data: res })
             .mockResolvedValueOnce({ data: res });
 
-        fromForeground(fun);
+        fromBackground(funB);
         sendToForeground(msg).then((result) => {
             expect(result).toBe(res);
         });
 
-        fromBackground(fun);
+        fromForeground(funF);
         sendToBackground(msg).then((result) => {
             expect(result).toBe(res);
         });
@@ -304,7 +310,7 @@ describe('stream', () => {
             extsync: {
                 request: 'request',
                 uri: 'extsync/',
-                body: '{"type": "foreground","message": {"test": "foreground"}}',
+                body: '{"type": "background","message": {"test": "foreground"}}',
             },
         });
         server.send({
@@ -314,7 +320,7 @@ describe('stream', () => {
             extsync: {
                 request: 'request',
                 uri: 'extsync/',
-                body: '{"type": "background","message": {"test": "background"}}',
+                body: '{"type": "foreground","message": {"test": "background"}}',
             },
         });
 
@@ -325,17 +331,18 @@ describe('stream', () => {
             message: {
                 test: 'test message',
             },
-            type: 'foreground',
+            type: 'background',
         });
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
             message: {
                 test: 'test message',
             },
-            type: 'background',
+            type: 'foreground',
         });
-        expect(fun).toHaveBeenCalledWith({ test: 'foreground' });
-        expect(fun).toHaveBeenCalledWith({ test: 'background' });
-        expect(fun.mock.calls.length).toBe(2);
+        expect(funB).toHaveBeenCalledWith({ test: 'foreground' });
+        expect(funF).toHaveBeenCalledWith({ test: 'background' });
+        expect(funF.mock.calls.length).toBe(1);
+        expect(funB.mock.calls.length).toBe(1);
     });
 
     it('can use webhook and sendToForeground ', async () => {
@@ -359,7 +366,7 @@ describe('stream', () => {
             .mockResolvedValueOnce({ data: res });
 
         onWebHook(funWeb);
-        fromForeground(funFore);
+        fromBackground(funFore);
         sendToForeground(msg).then((result) => {
             expect(result).toBe(res);
         });
@@ -383,7 +390,7 @@ describe('stream', () => {
             extsync: {
                 request: 'request',
                 uri: 'extsync/',
-                body: '{"type": "foreground","message": {"test": "foreground"}}',
+                body: '{"type": "background","message": {"test": "foreground"}}',
             },
         });
 
