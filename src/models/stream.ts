@@ -1,20 +1,22 @@
 import { Model } from './model';
-import { IMeta } from './meta';
 import { session, baseUrl } from '../session';
-import { StreamModel } from './model.stream';
 import { printDebug, printError } from '../util/debug';
 import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
+import {
+    IMeta,
+    IStreamEvent,
+    ServiceHandler,
+    SignalHandler,
+    RequestHandler,
+    IStreamModel,
+} from '../util/interfaces';
 
 var WebSocket = require('universal-websocket-client');
 
-type SignalHandler = (event: string) => void;
-type ServiceHandler = (event: any) => Promise<true | undefined> | boolean;
-type RequestHandler = (event: any) => Promise<any>;
-
 interface StreamModelHash {
-    [key: string]: StreamModel[];
+    [key: string]: IStreamModel[];
 }
 
 interface StreamServiceHash {
@@ -32,7 +34,7 @@ export const enum EventType {
     direct = 'direct',
 }
 
-export class StreamEvent {
+export class StreamEvent implements IStreamEvent {
     meta: IMeta = {};
     path: string = '';
     timestamp: string = '';
@@ -141,7 +143,9 @@ export class Stream extends Model {
         );
     }
 
-    public subscribe(model: StreamModel): void {
+    public subscribe(model: IStreamModel): void {
+        Model.checker.IStreamFunc.methodArgs('subscribe').check([model]);
+
         this.open().then(() => {
             if (!this.models[model.path()]) {
                 this.models[model.path()] = [];
@@ -154,7 +158,12 @@ export class Stream extends Model {
         });
     }
 
-    public subscribeService(service: string, callback: ServiceHandler): void {
+    public subscribeService(service: string, handler: ServiceHandler): void {
+        Model.checker.IStreamFunc.methodArgs('subscribeService').check([
+            service,
+            handler,
+        ]);
+
         this.open().then(() => {
             if (service[0] !== '/') {
                 service = '/' + service;
@@ -162,7 +171,7 @@ export class Stream extends Model {
             if (!this.services[service]) {
                 this.services[service] = [];
             }
-            this.services[service].push(callback);
+            this.services[service].push(handler);
 
             printDebug(`Add service subscription: ${service}`);
 
@@ -171,6 +180,11 @@ export class Stream extends Model {
     }
 
     public addSignalHandler(type: string, handler: SignalHandler): void {
+        Model.checker.IStreamFunc.methodArgs('addSignalHandler').check([
+            type,
+            handler,
+        ]);
+
         this.open().then(() => {
             printDebug(`Add Signal Handler: ${type}`);
             if (!this.handlers[type]) {
@@ -181,6 +195,8 @@ export class Stream extends Model {
     }
 
     public async sendRequest(msg: any): Promise<any> {
+        Model.checker.IStreamFunc.methodArgs('sendRequest').check([msg]);
+
         let result = {};
         try {
             let response = await wappsto.post('/2.0/extsync/request', msg);
@@ -196,6 +212,11 @@ export class Stream extends Model {
         code: number,
         msg: any
     ): Promise<void> {
+        Model.checker.IStreamFunc.methodArgs('sendResponse').check([
+            event,
+            code,
+            msg,
+        ]);
         try {
             let data = {
                 code: code,
@@ -208,6 +229,11 @@ export class Stream extends Model {
     }
 
     public onRequest(handler: RequestHandler, internal: boolean): void {
+        Model.checker.IStreamFunc.methodArgs('onRequest').check([
+            handler,
+            internal,
+        ]);
+
         this.subscribeService(
             '/extsync/request',
             async (event: any): Promise<any> => {
@@ -311,7 +337,7 @@ export class Stream extends Model {
         }
 
         paths.forEach((path) => {
-            this.models[path]?.forEach((model: StreamModel) => {
+            this.models[path]?.forEach((model: IStreamModel) => {
                 model.handleStream(event);
             });
         });
@@ -478,6 +504,7 @@ export async function sendToBackground(msg: any): Promise<any> {
 }
 
 function handleRequest(type: string, callback: RequestHandler): void {
+    Model.checker.RequestHandler.check(callback);
     openStream.onRequest(async (event: any) => {
         try {
             let data = JSON.parse(event);
@@ -492,13 +519,16 @@ function handleRequest(type: string, callback: RequestHandler): void {
 }
 
 export function fromForeground(callback: RequestHandler): void {
+    Model.checker.RequestHandler.check(callback);
     handleRequest('foreground', callback);
 }
 
 export function fromBackground(callback: RequestHandler): void {
+    Model.checker.RequestHandler.check(callback);
     handleRequest('background', callback);
 }
 
 export function onWebHook(handler: RequestHandler): void {
+    Model.checker.RequestHandler.check(handler);
     openStream.onRequest(handler, false);
 }

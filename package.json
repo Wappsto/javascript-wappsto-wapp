@@ -20,7 +20,8 @@
         "prepare": "tsdx build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
         "doc": "typedoc --exclude **/*.test.ts src/index.ts",
         "size": "size-limit",
-        "analyze": "size-limit --why"
+        "analyze": "size-limit --why",
+        "generate-types": "`npm bin`/ts-interface-builder -v -g -c src/util/interfaces.ts"
     },
     "peerDependencies": {},
     "husky": {
@@ -48,11 +49,11 @@
     "size-limit": [
         {
             "path": "dist/wappsto-wapp.cjs.production.min.js",
-            "limit": "10 KB"
+            "limit": "60 KB"
         },
         {
             "path": "dist/wappsto-wapp.esm.js",
-            "limit": "10 KB"
+            "limit": "40 KB"
         }
     ],
     "devDependencies": {
@@ -66,6 +67,7 @@
         "prettier": "^2.4.1",
         "pretty-quick": "^3.1.1",
         "size-limit": "^7.0.5",
+        "ts-interface-builder": "^0.3.2",
         "tsdx": "^0.14.1",
         "typedoc": "^0.22.7",
         "typescript": "^4.4.4"
@@ -79,6 +81,7 @@
         "lodash": "^4.17.21",
         "lodash-es": "^4.17.21",
         "reflect-metadata": "^0.1.13",
+        "ts-interface-checker": "^1.0.2",
         "tslib": "^2.3.1",
         "universal-websocket-client": "^1.0.2",
         "ws": "^7.5.5"
