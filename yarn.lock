@@ -6834,10 +6834,6 @@ shiki@^0.9.12:
   version "0.9.15"
   resolved "https://registry.npmjs.org/shiki/-/shiki-0.9.15.tgz"
   integrity sha512-/Y0z9IzhJ8nD9nbceORCqu6NgT9X6I8Fk8c3SICHI5NbZRLdZYFaB233gwct9sU0vvSypyaL/qaKvzyQGJBZSw==
-  dependencies:
-    jsonc-parser "^3.0.0"
-    vscode-oniguruma "^1.6.1"
-    vscode-textmate "5.2.0"
 
 side-channel@^1.0.4:
   version "1.0.4"
@@ -7658,6 +7654,7 @@ typescript@^4.4.4:
   version "4.5.3"
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.5.3.tgz"
   integrity sha512-eVYaEHALSt+s9LbvgEv4Ef+Tdq7hBiIZgii12xXJnukryt3pMgJf6aKhoCZ3FWQsu6sydEnkg11fYXLzhLBjeQ==
+
 
 ultron@~1.1.0:
   version "1.1.1"
