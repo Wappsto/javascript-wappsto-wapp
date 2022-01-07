@@ -1,24 +1,20 @@
 import { Model } from './model';
 import { StreamModel } from './model.stream';
+import { IState } from '../util/interfaces';
 
-export interface IState {
-    type: string;
-    data?: string;
-    timestamp?: string;
-}
 export class State extends StreamModel implements IState {
     static endpoint = '/2.0/state';
 
     data: string = '';
     status?: string;
-    type: string = '';
+    type: 'Report' | 'Control' = 'Report';
     timestamp: string = new Date().toISOString();
     status_payment?: string;
 
-    constructor(type?: string) {
+    constructor(type?: 'Report' | 'Control') {
         super('state');
-
-        this.type = type || '';
+        Model.checker.IStateFunc.methodArgs('constructor').check([type]);
+        this.type = type || 'Report';
     }
 
     attributes(): string[] {

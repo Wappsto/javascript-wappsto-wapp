@@ -198,21 +198,6 @@ describe('network', () => {
         expect(networks[0]?.name).toEqual('test');
     });
 
-    it('can find a network by id', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
-
-        let network = await Network.findById(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
-
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/network/b62e285a-5188-4304-85a0-3982dcb575bc',
-            { params: { expand: 4 } }
-        );
-        expect(network.meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
-    });
-
     it('can find a network by name', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })

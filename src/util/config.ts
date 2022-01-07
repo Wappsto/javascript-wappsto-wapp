@@ -1,3 +1,7 @@
+import { IConfig } from './interfaces';
+import interfaceTI from '../util/interfaces-ti';
+import { createCheckers } from 'ts-interface-checker';
+
 class Config {
     debug: boolean = false;
     verbose: boolean = false;
@@ -5,12 +9,10 @@ class Config {
 
 let _config = new Config();
 
-export interface IConfig {
-    verbose?: boolean;
-    debug?: boolean;
-}
-
 export function config(param: IConfig = {}): Config {
+    const checker = createCheckers(interfaceTI);
+    checker.IConfig.check(param);
+
     if (param.debug !== undefined) {
         _config.debug = param.debug;
     }

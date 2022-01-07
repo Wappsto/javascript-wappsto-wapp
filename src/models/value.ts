@@ -3,73 +3,26 @@ import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
-import { IMeta } from './meta';
-import { State, IState } from './state';
+import { State } from './state';
 import { printDebug } from '../util/debug';
-
-type ValueStreamCallback = (
-    value: Value,
-    data: string,
-    timestamp: string
-) => void;
-type RefreshStreamCallback = (value: Value) => void;
-
-export interface IValue {
-    name: string;
-    permission: string;
-    type?: string;
-    period?: string;
-    delta?: string;
-    number?: IValueNumber;
-    string?: IValueString;
-    blob?: IValueBlob;
-    xml?: IValueXml;
-}
-
-export interface IValueNumber {
-    min: number;
-    max: number;
-    step: number;
-    unit?: string;
-    si_conversion?: string;
-    mapping?: Record<string, any>;
-    ordered_mapping?: boolean;
-    meaningful_zero?: boolean;
-}
-
-export interface IValueString {
-    max: number;
-    encoding?: string;
-}
-
-export interface IValueBlob {
-    max: number;
-    encoding?: string;
-}
-
-export interface IValueXml {
-    xsd?: string;
-    namespace?: string;
-}
-
-export interface ILogRequest {
-    count?: number;
-    start?: Date;
-    end?: Date;
-}
-
-export interface ILogResponse {
-    meta: IMeta;
-    data: Record<string, any>;
-    more: boolean;
-    type: string;
-}
+import {
+    IValue,
+    IValueNumber,
+    IValueString,
+    IValueBlob,
+    IValueXml,
+    IState,
+    ILogRequest,
+    ILogResponse,
+    RefreshStreamCallback,
+    ValueStreamCallback,
+} from '../util/interfaces';
 
 export class Value extends StreamModel implements IValue {
     static endpoint = '/2.0/value';
 
     name: string;
-    permission: string;
+    permission: 'r' | 'w' | 'rw' | 'wr' = 'r';
     type?: string;
     period?: string;
     delta?: string;
@@ -83,8 +36,8 @@ export class Value extends StreamModel implements IValue {
 
     constructor(name?: string) {
         super('value');
+        Model.checker.IValueFunc.methodArgs('constructor').check([name]);
         this.name = name || '';
-        this.permission = '';
     }
 
     get states() {
@@ -156,9 +109,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     public createState = async (params: IState) => {
-        if (!['Report', 'Control'].includes(params.type)) {
-            throw new Error('Invalid value for state type');
-        }
+        Model.checker.IValueFunc.methodArgs('createState').check([params]);
 
         let create = false;
         let state = this.findState(params.type);
@@ -222,6 +173,8 @@ export class Value extends StreamModel implements IValue {
         data: string | number,
         timestamp: string | undefined = undefined
     ): void {
+        Model.checker.IValueFunc.methodArgs('report').check([data, timestamp]);
+
         this.findStateAndUpdate('Report', data, timestamp);
     }
 
@@ -229,18 +182,26 @@ export class Value extends StreamModel implements IValue {
         data: string | number,
         timestamp: string | undefined = undefined
     ): void {
+        Model.checker.IValueFunc.methodArgs('control').check([data, timestamp]);
+
         this.findStateAndUpdate('Control', data, timestamp);
     }
 
     public onControl(callback: ValueStreamCallback): void {
+        Model.checker.IValueFunc.methodArgs('onControl').check([callback]);
+
         this.findStateAndCallback('Control', callback);
     }
 
     public onReport(callback: ValueStreamCallback): void {
+        Model.checker.IValueFunc.methodArgs('onReport').check([callback]);
+
         this.findStateAndCallback('Report', callback);
     }
 
     public onRefresh(callback: RefreshStreamCallback): void {
+        Model.checker.IValueFunc.methodArgs('onRefresh').check([callback]);
+
         this.onChange(() => {
             if (this.status === 'update') {
                 callback(this);
@@ -276,12 +237,16 @@ export class Value extends StreamModel implements IValue {
     public getReportLog = async (
         request: ILogRequest
     ): Promise<ILogResponse> => {
+        Model.checker.IValueFunc.methodArgs('getReportLog').check([request]);
+
         return this.findStateAndLog('Report', request);
     };
 
     public getControlLog = async (
         request: ILogRequest
     ): Promise<ILogResponse> => {
+        Model.checker.IValueFunc.methodArgs('getControlLog').check([request]);
+
         return this.findStateAndLog('Control', request);
     };
 
@@ -290,6 +255,11 @@ export class Value extends StreamModel implements IValue {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
+        Model.checker.IValueFunc.methodArgs('find').check([
+            params,
+            quantity,
+            usage,
+        ]);
         if (usage === '') {
             usage = `Find ${quantity} value`;
         }
@@ -315,6 +285,11 @@ export class Value extends StreamModel implements IValue {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
+        Model.checker.IValueFunc.methodArgs('findByName').check([
+            name,
+            quantity,
+            usage,
+        ]);
         if (usage === '') {
             usage = `Find ${quantity} value with name ${name}`;
         }
@@ -326,6 +301,11 @@ export class Value extends StreamModel implements IValue {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
+        Model.checker.IValueFunc.methodArgs('findByType').check([
+            type,
+            quantity,
+            usage,
+        ]);
         if (usage === '') {
             usage = `Find ${quantity} value with type ${type}`;
         }
@@ -333,10 +313,18 @@ export class Value extends StreamModel implements IValue {
     };
 
     static findAllByName = async (name: string, usage: string = '') => {
+        Model.checker.IValueFunc.methodArgs('findAllByName').check([
+            name,
+            usage,
+        ]);
         return Value.findByName(name, 'all', usage);
     };
 
     static findAllByType = async (type: string, usage: string = '') => {
+        Model.checker.IValueFunc.methodArgs('findAllByType').check([
+            type,
+            usage,
+        ]);
         return Value.findByType(type, 'all', usage);
     };
 }
