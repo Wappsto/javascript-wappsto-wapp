@@ -57,6 +57,7 @@
         }
     ],
     "devDependencies": {
+        "@size-limit/preset-big-lib": "^7.0.5",
         "@types/jest": "^27.0.2",
         "browserify": "^17.0.0",
         "eslint-plugin-prettier": "^3.4.1",
@@ -65,6 +66,7 @@
         "mock-socket": "^9.0.8",
         "prettier": "^2.4.1",
         "pretty-quick": "^3.1.1",
+        "size-limit": "^7.0.5",
         "ts-interface-builder": "^0.3.2",
         "tsdx": "^0.14.1",
         "typedoc": "^0.22.7",
