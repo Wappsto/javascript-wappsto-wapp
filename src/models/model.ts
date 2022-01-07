@@ -2,8 +2,10 @@ import * as _ from 'lodash';
 import { plainToClass } from 'class-transformer';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
-import { IMeta } from './meta';
 import { config } from '../util/config';
+import { IMeta } from './interfaces';
+import interfaceTI from './interfaces-ti';
+import { createCheckers } from 'ts-interface-checker';
 
 interface IModel {
     getUrl(): string;
@@ -12,6 +14,7 @@ interface IModel {
 export class Model implements IModel {
     meta: IMeta = {};
     parent?: IModel;
+    static checker = createCheckers(interfaceTI);
 
     constructor(type: string, version = '2.0') {
         this.meta.type = type;
@@ -73,6 +76,7 @@ export class Model implements IModel {
     };
 
     public create = async (params: Record<string, any> = {}): Promise<void> => {
+        Model.checker.IModelFunc.methodArgs('create').check([params]);
         try {
             await this._create(params);
         } catch (e) {
@@ -117,6 +121,7 @@ export class Model implements IModel {
         endpoint: string,
         params?: Record<string, any>
     ): Promise<Record<string, any>[]> => {
+        Model.checker.IModelFunc.methodArgs('fetch').check([endpoint, params]);
         try {
             let response = await wappsto.get(
                 endpoint,
@@ -139,6 +144,7 @@ export class Model implements IModel {
     };
 
     public parse(json: Record<string, any>): boolean {
+        Model.checker.IModelFunc.methodArgs('parse').check([json]);
         if (_.isArray(json)) {
             json = json[0];
         }

@@ -1,8 +1,8 @@
+import { Model } from './model';
 import { StreamEvent, openStream } from './stream';
 import { printError } from '../util/debug';
 import { PermissionModel } from './model.permission';
-
-type StreamCallback = (model: StreamModel) => void;
+import { IStreamModel, StreamCallback } from './interfaces';
 
 interface IStreamCallbacks {
     change: StreamCallback[];
@@ -10,7 +10,7 @@ interface IStreamCallbacks {
     create: StreamCallback[];
 }
 
-export class StreamModel extends PermissionModel {
+export class StreamModel extends PermissionModel implements IStreamModel {
     streamCallback: IStreamCallbacks = {} as IStreamCallbacks;
 
     constructor(type: string, version = '2.0') {
@@ -19,16 +19,19 @@ export class StreamModel extends PermissionModel {
     }
 
     public onChange(callback: StreamCallback): void {
+        Model.checker.StreamCallback.check(callback);
         openStream.subscribe(this);
         this.streamCallback.change.push(callback);
     }
 
     public onDelete(callback: StreamCallback): void {
+        Model.checker.StreamCallback.check(callback);
         openStream.subscribe(this);
         this.streamCallback.delete.push(callback);
     }
 
     public onCreate(callback: StreamCallback): void {
+        Model.checker.StreamCallback.check(callback);
         openStream.subscribe(this);
         this.streamCallback.create.push(callback);
     }

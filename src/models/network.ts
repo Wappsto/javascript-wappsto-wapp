@@ -3,19 +3,19 @@ import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
-import { Device, IDevice } from './device';
+import { Device } from './device';
 import { Value } from './value';
 import { printDebug } from '../util/debug';
-
-interface INetwork {
-    name: string;
-    description?: string;
-}
+import { INetwork, IDevice } from './interfaces';
 
 export async function createNetwork(
     name: string | INetwork,
     description: string | undefined = undefined
 ): Promise<Network> {
+    Model.checker.INetworkFunc.methodArgs('createNetwork').check([
+        name,
+        description,
+    ]);
     if (typeof name !== 'string') {
         let options: INetwork = name;
         description = options.description;
@@ -48,6 +48,7 @@ export class Network extends StreamModel implements INetwork {
 
     constructor(name?: string) {
         super('network');
+        Model.checker.INetworkFunc.methodArgs('constructor').check([name]);
         this.name = name || '';
     }
 
@@ -56,10 +57,12 @@ export class Network extends StreamModel implements INetwork {
     }
 
     public findDeviceByName(name: string): Device[] {
+        Model.checker.INetworkFunc.methodArgs('findDeviceByName').check([name]);
         return this.device.filter((dev) => dev.name === name);
     }
 
     public findValueByName(name: string): Value[] {
+        Model.checker.INetworkFunc.methodArgs('findValueByName').check([name]);
         let values: Value[] = [];
         this.device.forEach((dev) => {
             values = values.concat(dev.findValueByName(name));
@@ -68,6 +71,7 @@ export class Network extends StreamModel implements INetwork {
     }
 
     public findValueByType(type: string): Value[] {
+        Model.checker.INetworkFunc.methodArgs('findValueByType').check([type]);
         let values: Value[] = [];
         this.device.forEach((dev) => {
             values = values.concat(dev.findValueByType(type));
@@ -76,6 +80,8 @@ export class Network extends StreamModel implements INetwork {
     }
 
     public async createDevice(params: IDevice): Promise<Device> {
+        Model.checker.INetworkFunc.methodArgs('createDevice').check([params]);
+
         let device = new Device();
         let devices = this.findDeviceByName(params.name);
         if (devices.length !== 0) {
@@ -105,6 +111,11 @@ export class Network extends StreamModel implements INetwork {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
+        Model.checker.INetworkFunc.methodArgs('find').check([
+            params,
+            quantity,
+            usage,
+        ]);
         if (usage === '') {
             usage = `Find ${quantity} network`;
         }
@@ -125,18 +136,16 @@ export class Network extends StreamModel implements INetwork {
         return Network.fromArray(data);
     };
 
-    static findById = async (id: string) => {
-        let data = await Model.fetch(`${Network.endpoint}/${id}`, {
-            expand: 4,
-        });
-        return Network.fromArray(data)[0];
-    };
-
     static findByName = async (
         name: string,
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
+        Model.checker.INetworkFunc.methodArgs('findByName').check([
+            name,
+            quantity,
+            usage,
+        ]);
         if (usage === '') {
             usage = `Find ${quantity} network with name ${name}`;
         }
@@ -144,6 +153,10 @@ export class Network extends StreamModel implements INetwork {
     };
 
     static findAllByName = async (name: string, usage: string = '') => {
+        Model.checker.INetworkFunc.methodArgs('findAllByName').check([
+            name,
+            usage,
+        ]);
         return Network.findByName(name, 'all', usage);
     };
 
@@ -151,6 +164,7 @@ export class Network extends StreamModel implements INetwork {
         name: string = '',
         params: Record<string, any> = {}
     ) => {
+        Model.checker.INetworkFunc.methodArgs('fetch').check([name, params]);
         Object.assign(params, { expand: 4 });
         if (name !== '') {
             Object.assign(params, {

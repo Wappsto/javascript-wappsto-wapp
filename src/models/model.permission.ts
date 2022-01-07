@@ -74,6 +74,12 @@ export class PermissionModel extends Model {
         message: string,
         params?: Record<string, any>
     ): Promise<Record<string, any>[]> => {
+        Model.checker.IPermissionModelFunc.methodArgs('request').check([
+            endpoint,
+            quantity,
+            message,
+            params,
+        ]);
         return new Promise<Record<string, any>[]>(async (resolve) => {
             let id = PermissionModel.getPermissionHash(
                 endpoint.split('/')[2],

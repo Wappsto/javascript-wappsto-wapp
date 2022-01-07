@@ -3,73 +3,26 @@ import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
-import { IMeta } from './meta';
-import { State, IState } from './state';
+import { State } from './state';
 import { printDebug } from '../util/debug';
-
-type ValueStreamCallback = (
-    value: Value,
-    data: string,
-    timestamp: string
-) => void;
-type RefreshStreamCallback = (value: Value) => void;
-
-export interface IValue {
-    name: string;
-    permission: string;
-    type?: string;
-    period?: string;
-    delta?: string;
-    number?: IValueNumber;
-    string?: IValueString;
-    blob?: IValueBlob;
-    xml?: IValueXml;
-}
-
-export interface IValueNumber {
-    min: number;
-    max: number;
-    step: number;
-    unit?: string;
-    si_conversion?: string;
-    mapping?: Record<string, any>;
-    ordered_mapping?: boolean;
-    meaningful_zero?: boolean;
-}
-
-export interface IValueString {
-    max: number;
-    encoding?: string;
-}
-
-export interface IValueBlob {
-    max: number;
-    encoding?: string;
-}
-
-export interface IValueXml {
-    xsd?: string;
-    namespace?: string;
-}
-
-export interface ILogRequest {
-    count?: number;
-    start?: Date;
-    end?: Date;
-}
-
-export interface ILogResponse {
-    meta: IMeta;
-    data: Record<string, any>;
-    more: boolean;
-    type: string;
-}
+import {
+    IValue,
+    IValueNumber,
+    IValueString,
+    IValueBlob,
+    IValueXml,
+    IState,
+    ILogRequest,
+    ILogResponse,
+    RefreshStreamCallback,
+    ValueStreamCallback,
+} from './interfaces';
 
 export class Value extends StreamModel implements IValue {
     static endpoint = '/2.0/value';
 
     name: string;
-    permission: string;
+    permission: 'r' | 'w' | 'rw' | 'wr';
     type?: string;
     period?: string;
     delta?: string;
@@ -84,7 +37,7 @@ export class Value extends StreamModel implements IValue {
     constructor(name?: string) {
         super('value');
         this.name = name || '';
-        this.permission = '';
+        this.permission = 'r';
     }
 
     get states() {
@@ -156,9 +109,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     public createState = async (params: IState) => {
-        if (!['Report', 'Control'].includes(params.type)) {
-            throw new Error('Invalid value for state type');
-        }
+        Model.checker.IState.check(params);
 
         let create = false;
         let state = this.findState(params.type);
@@ -233,14 +184,17 @@ export class Value extends StreamModel implements IValue {
     }
 
     public onControl(callback: ValueStreamCallback): void {
+        Model.checker.ValueStreamCallback.check(callback);
         this.findStateAndCallback('Control', callback);
     }
 
     public onReport(callback: ValueStreamCallback): void {
+        Model.checker.ValueStreamCallback.check(callback);
         this.findStateAndCallback('Report', callback);
     }
 
     public onRefresh(callback: RefreshStreamCallback): void {
+        Model.checker.RefreshStreamCallback.check(callback);
         this.onChange(() => {
             if (this.status === 'update') {
                 callback(this);
@@ -276,12 +230,14 @@ export class Value extends StreamModel implements IValue {
     public getReportLog = async (
         request: ILogRequest
     ): Promise<ILogResponse> => {
+        Model.checker.ILogRequest.check(request);
         return this.findStateAndLog('Report', request);
     };
 
     public getControlLog = async (
         request: ILogRequest
     ): Promise<ILogResponse> => {
+        Model.checker.ILogRequest.check(request);
         return this.findStateAndLog('Control', request);
     };
 

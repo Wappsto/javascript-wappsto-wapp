@@ -1,20 +1,22 @@
 import { Model } from './model';
-import { IMeta } from './meta';
 import { session, baseUrl } from '../session';
-import { StreamModel } from './model.stream';
 import { printDebug, printError } from '../util/debug';
 import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
+import {
+    IMeta,
+    IStreamEvent,
+    ServiceHandler,
+    SignalHandler,
+    RequestHandler,
+    IStreamModel,
+} from './interfaces';
 
 var WebSocket = require('universal-websocket-client');
 
-type SignalHandler = (event: string) => void;
-type ServiceHandler = (event: any) => Promise<true | undefined> | boolean;
-type RequestHandler = (event: any) => Promise<any>;
-
 interface StreamModelHash {
-    [key: string]: StreamModel[];
+    [key: string]: IStreamModel[];
 }
 
 interface StreamServiceHash {
@@ -32,7 +34,7 @@ export const enum EventType {
     direct = 'direct',
 }
 
-export class StreamEvent {
+export class StreamEvent implements IStreamEvent {
     meta: IMeta = {};
     path: string = '';
     timestamp: string = '';
@@ -141,7 +143,9 @@ export class Stream extends Model {
         );
     }
 
-    public subscribe(model: StreamModel): void {
+    public subscribe(model: IStreamModel): void {
+        Model.checker.IStreamModel.check(model);
+
         this.open().then(() => {
             if (!this.models[model.path()]) {
                 this.models[model.path()] = [];
@@ -155,6 +159,8 @@ export class Stream extends Model {
     }
 
     public subscribeService(service: string, callback: ServiceHandler): void {
+        Model.checker.ServiceHandler.check(callback);
+
         this.open().then(() => {
             if (service[0] !== '/') {
                 service = '/' + service;
@@ -171,6 +177,8 @@ export class Stream extends Model {
     }
 
     public addSignalHandler(type: string, handler: SignalHandler): void {
+        Model.checker.SignalHandler.check(handler);
+
         this.open().then(() => {
             printDebug(`Add Signal Handler: ${type}`);
             if (!this.handlers[type]) {
@@ -208,6 +216,8 @@ export class Stream extends Model {
     }
 
     public onRequest(handler: RequestHandler, internal: boolean): void {
+        Model.checker.RequestHandler.check(handler);
+
         this.subscribeService(
             '/extsync/request',
             async (event: any): Promise<any> => {
@@ -311,7 +321,7 @@ export class Stream extends Model {
         }
 
         paths.forEach((path) => {
-            this.models[path]?.forEach((model: StreamModel) => {
+            this.models[path]?.forEach((model: IStreamModel) => {
                 model.handleStream(event);
             });
         });
@@ -478,6 +488,7 @@ export async function sendToBackground(msg: any): Promise<any> {
 }
 
 function handleRequest(type: string, callback: RequestHandler): void {
+    Model.checker.RequestHandler.check(callback);
     openStream.onRequest(async (event: any) => {
         try {
             let data = JSON.parse(event);
@@ -492,13 +503,16 @@ function handleRequest(type: string, callback: RequestHandler): void {
 }
 
 export function fromForeground(callback: RequestHandler): void {
+    Model.checker.RequestHandler.check(callback);
     handleRequest('foreground', callback);
 }
 
 export function fromBackground(callback: RequestHandler): void {
+    Model.checker.RequestHandler.check(callback);
     handleRequest('background', callback);
 }
 
 export function onWebHook(handler: RequestHandler): void {
+    Model.checker.RequestHandler.check(handler);
     openStream.onRequest(handler, false);
 }
