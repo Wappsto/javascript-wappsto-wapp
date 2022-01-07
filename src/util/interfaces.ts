@@ -1,3 +1,17 @@
+export interface IConfig {
+    verbose?: boolean;
+    debug?: boolean;
+}
+
+export interface IModelFunc {
+    create(params: Record<string, any>): Promise<void>;
+    fetch(
+        endpoint: string,
+        params?: Record<string, any>
+    ): Promise<Record<string, any>[]>;
+    parse(json: Record<string, any>): boolean;
+}
+
 export interface IConnection {
     timestamp: string;
     online: boolean;
@@ -105,15 +119,6 @@ export interface IPermissionModelFunc {
     ): Promise<Record<string, any>[]>;
 }
 
-export interface IModelFunc {
-    create(params: Record<string, any>): Promise<void>;
-    fetch(
-        endpoint: string,
-        params?: Record<string, any>
-    ): Promise<Record<string, any>[]>;
-    parse(json: Record<string, any>): boolean;
-}
-
 export interface IValue {
     name: string;
     permission: 'r' | 'w' | 'rw' | 'wr';
@@ -152,10 +157,35 @@ export interface IValueXml {
     namespace?: string;
 }
 
+export interface IValueFunc {
+    constructor(name?: string): IState;
+    createState(params: IState): IState;
+    report(data: string | number, timestamp: string | undefined): void;
+    control(data: string | number, timestamp: string | undefined): void;
+    onControl(callback: ValueStreamCallback): void;
+    onReport(callback: ValueStreamCallback): void;
+    onRefresh(callback: RefreshStreamCallback): void;
+    getReportLog(request: ILogRequest): Promise<ILogResponse>;
+    getControlLog(request: ILogRequest): Promise<ILogResponse>;
+    find(
+        params: Record<string, any>,
+        quantity: number | 'all',
+        usage: string
+    ): IValue[];
+    findByName(name: string, quantity: number | 'all', usage: string): IValue[];
+    findByType(type: string, quantity: number | 'all', usage: string): IValue[];
+    findAllByName(name: string, usage: string): IValue[];
+    findAllByType(type: string, usage: string): IValue[];
+}
+
 export interface IState {
     type: 'Report' | 'Control';
     data?: string;
     timestamp?: string;
+}
+
+export interface IStateFunc {
+    constructor(type?: 'Report' | 'Control'): IState;
 }
 
 export interface ILogRequest {
@@ -176,6 +206,15 @@ export interface IStreamEvent {}
 export interface IStreamModel {
     path(): string;
     handleStream(event: IStreamEvent): void;
+}
+
+export interface IStreamFunc {
+    subscribe(model: IStreamModel): void;
+    subscribeService(service: string, handler: ServiceHandler): void;
+    addSignalHandler(type: string, handler: SignalHandler): void;
+    sendRequest(msg: any): Promise<any>;
+    sendResponse(event: any, code: number, msg: any): Promise<void>;
+    onRequest(handler: RequestHandler, internal: boolean): void;
 }
 
 export type SignalHandler = (event: string) => void;

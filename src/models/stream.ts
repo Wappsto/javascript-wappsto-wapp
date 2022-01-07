@@ -11,7 +11,7 @@ import {
     SignalHandler,
     RequestHandler,
     IStreamModel,
-} from './interfaces';
+} from '../util/interfaces';
 
 var WebSocket = require('universal-websocket-client');
 
@@ -144,7 +144,7 @@ export class Stream extends Model {
     }
 
     public subscribe(model: IStreamModel): void {
-        Model.checker.IStreamModel.check(model);
+        Model.checker.IStreamFunc.methodArgs('subscribe').check([model]);
 
         this.open().then(() => {
             if (!this.models[model.path()]) {
@@ -158,8 +158,11 @@ export class Stream extends Model {
         });
     }
 
-    public subscribeService(service: string, callback: ServiceHandler): void {
-        Model.checker.ServiceHandler.check(callback);
+    public subscribeService(service: string, handler: ServiceHandler): void {
+        Model.checker.IStreamFunc.methodArgs('subscribeService').check([
+            service,
+            handler,
+        ]);
 
         this.open().then(() => {
             if (service[0] !== '/') {
@@ -168,7 +171,7 @@ export class Stream extends Model {
             if (!this.services[service]) {
                 this.services[service] = [];
             }
-            this.services[service].push(callback);
+            this.services[service].push(handler);
 
             printDebug(`Add service subscription: ${service}`);
 
@@ -177,7 +180,10 @@ export class Stream extends Model {
     }
 
     public addSignalHandler(type: string, handler: SignalHandler): void {
-        Model.checker.SignalHandler.check(handler);
+        Model.checker.IStreamFunc.methodArgs('addSignalHandler').check([
+            type,
+            handler,
+        ]);
 
         this.open().then(() => {
             printDebug(`Add Signal Handler: ${type}`);
@@ -189,6 +195,8 @@ export class Stream extends Model {
     }
 
     public async sendRequest(msg: any): Promise<any> {
+        Model.checker.IStreamFunc.methodArgs('sendRequest').check([msg]);
+
         let result = {};
         try {
             let response = await wappsto.post('/2.0/extsync/request', msg);
@@ -204,6 +212,11 @@ export class Stream extends Model {
         code: number,
         msg: any
     ): Promise<void> {
+        Model.checker.IStreamFunc.methodArgs('sendResponse').check([
+            event,
+            code,
+            msg,
+        ]);
         try {
             let data = {
                 code: code,
@@ -216,7 +229,10 @@ export class Stream extends Model {
     }
 
     public onRequest(handler: RequestHandler, internal: boolean): void {
-        Model.checker.RequestHandler.check(handler);
+        Model.checker.IStreamFunc.methodArgs('onRequest').check([
+            handler,
+            internal,
+        ]);
 
         this.subscribeService(
             '/extsync/request',

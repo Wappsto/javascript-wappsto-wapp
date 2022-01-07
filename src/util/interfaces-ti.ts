@@ -4,6 +4,21 @@
 import * as t from 'ts-interface-checker';
 // tslint:disable:object-literal-key-quotes
 
+export const IConfig = t.iface([], {
+    verbose: t.opt('boolean'),
+    debug: t.opt('boolean'),
+});
+
+export const IModelFunc = t.iface([], {
+    create: t.func('void', t.param('params', 'any')),
+    fetch: t.func(
+        t.array('any'),
+        t.param('endpoint', 'string'),
+        t.param('params', 'any', true)
+    ),
+    parse: t.func('boolean', t.param('json', 'any')),
+});
+
 export const IConnection = t.iface([], {
     timestamp: 'string',
     online: 'boolean',
@@ -145,16 +160,6 @@ export const IPermissionModelFunc = t.iface([], {
     ),
 });
 
-export const IModelFunc = t.iface([], {
-    create: t.func('void', t.param('params', 'any')),
-    fetch: t.func(
-        t.array('any'),
-        t.param('endpoint', 'string'),
-        t.param('params', 'any', true)
-    ),
-    parse: t.func('boolean', t.param('json', 'any')),
-});
-
 export const IValue = t.iface([], {
     name: 'string',
     permission: t.union(t.lit('r'), t.lit('w'), t.lit('rw'), t.lit('wr')),
@@ -193,10 +198,65 @@ export const IValueXml = t.iface([], {
     namespace: t.opt('string'),
 });
 
+export const IValueFunc = t.iface([], {
+    constructor: t.func('IState', t.param('name', 'string', true)),
+    createState: t.func('IState', t.param('params', 'IState')),
+    report: t.func(
+        'void',
+        t.param('data', t.union('string', 'number')),
+        t.param('timestamp', t.union('string', 'undefined'))
+    ),
+    control: t.func(
+        'void',
+        t.param('data', t.union('string', 'number')),
+        t.param('timestamp', t.union('string', 'undefined'))
+    ),
+    onControl: t.func('void', t.param('callback', 'ValueStreamCallback')),
+    onReport: t.func('void', t.param('callback', 'ValueStreamCallback')),
+    onRefresh: t.func('void', t.param('callback', 'RefreshStreamCallback')),
+    getReportLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
+    getControlLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
+    find: t.func(
+        t.array('IValue'),
+        t.param('params', 'any'),
+        t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('usage', 'string')
+    ),
+    findByName: t.func(
+        t.array('IValue'),
+        t.param('name', 'string'),
+        t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('usage', 'string')
+    ),
+    findByType: t.func(
+        t.array('IValue'),
+        t.param('type', 'string'),
+        t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('usage', 'string')
+    ),
+    findAllByName: t.func(
+        t.array('IValue'),
+        t.param('name', 'string'),
+        t.param('usage', 'string')
+    ),
+    findAllByType: t.func(
+        t.array('IValue'),
+        t.param('type', 'string'),
+        t.param('usage', 'string')
+    ),
+});
+
 export const IState = t.iface([], {
     type: t.union(t.lit('Report'), t.lit('Control')),
     data: t.opt('string'),
     timestamp: t.opt('string'),
+});
+
+export const IStateFunc = t.iface([], {
+    constructor: t.func(
+        'IState',
+        t.param('type', t.union(t.lit('Report'), t.lit('Control')), true)
+    ),
 });
 
 export const ILogRequest = t.iface([], {
@@ -217,6 +277,32 @@ export const IStreamEvent = t.iface([], {});
 export const IStreamModel = t.iface([], {
     path: t.func('string'),
     handleStream: t.func('void', t.param('event', 'IStreamEvent')),
+});
+
+export const IStreamFunc = t.iface([], {
+    subscribe: t.func('void', t.param('model', 'IStreamModel')),
+    subscribeService: t.func(
+        'void',
+        t.param('service', 'string'),
+        t.param('handler', 'ServiceHandler')
+    ),
+    addSignalHandler: t.func(
+        'void',
+        t.param('type', 'string'),
+        t.param('handler', 'SignalHandler')
+    ),
+    sendRequest: t.func('any', t.param('msg', 'any')),
+    sendResponse: t.func(
+        'void',
+        t.param('event', 'any'),
+        t.param('code', 'number'),
+        t.param('msg', 'any')
+    ),
+    onRequest: t.func(
+        'void',
+        t.param('handler', 'RequestHandler'),
+        t.param('internal', 'boolean')
+    ),
 });
 
 export const SignalHandler = t.func('void', t.param('event', 'string'));
@@ -240,6 +326,8 @@ export const ValueStreamCallback = t.func(
 export const RefreshStreamCallback = t.func('void', t.param('value', 'IValue'));
 
 const exportedTypeSuite: t.ITypeSuite = {
+    IConfig,
+    IModelFunc,
     IConnection,
     IMeta,
     INetwork,
@@ -247,17 +335,19 @@ const exportedTypeSuite: t.ITypeSuite = {
     IDevice,
     IDeviceFunc,
     IPermissionModelFunc,
-    IModelFunc,
     IValue,
     IValueNumber,
     IValueString,
     IValueBlob,
     IValueXml,
+    IValueFunc,
     IState,
+    IStateFunc,
     ILogRequest,
     ILogResponse,
     IStreamEvent,
     IStreamModel,
+    IStreamFunc,
     SignalHandler,
     ServiceHandler,
     RequestHandler,

@@ -6,7 +6,7 @@ import { Model } from './model';
 import { Device } from './device';
 import { Value } from './value';
 import { printDebug } from '../util/debug';
-import { INetwork, IDevice } from './interfaces';
+import { INetwork, IDevice } from '../util/interfaces';
 
 export async function createNetwork(
     name: string | INetwork,

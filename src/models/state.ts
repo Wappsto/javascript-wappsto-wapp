@@ -1,6 +1,6 @@
 import { Model } from './model';
 import { StreamModel } from './model.stream';
-import { IState } from './interfaces';
+import { IState } from '../util/interfaces';
 
 export class State extends StreamModel implements IState {
     static endpoint = '/2.0/state';
@@ -13,7 +13,7 @@ export class State extends StreamModel implements IState {
 
     constructor(type?: 'Report' | 'Control') {
         super('state');
-
+        Model.checker.IStateFunc.methodArgs('constructor').check([type]);
         this.type = type || 'Report';
     }
 

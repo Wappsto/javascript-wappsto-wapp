@@ -12,7 +12,7 @@ import {
     IValueString,
     IValueBlob,
     IValueXml,
-} from './interfaces';
+} from '../util/interfaces';
 
 export class Device extends StreamModel implements IDevice {
     static endpoint = '/2.0/device';

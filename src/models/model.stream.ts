@@ -2,7 +2,7 @@ import { Model } from './model';
 import { StreamEvent, openStream } from './stream';
 import { printError } from '../util/debug';
 import { PermissionModel } from './model.permission';
-import { IStreamModel, StreamCallback } from './interfaces';
+import { IStreamModel, StreamCallback } from '../util/interfaces';
 
 interface IStreamCallbacks {
     change: StreamCallback[];
