@@ -2,12 +2,28 @@
 
 This is a node/js library for easily creating wapps for [Wappsto](https://wappsto.com)
 
+## Install
+
+To install the node module in your project, run this command:
+
+```shell
+npm i --save wappsto-wapp
+```
+
+To use it in a webpage, include this script tag:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/wappsto-wapp@v0.5.5/dist/wappsto-wapp.min.js"></script>
+```
+
 ## Usage
 
 Here are some examlples on how to use the library.
 
-### Create a new Network
 
+### Create a new IoT Device
+
+First you need to create a IoT network.
 To create a new network you need to call 'createNetwork'. If there is an Network with the same name, the exsisting network will be returned.
 
 ```javascript
@@ -16,8 +32,7 @@ let network = await Wappsto.createNetwork({
 });
 ```
 
-### Create a new device
-
+Then you need to create a device.
 To create a new device under an existing network, you should call createDevice. If a device exsists with the given name, the existing device will be returned.
 
 ```javascript
@@ -33,8 +48,7 @@ let device = network.createDevice({
 });
 ```
 
-### Create a new value
-
+Then you need to create new values.
 To create a new value under an exsisting device, you should call createValue. If a value exsists with the given name, the existing value will be returned. There are some helper functions to create number, string, blob and xml values.
 There will also be created the states nedded based on the permission. The only allowed values for permission is 'r', 'w' and 'rw'.
 
@@ -67,11 +81,11 @@ let value = device.createStringValue({
 });
 ```
 
+
 ### To request access to an exsisting object from the user
 
 To request access to an exsisting object, a request have to be send. You can request a single object or multiple objects of the same type.
 
-#### Find a network by name
 
 To request access to a network with a spefict name, use 'findByName'.
 
@@ -79,7 +93,6 @@ To request access to a network with a spefict name, use 'findByName'.
 let networks = await Wappsto.Network.findByName('Network name');
 ```
 
-### Find a device by name
 
 To request access to a device with a spefict name, use 'findByName'.
 
@@ -87,7 +100,6 @@ To request access to a device with a spefict name, use 'findByName'.
 let devices = await Wappsto.Device.findByName('Device name');
 ```
 
-### Find a device by product
 
 To request access to a device with a spefict product, use 'findByProduct'.
 
@@ -95,7 +107,6 @@ To request access to a device with a spefict product, use 'findByProduct'.
 let devices = await Wappsto.Device.findByProduct('Product name');
 ```
 
-### Find a value by name
 
 To request access to a value with a spefict name, use 'findByName'.
 
@@ -103,13 +114,13 @@ To request access to a value with a spefict name, use 'findByName'.
 let values = await Wappsto.Value.findByName('Value name');
 ```
 
-### Find a value by type
 
 To request access to a value with a spefict type, use 'findByType'.
 
 ```javascript
 let values = await Wappsto.Value.findByType('Type name');
 ```
+
 
 ### To report a change in the value
 
@@ -119,12 +130,26 @@ To send a new data point to wappsto, just call the 'report' function on the valu
 value.report('1');
 ```
 
+And to get the last reported data and timestamp.
+
+```javascript
+let data = value.getReportData();
+let timestamp = value.getReportTimestamp();
+```
+
 ### To change a value on another networks value
 
 To send a new data point to another value, just call the 'control' function on the value.
 
 ```javascript
 value.control('1');
+```
+
+And to get the last controlled data and timestamp.
+
+```javascript
+let data = value.getControlData();
+let timestamp = value.getControlTimestamp();
 ```
 
 ### Listing for changes on values
@@ -178,12 +203,20 @@ The debug log from the background wapp can be turn on like this:
 Wappsto.startLogging();
 ```
 
+And to turn it off again.
+
+```javascript
+Wappsto.stopLogging();
+```
+
 ### Enable verbose responses from wappsto
 
 To enable verbose mode in wappsto, the verbose mode needs to be set to true.
 
 ```javascript
-Wappsto.verbose(true);
+Wappsto.config({
+  verbose: true
+});
 ```
 
 ### Raw requests
@@ -192,12 +225,4 @@ It is possible to send your own requests to wappsto by using the 'request' objec
 
 ```javascript
 let netwoks = await Wappsto.request.get('/network');
-```
-
-### Find a model by ID
-
-It is possible to find a spefic model using it ID.
-
-```javascript
-let network = await Wappsto.Network.findById('b23b41c1-0859-46de-9b11-128c6d44df72');
 ```
