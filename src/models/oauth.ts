@@ -14,6 +14,7 @@ export class OAuth extends Model {
 
     constructor(name: string) {
         super('2.0', 'oauth');
+        Model.checker.IOAuthFunc.methodArgs('constructor').check([name]);
         this.name = name;
     }
 

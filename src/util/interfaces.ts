@@ -217,6 +217,10 @@ export interface IStreamFunc {
     onRequest(handler: RequestHandler, internal: boolean): void;
 }
 
+export interface IOAuthFunc {
+    constructor(name?: string): void;
+}
+
 export type SignalHandler = (event: string) => void;
 export type ServiceHandler = (
     event: any

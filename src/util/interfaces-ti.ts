@@ -305,6 +305,10 @@ export const IStreamFunc = t.iface([], {
     ),
 });
 
+export const IOAuthFunc = t.iface([], {
+    constructor: t.func('void', t.param('name', 'string', true)),
+});
+
 export const SignalHandler = t.func('void', t.param('event', 'string'));
 
 export const ServiceHandler = t.func(
@@ -348,6 +352,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IStreamEvent,
     IStreamModel,
     IStreamFunc,
+    IOAuthFunc,
     SignalHandler,
     ServiceHandler,
     RequestHandler,
