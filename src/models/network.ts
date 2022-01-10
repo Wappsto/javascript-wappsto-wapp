@@ -8,28 +8,18 @@ import { Value } from './value';
 import { printDebug } from '../util/debug';
 import { INetwork, IDevice } from '../util/interfaces';
 
-export async function createNetwork(
-    name: string | INetwork,
-    description: string | undefined = undefined
-): Promise<Network> {
-    Model.checker.INetworkFunc.methodArgs('createNetwork').check([
-        name,
-        description,
-    ]);
-    if (typeof name !== 'string') {
-        let options: INetwork = name;
-        description = options.description;
-        name = options.name;
-    }
-    let networks = await Network.fetch(name);
+export async function createNetwork(params: INetwork): Promise<Network> {
+    Model.checker.INetworkFunc.methodArgs('createNetwork').check([params]);
+
+    let networks = await Network.fetch(params.name);
     if (networks.length !== 0) {
         printDebug(`Using existing network with id ${networks[0].meta.id}`);
         return networks[0];
     }
 
     let network = new Network();
-    network.name = name;
-    network.description = description;
+    network.name = params.name;
+    network.description = params.description;
     await network.create();
 
     return network;

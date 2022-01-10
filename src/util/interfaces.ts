@@ -49,10 +49,7 @@ export interface INetwork {
 
 export interface INetworkFunc {
     constructor(name?: string): void;
-    createNetwork(
-        name: string | INetwork,
-        description: string | undefined
-    ): Promise<INetwork>;
+    createNetwork(params: INetwork): Promise<INetwork>;
     findDeviceByName(name: string): IDevice[];
     findValueByName(name: string): IValue[];
     findValueByType(type: string): IValue[];

@@ -55,11 +55,7 @@ export const INetwork = t.iface([], {
 
 export const INetworkFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string', true)),
-    createNetwork: t.func(
-        'INetwork',
-        t.param('name', t.union('string', 'INetwork')),
-        t.param('description', t.union('string', 'undefined'))
-    ),
+    createNetwork: t.func('INetwork', t.param('options', 'INetwork')),
     findDeviceByName: t.func(t.array('IDevice'), t.param('name', 'string')),
     findValueByName: t.func(t.array('IValue'), t.param('name', 'string')),
     findValueByType: t.func(t.array('IValue'), t.param('type', 'string')),
