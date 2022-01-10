@@ -333,7 +333,7 @@ describe('network', () => {
             ],
         });
 
-        let network = await createNetwork('Network Name');
+        let network = await createNetwork({ name: 'Network Name' });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
