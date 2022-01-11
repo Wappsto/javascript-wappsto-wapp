@@ -36,7 +36,7 @@ export class Value extends StreamModel implements IValue {
 
     constructor(name?: string) {
         super('value');
-        Model.checker.IValueFunc.methodArgs('constructor').check([name]);
+        this.validate('constructor', arguments);
         this.name = name || '';
     }
 
@@ -109,7 +109,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     public createState = async (params: IState) => {
-        Model.checker.IValueFunc.methodArgs('createState').check([params]);
+        this.validate('createState', [params]);
 
         let create = false;
         let state = this.findState(params.type);
@@ -173,7 +173,7 @@ export class Value extends StreamModel implements IValue {
         data: string | number,
         timestamp: string | undefined = undefined
     ): void {
-        Model.checker.IValueFunc.methodArgs('report').check([data, timestamp]);
+        this.validate('report', arguments);
 
         this.findStateAndUpdate('Report', data, timestamp);
     }
@@ -182,25 +182,25 @@ export class Value extends StreamModel implements IValue {
         data: string | number,
         timestamp: string | undefined = undefined
     ): void {
-        Model.checker.IValueFunc.methodArgs('control').check([data, timestamp]);
+        this.validate('control', arguments);
 
         this.findStateAndUpdate('Control', data, timestamp);
     }
 
     public onControl(callback: ValueStreamCallback): void {
-        Model.checker.IValueFunc.methodArgs('onControl').check([callback]);
+        this.validate('onControl', arguments);
 
         this.findStateAndCallback('Control', callback);
     }
 
     public onReport(callback: ValueStreamCallback): void {
-        Model.checker.IValueFunc.methodArgs('onReport').check([callback]);
+        this.validate('onReport', arguments);
 
         this.findStateAndCallback('Report', callback);
     }
 
     public onRefresh(callback: RefreshStreamCallback): void {
-        Model.checker.IValueFunc.methodArgs('onRefresh').check([callback]);
+        this.validate('onRefresh', arguments);
 
         this.onChange(() => {
             if (this.status === 'update') {
@@ -237,7 +237,7 @@ export class Value extends StreamModel implements IValue {
     public getReportLog = async (
         request: ILogRequest
     ): Promise<ILogResponse> => {
-        Model.checker.IValueFunc.methodArgs('getReportLog').check([request]);
+        this.validate('getReportLog', [request]);
 
         return this.findStateAndLog('Report', request);
     };
@@ -245,7 +245,7 @@ export class Value extends StreamModel implements IValue {
     public getControlLog = async (
         request: ILogRequest
     ): Promise<ILogResponse> => {
-        Model.checker.IValueFunc.methodArgs('getControlLog').check([request]);
+        this.validate('getControlLog', [request]);
 
         return this.findStateAndLog('Control', request);
     };
@@ -255,11 +255,7 @@ export class Value extends StreamModel implements IValue {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        Model.checker.IValueFunc.methodArgs('find').check([
-            params,
-            quantity,
-            usage,
-        ]);
+        this.validate('find', [params, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value`;
         }
@@ -285,11 +281,7 @@ export class Value extends StreamModel implements IValue {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        Model.checker.IValueFunc.methodArgs('findByName').check([
-            name,
-            quantity,
-            usage,
-        ]);
+        this.validate('findByName', [name, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with name ${name}`;
         }
@@ -301,11 +293,7 @@ export class Value extends StreamModel implements IValue {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        Model.checker.IValueFunc.methodArgs('findByType').check([
-            type,
-            quantity,
-            usage,
-        ]);
+        this.validate('findByType', [type, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with type ${type}`;
         }
@@ -313,18 +301,16 @@ export class Value extends StreamModel implements IValue {
     };
 
     static findAllByName = async (name: string, usage: string = '') => {
-        Model.checker.IValueFunc.methodArgs('findAllByName').check([
-            name,
-            usage,
-        ]);
+        this.validate('findAllByName', [name, usage]);
         return Value.findByName(name, 'all', usage);
     };
 
     static findAllByType = async (type: string, usage: string = '') => {
-        Model.checker.IValueFunc.methodArgs('findAllByType').check([
-            type,
-            usage,
-        ]);
+        this.validate('findAllByType', [type, usage]);
         return Value.findByType(type, 'all', usage);
     };
+
+    private static validate(name: string, params: any): void {
+        this.validateMethod('Value', name, params);
+    }
 }

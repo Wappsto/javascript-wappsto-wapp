@@ -37,6 +37,30 @@ export class Model implements IModel {
         return [];
     }
 
+    protected validate(name: string, params: any): void {
+        Model.validateMethod(this.meta.type || '', name, params);
+    }
+
+    public static validateMethod(
+        type: string,
+        name: string,
+        params: any
+    ): void {
+        if (config().validation !== 'none') {
+            let c = Object.keys(Model.checker).find(
+                (k) => k === `I${type}Func`
+            );
+            if (c) {
+                let m = Model.checker[c].methodArgs(name);
+                if (config().validation === 'strict') {
+                    m.strictCheck(Array.from(params));
+                } else {
+                    m.check(Array.from(params));
+                }
+            }
+        }
+    }
+
     protected static generateOptions(
         params?: Record<string, any>
     ): Record<string, any> {
@@ -76,7 +100,7 @@ export class Model implements IModel {
     };
 
     public create = async (params: Record<string, any> = {}): Promise<void> => {
-        Model.checker.IModelFunc.methodArgs('create').check([params]);
+        Model.validateMethod('Model', 'create', [params]);
         try {
             await this._create(params);
         } catch (e) {
@@ -121,7 +145,7 @@ export class Model implements IModel {
         endpoint: string,
         params?: Record<string, any>
     ): Promise<Record<string, any>[]> => {
-        Model.checker.IModelFunc.methodArgs('fetch').check([endpoint, params]);
+        Model.validateMethod('Model', 'fetch', [endpoint, params]);
         try {
             let response = await wappsto.get(
                 endpoint,
@@ -144,7 +168,7 @@ export class Model implements IModel {
     };
 
     public parse(json: Record<string, any>): boolean {
-        Model.checker.IModelFunc.methodArgs('parse').check([json]);
+        Model.validateMethod('Model', 'parse', arguments);
         if (_.isArray(json)) {
             json = json[0];
         }

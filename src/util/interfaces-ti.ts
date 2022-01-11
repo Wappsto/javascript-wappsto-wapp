@@ -7,6 +7,7 @@ import * as t from 'ts-interface-checker';
 export const IConfig = t.iface([], {
     verbose: t.opt('boolean'),
     debug: t.opt('boolean'),
+    validation: t.opt(t.union(t.lit('none'), t.lit('normal'), t.lit('strict'))),
 });
 
 export const IModelFunc = t.iface([], {
@@ -55,8 +56,12 @@ export const INetwork = t.iface([], {
 
 export const INetworkFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string', true)),
-    createNetwork: t.func('INetwork', t.param('options', 'INetwork')),
+    createNetwork: t.func('INetwork', t.param('params', 'INetwork')),
     findDeviceByName: t.func(t.array('IDevice'), t.param('name', 'string')),
+    findDeviceByProduct: t.func(
+        t.array('IDevice'),
+        t.param('product', 'string')
+    ),
     findValueByName: t.func(t.array('IValue'), t.param('name', 'string')),
     findValueByType: t.func(t.array('IValue'), t.param('type', 'string')),
     createDevice: t.func('IDevice', t.param('params', 'IDevice')),
@@ -303,6 +308,7 @@ export const IStreamFunc = t.iface([], {
 
 export const IOAuthFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string', true)),
+    getToken: t.func('void', t.param('name', 'string')),
 });
 
 export const SignalHandler = t.func('void', t.param('event', 'string'));

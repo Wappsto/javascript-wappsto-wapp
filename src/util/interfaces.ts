@@ -1,6 +1,7 @@
 export interface IConfig {
     verbose?: boolean;
     debug?: boolean;
+    validation?: 'none' | 'normal' | 'strict';
 }
 
 export interface IModelFunc {
@@ -51,6 +52,7 @@ export interface INetworkFunc {
     constructor(name?: string): void;
     createNetwork(params: INetwork): Promise<INetwork>;
     findDeviceByName(name: string): IDevice[];
+    findDeviceByProduct(product: string): IDevice[];
     findValueByName(name: string): IValue[];
     findValueByType(type: string): IValue[];
     createDevice(params: IDevice): Promise<IDevice>;
@@ -216,6 +218,7 @@ export interface IStreamFunc {
 
 export interface IOAuthFunc {
     constructor(name?: string): void;
+    getToken(name: string): void;
 }
 
 export type SignalHandler = (event: string) => void;

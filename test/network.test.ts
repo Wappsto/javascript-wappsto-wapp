@@ -29,6 +29,7 @@ describe('network', () => {
                     id: 'device_id',
                 },
                 name: 'Device Name',
+                product: 'Device Product',
                 value: [
                     {
                         meta: {
@@ -48,6 +49,24 @@ describe('network', () => {
             },
         ],
     };
+    let response2Networks = [
+        {
+            meta: {
+                type: 'network',
+                version: '2.0',
+                id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+            },
+            name: 'test',
+        },
+        {
+            meta: {
+                type: 'network',
+                version: '2.0',
+                id: 'aa9da00a-b5e2-4651-a111-92cb0899ee7c',
+            },
+            name: 'test',
+        },
+    ];
 
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
@@ -247,6 +266,17 @@ describe('network', () => {
         expect(device[0].toJSON).toBeDefined();
     });
 
+    it('can find device by product', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
+
+        let networks = await Network.fetch();
+        let device = networks[0].findDeviceByProduct('Device Product');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(device[0].name).toEqual('Device Name');
+        expect(device[0].toJSON).toBeDefined();
+    });
+
     it('can find value by name', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
 
@@ -411,5 +441,48 @@ describe('network', () => {
         expect(device.version).toEqual('version');
         expect(device.manufacturer).toEqual('manufacturer');
         expect(device.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can find all network by name', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: response2Networks });
+        let r = Network.findAllByName('test');
+        await server.connected;
+
+        await new Promise((r) => setTimeout(r, 100));
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                base: {
+                    code: 1100004,
+                    identifier: 'network-all-Find all network with name test',
+                    ids: [
+                        'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        'aa9da00a-b5e2-4651-a111-92cb0899ee7c',
+                    ],
+                },
+            },
+        });
+
+        let network = await r;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+            params: {
+                expand: 4,
+                quantity: 'all',
+                message: 'Find all network with name test',
+                identifier: 'network-all-Find all network with name test',
+                this_name: 'test',
+                method: ['retrieve', 'update'],
+            },
+        });
+        expect(network[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(network[1].meta.id === 'aa9da00a-b5e2-4651-a111-92cb0899ee7c');
     });
 });

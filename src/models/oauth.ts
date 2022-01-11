@@ -14,7 +14,7 @@ export class OAuth extends Model {
 
     constructor(name: string) {
         super('2.0', 'oauth');
-        Model.checker.IOAuthFunc.methodArgs('constructor').check([name]);
+        this.validate('constructor', arguments);
         this.name = name;
     }
 
@@ -63,7 +63,12 @@ export class OAuth extends Model {
     };
 
     static getToken = async (name: string) => {
+        this.validate('getToken', [name]);
         let oauth = new OAuth(name);
         return await oauth.getToken();
     };
+
+    private static validate(name: string, params: any): void {
+        this.validateMethod('OAuth', name, params);
+    }
 }

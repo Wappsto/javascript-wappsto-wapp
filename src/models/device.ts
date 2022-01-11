@@ -29,7 +29,7 @@ export class Device extends StreamModel implements IDevice {
 
     constructor(name?: string) {
         super('device');
-        Model.checker.IDeviceFunc.methodArgs('constructor').check([name]);
+        this.validate('constructor', arguments);
         this.name = name || '';
     }
 
@@ -51,17 +51,17 @@ export class Device extends StreamModel implements IDevice {
     }
 
     public findValueByName(name: string): Value[] {
-        Model.checker.IDeviceFunc.methodArgs('findValueByName').check([name]);
+        this.validate('findValueByName', arguments);
         return this.value.filter((val) => val.name === name);
     }
 
     public findValueByType(type: string): Value[] {
-        Model.checker.IDeviceFunc.methodArgs('findValueByType').check([type]);
+        this.validate('findValueByType', arguments);
         return this.value.filter((val) => val.type === type);
     }
 
     public async createValue(params: IValue): Promise<Value> {
-        Model.checker.IDeviceFunc.methodArgs('createValue').check([params]);
+        this.validate('createValue', arguments);
 
         let value = new Value();
         let values = this.findValueByName(params.name);
@@ -100,9 +100,7 @@ export class Device extends StreamModel implements IDevice {
     public async createNumberValue(
         params: IValue & IValueNumber
     ): Promise<Value> {
-        Model.checker.IDeviceFunc.methodArgs('createNumberValue').check([
-            params,
-        ]);
+        this.validate('createNumberValue', arguments);
 
         let numberValue = {} as IValueNumber;
         numberValue.min = params.min;
@@ -122,9 +120,7 @@ export class Device extends StreamModel implements IDevice {
     public async createStringValue(
         params: IValue & IValueString
     ): Promise<Value> {
-        Model.checker.IDeviceFunc.methodArgs('createStringValue').check([
-            params,
-        ]);
+        this.validate('createStringValue', arguments);
 
         let stringValue = {} as IValueString;
         stringValue.max = params.max;
@@ -136,7 +132,7 @@ export class Device extends StreamModel implements IDevice {
     }
 
     public async createBlobValue(params: IValue & IValueBlob): Promise<Value> {
-        Model.checker.IDeviceFunc.methodArgs('createBlobValue').check([params]);
+        this.validate('createBlobValue', arguments);
 
         let blobValue = {} as IValueBlob;
         blobValue.max = params.max;
@@ -148,7 +144,7 @@ export class Device extends StreamModel implements IDevice {
     }
 
     public async createXmlValue(params: IValue & IValueXml): Promise<Value> {
-        Model.checker.IDeviceFunc.methodArgs('createXmlValue').check([params]);
+        this.validate('createXmlValue', arguments);
 
         let xmlValue = {} as IValueXml;
         xmlValue.xsd = params.xsd;
@@ -164,11 +160,7 @@ export class Device extends StreamModel implements IDevice {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        Model.checker.IDeviceFunc.methodArgs('find').check([
-            params,
-            quantity,
-            usage,
-        ]);
+        this.validate('find', [params, quantity, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device`;
@@ -195,11 +187,7 @@ export class Device extends StreamModel implements IDevice {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        Model.checker.IDeviceFunc.methodArgs('findByName').check([
-            name,
-            quantity,
-            usage,
-        ]);
+        this.validate('findByName', [name, quantity, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device with name ${name}`;
@@ -208,10 +196,7 @@ export class Device extends StreamModel implements IDevice {
     };
 
     public static findAllByName = async (name: string, usage: string = '') => {
-        Model.checker.IDeviceFunc.methodArgs('findAllByName').check([
-            name,
-            usage,
-        ]);
+        this.validate('findAllByName', [name, usage]);
 
         return Device.findByName(name, 'all', usage);
     };
@@ -221,11 +206,7 @@ export class Device extends StreamModel implements IDevice {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        Model.checker.IDeviceFunc.methodArgs('findByProduct').check([
-            product,
-            quantity,
-            usage,
-        ]);
+        this.validate('findByProduct', [product, quantity, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device with product ${product}`;
@@ -237,10 +218,7 @@ export class Device extends StreamModel implements IDevice {
         product: string,
         usage: string = ''
     ) => {
-        Model.checker.IDeviceFunc.methodArgs('findAllByProduct').check([
-            product,
-            usage,
-        ]);
+        this.validate('findAllByProduct', [product, usage]);
 
         return Device.findByProduct(product, 'all', usage);
     };
@@ -251,4 +229,8 @@ export class Device extends StreamModel implements IDevice {
         let data = await Model.fetch(url, params);
         return Device.fromArray(data);
     };
+
+    private static validate(name: string, params: any): void {
+        this.validateMethod('Device', name, params);
+    }
 }

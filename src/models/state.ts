@@ -13,7 +13,7 @@ export class State extends StreamModel implements IState {
 
     constructor(type?: 'Report' | 'Control') {
         super('state');
-        Model.checker.IStateFunc.methodArgs('constructor').check([type]);
+        this.validate('constructor', arguments);
         this.type = type || 'Report';
     }
 

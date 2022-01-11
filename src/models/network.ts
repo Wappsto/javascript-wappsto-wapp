@@ -9,7 +9,7 @@ import { printDebug } from '../util/debug';
 import { INetwork, IDevice } from '../util/interfaces';
 
 export async function createNetwork(params: INetwork): Promise<Network> {
-    Model.checker.INetworkFunc.methodArgs('createNetwork').check([params]);
+    Model.validateMethod('Network', 'createNetwork', arguments);
 
     let networks = await Network.fetch(params.name);
     if (networks.length !== 0) {
@@ -38,7 +38,7 @@ export class Network extends StreamModel implements INetwork {
 
     constructor(name?: string) {
         super('network');
-        Model.checker.INetworkFunc.methodArgs('constructor').check([name]);
+        this.validate('constructor', arguments);
         this.name = name || '';
     }
 
@@ -47,12 +47,17 @@ export class Network extends StreamModel implements INetwork {
     }
 
     public findDeviceByName(name: string): Device[] {
-        Model.checker.INetworkFunc.methodArgs('findDeviceByName').check([name]);
+        this.validate('findDeviceByName', arguments);
         return this.device.filter((dev) => dev.name === name);
     }
 
+    public findDeviceByProduct(product: string): Device[] {
+        this.validate('findDeviceByProduct', arguments);
+        return this.device.filter((dev) => dev.product === product);
+    }
+
     public findValueByName(name: string): Value[] {
-        Model.checker.INetworkFunc.methodArgs('findValueByName').check([name]);
+        this.validate('findValueByName', arguments);
         let values: Value[] = [];
         this.device.forEach((dev) => {
             values = values.concat(dev.findValueByName(name));
@@ -61,7 +66,7 @@ export class Network extends StreamModel implements INetwork {
     }
 
     public findValueByType(type: string): Value[] {
-        Model.checker.INetworkFunc.methodArgs('findValueByType').check([type]);
+        this.validate('findValueByType', arguments);
         let values: Value[] = [];
         this.device.forEach((dev) => {
             values = values.concat(dev.findValueByType(type));
@@ -70,7 +75,7 @@ export class Network extends StreamModel implements INetwork {
     }
 
     public async createDevice(params: IDevice): Promise<Device> {
-        Model.checker.INetworkFunc.methodArgs('createDevice').check([params]);
+        this.validate('createDevice', arguments);
 
         let device = new Device();
         let devices = this.findDeviceByName(params.name);
@@ -101,11 +106,7 @@ export class Network extends StreamModel implements INetwork {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        Model.checker.INetworkFunc.methodArgs('find').check([
-            params,
-            quantity,
-            usage,
-        ]);
+        this.validate('find', [params, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} network`;
         }
@@ -131,11 +132,7 @@ export class Network extends StreamModel implements INetwork {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        Model.checker.INetworkFunc.methodArgs('findByName').check([
-            name,
-            quantity,
-            usage,
-        ]);
+        this.validate('findByName', [name, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} network with name ${name}`;
         }
@@ -143,10 +140,7 @@ export class Network extends StreamModel implements INetwork {
     };
 
     static findAllByName = async (name: string, usage: string = '') => {
-        Model.checker.INetworkFunc.methodArgs('findAllByName').check([
-            name,
-            usage,
-        ]);
+        this.validate('findAllByName', [name, usage]);
         return Network.findByName(name, 'all', usage);
     };
 
@@ -154,7 +148,7 @@ export class Network extends StreamModel implements INetwork {
         name: string = '',
         params: Record<string, any> = {}
     ) => {
-        Model.checker.INetworkFunc.methodArgs('fetch').check([name, params]);
+        this.validate('fetch', [name, params]);
         Object.assign(params, { expand: 4 });
         if (name !== '') {
             Object.assign(params, {
@@ -164,4 +158,8 @@ export class Network extends StreamModel implements INetwork {
         let data = await Model.fetch(Network.endpoint, params);
         return Network.fromArray(data);
     };
+
+    private static validate(name: string, params: any): void {
+        this.validateMethod('Network', name, params);
+    }
 }

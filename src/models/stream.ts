@@ -144,7 +144,7 @@ export class Stream extends Model {
     }
 
     public subscribe(model: IStreamModel): void {
-        Model.checker.IStreamFunc.methodArgs('subscribe').check([model]);
+        this.validate('subscribe', arguments);
 
         this.open().then(() => {
             if (!this.models[model.path()]) {
@@ -159,10 +159,7 @@ export class Stream extends Model {
     }
 
     public subscribeService(service: string, handler: ServiceHandler): void {
-        Model.checker.IStreamFunc.methodArgs('subscribeService').check([
-            service,
-            handler,
-        ]);
+        this.validate('subscribeService', arguments);
 
         this.open().then(() => {
             if (service[0] !== '/') {
@@ -180,10 +177,7 @@ export class Stream extends Model {
     }
 
     public addSignalHandler(type: string, handler: SignalHandler): void {
-        Model.checker.IStreamFunc.methodArgs('addSignalHandler').check([
-            type,
-            handler,
-        ]);
+        this.validate('addSignalHandler', arguments);
 
         this.open().then(() => {
             printDebug(`Add Signal Handler: ${type}`);
@@ -195,7 +189,7 @@ export class Stream extends Model {
     }
 
     public async sendRequest(msg: any): Promise<any> {
-        Model.checker.IStreamFunc.methodArgs('sendRequest').check([msg]);
+        this.validate('sendRequest', arguments);
 
         let result = {};
         try {
@@ -212,11 +206,8 @@ export class Stream extends Model {
         code: number,
         msg: any
     ): Promise<void> {
-        Model.checker.IStreamFunc.methodArgs('sendResponse').check([
-            event,
-            code,
-            msg,
-        ]);
+        this.validate('sendResponse', arguments);
+
         try {
             let data = {
                 code: code,
@@ -229,10 +220,7 @@ export class Stream extends Model {
     }
 
     public onRequest(handler: RequestHandler, internal: boolean): void {
-        Model.checker.IStreamFunc.methodArgs('onRequest').check([
-            handler,
-            internal,
-        ]);
+        this.validate('onRequest', arguments);
 
         this.subscribeService(
             '/extsync/request',
