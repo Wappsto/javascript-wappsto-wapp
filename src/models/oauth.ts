@@ -63,12 +63,12 @@ export class OAuth extends Model {
     };
 
     static getToken = async (name: string) => {
-        this.validate('getToken', [name]);
+        OAuth.validate('getToken', [name]);
         let oauth = new OAuth(name);
         return await oauth.getToken();
     };
 
     private static validate(name: string, params: any): void {
-        this.validateMethod('OAuth', name, params);
+        Model.validateMethod('OAuth', name, params);
     }
 }

@@ -160,7 +160,7 @@ export class Device extends StreamModel implements IDevice {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        this.validate('find', [params, quantity, usage]);
+        Device.validate('find', [params, quantity, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device`;
@@ -187,7 +187,7 @@ export class Device extends StreamModel implements IDevice {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        this.validate('findByName', [name, quantity, usage]);
+        Device.validate('findByName', [name, quantity, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device with name ${name}`;
@@ -196,7 +196,7 @@ export class Device extends StreamModel implements IDevice {
     };
 
     public static findAllByName = async (name: string, usage: string = '') => {
-        this.validate('findAllByName', [name, usage]);
+        Device.validate('findAllByName', [name, usage]);
 
         return Device.findByName(name, 'all', usage);
     };
@@ -206,7 +206,7 @@ export class Device extends StreamModel implements IDevice {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        this.validate('findByProduct', [product, quantity, usage]);
+        Device.validate('findByProduct', [product, quantity, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device with product ${product}`;
@@ -218,7 +218,7 @@ export class Device extends StreamModel implements IDevice {
         product: string,
         usage: string = ''
     ) => {
-        this.validate('findAllByProduct', [product, usage]);
+        Device.validate('findAllByProduct', [product, usage]);
 
         return Device.findByProduct(product, 'all', usage);
     };
@@ -231,6 +231,6 @@ export class Device extends StreamModel implements IDevice {
     };
 
     private static validate(name: string, params: any): void {
-        this.validateMethod('Device', name, params);
+        Model.validateMethod('Device', name, params);
     }
 }

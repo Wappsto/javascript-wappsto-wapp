@@ -106,7 +106,7 @@ export class Network extends StreamModel implements INetwork {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        this.validate('find', [params, quantity, usage]);
+        Network.validate('find', [params, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} network`;
         }
@@ -132,7 +132,7 @@ export class Network extends StreamModel implements INetwork {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        this.validate('findByName', [name, quantity, usage]);
+        Network.validate('findByName', [name, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} network with name ${name}`;
         }
@@ -140,7 +140,7 @@ export class Network extends StreamModel implements INetwork {
     };
 
     static findAllByName = async (name: string, usage: string = '') => {
-        this.validate('findAllByName', [name, usage]);
+        Network.validate('findAllByName', [name, usage]);
         return Network.findByName(name, 'all', usage);
     };
 
@@ -148,7 +148,7 @@ export class Network extends StreamModel implements INetwork {
         name: string = '',
         params: Record<string, any> = {}
     ) => {
-        this.validate('fetch', [name, params]);
+        Network.validate('fetch', [name, params]);
         Object.assign(params, { expand: 4 });
         if (name !== '') {
             Object.assign(params, {
@@ -160,6 +160,6 @@ export class Network extends StreamModel implements INetwork {
     };
 
     private static validate(name: string, params: any): void {
-        this.validateMethod('Network', name, params);
+        Model.validateMethod('Network', name, params);
     }
 }

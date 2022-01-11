@@ -255,7 +255,7 @@ export class Value extends StreamModel implements IValue {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        this.validate('find', [params, quantity, usage]);
+        Value.validate('find', [params, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value`;
         }
@@ -281,7 +281,7 @@ export class Value extends StreamModel implements IValue {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        this.validate('findByName', [name, quantity, usage]);
+        Value.validate('findByName', [name, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with name ${name}`;
         }
@@ -293,7 +293,7 @@ export class Value extends StreamModel implements IValue {
         quantity: number | 'all' = 1,
         usage: string = ''
     ) => {
-        this.validate('findByType', [type, quantity, usage]);
+        Value.validate('findByType', [type, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with type ${type}`;
         }
@@ -301,16 +301,16 @@ export class Value extends StreamModel implements IValue {
     };
 
     static findAllByName = async (name: string, usage: string = '') => {
-        this.validate('findAllByName', [name, usage]);
+        Value.validate('findAllByName', [name, usage]);
         return Value.findByName(name, 'all', usage);
     };
 
     static findAllByType = async (type: string, usage: string = '') => {
-        this.validate('findAllByType', [type, usage]);
+        Value.validate('findAllByType', [type, usage]);
         return Value.findByType(type, 'all', usage);
     };
 
     private static validate(name: string, params: any): void {
-        this.validateMethod('Value', name, params);
+        Model.validateMethod('Value', name, params);
     }
 }
