@@ -18,6 +18,25 @@ describe('device', () => {
         name: 'test',
     };
 
+    let response2Devices = [
+        {
+            meta: {
+                type: 'device',
+                version: '2.0',
+                id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+            },
+            name: 'test',
+        },
+        {
+            meta: {
+                type: 'device',
+                version: '2.0',
+                id: '7c1611da-46e2-4f0d-85fa-1b010561b35d',
+            },
+            name: 'test',
+        },
+    ];
+
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
     beforeAll(() => {
@@ -41,6 +60,7 @@ describe('device', () => {
         let device = new Device('test');
         await device.create();
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device',
@@ -69,6 +89,7 @@ describe('device', () => {
         device.name = 'new name';
         await device.update();
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -139,6 +160,17 @@ describe('device', () => {
                 identifier: 'device-1-Find 1 device with name test',
                 this_name: 'test',
                 method: ['retrieve', 'update'],
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+            params: {
+                expand: 3,
+                id: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                identifier: 'device-1-Find 1 device with name test',
+                message: 'Find 1 device with name test',
+                method: ['retrieve', 'update'],
+                quantity: 1,
+                this_name: 'test',
             },
         });
         expect(device[0].toJSON).toBeDefined();
@@ -237,6 +269,7 @@ describe('device', () => {
             si_conversion: 'si_conversion',
         });
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
@@ -345,6 +378,7 @@ describe('device', () => {
             encoding: 'encoding',
         });
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
@@ -436,6 +470,7 @@ describe('device', () => {
             encoding: 'encoding',
         });
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
@@ -515,6 +550,7 @@ describe('device', () => {
             namespace: 'namespace',
         });
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
@@ -603,6 +639,7 @@ describe('device', () => {
             si_conversion: 'si_conversion',
         });
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -639,5 +676,51 @@ describe('device', () => {
         expect(value.number?.unit).toEqual('unit');
         expect(value.number?.si_conversion).toEqual('si_conversion');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can find all devices by name', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: response2Devices });
+
+        let r = Device.findAllByName('test');
+        let device = await r;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+            params: {
+                expand: 3,
+                quantity: 'all',
+                message: 'Find all device with name test',
+                identifier: 'device-all-Find all device with name test',
+                this_name: 'test',
+                method: ['retrieve', 'update'],
+            },
+        });
+
+        expect(device[0].toJSON).toBeDefined();
+        expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(device[1].meta.id === '7c1611da-46e2-4f0d-85fa-1b010561b35d');
+    });
+
+    it('can find all devices by product', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: response2Devices });
+
+        let r = Device.findAllByProduct('test');
+        let device = await r;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+            params: {
+                expand: 3,
+                quantity: 'all',
+                message: 'Find all device with product test',
+                identifier: 'device-all-Find all device with product test',
+                this_product: 'test',
+                method: ['retrieve', 'update'],
+            },
+        });
+
+        expect(device[0].toJSON).toBeDefined();
+        expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(device[1].meta.id === '7c1611da-46e2-4f0d-85fa-1b010561b35d');
     });
 });

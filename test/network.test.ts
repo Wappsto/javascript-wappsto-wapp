@@ -485,4 +485,43 @@ describe('network', () => {
         expect(network[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
         expect(network[1].meta.id === 'aa9da00a-b5e2-4651-a111-92cb0899ee7c');
     });
+
+    it('can use custom find', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: response2Networks });
+        let r = Network.find({ name: 'test' });
+        await server.connected;
+
+        await new Promise((r) => setTimeout(r, 100));
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                base: {
+                    code: 1100004,
+                    identifier: 'network-1-Find 1 network',
+                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                },
+            },
+        });
+
+        let network = await r;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+            params: {
+                expand: 4,
+                quantity: 1,
+                message: 'Find 1 network',
+                identifier: 'network-1-Find 1 network',
+                this_name: 'test',
+                method: ['retrieve', 'update'],
+            },
+        });
+        expect(network[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
 });

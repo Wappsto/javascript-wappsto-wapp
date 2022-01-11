@@ -252,10 +252,10 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 1));
         expect(fun).toHaveBeenCalledWith('test');
         expect(fun.mock.calls.length).toBe(1);
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 1));
 
         server.send({
             meta_object: {
@@ -324,7 +324,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
@@ -394,7 +394,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(funWeb.mock.calls.length).toBe(1);
         expect(funFore.mock.calls.length).toBe(1);
