@@ -21,7 +21,8 @@
         "doc": "typedoc --exclude **/*.test.ts src/index.ts",
         "size": "size-limit",
         "analyze": "size-limit --why",
-        "generate-types": "`npm bin`/ts-interface-builder -v -g -c src/util/interfaces.ts"
+        "generate-types": "`npm bin`/ts-interface-builder -v -g -c src/util/interfaces.ts",
+        "doc": "npx typedoc --tsconfig tsconfig.typedoc.json src/index.ts"
     },
     "peerDependencies": {},
     "husky": {
