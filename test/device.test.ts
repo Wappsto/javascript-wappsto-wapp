@@ -196,7 +196,7 @@ describe('device', () => {
         expect(devices[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
-    it('can create a value from a template', async () => {
+    let templateHelperStart = () => {
         mockedAxios.post
             .mockResolvedValueOnce({
                 data: [
@@ -231,35 +231,12 @@ describe('device', () => {
                     },
                 ],
             });
-        let device = new Device();
-        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
-        let value = await device.createValue(
-            'name',
-            'rw',
-            ValueTemplate.Number
-        );
+    };
 
+    let templateHelperDone = () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
-            expect.objectContaining({
-                permission: 'rw',
-                type: 'number',
-                meta: {
-                    type: 'value',
-                    version: '2.0',
-                },
-                name: 'name',
-                number: {
-                    min: 0,
-                    max: 255,
-                    step: 1,
-                },
-            }),
-            {}
-        );
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
@@ -284,12 +261,120 @@ describe('device', () => {
             }),
             {}
         );
+    };
+
+    it('can create a value from a NUMBER template', async () => {
+        templateHelperStart();
+
+        let device = new Device();
+        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
+        let value = await device.createValue(
+            'name',
+            'rw',
+            ValueTemplate.NUMBER
+        );
+
+        templateHelperDone();
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            {
+                permission: 'rw',
+                type: 'number',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
+                },
+                name: 'name',
+                number: {
+                    min: -1e38,
+                    max: 1e38,
+                    step: 0.01,
+                },
+            },
+            {}
+        );
+
         expect(value.name).toEqual('name');
         expect(value.permission).toEqual('rw');
         expect(value.type).toEqual('number');
-        expect(value.number?.min).toEqual(0);
-        expect(value.number?.max).toEqual(255);
-        expect(value.number?.step).toEqual(1);
+        expect(value.number?.min).toEqual(-1e38);
+        expect(value.number?.max).toEqual(1e38);
+        expect(value.number?.step).toEqual(0.01);
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can create a value from a STRING template', async () => {
+        templateHelperStart();
+
+        let device = new Device();
+        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
+        let value = await device.createValue(
+            'name',
+            'rw',
+            ValueTemplate.STRING
+        );
+
+        templateHelperDone();
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            {
+                permission: 'rw',
+                type: 'string',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
+                },
+                name: 'name',
+                string: {
+                    max: 64,
+                    encoding: 'utf-8',
+                },
+            },
+            {}
+        );
+
+        expect(value.name).toEqual('name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('string');
+        expect(value.string?.max).toEqual(64);
+        expect(value.string?.encoding).toEqual('utf-8');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can create a value from a IMAGE template', async () => {
+        templateHelperStart();
+
+        let device = new Device();
+        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
+        let value = await device.createValue('name', 'rw', ValueTemplate.IMAGE);
+
+        templateHelperDone();
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            {
+                permission: 'rw',
+                type: 'image',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
+                },
+                name: 'name',
+                blob: {
+                    max: 255,
+                    encoding: 'base64',
+                },
+            },
+            {}
+        );
+
+        expect(value.name).toEqual('name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('image');
+        expect(value.blob?.max).toEqual(255);
+        expect(value.blob?.encoding).toEqual('base64');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
