@@ -81,16 +81,16 @@ export class Value extends StreamModel implements IValue {
         return new Date().toISOString();
     }
 
-    private findStateAndUpdate(
+    private async findStateAndUpdate(
         type: string,
         data: string | number,
         timestamp: string | undefined
-    ): void {
+    ): Promise<void> {
         let state = this.findState(type);
         if (state) {
             state.data = data.toString();
             state.timestamp = timestamp || this.getTime();
-            state.update();
+            await state.update();
         }
     }
 
@@ -169,19 +169,19 @@ export class Value extends StreamModel implements IValue {
         return this.findStateAndTimestamp('Report');
     }
 
-    public report(
+    public async report(
         data: string | number,
         timestamp: string | undefined = undefined
-    ): void {
+    ): Promise<void> {
         this.validate('report', arguments);
 
         this.findStateAndUpdate('Report', data, timestamp);
     }
 
-    public control(
+    public async control(
         data: string | number,
         timestamp: string | undefined = undefined
-    ): void {
+    ): Promise<void> {
         this.validate('control', arguments);
 
         this.findStateAndUpdate('Control', data, timestamp);
