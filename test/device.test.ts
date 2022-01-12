@@ -196,18 +196,6 @@ describe('device', () => {
         expect(devices[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
-    /*it('will throw an error when the permission is wrong', async () => {
-        let device = new Device();
-        try {
-            await device.createValue({ name: 'name', permission: 'wrong' });
-            expect(true).toBe(false);
-        } catch (e: any) {
-            expect(e.message).toBe(
-                'value.permission is none of "r", "w", "rw", "wr"'
-            );
-        }
-    });*/
-
     it('will throw an error when the value type is missing', async () => {
         let device = new Device();
         try {
@@ -270,6 +258,7 @@ describe('device', () => {
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
@@ -594,30 +583,30 @@ describe('device', () => {
     });
 
     it('can return value as a child', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({
-            data: [
-                {
-                    permission: 'rw',
-                    type: 'type',
-                    period: 'period',
-                    meta: {
-                        type: 'value',
-                        version: '2.0',
-                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                    },
-                    name: 'Value Name',
-                    delta: 'delta',
-                    number: {
-                        min: 0,
-                        max: 1,
-                        step: 1,
-                        unit: 'unit',
-                        si_conversion: 'si_conversion',
-                    },
-                },
-            ],
-        });
         mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        permission: 'rw',
+                        type: 'type',
+                        period: 'period',
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                        name: 'Value Name',
+                        delta: 'delta',
+                        number: {
+                            min: 0,
+                            max: 1,
+                            step: 1,
+                            unit: 'unit',
+                            si_conversion: 'si_conversion',
+                        },
+                    },
+                ],
+            })
             .mockResolvedValueOnce({ data: {} })
             .mockResolvedValueOnce({ data: {} });
 
@@ -640,9 +629,9 @@ describe('device', () => {
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/device_id/value',
             expect.objectContaining({
                 permission: 'rw',

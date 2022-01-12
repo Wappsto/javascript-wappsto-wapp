@@ -90,6 +90,8 @@ describe('network', () => {
         let network = new Network('test');
         await network.create();
 
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/network',
@@ -159,7 +161,9 @@ describe('network', () => {
 
     it('can create a new network from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
-        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         let network = await createNetwork({ name: 'Wapp Network' });
@@ -175,8 +179,8 @@ describe('network', () => {
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: { expand: 4, 'this_name=': 'Wapp Network' },
