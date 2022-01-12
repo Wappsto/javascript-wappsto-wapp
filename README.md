@@ -107,13 +107,11 @@ To request access to a device with a spefict product, use 'findByProduct'.
 let devices = await Wappsto.Device.findByProduct('Product name');
 ```
 
-
 To request access to a value with a spefict name, use 'findByName'.
 
 ```javascript
 let values = await Wappsto.Value.findByName('Value name');
 ```
-
 
 To request access to a value with a spefict type, use 'findByType'.
 
@@ -122,12 +120,40 @@ let values = await Wappsto.Value.findByType('Type name');
 ```
 
 
+### To find a child from an exsisting object
+
+To find devices under a network, you can call 'findDeviceByName' to search for all devices with the given name.
+
+```javascript
+let devices = network.findDeviceByName('Device name');
+```
+
+Or you can search for all devices with a given product.
+
+```javascript
+let devices = network.findDeviceByProduct('Device product');
+```
+
+To find all values under a network or device, you can call 'findValueByName' to search for all values with the given name.
+
+```javascript
+let values = network.findValueByName('value name');
+let values = device.findValueByName('value name');
+```
+
+Or you can find all values with a given type, by calling 'findValueByType'.
+
+```javascript
+let values = network.findValueByType('value type');
+let values = device.findValueByType('value type');
+```
+
 ### To report a change in the value
 
 To send a new data point to wappsto, just call the 'report' function on the value.
 
 ```javascript
-value.report('1');
+await value.report('1');
 ```
 
 And to get the last reported data and timestamp.
@@ -142,7 +168,7 @@ let timestamp = value.getReportTimestamp();
 To send a new data point to another value, just call the 'control' function on the value.
 
 ```javascript
-value.control('1');
+await value.control('1');
 ```
 
 And to get the last controlled data and timestamp.
@@ -219,10 +245,22 @@ Wappsto.config({
 });
 ```
 
+### Validation
+
+It is possible to change the validation of the input parameters, by changing it in the config. It can be 'none', 'normal' or 'strict'.
+The default validation is 'normal'.
+
+```javascript
+Wappsto.config({
+  validation: 'strict'
+});
+```
+
 ### Raw requests
 
 It is possible to send your own requests to wappsto by using the 'request' object in wappsto.
 
 ```javascript
 let netwoks = await Wappsto.request.get('/network');
+await Wappsto.request.post('/network', {name: 'Network Name'});
 ```
