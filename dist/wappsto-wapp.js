@@ -1,10 +1,10 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Wappsto = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (process){(function (){
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),require("reflect-metadata");var t,e=(t=require("axios"))&&"object"==typeof t&&"default"in t?t.default:t,r=require("tslib"),n=require("lodash"),a=require("class-transformer"),i=new function(){this.debug=!1,this.verbose=!1};function o(t){return void 0===t&&(t={}),void 0!==t.debug&&(i.debug=t.debug),void 0!==t.verbose&&(i.verbose=t.verbose),i}function s(t){var e=null;return"undefined"!=typeof window&&((e=window.sessionStorage.getItem(t))||(e=function(t){for(var e=t+"=",r=window.document.cookie.split(";"),n=0;n<r.length;n++){var a=r[n];if(0===(a=a.trim()).indexOf(e))return a.substring(e.length,a.length)}return null}(t))),e||(e=process.env[t]||null),e}var u=s("baseUrl")||"/services",c=s("sessionID")||"",p=s("tokenID")||"";function f(t){o().debug&&console.log("WAPPSTO DEBUG: "+t)}function l(t){console.error("WAPPSTO ERROR: "+t)}var d=e.create({baseURL:u,headers:{"X-Session":c,"Content-Type":"application/json"}});function h(t){var r;return e.isAxiosError(t)?null==t||null==(r=t.response)?void 0:r.data:t}function v(t){var e,r;if(t.errno&&-111===t.errno)l("Failed to connect to "+t.address);else if(t.response)if(null!=t&&null!=(e=t.response)&&null!=(r=e.data)&&r.code)switch(t.response.data.code){case 400017:l("You can't share with yourself");break;case 507e6:l("Timeout, waiting for response on extsync request");break;default:l(t.response.data.message),f(JSON.stringify(t.response.data))}else l(t.response.statusText+" for "+t.config.url);else l("Unknown HTTP error: "+t.errno+" ("+t.code+")"),f(JSON.stringify(t))}var m=Object.assign({},console);function y(t){var e=(new Date).toISOString(),r=JSON.stringify({key:t,arguments:arguments.length<=1?void 0:arguments[1],time:e});return d.post("/2.0/extsync/wappsto/editor/console",r).catch((function(){}))}function b(t,e,r,n,a,i,o){try{var s=t[i](o),u=s.value}catch(t){return void r(t)}s.done?e(u):Promise.resolve(u).then(n,a)}function w(t){return function(){var e=this,r=arguments;return new Promise((function(n,a){var i=t.apply(e,r);function o(t){b(i,n,a,o,s,"next",t)}function s(t){b(i,n,a,o,s,"throw",t)}o(void 0)}))}}function g(t,e){for(var r=0;r<e.length;r++){var n=e[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(t,n.key,n)}}function x(t,e,r){return e&&g(t.prototype,e),r&&g(t,r),t}function k(t,e){t.prototype=Object.create(e.prototype),t.prototype.constructor=t,(Object.setPrototypeOf||function(t,e){return t.__proto__=e,t})(t,e)}function S(t){if(void 0===t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return t}var O,A=(function(t){var e=function(t){var e=Object.prototype,r=e.hasOwnProperty,n="function"==typeof Symbol?Symbol:{},a=n.iterator||"@@iterator",i=n.asyncIterator||"@@asyncIterator",o=n.toStringTag||"@@toStringTag";function s(t,e,r){return Object.defineProperty(t,e,{value:r,enumerable:!0,configurable:!0,writable:!0}),t[e]}try{s({},"")}catch(t){s=function(t,e,r){return t[e]=r}}function u(t,e,r,n){var a=Object.create((e&&e.prototype instanceof f?e:f).prototype),i=new S(n||[]);return a._invoke=function(t,e,r){var n="suspendedStart";return function(a,i){if("executing"===n)throw new Error("Generator is already running");if("completed"===n){if("throw"===a)throw i;return{value:void 0,done:!0}}for(r.method=a,r.arg=i;;){var o=r.delegate;if(o){var s=g(o,r);if(s){if(s===p)continue;return s}}if("next"===r.method)r.sent=r._sent=r.arg;else if("throw"===r.method){if("suspendedStart"===n)throw n="completed",r.arg;r.dispatchException(r.arg)}else"return"===r.method&&r.abrupt("return",r.arg);n="executing";var u=c(t,e,r);if("normal"===u.type){if(n=r.done?"completed":"suspendedYield",u.arg===p)continue;return{value:u.arg,done:r.done}}"throw"===u.type&&(n="completed",r.method="throw",r.arg=u.arg)}}}(t,r,i),a}function c(t,e,r){try{return{type:"normal",arg:t.call(e,r)}}catch(t){return{type:"throw",arg:t}}}t.wrap=u;var p={};function f(){}function l(){}function d(){}var h={};s(h,a,(function(){return this}));var v=Object.getPrototypeOf,m=v&&v(v(O([])));m&&m!==e&&r.call(m,a)&&(h=m);var y=d.prototype=f.prototype=Object.create(h);function b(t){["next","throw","return"].forEach((function(e){s(t,e,(function(t){return this._invoke(e,t)}))}))}function w(t,e){var n;this._invoke=function(a,i){function o(){return new e((function(n,o){!function n(a,i,o,s){var u=c(t[a],t,i);if("throw"!==u.type){var p=u.arg,f=p.value;return f&&"object"==typeof f&&r.call(f,"__await")?e.resolve(f.__await).then((function(t){n("next",t,o,s)}),(function(t){n("throw",t,o,s)})):e.resolve(f).then((function(t){p.value=t,o(p)}),(function(t){return n("throw",t,o,s)}))}s(u.arg)}(a,i,n,o)}))}return n=n?n.then(o,o):o()}}function g(t,e){var r=t.iterator[e.method];if(void 0===r){if(e.delegate=null,"throw"===e.method){if(t.iterator.return&&(e.method="return",e.arg=void 0,g(t,e),"throw"===e.method))return p;e.method="throw",e.arg=new TypeError("The iterator does not provide a 'throw' method")}return p}var n=c(r,t.iterator,e.arg);if("throw"===n.type)return e.method="throw",e.arg=n.arg,e.delegate=null,p;var a=n.arg;return a?a.done?(e[t.resultName]=a.value,e.next=t.nextLoc,"return"!==e.method&&(e.method="next",e.arg=void 0),e.delegate=null,p):a:(e.method="throw",e.arg=new TypeError("iterator result is not an object"),e.delegate=null,p)}function x(t){var e={tryLoc:t[0]};1 in t&&(e.catchLoc=t[1]),2 in t&&(e.finallyLoc=t[2],e.afterLoc=t[3]),this.tryEntries.push(e)}function k(t){var e=t.completion||{};e.type="normal",delete e.arg,t.completion=e}function S(t){this.tryEntries=[{tryLoc:"root"}],t.forEach(x,this),this.reset(!0)}function O(t){if(t){var e=t[a];if(e)return e.call(t);if("function"==typeof t.next)return t;if(!isNaN(t.length)){var n=-1,i=function e(){for(;++n<t.length;)if(r.call(t,n))return e.value=t[n],e.done=!1,e;return e.value=void 0,e.done=!0,e};return i.next=i}}return{next:A}}function A(){return{value:void 0,done:!0}}return l.prototype=d,s(y,"constructor",d),s(d,"constructor",l),l.displayName=s(d,o,"GeneratorFunction"),t.isGeneratorFunction=function(t){var e="function"==typeof t&&t.constructor;return!!e&&(e===l||"GeneratorFunction"===(e.displayName||e.name))},t.mark=function(t){return Object.setPrototypeOf?Object.setPrototypeOf(t,d):(t.__proto__=d,s(t,o,"GeneratorFunction")),t.prototype=Object.create(y),t},t.awrap=function(t){return{__await:t}},b(w.prototype),s(w.prototype,i,(function(){return this})),t.AsyncIterator=w,t.async=function(e,r,n,a,i){void 0===i&&(i=Promise);var o=new w(u(e,r,n,a),i);return t.isGeneratorFunction(r)?o:o.next().then((function(t){return t.done?t.value:o.next()}))},b(y),s(y,o,"Generator"),s(y,a,(function(){return this})),s(y,"toString",(function(){return"[object Generator]"})),t.keys=function(t){var e=[];for(var r in t)e.push(r);return e.reverse(),function r(){for(;e.length;){var n=e.pop();if(n in t)return r.value=n,r.done=!1,r}return r.done=!0,r}},t.values=O,S.prototype={constructor:S,reset:function(t){if(this.prev=0,this.next=0,this.sent=this._sent=void 0,this.done=!1,this.delegate=null,this.method="next",this.arg=void 0,this.tryEntries.forEach(k),!t)for(var e in this)"t"===e.charAt(0)&&r.call(this,e)&&!isNaN(+e.slice(1))&&(this[e]=void 0)},stop:function(){this.done=!0;var t=this.tryEntries[0].completion;if("throw"===t.type)throw t.arg;return this.rval},dispatchException:function(t){if(this.done)throw t;var e=this;function n(r,n){return o.type="throw",o.arg=t,e.next=r,n&&(e.method="next",e.arg=void 0),!!n}for(var a=this.tryEntries.length-1;a>=0;--a){var i=this.tryEntries[a],o=i.completion;if("root"===i.tryLoc)return n("end");if(i.tryLoc<=this.prev){var s=r.call(i,"catchLoc"),u=r.call(i,"finallyLoc");if(s&&u){if(this.prev<i.catchLoc)return n(i.catchLoc,!0);if(this.prev<i.finallyLoc)return n(i.finallyLoc)}else if(s){if(this.prev<i.catchLoc)return n(i.catchLoc,!0)}else{if(!u)throw new Error("try statement without catch or finally");if(this.prev<i.finallyLoc)return n(i.finallyLoc)}}}},abrupt:function(t,e){for(var n=this.tryEntries.length-1;n>=0;--n){var a=this.tryEntries[n];if(a.tryLoc<=this.prev&&r.call(a,"finallyLoc")&&this.prev<a.finallyLoc){var i=a;break}}i&&("break"===t||"continue"===t)&&i.tryLoc<=e&&e<=i.finallyLoc&&(i=null);var o=i?i.completion:{};return o.type=t,o.arg=e,i?(this.method="next",this.next=i.finallyLoc,p):this.complete(o)},complete:function(t,e){if("throw"===t.type)throw t.arg;return"break"===t.type||"continue"===t.type?this.next=t.arg:"return"===t.type?(this.rval=this.arg=t.arg,this.method="return",this.next="end"):"normal"===t.type&&e&&(this.next=e),p},finish:function(t){for(var e=this.tryEntries.length-1;e>=0;--e){var r=this.tryEntries[e];if(r.finallyLoc===t)return this.complete(r.completion,r.afterLoc),k(r),p}},catch:function(t){for(var e=this.tryEntries.length-1;e>=0;--e){var r=this.tryEntries[e];if(r.tryLoc===t){var n=r.completion;if("throw"===n.type){var a=n.arg;k(r)}return a}}throw new Error("illegal catch attempt")},delegateYield:function(t,e,r){return this.delegate={iterator:O(t),resultName:e,nextLoc:r},"next"===this.method&&(this.arg=void 0),p}},t}(t.exports);try{regeneratorRuntime=e}catch(t){"object"==typeof globalThis?globalThis.regeneratorRuntime=e:Function("r","regeneratorRuntime = r")(e)}}(O={exports:{}}),O.exports),_=function(){function t(e,r){var n=this;void 0===r&&(r="2.0"),this.meta={},this._create=function(){var e=w(A.mark((function e(r){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===r&&(r={}),e.next=3,d.post(n.getUrl(),n.toJSON(),t.generateOptions(r));case 3:n.parse(e.sent.data);case 5:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}(),this.create=function(){var t=w(A.mark((function t(e){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===e&&(e={}),t.prev=1,t.next=4,n._create(e);case 4:t.next=9;break;case 6:t.prev=6,t.t0=t.catch(1),v(t.t0);case 9:case"end":return t.stop()}}),t,null,[[1,6]])})));return function(e){return t.apply(this,arguments)}}(),this.update=w(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.prev=0,e.next=3,d.patch(n.getUrl(),n.toJSON(),t.generateOptions());case 3:n.parse(e.sent.data),e.next=10;break;case 7:e.prev=7,e.t0=e.catch(0),v(e.t0);case 10:case"end":return e.stop()}}),e,null,[[0,7]])}))),this.refresh=w(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.prev=0,e.next=3,d.get(n.getUrl(),t.generateOptions());case 3:n.parse(e.sent.data),e.next=10;break;case 7:e.prev=7,e.t0=e.catch(0),v(e.t0);case 10:case"end":return e.stop()}}),e,null,[[0,7]])}))),this.delete=w(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.prev=0,e.next=3,d.delete(n.getUrl(),t.generateOptions());case 3:e.next=8;break;case 5:e.prev=5,e.t0=e.catch(0),v(e.t0);case 8:case"end":return e.stop()}}),e,null,[[0,5]])}))),this.meta.type=e,this.meta.version=r}var e=t.prototype;return e.url=function(){return"/"+this.meta.version+"/"+this.meta.type},e.path=function(){return this.meta.id?"/"+this.meta.type+"/"+this.meta.id:"/"+this.meta.type},e.attributes=function(){return[]},t.generateOptions=function(t){var e={params:{}};return t&&Object.assign(e.params,t),o().verbose&&(e.params.verbose=!0),0===Object.keys(e.params).length&&(e=n.omit(e,"params")),e},e.getUrl=function(){return this.meta.id?this.url()+"/"+this.meta.id:this.parent?this.parent.getUrl()+"/"+this.meta.type:this.url()},e.parse=function(t){n.isArray(t)&&(t=t[0]);var e=this.toJSON();Object.assign(this,n.pick(t,this.attributes().concat(["meta"])));var r=this.toJSON();return!n.isEqual(e,r)},t.fromArray=function(t){return a.plainToClass(this,t)},e.toJSON=function(){var t=Object.assign({},n.pick(this.meta,["id","type","version"]));return Object.assign({meta:t},n.pick(this,this.attributes()))},t}();_.fetch=function(){var t=w(A.mark((function t(e,r){var a;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.prev=0,t.next=3,d.get(e,_.generateOptions(r));case 3:if(null==(a=t.sent)||!a.data){t.next=13;break}if(!n.isArray(null==a?void 0:a.data)){t.next=9;break}return t.abrupt("return",a.data);case 9:if(!a.data){t.next=11;break}return t.abrupt("return",[a.data]);case 11:t.next=14;break;case 13:return t.abrupt("return",[]);case 14:t.next=19;break;case 16:t.prev=16,t.t0=t.catch(0),v(t.t0);case 19:return t.abrupt("return",[]);case 20:case"end":return t.stop()}}),t,null,[[0,16]])})));return function(e,r){return t.apply(this,arguments)}}();var E=function(t){function e(){return t.call(this,"notification","2.1")||this}return k(e,t),e.prototype.getIds=function(){var t,e,r,n=[];return null!=(t=this.base)&&t.ids&&(n=this.base.ids),0===n.length&&null!=(e=this.custom)&&null!=(r=e.data)&&r.selected&&(n=this.custom.data.selected.map((function(t){return t.meta.id}))),n},e}(_);function N(t){return/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-b8-9][a-f0-9]{3}-[a-f0-9]{12}$/i.test(t)}E.endpoint="/2.1/notification";var T=require("universal-websocket-client"),C=function(t){function e(){var e;return(e=t.call(this,"stream","2.1")||this).websocketUrl="",e.ignoreReconnect=!1,e.models={},e.services={},e.handlers={},e.subscriptions=[],e.opened=!1,e.backoff=1e3,e.waiting=[],e.websocketUrl=""+u,e.websocketUrl.endsWith("/")||(e.websocketUrl+="/"),e.websocketUrl+="2.1/websocket/open",!e.websocketUrl.startsWith("http")&&"object"==typeof window&&window&&window.location&&window.location.origin&&(e.websocketUrl=window.location.origin+e.websocketUrl),e.websocketUrl=e.websocketUrl.replace(/^http/,"ws"),e.websocketUrl+="?X-Session="+c,e}k(e,t);var r=e.prototype;return r.open=function(){var t=this;return new Promise((function(e,r){var n=t;if(t.socket)e();else if(t.opened)t.waiting.push(e);else{t.opened=!0,f("Open WebSocket on "+t.websocketUrl),t.ignoreReconnect=!1;var a=setTimeout((function(){n.reconnect()}),1e3+t.backoff),i=new T(t.websocketUrl);i&&(i.onopen=function(){t.backoff=1e3,t.socket=i,clearTimeout(a),t.addListeners(),e(),t.waiting.forEach((function(t){t()})),t.waiting=[]})}}))},r.close=function(){this.socket&&(f("Closing WebSocket"),this.ignoreReconnect=!0,this.socket.close(),this.opened=!1,this.socket=void 0)},r.addSubscription=function(t){this.subscriptions.includes(t)||(this.subscriptions.push(t),this.sendMessage("POST","/services/2.1/websocket/open/subscription",t))},r.subscribe=function(t){var e=this;this.open().then((function(){e.models[t.path()]||(e.models[t.path()]=[]),e.models[t.path()].push(t),f("Add subscription: "+t.path()),e.addSubscription(t.path())}))},r.subscribeService=function(t,e){var r=this;this.open().then((function(){"/"!==t[0]&&(t="/"+t),r.services[t]||(r.services[t]=[]),r.services[t].push(e),f("Add service subscription: "+t),r.addSubscription(t)}))},r.addSignalHandler=function(t,e){var r=this;this.open().then((function(){f("Add Signal Handler: "+t),r.handlers[t]||(r.handlers[t]=[]),r.handlers[t].push(e)}))},r.sendRequest=function(){var t=w(A.mark((function t(e){var r;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return r={},t.prev=1,t.next=4,d.post("/2.0/extsync/request",e);case 4:r=t.sent.data,t.next=11;break;case 8:t.prev=8,t.t0=t.catch(1),v(t.t0);case 11:return t.abrupt("return",r);case 12:case"end":return t.stop()}}),t,null,[[1,8]])})));return function(e){return t.apply(this,arguments)}}(),r.sendResponse=function(){var t=w(A.mark((function t(e,r){var n;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.prev=0,n={code:200,body:r},t.next=4,d.patch("/2.0/extsync/response/"+e.meta.id,n);case 4:t.next=9;break;case 6:t.prev=6,t.t0=t.catch(0),v(t.t0);case 9:case"end":return t.stop()}}),t,null,[[0,6]])})));return function(e,r){return t.apply(this,arguments)}}(),r.onRequest=function(t,e){var r=this;this.subscribeService("/extsync/request",function(){var n=w(A.mark((function n(a){var i,o;return A.wrap((function(n){for(;;)switch(n.prev=n.next){case 0:if(n.prev=0,!(e&&"extsync/"!==a.uri||!e&&"extsync/"===a.uri)){n.next=4;break}return f("Discarding extsync event ("+e+" - "+a.uri+")"),n.abrupt("return");case 4:if(!(o=t(a.body))){n.next=12;break}if(!o.then){n.next=11;break}return o.then((function(t){r.sendResponse(a,t)})),n.abrupt("return");case 11:i=o;case 12:r.sendResponse(a,i),n.next=19;break;case 15:n.prev=15,n.t0=n.catch(0),l("An error happend when calling request handler"),l(JSON.stringify(n.t0));case 19:case"end":return n.stop()}}),n,null,[[0,15]])})));return function(t){return n.apply(this,arguments)}}())},r.reconnect=function(){var t=this;this.backoff=2*this.backoff,f("Stream Reconnecting"),this.close(),this.open().then((function(){t.sendMessage("PATCH","/services/2.1/websocket/open",{subscription:t.subscriptions})}))},r.handleEvent=function(t,e){var r;f("Handle Event: "+t),null==(r=this.handlers[t])||r.forEach((function(t){t(e)}))},r.filterCallback=function(t,e,r){!0===r&&(this.services[e]=this.services[e].filter((function(e){return e!==t})))},r.handleMessage=function(t,e,r){var n=this,a=[],i=[];if("message"===t){var o=e.path.split("/").filter((function(t){return t.length>0}));if(!o)return;var s=o[o.length-1];a.push("/"+o.slice(o.length-2,o.length).join("/")),N(s)||a.push("/"+o.slice(o.length-3,o.length).join("/")),o.forEach((function(t){N(t)||i.push("/"+t)}))}else i.push("/"+t);a.forEach((function(t){var r;null==(r=n.models[t])||r.forEach((function(t){t.handleStream(e)}))})),i.forEach((function(t){var r=n.services[t];null==r||r.forEach((function(r){var a=r(e);a&&(!0===a?n.filterCallback(r,t,a):a.then((function(e){n.filterCallback(r,t,e)})))}))}))},r.sendMessage=function(t,e,r){var n;void 0===r&&(r=void 0);var a={jsonrpc:"2.0",method:t,id:Math.floor(1e5*Math.random()),params:{url:e,data:void 0}};r&&(a.params.data=r),f("Sending a "+t+" message to "+e+": "+JSON.stringify(a)),null==(n=this.socket)||n.send(JSON.stringify(a))},r.addListeners=function(){var t=this;this.socket&&(this.socket.onmessage=function(e){var r;if("message"===e.type)try{r=JSON.parse(e.data)}catch(t){return void l("Failed to parse stream event")}else l("Can't handle binary stream data");r.jsonrpc?r.result?!0!==r.result.value&&f("Stream rpc result: "+JSON.stringify(r.result.value)):l("Stream rpc error: "+JSON.stringify(r.error)):(r.constructor!==Array?[r]:r).forEach((function(e){var r;if(f(JSON.stringify(e)),"extsync"!==(null==(r=e.meta_object)?void 0:r.type)){var n=t.checkAndSendTrace(e);t.handleMessage("message",e,n)}else{var a=e.extsync||e.data;a.request?t.handleMessage("extsync/request",a):"extsync/wappsto/editor/console"!==a.uri&&t.handleMessage("extsync",a)}}))},this.socket.onerror=function(e){try{t.handleEvent("error",e)}catch(e){l("Stream error: "+t.websocketUrl)}},this.socket.onclose=function(e){t.ignoreReconnect?t.handleEvent("close",e):(f("Starting reconnect"),setTimeout((function(){t.reconnect()}),t.backoff))})},r.checkAndSendTrace=function(t){return""},e}(_);C.endpoint="/2.1/stream",C.fetch=w(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.next=2,_.fetch(C.endpoint);case 2:return t.abrupt("return",C.fromArray(t.sent));case 4:case"end":return t.stop()}}),t)})));var L=new C;function j(t,e){return R.apply(this,arguments)}function R(){return(R=w(A.mark((function t(e,r){var n;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return n={type:e,message:r},t.next=3,L.sendRequest(n);case 3:return t.abrupt("return",t.sent);case 4:case"end":return t.stop()}}),t)})))).apply(this,arguments)}function U(){return(U=w(A.mark((function t(e){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.abrupt("return",j("foreground",e));case 1:case"end":return t.stop()}}),t)})))).apply(this,arguments)}function q(){return(q=w(A.mark((function t(e){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.abrupt("return",j("background",e));case 1:case"end":return t.stop()}}),t)})))).apply(this,arguments)}function B(t,e){L.onRequest(function(){var r=w(A.mark((function r(n){var a;return A.wrap((function(r){for(;;)switch(r.prev=r.next){case 0:if(r.prev=0,(a=JSON.parse(n)).type!==t){r.next=4;break}return r.abrupt("return",e(a.message));case 4:r.next=9;break;case 6:r.prev=6,r.t0=r.catch(0),f("Failed to parse event - Foreground/Background handler");case 9:return r.abrupt("return",void 0);case 10:case"end":return r.stop()}}),r,null,[[0,6]])})));return function(t){return r.apply(this,arguments)}}(),!0)}var P=function(t){function e(){var e;return(e=t.apply(this,arguments)||this).create=w(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.abrupt("return",new Promise(function(){var t=w(A.mark((function t(r,n){var a;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.prev=0,t.next=3,e._create();case 3:r(),t.next=14;break;case 6:if(t.prev=6,t.t0=t.catch(0),a=h(t.t0)){t.next=13;break}return v(t.t0),n(t.t0),t.abrupt("return");case 13:400008===a.code||400013===a.code?(f("Requesting permission to add data to user"),L.subscribeService("/notification",function(){var t=w(A.mark((function t(n){var a,i,o,s;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:if("notification"!==(null==(a=n.meta_object)?void 0:a.type)){t.next=16;break}if((s=E.fromArray([n.data]))&&s[0]){t.next=4;break}return t.abrupt("return");case 4:if(1100013!==(null==(i=s[0])||null==(o=i.base)?void 0:o.code)){t.next=16;break}return t.prev=5,f("Got permission to create data under users account"),t.next=9,e._create({identifier:"request access to save data under users account"});case 9:return r(),t.abrupt("return",!0);case 13:t.prev=13,t.t0=t.catch(5),f("Failed to get permission to save data under users account");case 16:return t.abrupt("return",void 0);case 17:case"end":return t.stop()}}),t,null,[[5,13]])})));return function(e){return t.apply(this,arguments)}}())):(v(t.t0),n(a));case 14:case"end":return t.stop()}}),t,null,[[0,6]])})));return function(e,r){return t.apply(this,arguments)}}()));case 1:case"end":return t.stop()}}),t)}))),e}return k(e,t),e.getPermissionHash=function(t,e,r){return t+"-"+e+"-"+r},e}(_);P.request=function(){var t=w(A.mark((function t(e,r,n,a){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.abrupt("return",new Promise(function(){var t=w(A.mark((function t(i){var o,s;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return o=P.getPermissionHash(e.split("/")[2],r,n),Object.assign(a,{quantity:r,message:n,identifier:o,method:["retrieve","update"]}),t.next=4,_.fetch(e,a);case 4:0===(s=t.sent).length?f("Requesting new access to users data: "+n):(f("Found permission notification - returning old result"),i(s)),f("Waiting for permission to access users data: "+n),L.subscribeService("/notification",function(){var t=w(A.mark((function t(n){var o,s,u,c,p;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:if("notification"!==(null==(o=n.meta_object)?void 0:o.type)){t.next=13;break}if((c=E.fromArray([n.data]))&&c[0]){t.next=4;break}return t.abrupt("return");case 4:if(p=c[0].getIds(),1100004!==(null==(s=c[0].base)?void 0:s.code)&&1100013!==(null==(u=c[0].base)?void 0:u.code)||!("all"===r||p.length>=r)){t.next=13;break}return Object.assign(a,"all"===r?{id:p}:{id:p.reverse().slice(0,r)}),f("Got permission to "+JSON.stringify(null==a?void 0:a.id)),t.next=10,_.fetch(e,a);case 10:return i(t.sent),t.abrupt("return",!0);case 13:return t.abrupt("return",void 0);case 14:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}());case 8:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}()));case 1:case"end":return t.stop()}}),t)})));return function(e,r,n,a){return t.apply(this,arguments)}}();var J=function(t){function e(e,r){var n;return void 0===r&&(r="2.0"),(n=t.call(this,e,r)||this).streamCallback={},n.clearAllCallbacks(),n}k(e,t);var r=e.prototype;return r.onChange=function(t){L.subscribe(this),this.streamCallback.change.push(t)},r.onDelete=function(t){L.subscribe(this),this.streamCallback.delete.push(t)},r.onCreate=function(t){L.subscribe(this),this.streamCallback.create.push(t)},r.clearAllCallbacks=function(){this.streamCallback.change=[],this.streamCallback.delete=[],this.streamCallback.create=[]},r.handleStream=function(t){var e=this;switch(null==t?void 0:t.event){case"create":this.streamCallback.create.forEach((function(t){t(e)}));break;case"update":this.parse(t.data)&&this.streamCallback.change.forEach((function(t){t(e)}));break;case"delete":this.streamCallback.delete.forEach((function(t){t(e)}));break;default:l("Unhandled stream event type: "+(null==t?void 0:t.event))}},e}(P),F=function(t){function e(e){var r;return(r=t.call(this,"state")||this).data="",r.type="",r.timestamp=(new Date).toISOString(),r.type=e||"",r}return k(e,t),e.prototype.attributes=function(){return["data","type","timestamp"]},e}(J);F.endpoint="/2.0/state",F.fetch=w(A.mark((function t(){var e,r;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return e={expand:1},r=F.endpoint,t.next=4,_.fetch(r,e);case 4:return t.abrupt("return",F.fromArray(t.sent));case 6:case"end":return t.stop()}}),t)})));var D=function(t){function e(e){var r;return(r=t.call(this,"value")||this).state=[],r.createState=function(){var t=w(A.mark((function t(e){var a,i,o,s;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:if(["Report","Control"].includes(e.type)){t.next=2;break}throw new Error("Invalid value for state type");case 2:if(a=!1,(i=r.findState(e.type))?f("Using existing state with id "+i.meta.id):(i=new F(e.type),a=!0),o=i.toJSON(),i.parse(e),i.parent=S(r),s=i.toJSON(),!a&&n.isEqual(o,s)){t.next=18;break}if(!a){t.next=16;break}return t.next=13,i.create();case 13:r.state.push(i),t.next=18;break;case 16:return t.next=18,i.update();case 18:return t.abrupt("return",i);case 19:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}(),r.findStateAndLog=function(){var t=w(A.mark((function t(e,n){var a;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:if(!(a=r.findState(e))){t.next=6;break}return t.next=4,_.fetch("/2.1/log/"+a.meta.id+"/state",n);case 4:return t.abrupt("return",t.sent[0]);case 6:return t.abrupt("return",{meta:{id:"",type:"log",version:"2.1"},data:[],more:!1,type:"state"});case 7:case"end":return t.stop()}}),t)})));return function(e,r){return t.apply(this,arguments)}}(),r.getReportLog=function(){var t=w(A.mark((function t(e){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.abrupt("return",r.findStateAndLog("Report",e));case 1:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}(),r.getControlLog=function(){var t=w(A.mark((function t(e){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.abrupt("return",r.findStateAndLog("Control",e));case 1:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}(),r.name=e||"",r.permission="",r}k(e,t);var r=e.prototype;return r.attributes=function(){return["name","permission","type","period","delta","number","string","blob","xml","status"]},r.findState=function(t){var e=void 0;return this.state.forEach((function(r){r.type===t&&(e=r)})),e},r.getTime=function(){return(new Date).toISOString()},r.findStateAndUpdate=function(t,e,r){var n=this.findState(t);n&&(n.data=e.toString(),n.timestamp=r||this.getTime(),n.update())},r.findStateAndCallback=function(t,e){var r=this,n=this.findState(t);n&&n.onChange((function(){n&&e(r,n.data,n.timestamp)}))},r.findStateAndData=function(t){var e=this.findState(t);if(e)return e.data},r.findStateAndTimestamp=function(t){var e=this.findState(t);if(e)return e.timestamp},r.getReportData=function(){return this.findStateAndData("Report")},r.getControlData=function(){return this.findStateAndData("Control")},r.getControlTimestamp=function(){return this.findStateAndTimestamp("Control")},r.getReportTimestamp=function(){return this.findStateAndTimestamp("Report")},r.report=function(t,e){void 0===e&&(e=void 0),this.findStateAndUpdate("Report",t,e)},r.control=function(t,e){void 0===e&&(e=void 0),this.findStateAndUpdate("Control",t,e)},r.onControl=function(t){this.findStateAndCallback("Control",t)},r.onReport=function(t){this.findStateAndCallback("Report",t)},r.onRefresh=function(t){var e=this;this.onChange((function(){"update"===e.status&&(t(e),e.status="")}))},x(e,[{key:"states",get:function(){return this.state}}]),e}(J);D.endpoint="/2.0/value",D.fetch=w(A.mark((function t(){var e,r;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return e={expand:2},r=D.endpoint,t.next=4,_.fetch(r,e);case 4:return t.abrupt("return",D.fromArray(t.sent));case 6:case"end":return t.stop()}}),t)}))),D.find=function(){var t=w(A.mark((function t(e,r,n){var a,i;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:for(i in void 0===r&&(r=1),void 0===n&&(n=""),""===n&&(n="Find "+r+" value"),a={expand:2},e)a["this_"+i]=e[i];return t.next=7,P.request(D.endpoint,r,n,a);case 7:return t.abrupt("return",D.fromArray(t.sent));case 9:case"end":return t.stop()}}),t)})));return function(e,r,n){return t.apply(this,arguments)}}(),D.findByName=function(){var t=w(A.mark((function t(e,r,n){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=1),void 0===n&&(n=""),""===n&&(n="Find "+r+" value with name "+e),t.abrupt("return",D.find({name:e},r,n));case 4:case"end":return t.stop()}}),t)})));return function(e,r,n){return t.apply(this,arguments)}}(),D.findByType=function(){var t=w(A.mark((function t(e,r,n){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=1),void 0===n&&(n=""),""===n&&(n="Find "+r+" value with type "+e),t.abrupt("return",D.find({type:e},r,n));case 4:case"end":return t.stop()}}),t)})));return function(e,r,n){return t.apply(this,arguments)}}(),D.findAllByName=function(){var t=w(A.mark((function t(e,r){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=""),t.abrupt("return",D.findByName(e,"all",r));case 2:case"end":return t.stop()}}),t)})));return function(e,r){return t.apply(this,arguments)}}(),D.findAllByType=function(){var t=w(A.mark((function t(e,r){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=""),t.abrupt("return",D.findByType(e,"all",r));case 2:case"end":return t.stop()}}),t)})));return function(e,r){return t.apply(this,arguments)}}(),r.__decorate([a.Type((function(){return F}))],D.prototype,"state",void 0);var V=function(t){function e(e){var r;return(r=t.call(this,"device")||this).value=[],r.name=e||"",r}k(e,t);var r=e.prototype;return r.attributes=function(){return["name","product","serial","description","protocol","communication","version","manufacturer"]},r.findValueByName=function(t){return this.value.filter((function(e){return e.name===t}))},r.findValueByType=function(t){return this.value.filter((function(e){return e.type===t}))},r.createValue=function(){var t=w(A.mark((function t(e){var r,a,i,o;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:if(e.permission&&["r","w","rw","wr"].includes(e.permission.toLowerCase())){t.next=2;break}throw new Error("Invalid value for value permission");case 2:if(e.permission=e.permission.toLowerCase(),r=new D,0!==(a=this.findValueByName(e.name)).length&&(f("Using existing value with id "+a[0].meta.id),r=a[0]),e.number||e.string||e.blob||e.xml){t.next=8;break}throw new Error("You must suply a valid type");case 8:if(i=r.toJSON(),r.parse(e),r.parent=this,o=r.toJSON(),n.isEqual(i,o)){t.next=21;break}if(0===a.length){t.next=18;break}return t.next=16,r.update();case 16:t.next=21;break;case 18:return t.next=20,r.create();case 20:this.value.push(r);case 21:if(!["r","rw","wr"].includes(e.permission)){t.next=24;break}return t.next=24,r.createState({type:"Report"});case 24:if(!["w","rw","wr"].includes(e.permission)){t.next=27;break}return t.next=27,r.createState({type:"Control"});case 27:return t.abrupt("return",r);case 28:case"end":return t.stop()}}),t,this)})));return function(e){return t.apply(this,arguments)}}(),r.createNumberValue=function(){var t=w(A.mark((function t(e){var r;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return(r={}).min=e.min,r.max=e.max,r.step=e.step,r.unit=e.unit,r.si_conversion=e.si_conversion,r.mapping=e.mapping,r.ordered_mapping=e.ordered_mapping,r.meaningful_zero=e.meaningful_zero,e.number=r,t.abrupt("return",this.createValue(e));case 11:case"end":return t.stop()}}),t,this)})));return function(e){return t.apply(this,arguments)}}(),r.createStringValue=function(){var t=w(A.mark((function t(e){var r;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return(r={}).max=e.max,r.encoding=e.encoding,e.string=r,t.abrupt("return",this.createValue(e));case 5:case"end":return t.stop()}}),t,this)})));return function(e){return t.apply(this,arguments)}}(),r.createBlobValue=function(){var t=w(A.mark((function t(e){var r;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return(r={}).max=e.max,r.encoding=e.encoding,e.blob=r,t.abrupt("return",this.createValue(e));case 5:case"end":return t.stop()}}),t,this)})));return function(e){return t.apply(this,arguments)}}(),r.createXmlValue=function(){var t=w(A.mark((function t(e){var r;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return(r={}).xsd=e.xsd,r.namespace=e.namespace,e.xml=r,t.abrupt("return",this.createValue(e));case 5:case"end":return t.stop()}}),t,this)})));return function(e){return t.apply(this,arguments)}}(),x(e,[{key:"values",get:function(){return this.value}}]),e}(J);function I(){return(I=w(A.mark((function t(e,r){var n,a,i;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=void 0),"string"!=typeof e&&(r=(n=e).description,e=n.name),t.next=4,G.fetch(e);case 4:if(0===(a=t.sent).length){t.next=8;break}return f("Using existing network with id "+a[0].meta.id),t.abrupt("return",a[0]);case 8:return(i=new G).name=e,i.description=r,t.next=13,i.create();case 13:return t.abrupt("return",i);case 14:case"end":return t.stop()}}),t)})))).apply(this,arguments)}V.endpoint="/2.0/device",V.find=function(){var t=w(A.mark((function t(e,r,n){var a,i;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:for(i in void 0===r&&(r=1),void 0===n&&(n=""),""===n&&(n="Find "+r+" device"),a={expand:3},e)a["this_"+i]=e[i];return t.next=7,P.request(V.endpoint,r,n,a);case 7:return t.abrupt("return",V.fromArray(t.sent));case 9:case"end":return t.stop()}}),t)})));return function(e,r,n){return t.apply(this,arguments)}}(),V.findByName=function(){var t=w(A.mark((function t(e,r,n){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=1),void 0===n&&(n=""),""===n&&(n="Find "+r+" device with name "+e),t.abrupt("return",V.find({name:e},r,n));case 4:case"end":return t.stop()}}),t)})));return function(e,r,n){return t.apply(this,arguments)}}(),V.findAllByName=function(){var t=w(A.mark((function t(e,r){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=""),t.abrupt("return",V.findByName(e,"all",r));case 2:case"end":return t.stop()}}),t)})));return function(e,r){return t.apply(this,arguments)}}(),V.findByProduct=function(){var t=w(A.mark((function t(e,r,n){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=1),void 0===n&&(n=""),""===n&&(n="Find "+r+" device with product "+e),t.abrupt("return",V.find({product:e},r,n));case 4:case"end":return t.stop()}}),t)})));return function(e,r,n){return t.apply(this,arguments)}}(),V.findAllByProduct=function(){var t=w(A.mark((function t(e,r){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=""),t.abrupt("return",V.findByProduct(e,"all",r));case 2:case"end":return t.stop()}}),t)})));return function(e,r){return t.apply(this,arguments)}}(),V.fetch=w(A.mark((function t(){var e,r;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return e={expand:3},r=V.endpoint,t.next=4,_.fetch(r,e);case 4:return t.abrupt("return",V.fromArray(t.sent));case 6:case"end":return t.stop()}}),t)}))),r.__decorate([a.Type((function(){return D}))],V.prototype,"value",void 0);var G=function(t){function e(e){var r;return(r=t.call(this,"network")||this).device=[],r.name=e||"",r}k(e,t);var r=e.prototype;return r.attributes=function(){return["name","description"]},r.findDeviceByName=function(t){return this.device.filter((function(e){return e.name===t}))},r.findValueByName=function(t){var e=[];return this.device.forEach((function(r){e=e.concat(r.findValueByName(t))})),e},r.findValueByType=function(t){var e=[];return this.device.forEach((function(r){e=e.concat(r.findValueByType(t))})),e},r.createDevice=function(){var t=w(A.mark((function t(e){var r,a,i,o,s;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:if(r=new V,0!==(a=this.findDeviceByName(e.name)).length&&(f("Using existing device with id "+(null==(i=a[0])?void 0:i.meta.id)),r=a[0]),o=r.toJSON(),r.parse(e),r.parent=this,s=r.toJSON(),n.isEqual(o,s)){t.next=16;break}if(0===a.length){t.next=13;break}return t.next=11,r.update();case 11:t.next=16;break;case 13:return t.next=15,r.create();case 15:this.device.push(r);case 16:return t.abrupt("return",r);case 17:case"end":return t.stop()}}),t,this)})));return function(e){return t.apply(this,arguments)}}(),x(e,[{key:"devices",get:function(){return this.device}}]),e}(J);G.endpoint="/2.0/network",G.find=function(){var t=w(A.mark((function t(e,r,n){var a,i;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:for(i in void 0===r&&(r=1),void 0===n&&(n=""),""===n&&(n="Find "+r+" network"),a={expand:4},e)a["this_"+i]=e[i];return t.next=7,P.request(G.endpoint,r,n,a);case 7:return t.abrupt("return",G.fromArray(t.sent));case 9:case"end":return t.stop()}}),t)})));return function(e,r,n){return t.apply(this,arguments)}}(),G.findById=function(){var t=w(A.mark((function t(e){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.next=2,_.fetch(G.endpoint+"/"+e,{expand:4});case 2:return t.abrupt("return",G.fromArray(t.sent)[0]);case 4:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}(),G.findByName=function(){var t=w(A.mark((function t(e,r,n){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=1),void 0===n&&(n=""),""===n&&(n="Find "+r+" network with name "+e),t.abrupt("return",G.find({name:e},r,n));case 4:case"end":return t.stop()}}),t)})));return function(e,r,n){return t.apply(this,arguments)}}(),G.findAllByName=function(){var t=w(A.mark((function t(e,r){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===r&&(r=""),t.abrupt("return",G.findByName(e,"all",r));case 2:case"end":return t.stop()}}),t)})));return function(e,r){return t.apply(this,arguments)}}(),G.fetch=function(){var t=w(A.mark((function t(e,r){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===e&&(e=""),void 0===r&&(r={}),Object.assign(r,{expand:4}),""!==e&&Object.assign(r,{"this_name=":e}),t.next=6,_.fetch(G.endpoint,r);case 6:return t.abrupt("return",G.fromArray(t.sent));case 8:case"end":return t.stop()}}),t)})));return function(e,r){return t.apply(this,arguments)}}(),r.__decorate([a.Type((function(){return V}))],G.prototype,"device",void 0);var M=function(t){function e(){var e;return(e=t.call(this,"user","2.1")||this).create=w(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:case"end":return t.stop()}}),t)}))),e.update=w(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:case"end":return t.stop()}}),t)}))),e}return k(e,t),e.prototype.attributes=function(){return["first_name","lat_name","email","phone","name","nickname","language"]},e}(_);M.endpoint="/2.1/user",M.me=w(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.next=2,M.fetch();case 2:return t.abrupt("return",t.sent[0]);case 4:case"end":return t.stop()}}),t)}))),M.fetch=w(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.next=2,_.fetch(M.endpoint+"/me",{expand:1});case 2:return t.abrupt("return",M.fromArray(t.sent));case 4:case"end":return t.stop()}}),t)})));var H=function(t){function e(e,r){var n;return(n=t.call(this,"data","2.1")||this).data_meta={},n.data={},n.data_meta||(n.data_meta={}),n.data_meta.type=r,n.data_meta.id=e,n.meta.redirect=e,n}k(e,t);var r=e.prototype;return r.url=function(){return e.endpoint},r.attributes=function(){return["data_meta"]},r.set=function(t,e){this.data[t]=e},r.get=function(t){return this.data[t]},e}(_);H.endpoint="/2.1/data",H.fetch=w(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.next=2,_.fetch(H.endpoint);case 2:return t.abrupt("return",H.fromArray(t.sent));case 4:case"end":return t.stop()}}),t)}))),H.findById=function(){var t=w(A.mark((function t(e){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.next=2,_.fetch(H.endpoint,{"this_data_meta.id":e});case 2:return t.abrupt("return",H.fromArray(t.sent));case 4:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}();var W=function(t){function e(e){var r;return(r=t.call(this,"2.0","oauth")||this).getToken=w(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.abrupt("return",new Promise(function(){var t=w(A.mark((function t(e){var n,a,i,o;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.next=2,_.fetch("/2.0/oauth_connect/"+r.name,{});case 2:if(null==(a=t.sent[0])||null==(n=a.params)||!n.oauth_token){t.next=7;break}return e(null==a?void 0:a.params),t.abrupt("return");case 7:f("OAuth token is not valid, waiting for token on stream"),L.subscribeService("/oauth_connect",function(){var t=w(A.mark((function t(n){var a,i;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:if((null==n||null==(a=n.data)?void 0:a.name)!==r.name){t.next=4;break}return f("Got OAuth token from stream"),e(null==n||null==(i=n.data)?void 0:i.params),t.abrupt("return",!0);case 4:return t.abrupt("return");case 5:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}()),436000002===(null==a?void 0:a.code)&&(f("OAuth is missing"),"undefined"!=typeof window&&window.open?(f("Open new window with oauth request"),o=window.open(null==a||null==(i=a.data)?void 0:i.request,"OAuth - "+a.message,"popup"),console.log(o)):f("OAuth running without window"));case 10:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}()));case 1:case"end":return t.stop()}}),t)}))),r.name=e,r}return k(e,t),e}(_);W.endpoint="/2.0/oauth_connect",W.getToken=function(){var t=w(A.mark((function t(e){var r;return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return r=new W(e),t.next=3,r.getToken();case 3:return t.abrupt("return",t.sent);case 4:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}(),exports.Data=H,exports.Device=V,exports.Network=G,exports.Notification=E,exports.OAuth=W,exports.State=F,exports.Stream=C,exports.User=M,exports.Value=D,exports.config=o,exports.createNetwork=function(t,e){return I.apply(this,arguments)},exports.extSyncToken=p,exports.fromBackground=function(t){B("background",t)},exports.fromForeground=function(t){B("foreground",t)},exports.onWebHook=function(t){L.onRequest(t,!1)},exports.request=d,exports.sendToBackground=function(t){return q.apply(this,arguments)},exports.sendToForeground=function(t){return U.apply(this,arguments)},exports.startLogging=function(){var t=function(t){return function(){for(var e=arguments.length,r=new Array(e),n=0;n<e;n++)r[n]=arguments[n];y(t,arguments),m.log.apply(m,r)}};console.log=t("log"),console.info=t("info"),console.error=t("error"),console.warn=t("warn"),process.on("uncaughtException",(function(t){y("error",[t.stack]).finally((function(){process.exit(1)}))}))},exports.stopLogging=function(){Object.assign(console,m)};
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),require("reflect-metadata");var e,t=require("ts-interface-checker"),n=(e=require("axios"))&&"object"==typeof e&&"default"in e?e.default:e,r=require("tslib"),a=require("lodash"),i=require("class-transformer"),o={IConfig:t.iface([],{verbose:t.opt("boolean"),debug:t.opt("boolean"),validation:t.opt(t.union(t.lit("none"),t.lit("normal"),t.lit("strict")))}),IModelFunc:t.iface([],{create:t.func("void",t.param("params","any")),fetch:t.func(t.array("any"),t.param("endpoint","string"),t.param("params","any",!0)),parse:t.func("boolean",t.param("json","any"))}),IConnection:t.iface([],{timestamp:"string",online:"boolean"}),IMeta:t.iface([],{id:t.opt("string"),type:t.opt("string"),version:t.opt("string"),redirect:t.opt("string"),manufacturer:t.opt("string"),iot:t.opt("boolean"),upgradable:t.opt("boolean"),connection:t.opt("IConnection"),created:t.opt("string"),updated:t.opt("string"),revision:t.opt("number"),changed:t.opt("string"),owner:t.opt("string"),size:t.opt("number"),path:t.opt("string"),parent:t.opt("string"),usage_daily:t.opt("any"),product:t.opt("string"),deprecated:t.opt("boolean"),icon:t.opt("string"),trace:t.opt("string")}),INetwork:t.iface([],{name:"string",description:t.opt("string")}),INetworkFunc:t.iface([],{constructor:t.func("void",t.param("name","string",!0)),createNetwork:t.func("INetwork",t.param("params","INetwork")),findDeviceByName:t.func(t.array("IDevice"),t.param("name","string")),findDeviceByProduct:t.func(t.array("IDevice"),t.param("product","string")),findValueByName:t.func(t.array("IValue"),t.param("name","string")),findValueByType:t.func(t.array("IValue"),t.param("type","string")),createDevice:t.func("IDevice",t.param("params","IDevice")),find:t.func(t.array("INetwork"),t.param("params","any"),t.param("quantity",t.union("number",t.lit("all"))),t.param("usage","string")),findByName:t.func(t.array("INetwork"),t.param("name","string"),t.param("quantity",t.union("number",t.lit("all"))),t.param("usage","string")),findAllByName:t.func(t.array("IDevice"),t.param("name","string"),t.param("usage","string")),fetch:t.func("IDevice",t.param("name","string"),t.param("params","any"))}),IDevice:t.iface([],{name:"string",product:t.opt("string"),serial:t.opt("string"),description:t.opt("string"),protocol:t.opt("string"),communication:t.opt("string"),version:t.opt("string"),manufacturer:t.opt("string")}),IDeviceFunc:t.iface([],{constructor:t.func("void",t.param("name","string",!0)),findValueByName:t.func(t.array("IValue"),t.param("name","string")),findValueByType:t.func(t.array("IValue"),t.param("type","string")),createValue:t.func("IValue",t.param("params","IValue")),createNumberValue:t.func("IValue",t.param("params",t.intersection("IValue","IValueNumber"))),createStringValue:t.func("IValue",t.param("params",t.intersection("IValue","IValueString"))),createBlobValue:t.func("IValue",t.param("params",t.intersection("IValue","IValueBlob"))),createXmlValue:t.func("IValue",t.param("params",t.intersection("IValue","IValueXml"))),find:t.func(t.array("IDevice"),t.param("params","any"),t.param("quantity",t.union("number",t.lit("all"))),t.param("usage","string")),findByName:t.func(t.array("IDevice"),t.param("name","string"),t.param("quantity",t.union("number",t.lit("all"))),t.param("usage","string")),findAllByName:t.func(t.array("IDevice"),t.param("name","string"),t.param("usage","string")),findByProduct:t.func(t.array("IDevice"),t.param("product","string"),t.param("quantity",t.union("number",t.lit("all"))),t.param("usage","string")),findAllByProduct:t.func(t.array("IDevice"),t.param("product","string"),t.param("usage","string"))}),IPermissionModelFunc:t.iface([],{request:t.func(t.array("any"),t.param("endpoint","string"),t.param("quantity",t.union("number",t.lit("all"))),t.param("message","string"),t.param("params","any",!0))}),IValue:t.iface([],{name:"string",permission:t.union(t.lit("r"),t.lit("w"),t.lit("rw"),t.lit("wr")),type:t.opt("string"),period:t.opt("string"),delta:t.opt("string"),number:t.opt("IValueNumber"),string:t.opt("IValueString"),blob:t.opt("IValueBlob"),xml:t.opt("IValueXml")}),IValueNumber:t.iface([],{min:"number",max:"number",step:"number",unit:t.opt("string"),si_conversion:t.opt("string"),mapping:t.opt("any"),ordered_mapping:t.opt("boolean"),meaningful_zero:t.opt("boolean")}),IValueString:t.iface([],{max:"number",encoding:t.opt("string")}),IValueBlob:t.iface([],{max:"number",encoding:t.opt("string")}),IValueXml:t.iface([],{xsd:t.opt("string"),namespace:t.opt("string")}),IValueFunc:t.iface([],{constructor:t.func("IState",t.param("name","string",!0)),createState:t.func("IState",t.param("params","IState")),report:t.func("void",t.param("data",t.union("string","number")),t.param("timestamp",t.union("string","undefined"))),control:t.func("void",t.param("data",t.union("string","number")),t.param("timestamp",t.union("string","undefined"))),onControl:t.func("void",t.param("callback","ValueStreamCallback")),onReport:t.func("void",t.param("callback","ValueStreamCallback")),onRefresh:t.func("void",t.param("callback","RefreshStreamCallback")),getReportLog:t.func("ILogResponse",t.param("request","ILogRequest")),getControlLog:t.func("ILogResponse",t.param("request","ILogRequest")),find:t.func(t.array("IValue"),t.param("params","any"),t.param("quantity",t.union("number",t.lit("all"))),t.param("usage","string")),findByName:t.func(t.array("IValue"),t.param("name","string"),t.param("quantity",t.union("number",t.lit("all"))),t.param("usage","string")),findByType:t.func(t.array("IValue"),t.param("type","string"),t.param("quantity",t.union("number",t.lit("all"))),t.param("usage","string")),findAllByName:t.func(t.array("IValue"),t.param("name","string"),t.param("usage","string")),findAllByType:t.func(t.array("IValue"),t.param("type","string"),t.param("usage","string"))}),IState:t.iface([],{type:t.union(t.lit("Report"),t.lit("Control")),data:t.opt("string"),timestamp:t.opt("string")}),IStateFunc:t.iface([],{constructor:t.func("IState",t.param("type",t.union(t.lit("Report"),t.lit("Control")),!0))}),ILogRequest:t.iface([],{count:t.opt("number"),start:t.opt("Date"),end:t.opt("Date")}),ILogResponse:t.iface([],{meta:"IMeta",data:"any",more:"boolean",type:"string"}),IStreamEvent:t.iface([],{}),IStreamModel:t.iface([],{path:t.func("string"),handleStream:t.func("void",t.param("event","IStreamEvent"))}),IStreamFunc:t.iface([],{subscribe:t.func("void",t.param("model","IStreamModel")),subscribeService:t.func("void",t.param("service","string"),t.param("handler","ServiceHandler")),addSignalHandler:t.func("void",t.param("type","string"),t.param("handler","SignalHandler")),sendRequest:t.func("any",t.param("msg","any")),sendResponse:t.func("void",t.param("event","any"),t.param("code","number"),t.param("msg","any")),onRequest:t.func("void",t.param("handler","RequestHandler"),t.param("internal","boolean"))}),IOAuthFunc:t.iface([],{constructor:t.func("void",t.param("name","string",!0)),getToken:t.func("void",t.param("name","string"))}),SignalHandler:t.func("void",t.param("event","string")),ServiceHandler:t.func(t.union(t.union(t.lit(!0),"undefined"),"boolean"),t.param("event","any")),RequestHandler:t.func("any",t.param("event","any")),StreamCallback:t.func("void",t.param("model","IStreamModel")),ValueStreamCallback:t.func("void",t.param("value","IValue"),t.param("data","string"),t.param("timestamp","string")),RefreshStreamCallback:t.func("void",t.param("value","IValue"))},u=new function(){this.debug=!1,this.verbose=!1,this.validation="normal"};function c(e){return void 0===e&&(e={}),t.createCheckers(o).IConfig.check(e),void 0!==e.debug&&(u.debug=e.debug),void 0!==e.verbose&&(u.verbose=e.verbose),void 0!==e.validation&&(u.validation=e.validation),u}function s(e){var t=null;return"undefined"!=typeof window&&((t=window.sessionStorage.getItem(e))||(t=function(e){for(var t=e+"=",n=window.document.cookie.split(";"),r=0;r<n.length;r++){var a=n[r];if(0===(a=a.trim()).indexOf(t))return a.substring(t.length,a.length)}return null}(e))),t||(t=process.env[e]||null),t}var p=s("baseUrl")||"/services",f=s("sessionID")||"",l=s("tokenID")||"";function d(e){c().debug&&console.log("WAPPSTO DEBUG: "+e)}function h(e){console.error("WAPPSTO ERROR: "+e)}var v=n.create({baseURL:p,headers:{"X-Session":f,"Content-Type":"application/json"}});function m(e){var t;return n.isAxiosError(e)?null==e||null==(t=e.response)?void 0:t.data:e}function g(e){var t,n;if(e.errno&&-111===e.errno)h("Failed to connect to "+e.address);else if(e.response)if(null!=e&&null!=(t=e.response)&&null!=(n=t.data)&&n.code)switch(e.response.data.code){case 400017:h("You can't share with yourself");break;case 507e6:h("Timeout, waiting for response on extsync request");break;default:h(e.response.data.message),d(JSON.stringify(e.response.data))}else h(e.response.statusText+" for "+e.config.url);else h("Unknown HTTP error: "+e.errno+" ("+e.code+")"),d(JSON.stringify(e))}var y=Object.assign({},console);function b(e){var t=(new Date).toISOString(),n=JSON.stringify({key:e,arguments:arguments.length<=1?void 0:arguments[1],time:t});return v.post("/2.0/extsync/wappsto/editor/console",n).catch((function(){}))}function w(e,t,n,r,a,i,o){try{var u=e[i](o),c=u.value}catch(e){return void n(e)}u.done?t(c):Promise.resolve(c).then(r,a)}function k(e){return function(){var t=this,n=arguments;return new Promise((function(r,a){var i=e.apply(t,n);function o(e){w(i,r,a,o,u,"next",e)}function u(e){w(i,r,a,o,u,"throw",e)}o(void 0)}))}}function x(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}function S(e,t,n){return t&&x(e.prototype,t),n&&x(e,n),Object.defineProperty(e,"prototype",{writable:!1}),e}function I(e,t){e.prototype=Object.create(t.prototype),e.prototype.constructor=e,(Object.setPrototypeOf||function(e,t){return e.__proto__=t,e})(e,t)}function N(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}var O,A=(function(e){var t=function(e){var t=Object.prototype,n=t.hasOwnProperty,r="function"==typeof Symbol?Symbol:{},a=r.iterator||"@@iterator",i=r.asyncIterator||"@@asyncIterator",o=r.toStringTag||"@@toStringTag";function u(e,t,n){return Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}),e[t]}try{u({},"")}catch(e){u=function(e,t,n){return e[t]=n}}function c(e,t,n,r){var a=Object.create((t&&t.prototype instanceof f?t:f).prototype),i=new S(r||[]);return a._invoke=function(e,t,n){var r="suspendedStart";return function(a,i){if("executing"===r)throw new Error("Generator is already running");if("completed"===r){if("throw"===a)throw i;return{value:void 0,done:!0}}for(n.method=a,n.arg=i;;){var o=n.delegate;if(o){var u=w(o,n);if(u){if(u===p)continue;return u}}if("next"===n.method)n.sent=n._sent=n.arg;else if("throw"===n.method){if("suspendedStart"===r)throw r="completed",n.arg;n.dispatchException(n.arg)}else"return"===n.method&&n.abrupt("return",n.arg);r="executing";var c=s(e,t,n);if("normal"===c.type){if(r=n.done?"completed":"suspendedYield",c.arg===p)continue;return{value:c.arg,done:n.done}}"throw"===c.type&&(r="completed",n.method="throw",n.arg=c.arg)}}}(e,n,i),a}function s(e,t,n){try{return{type:"normal",arg:e.call(t,n)}}catch(e){return{type:"throw",arg:e}}}e.wrap=c;var p={};function f(){}function l(){}function d(){}var h={};u(h,a,(function(){return this}));var v=Object.getPrototypeOf,m=v&&v(v(I([])));m&&m!==t&&n.call(m,a)&&(h=m);var g=d.prototype=f.prototype=Object.create(h);function y(e){["next","throw","return"].forEach((function(t){u(e,t,(function(e){return this._invoke(t,e)}))}))}function b(e,t){var r;this._invoke=function(a,i){function o(){return new t((function(r,o){!function r(a,i,o,u){var c=s(e[a],e,i);if("throw"!==c.type){var p=c.arg,f=p.value;return f&&"object"==typeof f&&n.call(f,"__await")?t.resolve(f.__await).then((function(e){r("next",e,o,u)}),(function(e){r("throw",e,o,u)})):t.resolve(f).then((function(e){p.value=e,o(p)}),(function(e){return r("throw",e,o,u)}))}u(c.arg)}(a,i,r,o)}))}return r=r?r.then(o,o):o()}}function w(e,t){var n=e.iterator[t.method];if(void 0===n){if(t.delegate=null,"throw"===t.method){if(e.iterator.return&&(t.method="return",t.arg=void 0,w(e,t),"throw"===t.method))return p;t.method="throw",t.arg=new TypeError("The iterator does not provide a 'throw' method")}return p}var r=s(n,e.iterator,t.arg);if("throw"===r.type)return t.method="throw",t.arg=r.arg,t.delegate=null,p;var a=r.arg;return a?a.done?(t[e.resultName]=a.value,t.next=e.nextLoc,"return"!==t.method&&(t.method="next",t.arg=void 0),t.delegate=null,p):a:(t.method="throw",t.arg=new TypeError("iterator result is not an object"),t.delegate=null,p)}function k(e){var t={tryLoc:e[0]};1 in e&&(t.catchLoc=e[1]),2 in e&&(t.finallyLoc=e[2],t.afterLoc=e[3]),this.tryEntries.push(t)}function x(e){var t=e.completion||{};t.type="normal",delete t.arg,e.completion=t}function S(e){this.tryEntries=[{tryLoc:"root"}],e.forEach(k,this),this.reset(!0)}function I(e){if(e){var t=e[a];if(t)return t.call(e);if("function"==typeof e.next)return e;if(!isNaN(e.length)){var r=-1,i=function t(){for(;++r<e.length;)if(n.call(e,r))return t.value=e[r],t.done=!1,t;return t.value=void 0,t.done=!0,t};return i.next=i}}return{next:N}}function N(){return{value:void 0,done:!0}}return l.prototype=d,u(g,"constructor",d),u(d,"constructor",l),l.displayName=u(d,o,"GeneratorFunction"),e.isGeneratorFunction=function(e){var t="function"==typeof e&&e.constructor;return!!t&&(t===l||"GeneratorFunction"===(t.displayName||t.name))},e.mark=function(e){return Object.setPrototypeOf?Object.setPrototypeOf(e,d):(e.__proto__=d,u(e,o,"GeneratorFunction")),e.prototype=Object.create(g),e},e.awrap=function(e){return{__await:e}},y(b.prototype),u(b.prototype,i,(function(){return this})),e.AsyncIterator=b,e.async=function(t,n,r,a,i){void 0===i&&(i=Promise);var o=new b(c(t,n,r,a),i);return e.isGeneratorFunction(n)?o:o.next().then((function(e){return e.done?e.value:o.next()}))},y(g),u(g,o,"Generator"),u(g,a,(function(){return this})),u(g,"toString",(function(){return"[object Generator]"})),e.keys=function(e){var t=[];for(var n in e)t.push(n);return t.reverse(),function n(){for(;t.length;){var r=t.pop();if(r in e)return n.value=r,n.done=!1,n}return n.done=!0,n}},e.values=I,S.prototype={constructor:S,reset:function(e){if(this.prev=0,this.next=0,this.sent=this._sent=void 0,this.done=!1,this.delegate=null,this.method="next",this.arg=void 0,this.tryEntries.forEach(x),!e)for(var t in this)"t"===t.charAt(0)&&n.call(this,t)&&!isNaN(+t.slice(1))&&(this[t]=void 0)},stop:function(){this.done=!0;var e=this.tryEntries[0].completion;if("throw"===e.type)throw e.arg;return this.rval},dispatchException:function(e){if(this.done)throw e;var t=this;function r(n,r){return o.type="throw",o.arg=e,t.next=n,r&&(t.method="next",t.arg=void 0),!!r}for(var a=this.tryEntries.length-1;a>=0;--a){var i=this.tryEntries[a],o=i.completion;if("root"===i.tryLoc)return r("end");if(i.tryLoc<=this.prev){var u=n.call(i,"catchLoc"),c=n.call(i,"finallyLoc");if(u&&c){if(this.prev<i.catchLoc)return r(i.catchLoc,!0);if(this.prev<i.finallyLoc)return r(i.finallyLoc)}else if(u){if(this.prev<i.catchLoc)return r(i.catchLoc,!0)}else{if(!c)throw new Error("try statement without catch or finally");if(this.prev<i.finallyLoc)return r(i.finallyLoc)}}}},abrupt:function(e,t){for(var r=this.tryEntries.length-1;r>=0;--r){var a=this.tryEntries[r];if(a.tryLoc<=this.prev&&n.call(a,"finallyLoc")&&this.prev<a.finallyLoc){var i=a;break}}i&&("break"===e||"continue"===e)&&i.tryLoc<=t&&t<=i.finallyLoc&&(i=null);var o=i?i.completion:{};return o.type=e,o.arg=t,i?(this.method="next",this.next=i.finallyLoc,p):this.complete(o)},complete:function(e,t){if("throw"===e.type)throw e.arg;return"break"===e.type||"continue"===e.type?this.next=e.arg:"return"===e.type?(this.rval=this.arg=e.arg,this.method="return",this.next="end"):"normal"===e.type&&t&&(this.next=t),p},finish:function(e){for(var t=this.tryEntries.length-1;t>=0;--t){var n=this.tryEntries[t];if(n.finallyLoc===e)return this.complete(n.completion,n.afterLoc),x(n),p}},catch:function(e){for(var t=this.tryEntries.length-1;t>=0;--t){var n=this.tryEntries[t];if(n.tryLoc===e){var r=n.completion;if("throw"===r.type){var a=r.arg;x(n)}return a}}throw new Error("illegal catch attempt")},delegateYield:function(e,t,n){return this.delegate={iterator:I(e),resultName:t,nextLoc:n},"next"===this.method&&(this.arg=void 0),p}},e}(e.exports);try{regeneratorRuntime=t}catch(e){"object"==typeof globalThis?globalThis.regeneratorRuntime=t:Function("r","regeneratorRuntime = r")(t)}}(O={exports:{}}),O.exports),V=function(){function e(t,n){var r=this;void 0===n&&(n="2.0"),this.meta={},this._create=function(){var t=k(A.mark((function t(n){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===n&&(n={}),t.next=3,v.post(r.getUrl(),r.toJSON(),e.generateOptions(n));case 3:r.parse(t.sent.data);case 5:case"end":return t.stop()}}),t)})));return function(e){return t.apply(this,arguments)}}(),this.create=function(){var t=k(A.mark((function t(n){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return void 0===n&&(n={}),e.validateMethod("Model","create",[n]),t.prev=2,t.next=5,r._create(n);case 5:t.next=10;break;case 7:t.prev=7,t.t0=t.catch(2),g(t.t0);case 10:case"end":return t.stop()}}),t,null,[[2,7]])})));return function(e){return t.apply(this,arguments)}}(),this.update=k(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.prev=0,t.next=3,v.patch(r.getUrl(),r.toJSON(),e.generateOptions());case 3:r.parse(t.sent.data),t.next=10;break;case 7:t.prev=7,t.t0=t.catch(0),g(t.t0);case 10:case"end":return t.stop()}}),t,null,[[0,7]])}))),this.refresh=k(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.prev=0,t.next=3,v.get(r.getUrl(),e.generateOptions());case 3:r.parse(t.sent.data),t.next=10;break;case 7:t.prev=7,t.t0=t.catch(0),g(t.t0);case 10:case"end":return t.stop()}}),t,null,[[0,7]])}))),this.delete=k(A.mark((function t(){return A.wrap((function(t){for(;;)switch(t.prev=t.next){case 0:return t.prev=0,t.next=3,v.delete(r.getUrl(),e.generateOptions());case 3:t.next=8;break;case 5:t.prev=5,t.t0=t.catch(0),g(t.t0);case 8:case"end":return t.stop()}}),t,null,[[0,5]])}))),this.meta.type=t,this.meta.version=n}var t=e.prototype;return t.url=function(){return"/"+this.meta.version+"/"+this.meta.type},t.path=function(){return this.meta.id?"/"+this.meta.type+"/"+this.meta.id:"/"+this.meta.type},t.attributes=function(){return[]},t.validate=function(t,n){e.validateMethod(this.meta.type||"",t,n)},e.validateMethod=function(t,n,r){if("none"!==c().validation){var a=Object.keys(e.checker).find((function(e){return e==="I"+t+"Func"}));if(a){var i=e.checker[a].methodArgs(n);"strict"===c().validation?i.strictCheck(Array.from(r)):i.check(Array.from(r))}}},e.generateOptions=function(e){var t={params:{}};return e&&Object.assign(t.params,e),c().verbose&&(t.params.verbose=!0),0===Object.keys(t.params).length&&(t=a.omit(t,"params")),t},t.getUrl=function(){return this.meta.id?this.url()+"/"+this.meta.id:this.parent?this.parent.getUrl()+"/"+this.meta.type:this.url()},t.parse=function(t){e.validateMethod("Model","parse",arguments),a.isArray(t)&&(t=t[0]);var n=this.toJSON();Object.assign(this,a.pick(t,this.attributes().concat(["meta"])));var r=this.toJSON();return!a.isEqual(n,r)},e.fromArray=function(e){return i.plainToClass(this,e)},t.toJSON=function(){var e=Object.assign({},a.pick(this.meta,["id","type","version"]));return Object.assign({meta:e},a.pick(this,this.attributes()))},e}();V.checker=t.createCheckers(o),V.fetch=function(){var e=k(A.mark((function e(t,n){var r;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return V.validateMethod("Model","fetch",[t,n]),e.prev=1,e.next=4,v.get(t,V.generateOptions(n));case 4:if(null==(r=e.sent)||!r.data){e.next=14;break}if(!a.isArray(null==r?void 0:r.data)){e.next=10;break}return e.abrupt("return",r.data);case 10:if(!r.data){e.next=12;break}return e.abrupt("return",[r.data]);case 12:e.next=15;break;case 14:return e.abrupt("return",[]);case 15:e.next=20;break;case 17:e.prev=17,e.t0=e.catch(1),g(e.t0);case 20:return e.abrupt("return",[]);case 21:case"end":return e.stop()}}),e,null,[[1,17]])})));return function(t,n){return e.apply(this,arguments)}}();var B=function(e){function t(){return e.call(this,"notification","2.1")||this}return I(t,e),t.prototype.getIds=function(){var e,t,n,r=[];return null!=(e=this.base)&&e.ids&&(r=this.base.ids),0===r.length&&null!=(t=this.custom)&&null!=(n=t.data)&&n.selected&&(r=this.custom.data.selected.map((function(e){return e.meta.id}))),r},t}(V);function R(e){return/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-b8-9][a-f0-9]{3}-[a-f0-9]{12}$/i.test(e)}B.endpoint="/2.1/notification";var _=require("universal-websocket-client"),q=function(e){function t(){var t;return(t=e.call(this,"stream","2.1")||this).websocketUrl="",t.ignoreReconnect=!1,t.models={},t.services={},t.handlers={},t.subscriptions=[],t.opened=!1,t.backoff=1e3,t.waiting=[],t.websocketUrl=""+p,t.websocketUrl.endsWith("/")||(t.websocketUrl+="/"),t.websocketUrl+="2.1/websocket/open",!t.websocketUrl.startsWith("http")&&"object"==typeof window&&window&&window.location&&window.location.origin&&(t.websocketUrl=window.location.origin+t.websocketUrl),t.websocketUrl=t.websocketUrl.replace(/^http/,"ws"),t.websocketUrl+="?X-Session="+f,t}I(t,e);var n=t.prototype;return n.open=function(){var e=this;return new Promise((function(t,n){var r=e;if(e.socket)t();else if(e.opened)e.waiting.push(t);else{e.opened=!0,d("Open WebSocket on "+e.websocketUrl),e.ignoreReconnect=!1;var a=setTimeout((function(){r.reconnect()}),1e3+e.backoff),i=new _(e.websocketUrl);i&&(i.onopen=function(){e.backoff=1e3,e.socket=i,clearTimeout(a),e.addListeners(),t(),e.waiting.forEach((function(e){e()})),e.waiting=[]})}}))},n.close=function(){this.socket&&(d("Closing WebSocket"),this.ignoreReconnect=!0,this.socket.close(),this.opened=!1,this.socket=void 0)},n.addSubscription=function(e){this.subscriptions.includes(e)||(this.subscriptions.push(e),this.sendMessage("POST","/services/2.1/websocket/open/subscription",e))},n.subscribe=function(e){var t=this;this.validate("subscribe",arguments),this.open().then((function(){t.models[e.path()]||(t.models[e.path()]=[]),t.models[e.path()].push(e),d("Add subscription: "+e.path()),t.addSubscription(e.path())}))},n.subscribeService=function(e,t){var n=this;this.validate("subscribeService",arguments),this.open().then((function(){"/"!==e[0]&&(e="/"+e),n.services[e]||(n.services[e]=[]),n.services[e].push(t),d("Add service subscription: "+e),n.addSubscription(e)}))},n.addSignalHandler=function(e,t){var n=this;this.validate("addSignalHandler",arguments),this.open().then((function(){d("Add Signal Handler: "+e),n.handlers[e]||(n.handlers[e]=[]),n.handlers[e].push(t)}))},n.sendRequest=function(){var e=k(A.mark((function e(t){var n,r=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return this.validate("sendRequest",r),n={},e.prev=2,e.next=5,v.post("/2.0/extsync/request",t);case 5:n=e.sent.data,e.next=12;break;case 9:e.prev=9,e.t0=e.catch(2),g(e.t0);case 12:return e.abrupt("return",n);case 13:case"end":return e.stop()}}),e,this,[[2,9]])})));return function(t){return e.apply(this,arguments)}}(),n.sendResponse=function(){var e=k(A.mark((function e(t,n,r){var a,i=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return this.validate("sendResponse",i),e.prev=1,a={code:n,body:r},e.next=5,v.patch("/2.0/extsync/response/"+t.meta.id,a);case 5:e.next=10;break;case 7:e.prev=7,e.t0=e.catch(1),g(e.t0);case 10:case"end":return e.stop()}}),e,this,[[1,7]])})));return function(t,n,r){return e.apply(this,arguments)}}(),n.onRequest=function(e,t){var n=this;this.validate("onRequest",arguments),this.subscribeService("/extsync/request",function(){var r=k(A.mark((function r(a){var i,o;return A.wrap((function(r){for(;;)switch(r.prev=r.next){case 0:if(r.prev=0,!(t&&"extsync/"!==a.uri||!t&&"extsync/"===a.uri)){r.next=4;break}return d("Discarding extsync event ("+t+" - "+a.uri+")"),r.abrupt("return");case 4:if(!(o=e(a.body))){r.next=12;break}if(!o.then){r.next=11;break}return o.then((function(e){n.sendResponse(a,200,e)})).catch((function(e){n.sendResponse(a,400,e)})),r.abrupt("return");case 11:i=o;case 12:n.sendResponse(a,200,i),r.next=20;break;case 15:r.prev=15,r.t0=r.catch(0),n.sendResponse(a,501,r.t0),h("An error happend when calling request handler"),h(JSON.stringify(r.t0));case 20:case"end":return r.stop()}}),r,null,[[0,15]])})));return function(e){return r.apply(this,arguments)}}())},n.reconnect=function(){var e=this;this.backoff=2*this.backoff,d("Stream Reconnecting"),this.close(),this.open().then((function(){e.sendMessage("PATCH","/services/2.1/websocket/open",{subscription:e.subscriptions})}))},n.handleEvent=function(e,t){var n;d("Handle Event: "+e),null==(n=this.handlers[e])||n.forEach((function(e){e(t)}))},n.filterCallback=function(e,t,n){!0===n&&(this.services[t]=this.services[t].filter((function(t){return t!==e})))},n.handleMessage=function(e,t,n){var r=this,a=[],i=[];if("message"===e){var o=t.path.split("/").filter((function(e){return e.length>0}));if(!o)return;var u=o[o.length-1];a.push("/"+o.slice(o.length-2,o.length).join("/")),R(u)||a.push("/"+o.slice(o.length-3,o.length).join("/")),o.forEach((function(e){R(e)||i.push("/"+e)}))}else i.push("/"+e);a.forEach((function(e){var n;null==(n=r.models[e])||n.forEach((function(e){e.handleStream(t)}))})),i.forEach((function(e){var n=r.services[e];null==n||n.forEach((function(n){var a=n(t);a&&(!0===a?r.filterCallback(n,e,a):a.then((function(t){r.filterCallback(n,e,t)})))}))}))},n.sendMessage=function(e,t,n){var r;void 0===n&&(n=void 0);var a={jsonrpc:"2.0",method:e,id:Math.floor(1e5*Math.random()),params:{url:t,data:void 0}};n&&(a.params.data=n),d("Sending a "+e+" message to "+t+": "+JSON.stringify(a)),null==(r=this.socket)||r.send(JSON.stringify(a))},n.addListeners=function(){var e=this;this.socket&&(this.socket.onmessage=function(t){var n;if("message"===t.type)try{n=JSON.parse(t.data)}catch(e){return void h("Failed to parse stream event")}else h("Can't handle binary stream data");n.jsonrpc?n.result?!0!==n.result.value&&d("Stream rpc result: "+JSON.stringify(n.result.value)):h("Stream rpc error: "+JSON.stringify(n.error)):(n.constructor!==Array?[n]:n).forEach((function(t){var n;if(d(JSON.stringify(t)),"extsync"!==(null==(n=t.meta_object)?void 0:n.type)){var r=e.checkAndSendTrace(t);e.handleMessage("message",t,r)}else{var a=t.extsync||t.data;a.request?e.handleMessage("extsync/request",a):"extsync/wappsto/editor/console"!==a.uri&&e.handleMessage("extsync",a)}}))},this.socket.onerror=function(t){try{e.handleEvent("error",t)}catch(t){h("Stream error: "+e.websocketUrl)}},this.socket.onclose=function(t){e.ignoreReconnect?e.handleEvent("close",t):(d("Starting reconnect"),setTimeout((function(){e.reconnect()}),e.backoff))})},n.checkAndSendTrace=function(e){return""},t}(V);q.endpoint="/2.1/stream",q.fetch=k(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.next=2,V.fetch(q.endpoint);case 2:return e.abrupt("return",q.fromArray(e.sent));case 4:case"end":return e.stop()}}),e)})));var C=new q;function T(e,t){return E.apply(this,arguments)}function E(){return(E=k(A.mark((function e(t,n){var r;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return r={type:t,message:n},e.next=3,C.sendRequest(r);case 3:return e.abrupt("return",e.sent);case 4:case"end":return e.stop()}}),e)})))).apply(this,arguments)}function L(){return(L=k(A.mark((function e(t){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.abrupt("return",T("background",t));case 1:case"end":return e.stop()}}),e)})))).apply(this,arguments)}function D(){return(D=k(A.mark((function e(t){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.abrupt("return",T("foreground",t));case 1:case"end":return e.stop()}}),e)})))).apply(this,arguments)}function j(e,t){V.checker.RequestHandler.check(t),C.onRequest(function(){var n=k(A.mark((function n(r){var a;return A.wrap((function(n){for(;;)switch(n.prev=n.next){case 0:if(n.prev=0,(a=JSON.parse(r)).type!==e){n.next=4;break}return n.abrupt("return",t(a.message));case 4:n.next=9;break;case 6:n.prev=6,n.t0=n.catch(0),d("Failed to parse event - Foreground/Background handler");case 9:return n.abrupt("return",void 0);case 10:case"end":return n.stop()}}),n,null,[[0,6]])})));return function(e){return n.apply(this,arguments)}}(),!0)}var P=function(e){function t(){var t;return(t=e.apply(this,arguments)||this).create=k(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.abrupt("return",new Promise(function(){var e=k(A.mark((function e(n,r){var a;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.prev=0,e.next=3,t._create();case 3:n(),e.next=14;break;case 6:if(e.prev=6,e.t0=e.catch(0),a=m(e.t0)){e.next=13;break}return g(e.t0),r(e.t0),e.abrupt("return");case 13:400008===a.code||400013===a.code?(d("Requesting permission to add data to user"),C.subscribeService("/notification",function(){var e=k(A.mark((function e(r){var a,i,o,u;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if("notification"!==(null==(a=r.meta_object)?void 0:a.type)){e.next=16;break}if((u=B.fromArray([r.data]))&&u[0]){e.next=4;break}return e.abrupt("return");case 4:if(1100013!==(null==(i=u[0])||null==(o=i.base)?void 0:o.code)){e.next=16;break}return e.prev=5,d("Got permission to create data under users account"),e.next=9,t._create({identifier:"request access to save data under users account"});case 9:return n(),e.abrupt("return",!0);case 13:e.prev=13,e.t0=e.catch(5),d("Failed to get permission to save data under users account");case 16:return e.abrupt("return",void 0);case 17:case"end":return e.stop()}}),e,null,[[5,13]])})));return function(t){return e.apply(this,arguments)}}())):(g(e.t0),r(a));case 14:case"end":return e.stop()}}),e,null,[[0,6]])})));return function(t,n){return e.apply(this,arguments)}}()));case 1:case"end":return e.stop()}}),e)}))),t}return I(t,e),t.getPermissionHash=function(e,t,n){return e+"-"+t+"-"+n},t}(V);P.request=function(){var e=k(A.mark((function e(t,n,r,a){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return V.checker.IPermissionModelFunc.methodArgs("request").check([t,n,r,a]),e.abrupt("return",new Promise(function(){var e=k(A.mark((function e(i){var o,u;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return o=P.getPermissionHash(t.split("/")[2],n,r),Object.assign(a,{quantity:n,message:r,identifier:o,method:["retrieve","update"]}),e.next=4,V.fetch(t,a);case 4:0===(u=e.sent).length?d("Requesting new access to users data: "+r):(d("Found permission notification - returning old result"),i(u)),d("Waiting for permission to access users data: "+r),C.subscribeService("/notification",function(){var e=k(A.mark((function e(r){var o,u,c,s,p;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if("notification"!==(null==(o=r.meta_object)?void 0:o.type)){e.next=13;break}if((s=B.fromArray([r.data]))&&s[0]){e.next=4;break}return e.abrupt("return");case 4:if(p=s[0].getIds(),1100004!==(null==(u=s[0].base)?void 0:u.code)&&1100013!==(null==(c=s[0].base)?void 0:c.code)||!("all"===n||p.length>=n)){e.next=13;break}return Object.assign(a,"all"===n?{id:p}:{id:p.reverse().slice(0,n)}),d("Got permission to "+JSON.stringify(null==a?void 0:a.id)),e.next=10,V.fetch(t,a);case 10:return i(e.sent),e.abrupt("return",!0);case 13:return e.abrupt("return",void 0);case 14:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}());case 8:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}()));case 2:case"end":return e.stop()}}),e)})));return function(t,n,r,a){return e.apply(this,arguments)}}();var U=function(e){function t(t,n){var r;return void 0===n&&(n="2.0"),(r=e.call(this,t,n)||this).streamCallback={},r.clearAllCallbacks(),r}I(t,e);var n=t.prototype;return n.onChange=function(e){V.checker.StreamCallback.check(e),C.subscribe(this),this.streamCallback.change.push(e)},n.onDelete=function(e){V.checker.StreamCallback.check(e),C.subscribe(this),this.streamCallback.delete.push(e)},n.onCreate=function(e){V.checker.StreamCallback.check(e),C.subscribe(this),this.streamCallback.create.push(e)},n.clearAllCallbacks=function(){this.streamCallback.change=[],this.streamCallback.delete=[],this.streamCallback.create=[]},n.handleStream=function(e){var t=this;switch(null==e?void 0:e.event){case"create":this.streamCallback.create.forEach((function(e){e(t)}));break;case"update":this.parse(e.data)&&this.streamCallback.change.forEach((function(e){e(t)}));break;case"delete":this.streamCallback.delete.forEach((function(e){e(t)}));break;default:h("Unhandled stream event type: "+(null==e?void 0:e.event))}},t}(P),F=function(e){function t(t){var n;return(n=e.call(this,"state")||this).data="",n.type="Report",n.timestamp=(new Date).toISOString(),n.validate("constructor",arguments),n.type=t||"Report",n}return I(t,e),t.prototype.attributes=function(){return["data","type","timestamp"]},t}(U);F.endpoint="/2.0/state",F.fetch=k(A.mark((function e(){var t,n;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return t={expand:1},n=F.endpoint,e.next=4,V.fetch(n,t);case 4:return e.abrupt("return",F.fromArray(e.sent));case 6:case"end":return e.stop()}}),e)})));var M=function(e){function t(t){var n;return(n=e.call(this,"value")||this).permission="r",n.state=[],n.createState=function(){var e=k(A.mark((function e(t){var r,i,o,u;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if(n.validate("createState",[t]),r=!1,(i=n.findState(t.type))?d("Using existing state with id "+i.meta.id):(i=new F(t.type),r=!0),o=i.toJSON(),i.parse(t),i.parent=N(n),u=i.toJSON(),!r&&a.isEqual(o,u)){e.next=17;break}if(!r){e.next=15;break}return e.next=12,i.create();case 12:n.state.push(i),e.next=17;break;case 15:return e.next=17,i.update();case 17:return e.abrupt("return",i);case 18:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}(),n.findStateAndLog=function(){var e=k(A.mark((function e(t,r){var a;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if(!(a=n.findState(t))){e.next=6;break}return e.next=4,V.fetch("/2.1/log/"+a.meta.id+"/state",r);case 4:return e.abrupt("return",e.sent[0]);case 6:return e.abrupt("return",{meta:{id:"",type:"log",version:"2.1"},data:[],more:!1,type:"state"});case 7:case"end":return e.stop()}}),e)})));return function(t,n){return e.apply(this,arguments)}}(),n.getReportLog=function(){var e=k(A.mark((function e(t){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return n.validate("getReportLog",[t]),e.abrupt("return",n.findStateAndLog("Report",t));case 2:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}(),n.getControlLog=function(){var e=k(A.mark((function e(t){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return n.validate("getControlLog",[t]),e.abrupt("return",n.findStateAndLog("Control",t));case 2:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}(),n.validate("constructor",arguments),n.name=t||"",n}I(t,e);var n=t.prototype;return n.attributes=function(){return["name","permission","type","period","delta","number","string","blob","xml","status"]},n.findState=function(e){var t=void 0;return this.state.forEach((function(n){n.type===e&&(t=n)})),t},n.getTime=function(){return(new Date).toISOString()},n.findStateAndUpdate=function(){var e=k(A.mark((function e(t,n,r){var a;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if(!(a=this.findState(t))){e.next=6;break}return a.data=n.toString(),a.timestamp=r||this.getTime(),e.next=6,a.update();case 6:case"end":return e.stop()}}),e,this)})));return function(t,n,r){return e.apply(this,arguments)}}(),n.findStateAndCallback=function(e,t){var n=this,r=this.findState(e);r&&r.onChange((function(){r&&t(n,r.data,r.timestamp)}))},n.findStateAndData=function(e){var t=this.findState(e);if(t)return t.data},n.findStateAndTimestamp=function(e){var t=this.findState(e);if(t)return t.timestamp},n.getReportData=function(){return this.findStateAndData("Report")},n.getControlData=function(){return this.findStateAndData("Control")},n.getControlTimestamp=function(){return this.findStateAndTimestamp("Control")},n.getReportTimestamp=function(){return this.findStateAndTimestamp("Report")},n.report=function(){var e=k(A.mark((function e(t,n){var r=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:void 0===n&&(n=void 0),this.validate("report",r),this.findStateAndUpdate("Report",t,n);case 3:case"end":return e.stop()}}),e,this)})));return function(t,n){return e.apply(this,arguments)}}(),n.control=function(){var e=k(A.mark((function e(t,n){var r=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:void 0===n&&(n=void 0),this.validate("control",r),this.findStateAndUpdate("Control",t,n);case 3:case"end":return e.stop()}}),e,this)})));return function(t,n){return e.apply(this,arguments)}}(),n.onControl=function(e){this.validate("onControl",arguments),this.findStateAndCallback("Control",e)},n.onReport=function(e){this.validate("onReport",arguments),this.findStateAndCallback("Report",e)},n.onRefresh=function(e){var t=this;this.validate("onRefresh",arguments),this.onChange((function(){"update"===t.status&&(e(t),t.status="")}))},t.validate=function(e,t){V.validateMethod("Value",e,t)},S(t,[{key:"states",get:function(){return this.state}}]),t}(U);M.endpoint="/2.0/value",M.fetch=k(A.mark((function e(){var t,n;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return t={expand:2},n=M.endpoint,e.next=4,V.fetch(n,t);case 4:return e.abrupt("return",M.fromArray(e.sent));case 6:case"end":return e.stop()}}),e)}))),M.find=function(){var e=k(A.mark((function e(t,n,r){var a,i;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:for(i in void 0===n&&(n=1),void 0===r&&(r=""),M.validate("find",[t,n,r]),""===r&&(r="Find "+n+" value"),a={expand:2},t)a["this_"+i]=t[i];return e.next=8,P.request(M.endpoint,n,r,a);case 8:return e.abrupt("return",M.fromArray(e.sent));case 10:case"end":return e.stop()}}),e)})));return function(t,n,r){return e.apply(this,arguments)}}(),M.findByName=function(){var e=k(A.mark((function e(t,n,r){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=1),void 0===r&&(r=""),M.validate("findByName",[t,n,r]),""===r&&(r="Find "+n+" value with name "+t),e.abrupt("return",M.find({name:t},n,r));case 5:case"end":return e.stop()}}),e)})));return function(t,n,r){return e.apply(this,arguments)}}(),M.findByType=function(){var e=k(A.mark((function e(t,n,r){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=1),void 0===r&&(r=""),M.validate("findByType",[t,n,r]),""===r&&(r="Find "+n+" value with type "+t),e.abrupt("return",M.find({type:t},n,r));case 5:case"end":return e.stop()}}),e)})));return function(t,n,r){return e.apply(this,arguments)}}(),M.findAllByName=function(){var e=k(A.mark((function e(t,n){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=""),M.validate("findAllByName",[t,n]),e.abrupt("return",M.findByName(t,"all",n));case 3:case"end":return e.stop()}}),e)})));return function(t,n){return e.apply(this,arguments)}}(),M.findAllByType=function(){var e=k(A.mark((function e(t,n){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=""),M.validate("findAllByType",[t,n]),e.abrupt("return",M.findByType(t,"all",n));case 3:case"end":return e.stop()}}),e)})));return function(t,n){return e.apply(this,arguments)}}(),r.__decorate([i.Type((function(){return F}))],M.prototype,"state",void 0);var J=function(e){function t(t){var n;return(n=e.call(this,"device")||this).value=[],n.validate("constructor",arguments),n.name=t||"",n}I(t,e);var n=t.prototype;return n.attributes=function(){return["name","product","serial","description","protocol","communication","version","manufacturer"]},n.findValueByName=function(e){return this.validate("findValueByName",arguments),this.value.filter((function(t){return t.name===e}))},n.findValueByType=function(e){return this.validate("findValueByType",arguments),this.value.filter((function(t){return t.type===e}))},n.createValue=function(){var e=k(A.mark((function e(t){var n,r,i,o,u=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if(this.validate("createValue",u),n=new M,0!==(r=this.findValueByName(t.name)).length&&(d("Using existing value with id "+r[0].meta.id),n=r[0]),t.number||t.string||t.blob||t.xml){e.next=6;break}throw new Error("You must suply a valid type");case 6:if(i=n.toJSON(),n.parse(t),n.parent=this,o=n.toJSON(),a.isEqual(i,o)){e.next=19;break}if(0===r.length){e.next=16;break}return e.next=14,n.update();case 14:e.next=19;break;case 16:return e.next=18,n.create();case 18:this.value.push(n);case 19:if(!["r","rw","wr"].includes(t.permission)){e.next=22;break}return e.next=22,n.createState({type:"Report"});case 22:if(!["w","rw","wr"].includes(t.permission)){e.next=25;break}return e.next=25,n.createState({type:"Control"});case 25:return e.abrupt("return",n);case 26:case"end":return e.stop()}}),e,this)})));return function(t){return e.apply(this,arguments)}}(),n.createNumberValue=function(){var e=k(A.mark((function e(t){var n,r=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return this.validate("createNumberValue",r),(n={}).min=t.min,n.max=t.max,n.step=t.step,n.unit=t.unit,n.si_conversion=t.si_conversion,n.mapping=t.mapping,n.ordered_mapping=t.ordered_mapping,n.meaningful_zero=t.meaningful_zero,t.number=n,e.abrupt("return",this.createValue(t));case 12:case"end":return e.stop()}}),e,this)})));return function(t){return e.apply(this,arguments)}}(),n.createStringValue=function(){var e=k(A.mark((function e(t){var n,r=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return this.validate("createStringValue",r),(n={}).max=t.max,n.encoding=t.encoding,t.string=n,e.abrupt("return",this.createValue(t));case 6:case"end":return e.stop()}}),e,this)})));return function(t){return e.apply(this,arguments)}}(),n.createBlobValue=function(){var e=k(A.mark((function e(t){var n,r=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return this.validate("createBlobValue",r),(n={}).max=t.max,n.encoding=t.encoding,t.blob=n,e.abrupt("return",this.createValue(t));case 6:case"end":return e.stop()}}),e,this)})));return function(t){return e.apply(this,arguments)}}(),n.createXmlValue=function(){var e=k(A.mark((function e(t){var n,r=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return this.validate("createXmlValue",r),(n={}).xsd=t.xsd,n.namespace=t.namespace,t.xml=n,e.abrupt("return",this.createValue(t));case 6:case"end":return e.stop()}}),e,this)})));return function(t){return e.apply(this,arguments)}}(),t.validate=function(e,t){V.validateMethod("Device",e,t)},S(t,[{key:"values",get:function(){return this.value}}]),t}(U);function H(){return(H=k(A.mark((function e(t){var n,r,a=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return V.validateMethod("Network","createNetwork",a),e.next=3,G.fetch(t.name);case 3:if(0===(n=e.sent).length){e.next=7;break}return d("Using existing network with id "+n[0].meta.id),e.abrupt("return",n[0]);case 7:return(r=new G).name=t.name,r.description=t.description,e.next=12,r.create();case 12:return e.abrupt("return",r);case 13:case"end":return e.stop()}}),e)})))).apply(this,arguments)}J.endpoint="/2.0/device",J.find=function(){var e=k(A.mark((function e(t,n,r){var a,i;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:for(i in void 0===n&&(n=1),void 0===r&&(r=""),J.validate("find",[t,n,r]),""===r&&(r="Find "+n+" device"),a={expand:3},t)a["this_"+i]=t[i];return e.next=8,P.request(J.endpoint,n,r,a);case 8:return e.abrupt("return",J.fromArray(e.sent));case 10:case"end":return e.stop()}}),e)})));return function(t,n,r){return e.apply(this,arguments)}}(),J.findByName=function(){var e=k(A.mark((function e(t,n,r){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=1),void 0===r&&(r=""),J.validate("findByName",[t,n,r]),""===r&&(r="Find "+n+" device with name "+t),e.abrupt("return",J.find({name:t},n,r));case 5:case"end":return e.stop()}}),e)})));return function(t,n,r){return e.apply(this,arguments)}}(),J.findAllByName=function(){var e=k(A.mark((function e(t,n){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=""),J.validate("findAllByName",[t,n]),e.abrupt("return",J.findByName(t,"all",n));case 3:case"end":return e.stop()}}),e)})));return function(t,n){return e.apply(this,arguments)}}(),J.findByProduct=function(){var e=k(A.mark((function e(t,n,r){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=1),void 0===r&&(r=""),J.validate("findByProduct",[t,n,r]),""===r&&(r="Find "+n+" device with product "+t),e.abrupt("return",J.find({product:t},n,r));case 5:case"end":return e.stop()}}),e)})));return function(t,n,r){return e.apply(this,arguments)}}(),J.findAllByProduct=function(){var e=k(A.mark((function e(t,n){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=""),J.validate("findAllByProduct",[t,n]),e.abrupt("return",J.findByProduct(t,"all",n));case 3:case"end":return e.stop()}}),e)})));return function(t,n){return e.apply(this,arguments)}}(),J.fetch=k(A.mark((function e(){var t,n;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return t={expand:3},n=J.endpoint,e.next=4,V.fetch(n,t);case 4:return e.abrupt("return",J.fromArray(e.sent));case 6:case"end":return e.stop()}}),e)}))),r.__decorate([i.Type((function(){return M}))],J.prototype,"value",void 0);var G=function(e){function t(t){var n;return(n=e.call(this,"network")||this).device=[],n.validate("constructor",arguments),n.name=t||"",n}I(t,e);var n=t.prototype;return n.attributes=function(){return["name","description"]},n.findDeviceByName=function(e){return this.validate("findDeviceByName",arguments),this.device.filter((function(t){return t.name===e}))},n.findDeviceByProduct=function(e){return this.validate("findDeviceByProduct",arguments),this.device.filter((function(t){return t.product===e}))},n.findValueByName=function(e){this.validate("findValueByName",arguments);var t=[];return this.device.forEach((function(n){t=t.concat(n.findValueByName(e))})),t},n.findValueByType=function(e){this.validate("findValueByType",arguments);var t=[];return this.device.forEach((function(n){t=t.concat(n.findValueByType(e))})),t},n.createDevice=function(){var e=k(A.mark((function e(t){var n,r,i,o,u,c=arguments;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if(this.validate("createDevice",c),n=new J,0!==(r=this.findDeviceByName(t.name)).length&&(d("Using existing device with id "+(null==(i=r[0])?void 0:i.meta.id)),n=r[0]),o=n.toJSON(),n.parse(t),n.parent=this,u=n.toJSON(),a.isEqual(o,u)){e.next=17;break}if(0===r.length){e.next=14;break}return e.next=12,n.update();case 12:e.next=17;break;case 14:return e.next=16,n.create();case 16:this.device.push(n);case 17:return e.abrupt("return",n);case 18:case"end":return e.stop()}}),e,this)})));return function(t){return e.apply(this,arguments)}}(),t.validate=function(e,t){V.validateMethod("Network",e,t)},S(t,[{key:"devices",get:function(){return this.device}}]),t}(U);G.endpoint="/2.0/network",G.find=function(){var e=k(A.mark((function e(t,n,r){var a,i;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:for(i in void 0===n&&(n=1),void 0===r&&(r=""),G.validate("find",[t,n,r]),""===r&&(r="Find "+n+" network"),a={expand:4},t)a["this_"+i]=t[i];return e.next=8,P.request(G.endpoint,n,r,a);case 8:return e.abrupt("return",G.fromArray(e.sent));case 10:case"end":return e.stop()}}),e)})));return function(t,n,r){return e.apply(this,arguments)}}(),G.findByName=function(){var e=k(A.mark((function e(t,n,r){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=1),void 0===r&&(r=""),G.validate("findByName",[t,n,r]),""===r&&(r="Find "+n+" network with name "+t),e.abrupt("return",G.find({name:t},n,r));case 5:case"end":return e.stop()}}),e)})));return function(t,n,r){return e.apply(this,arguments)}}(),G.findAllByName=function(){var e=k(A.mark((function e(t,n){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===n&&(n=""),G.validate("findAllByName",[t,n]),e.abrupt("return",G.findByName(t,"all",n));case 3:case"end":return e.stop()}}),e)})));return function(t,n){return e.apply(this,arguments)}}(),G.fetch=function(){var e=k(A.mark((function e(t,n){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return void 0===t&&(t=""),void 0===n&&(n={}),G.validate("fetch",[t,n]),Object.assign(n,{expand:4}),""!==t&&Object.assign(n,{"this_name=":t}),e.next=7,V.fetch(G.endpoint,n);case 7:return e.abrupt("return",G.fromArray(e.sent));case 9:case"end":return e.stop()}}),e)})));return function(t,n){return e.apply(this,arguments)}}(),r.__decorate([i.Type((function(){return J}))],G.prototype,"device",void 0);var W=function(e){function t(){var t;return(t=e.call(this,"user","2.1")||this).create=k(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:case"end":return e.stop()}}),e)}))),t.update=k(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:case"end":return e.stop()}}),e)}))),t}return I(t,e),t.prototype.attributes=function(){return["first_name","lat_name","email","phone","name","nickname","language"]},t}(V);W.endpoint="/2.1/user",W.me=k(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.next=2,W.fetch();case 2:return e.abrupt("return",e.sent[0]);case 4:case"end":return e.stop()}}),e)}))),W.fetch=k(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.next=2,V.fetch(W.endpoint+"/me",{expand:1});case 2:return e.abrupt("return",W.fromArray(e.sent));case 4:case"end":return e.stop()}}),e)})));var X=function(e){function t(t,n){var r;return(r=e.call(this,"data","2.1")||this).data_meta={},r.data={},r.data_meta||(r.data_meta={}),r.data_meta.type=n,r.data_meta.id=t,r.meta.redirect=t,r}I(t,e);var n=t.prototype;return n.url=function(){return t.endpoint},n.attributes=function(){return["data_meta"]},n.set=function(e,t){this.data[e]=t},n.get=function(e){return this.data[e]},t}(V);X.endpoint="/2.1/data",X.fetch=k(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.next=2,V.fetch(X.endpoint);case 2:return e.abrupt("return",X.fromArray(e.sent));case 4:case"end":return e.stop()}}),e)}))),X.findById=function(){var e=k(A.mark((function e(t){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.next=2,V.fetch(X.endpoint,{"this_data_meta.id":t});case 2:return e.abrupt("return",X.fromArray(e.sent));case 4:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}();var z=function(e){function t(t){var n;return(n=e.call(this,"2.0","oauth")||this).getToken=k(A.mark((function e(){return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.abrupt("return",new Promise(function(){var e=k(A.mark((function e(t){var r,a,i,o;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return e.next=2,V.fetch("/2.0/oauth_connect/"+n.name,{});case 2:if(null==(a=e.sent[0])||null==(r=a.params)||!r.oauth_token){e.next=7;break}return t(null==a?void 0:a.params),e.abrupt("return");case 7:d("OAuth token is not valid, waiting for token on stream"),C.subscribeService("/oauth_connect",function(){var e=k(A.mark((function e(r){var a,i;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:if((null==r||null==(a=r.data)?void 0:a.name)!==n.name){e.next=4;break}return d("Got OAuth token from stream"),t(null==r||null==(i=r.data)?void 0:i.params),e.abrupt("return",!0);case 4:return e.abrupt("return");case 5:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}()),436000002===(null==a?void 0:a.code)&&(d("OAuth is missing"),"undefined"!=typeof window&&window.open?(d("Open new window with oauth request"),o=window.open(null==a||null==(i=a.data)?void 0:i.request,"OAuth - "+a.message,"popup"),console.log(o)):d("OAuth running without window"));case 10:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}()));case 1:case"end":return e.stop()}}),e)}))),n.validate("constructor",arguments),n.name=t,n}return I(t,e),t.validate=function(e,t){V.validateMethod("OAuth",e,t)},t}(V);z.endpoint="/2.0/oauth_connect",z.getToken=function(){var e=k(A.mark((function e(t){var n;return A.wrap((function(e){for(;;)switch(e.prev=e.next){case 0:return z.validate("getToken",[t]),n=new z(t),e.next=4,n.getToken();case 4:return e.abrupt("return",e.sent);case 5:case"end":return e.stop()}}),e)})));return function(t){return e.apply(this,arguments)}}(),exports.Data=X,exports.Device=J,exports.Network=G,exports.Notification=B,exports.OAuth=z,exports.State=F,exports.Stream=q,exports.User=W,exports.Value=M,exports.config=c,exports.createNetwork=function(e){return H.apply(this,arguments)},exports.extSyncToken=l,exports.fromBackground=function(e){V.checker.RequestHandler.check(e),j("background",e)},exports.fromForeground=function(e){V.checker.RequestHandler.check(e),j("foreground",e)},exports.onWebHook=function(e){V.checker.RequestHandler.check(e),C.onRequest(e,!1)},exports.request=v,exports.sendToBackground=function(e){return D.apply(this,arguments)},exports.sendToForeground=function(e){return L.apply(this,arguments)},exports.startLogging=function(){var e=function(e){return function(){for(var t=arguments.length,n=new Array(t),r=0;r<t;r++)n[r]=arguments[r];b(e,arguments),y.log.apply(y,n)}};console.log=e("log"),console.info=e("info"),console.error=e("error"),console.warn=e("warn"),process.on("uncaughtException",(function(e){b("error",[e.stack]).finally((function(){process.exit(1)}))}))},exports.stopLogging=function(){Object.assign(console,y)};
 
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":69,"axios":2,"class-transformer":47,"lodash":68,"reflect-metadata":70,"tslib":71,"universal-websocket-client":72}],2:[function(require,module,exports){
+},{"_process":69,"axios":2,"class-transformer":47,"lodash":68,"reflect-metadata":70,"ts-interface-checker":71,"tslib":74,"universal-websocket-client":75}],2:[function(require,module,exports){
 module.exports = require('./lib/axios');
 },{"./lib/axios":4}],3:[function(require,module,exports){
 'use strict';
@@ -23698,6 +23698,1153 @@ var Reflect;
 
 }).call(this)}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"_process":69}],71:[function(require,module,exports){
+"use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Checker = exports.createCheckers = void 0;
+var types_1 = require("./types");
+var util_1 = require("./util");
+/**
+ * Export functions used to define interfaces.
+ */
+var types_2 = require("./types");
+Object.defineProperty(exports, "TArray", { enumerable: true, get: function () { return types_2.TArray; } });
+Object.defineProperty(exports, "TEnumType", { enumerable: true, get: function () { return types_2.TEnumType; } });
+Object.defineProperty(exports, "TEnumLiteral", { enumerable: true, get: function () { return types_2.TEnumLiteral; } });
+Object.defineProperty(exports, "TFunc", { enumerable: true, get: function () { return types_2.TFunc; } });
+Object.defineProperty(exports, "TIface", { enumerable: true, get: function () { return types_2.TIface; } });
+Object.defineProperty(exports, "TLiteral", { enumerable: true, get: function () { return types_2.TLiteral; } });
+Object.defineProperty(exports, "TName", { enumerable: true, get: function () { return types_2.TName; } });
+Object.defineProperty(exports, "TOptional", { enumerable: true, get: function () { return types_2.TOptional; } });
+Object.defineProperty(exports, "TParam", { enumerable: true, get: function () { return types_2.TParam; } });
+Object.defineProperty(exports, "TParamList", { enumerable: true, get: function () { return types_2.TParamList; } });
+Object.defineProperty(exports, "TProp", { enumerable: true, get: function () { return types_2.TProp; } });
+Object.defineProperty(exports, "TTuple", { enumerable: true, get: function () { return types_2.TTuple; } });
+Object.defineProperty(exports, "TType", { enumerable: true, get: function () { return types_2.TType; } });
+Object.defineProperty(exports, "TUnion", { enumerable: true, get: function () { return types_2.TUnion; } });
+Object.defineProperty(exports, "TIntersection", { enumerable: true, get: function () { return types_2.TIntersection; } });
+Object.defineProperty(exports, "array", { enumerable: true, get: function () { return types_2.array; } });
+Object.defineProperty(exports, "enumlit", { enumerable: true, get: function () { return types_2.enumlit; } });
+Object.defineProperty(exports, "enumtype", { enumerable: true, get: function () { return types_2.enumtype; } });
+Object.defineProperty(exports, "func", { enumerable: true, get: function () { return types_2.func; } });
+Object.defineProperty(exports, "iface", { enumerable: true, get: function () { return types_2.iface; } });
+Object.defineProperty(exports, "lit", { enumerable: true, get: function () { return types_2.lit; } });
+Object.defineProperty(exports, "name", { enumerable: true, get: function () { return types_2.name; } });
+Object.defineProperty(exports, "opt", { enumerable: true, get: function () { return types_2.opt; } });
+Object.defineProperty(exports, "param", { enumerable: true, get: function () { return types_2.param; } });
+Object.defineProperty(exports, "tuple", { enumerable: true, get: function () { return types_2.tuple; } });
+Object.defineProperty(exports, "union", { enumerable: true, get: function () { return types_2.union; } });
+Object.defineProperty(exports, "intersection", { enumerable: true, get: function () { return types_2.intersection; } });
+Object.defineProperty(exports, "rest", { enumerable: true, get: function () { return types_2.rest; } });
+Object.defineProperty(exports, "indexKey", { enumerable: true, get: function () { return types_2.indexKey; } });
+Object.defineProperty(exports, "BasicType", { enumerable: true, get: function () { return types_2.BasicType; } });
+var util_2 = require("./util");
+Object.defineProperty(exports, "VError", { enumerable: true, get: function () { return util_2.VError; } });
+/**
+ * Takes one of more type suites (e.g. a module generated by `ts-interface-builder`), and combines
+ * them into a suite of interface checkers. If a type is used by name, that name should be present
+ * among the passed-in type suites.
+ *
+ * The returned object maps type names to Checker objects.
+ */
+function createCheckers() {
+    var typeSuite = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        typeSuite[_i] = arguments[_i];
+    }
+    var fullSuite = Object.assign.apply(Object, __spreadArrays([{}, types_1.basicTypes], typeSuite));
+    var checkers = {};
+    for (var _a = 0, typeSuite_1 = typeSuite; _a < typeSuite_1.length; _a++) {
+        var suite_1 = typeSuite_1[_a];
+        for (var _b = 0, _c = Object.keys(suite_1); _b < _c.length; _b++) {
+            var name = _c[_b];
+            checkers[name] = new Checker(fullSuite, suite_1[name]);
+        }
+    }
+    return checkers;
+}
+exports.createCheckers = createCheckers;
+/**
+ * Checker implements validation of objects, and also includes accessors to validate method calls.
+ * Checkers should be created using `createCheckers()`.
+ */
+var Checker = /** @class */ (function () {
+    // Create checkers by using `createCheckers()` function.
+    function Checker(suite, ttype, _path) {
+        if (_path === void 0) { _path = 'value'; }
+        this.suite = suite;
+        this.ttype = ttype;
+        this._path = _path;
+        this.props = new Map();
+        if (ttype instanceof types_1.TIface) {
+            for (var _i = 0, _a = ttype.props; _i < _a.length; _i++) {
+                var p = _a[_i];
+                this.props.set(p.name, p.ttype);
+            }
+        }
+        this.checkerPlain = this.ttype.getChecker(suite, false);
+        this.checkerStrict = this.ttype.getChecker(suite, true);
+    }
+    /**
+     * Set the path to report in errors, instead of the default "value". (E.g. if the Checker is for
+     * a "person" interface, set path to "person" to report e.g. "person.name is not a string".)
+     */
+    Checker.prototype.setReportedPath = function (path) {
+        this._path = path;
+    };
+    /**
+     * Check that the given value satisfies this checker's type, or throw Error.
+     */
+    Checker.prototype.check = function (value) { return this._doCheck(this.checkerPlain, value); };
+    /**
+     * A fast check for whether or not the given value satisfies this Checker's type. This returns
+     * true or false, does not produce an error message, and is fast both on success and on failure.
+     */
+    Checker.prototype.test = function (value) {
+        return this.checkerPlain(value, new util_1.NoopContext());
+    };
+    /**
+     * Returns a non-empty array of error objects describing the errors if the given value does not satisfy this
+     * Checker's type, or null if it does.
+     */
+    Checker.prototype.validate = function (value) {
+        return this._doValidate(this.checkerPlain, value);
+    };
+    /**
+     * Check that the given value satisfies this checker's type strictly. This checks that objects
+     * and tuples have no extra members. Note that this prevents backward compatibility, so usually
+     * a plain check() is more appropriate.
+     */
+    Checker.prototype.strictCheck = function (value) { return this._doCheck(this.checkerStrict, value); };
+    /**
+     * A fast strict check for whether or not the given value satisfies this Checker's type. Returns
+     * true or false, does not produce an error message, and is fast both on success and on failure.
+     */
+    Checker.prototype.strictTest = function (value) {
+        return this.checkerStrict(value, new util_1.NoopContext());
+    };
+    /**
+     * Returns a non-empty array of error objects describing the errors if the given value does not satisfy this
+     * Checker's type strictly, or null if it does.
+     */
+    Checker.prototype.strictValidate = function (value) {
+        return this._doValidate(this.checkerStrict, value);
+    };
+    /**
+     * If this checker is for an interface, returns a Checker for the type required for the given
+     * property of this interface.
+     */
+    Checker.prototype.getProp = function (prop) {
+        var ttype = this.props.get(prop);
+        if (!ttype) {
+            throw new Error("Type has no property " + prop);
+        }
+        return new Checker(this.suite, ttype, this._path + "." + prop);
+    };
+    /**
+     * If this checker is for an interface, returns a Checker for the argument-list required to call
+     * the given method of this interface. E.g. if this Checker is for the interface:
+     *    interface Foo {
+     *      find(s: string, pos?: number): number;
+     *    }
+     * Then methodArgs("find").check(...) will succeed for ["foo"] and ["foo", 3], but not for [17].
+     */
+    Checker.prototype.methodArgs = function (methodName) {
+        var tfunc = this._getMethod(methodName);
+        return new Checker(this.suite, tfunc.paramList);
+    };
+    /**
+     * If this checker is for an interface, returns a Checker for the return value of the given
+     * method of this interface.
+     */
+    Checker.prototype.methodResult = function (methodName) {
+        var tfunc = this._getMethod(methodName);
+        return new Checker(this.suite, tfunc.result);
+    };
+    /**
+     * If this checker is for a function, returns a Checker for its argument-list.
+     */
+    Checker.prototype.getArgs = function () {
+        if (!(this.ttype instanceof types_1.TFunc)) {
+            throw new Error("getArgs() applied to non-function");
+        }
+        return new Checker(this.suite, this.ttype.paramList);
+    };
+    /**
+     * If this checker is for a function, returns a Checker for its result.
+     */
+    Checker.prototype.getResult = function () {
+        if (!(this.ttype instanceof types_1.TFunc)) {
+            throw new Error("getResult() applied to non-function");
+        }
+        return new Checker(this.suite, this.ttype.result);
+    };
+    /**
+     * Return the type for which this is a checker.
+     */
+    Checker.prototype.getType = function () {
+        return this.ttype;
+    };
+    /**
+     * Actual implementation of check() and strictCheck().
+     */
+    Checker.prototype._doCheck = function (checkerFunc, value) {
+        var noopCtx = new util_1.NoopContext();
+        if (!checkerFunc(value, noopCtx)) {
+            var detailCtx = new util_1.DetailContext();
+            checkerFunc(value, detailCtx);
+            throw detailCtx.getError(this._path);
+        }
+    };
+    Checker.prototype._doValidate = function (checkerFunc, value) {
+        var noopCtx = new util_1.NoopContext();
+        if (checkerFunc(value, noopCtx)) {
+            return null;
+        }
+        var detailCtx = new util_1.DetailContext();
+        checkerFunc(value, detailCtx);
+        return detailCtx.getErrorDetails(this._path);
+    };
+    Checker.prototype._getMethod = function (methodName) {
+        var ttype = this.props.get(methodName);
+        if (!ttype) {
+            throw new Error("Type has no property " + methodName);
+        }
+        if (!(ttype instanceof types_1.TFunc)) {
+            throw new Error("Property " + methodName + " is not a method");
+        }
+        return ttype;
+    };
+    return Checker;
+}());
+exports.Checker = Checker;
+
+},{"./types":72,"./util":73}],72:[function(require,module,exports){
+(function (Buffer){(function (){
+"use strict";
+/**
+ * This module defines nodes used to define types and validations for objects and interfaces.
+ */
+// tslint:disable:no-shadowed-variable prefer-for-of
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.basicTypes = exports.BasicType = exports.TParamList = exports.TParam = exports.param = exports.TFunc = exports.func = exports.TProp = exports.TOptional = exports.opt = exports.TIface = exports.iface = exports.indexKey = exports.TEnumLiteral = exports.enumlit = exports.TEnumType = exports.enumtype = exports.TIntersection = exports.intersection = exports.TUnion = exports.union = exports.TTuple = exports.tuple = exports.RestType = exports.rest = exports.TArray = exports.array = exports.TLiteral = exports.lit = exports.TName = exports.name = exports.TType = void 0;
+var util_1 = require("./util");
+/** Node that represents a type. */
+var TType = /** @class */ (function () {
+    function TType() {
+    }
+    return TType;
+}());
+exports.TType = TType;
+/** Parses a type spec into a TType node. */
+function parseSpec(typeSpec) {
+    return typeof typeSpec === "string" ? name(typeSpec) : typeSpec;
+}
+function getNamedType(suite, name) {
+    var ttype = suite[name];
+    if (!ttype) {
+        throw new Error("Unknown type " + name);
+    }
+    return ttype;
+}
+/**
+ * Defines a type name, either built-in, or defined in this suite. It can typically be included in
+ * the specs as just a plain string.
+ */
+function name(value) { return new TName(value); }
+exports.name = name;
+var TName = /** @class */ (function (_super) {
+    __extends(TName, _super);
+    function TName(name) {
+        var _this = _super.call(this) || this;
+        _this.name = name;
+        _this._failMsg = "is not a " + name;
+        return _this;
+    }
+    TName.prototype.getChecker = function (suite, strict, allowedProps) {
+        // Using names, we can reference a type recursively in its own definition. To avoid an
+        // infinite recursion in getChecker() calls, we cache and reuse the checker that's being built
+        // when it references its own TName node. Note that it's important to reuse the result only
+        // when getChecker() is called with the same arguments, but that's already guaranteed because
+        // we are caching only for the current call and only for the same TName object (not another
+        // instance of name() call for the same name).
+        //
+        // Note also that this is about handling recursive types; it does NOT help validating data
+        // with circular references.
+        var checkerFunc = this._checkerBeingBuilt;
+        if (!checkerFunc) {
+            this._checkerBeingBuilt = function (value, ctx) { return checkerFunc(value, ctx); };
+            try {
+                checkerFunc = this._getChecker(suite, strict, allowedProps);
+            }
+            finally {
+                this._checkerBeingBuilt = undefined;
+            }
+        }
+        return checkerFunc;
+    };
+    TName.prototype._getChecker = function (suite, strict, allowedProps) {
+        var _this = this;
+        var ttype = getNamedType(suite, this.name);
+        var checker = ttype.getChecker(suite, strict, allowedProps);
+        if (ttype instanceof BasicType || ttype instanceof TName) {
+            return checker;
+        }
+        // For complex types, add an additional "is not a <Type>" message on failure.
+        return function (value, ctx) { return checker(value, ctx) ? true : ctx.fail(null, _this._failMsg, 0); };
+    };
+    return TName;
+}(TType));
+exports.TName = TName;
+/**
+ * Defines a literal value, e.g. lit('hello') or lit(123).
+ */
+function lit(value) { return new TLiteral(value); }
+exports.lit = lit;
+var TLiteral = /** @class */ (function (_super) {
+    __extends(TLiteral, _super);
+    function TLiteral(value) {
+        var _this = _super.call(this) || this;
+        _this.value = value;
+        _this.name = JSON.stringify(value);
+        _this._failMsg = "is not " + _this.name;
+        return _this;
+    }
+    TLiteral.prototype.getChecker = function (suite, strict) {
+        var _this = this;
+        return function (value, ctx) { return (value === _this.value) ? true : ctx.fail(null, _this._failMsg, -1); };
+    };
+    return TLiteral;
+}(TType));
+exports.TLiteral = TLiteral;
+/**
+ * Defines an array type, e.g. array('number').
+ */
+function array(typeSpec) { return new TArray(parseSpec(typeSpec)); }
+exports.array = array;
+var TArray = /** @class */ (function (_super) {
+    __extends(TArray, _super);
+    function TArray(ttype) {
+        var _this = _super.call(this) || this;
+        _this.ttype = ttype;
+        var elementTypeName = getTypeName(ttype);
+        if (elementTypeName) {
+            _this.name = elementTypeName + "[]";
+        }
+        return _this;
+    }
+    TArray.prototype.getChecker = function (suite, strict) {
+        var itemChecker = this.ttype.getChecker(suite, strict);
+        return function (value, ctx) {
+            if (!Array.isArray(value)) {
+                return ctx.fail(null, "is not an array", 0);
+            }
+            for (var i = 0; i < value.length; i++) {
+                var ok = itemChecker(value[i], ctx);
+                if (!ok) {
+                    return ctx.fail(i, null, 1);
+                }
+            }
+            return true;
+        };
+    };
+    return TArray;
+}(TType));
+exports.TArray = TArray;
+/**
+ * Defines a rest type, e.g. tuple('string', rest(array('number'))).
+ */
+function rest(typeSpec) {
+    return new RestType(typeSpec);
+}
+exports.rest = rest;
+var RestType = /** @class */ (function (_super) {
+    __extends(RestType, _super);
+    function RestType(typeSpec) {
+        var _this = _super.call(this) || this;
+        _this.typeSpec = typeSpec;
+        return _this;
+    }
+    RestType.prototype.setStart = function (start) {
+        this._start = start;
+    };
+    RestType.prototype.getChecker = function (suite, strict) {
+        var arrType = typeof this.typeSpec === "string" ? getNamedType(suite, this.typeSpec) : this.typeSpec;
+        if (!(arrType instanceof TArray)) {
+            throw new Error("Rest type must be an array");
+        }
+        var itemChecker = arrType.ttype.getChecker(suite, strict);
+        var start = this._start;
+        return function (value, ctx) {
+            for (var i = start; i < value.length; i++) {
+                if (!itemChecker(value[i], ctx)) {
+                    return ctx.fail(i, null, 1);
+                }
+            }
+            return true;
+        };
+    };
+    return RestType;
+}(TType));
+exports.RestType = RestType;
+/**
+ * Defines a tuple type, e.g. tuple('string', 'number').
+ */
+function tuple() {
+    var typeSpec = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        typeSpec[_i] = arguments[_i];
+    }
+    return new TTuple(typeSpec.map(function (t) { return parseSpec(t); }));
+}
+exports.tuple = tuple;
+var TTuple = /** @class */ (function (_super) {
+    __extends(TTuple, _super);
+    function TTuple(ttypes) {
+        var _this = _super.call(this) || this;
+        _this.ttypes = ttypes;
+        var last = ttypes[ttypes.length - 1];
+        if (last instanceof RestType) {
+            ttypes.pop();
+            _this._restType = last;
+            _this._restType.setStart(ttypes.length);
+        }
+        return _this;
+    }
+    TTuple.prototype.getChecker = function (suite, strict) {
+        var itemCheckers = this.ttypes.map(function (t) { return t.getChecker(suite, strict); });
+        var checker = function (value, ctx) {
+            if (!Array.isArray(value)) {
+                return ctx.fail(null, "is not an array", 0);
+            }
+            for (var i = 0; i < itemCheckers.length; i++) {
+                var ok = itemCheckers[i](value[i], ctx);
+                if (!ok) {
+                    return ctx.fail(i, null, 1);
+                }
+            }
+            return true;
+        };
+        if (this._restType) {
+            var restChecker_1 = this._restType.getChecker(suite, strict);
+            return function (value, ctx) {
+                return checker(value, ctx) && restChecker_1(value, ctx);
+            };
+        }
+        if (!strict) {
+            return checker;
+        }
+        return function (value, ctx) {
+            if (!checker(value, ctx)) {
+                return false;
+            }
+            return value.length <= itemCheckers.length ? true :
+                ctx.fail(itemCheckers.length, "is extraneous", 2);
+        };
+    };
+    return TTuple;
+}(TType));
+exports.TTuple = TTuple;
+/**
+ * Defines a union type, e.g. union('number', 'null').
+ */
+function union() {
+    var typeSpec = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        typeSpec[_i] = arguments[_i];
+    }
+    return new TUnion(typeSpec.map(function (t) { return parseSpec(t); }));
+}
+exports.union = union;
+var TUnion = /** @class */ (function (_super) {
+    __extends(TUnion, _super);
+    function TUnion(ttypes) {
+        var _this = _super.call(this) || this;
+        _this.ttypes = ttypes;
+        var names = ttypes.map(getTypeName)
+            .filter(function (n) { return n; });
+        var otherTypes = ttypes.length - names.length;
+        if (names.length) {
+            if (otherTypes > 0) {
+                names.push(otherTypes + " more");
+            }
+            _this._failMsg = "is none of " + names.join(", ");
+        }
+        else {
+            _this._failMsg = "is none of " + otherTypes + " types";
+        }
+        return _this;
+    }
+    TUnion.prototype.getChecker = function (suite, strict, allowedProps) {
+        var _this = this;
+        var itemCheckers = this.ttypes.map(function (t) { return t.getChecker(suite, strict, allowedProps); });
+        return function (value, ctx) {
+            var ur = ctx.unionResolver();
+            for (var i = 0; i < itemCheckers.length; i++) {
+                var ok = itemCheckers[i](value, ur.createContext());
+                if (ok) {
+                    return true;
+                }
+            }
+            ctx.resolveUnion(ur);
+            return ctx.fail(null, _this._failMsg, 0);
+        };
+    };
+    return TUnion;
+}(TType));
+exports.TUnion = TUnion;
+/**
+ * Defines an intersection type, e.g. intersection('number', 'null').
+ */
+function intersection() {
+    var typeSpec = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        typeSpec[_i] = arguments[_i];
+    }
+    return new TIntersection(typeSpec.map(function (t) { return parseSpec(t); }));
+}
+exports.intersection = intersection;
+var TIntersection = /** @class */ (function (_super) {
+    __extends(TIntersection, _super);
+    function TIntersection(ttypes) {
+        var _this = _super.call(this) || this;
+        _this.ttypes = ttypes;
+        return _this;
+    }
+    TIntersection.prototype.getChecker = function (suite, strict, allowedProps) {
+        if (allowedProps === void 0) { allowedProps = new Set(); }
+        var itemCheckers = this.ttypes.map(function (t) { return t.getChecker(suite, strict, allowedProps); });
+        return function (value, ctx) {
+            return itemCheckers.every(function (checker) {
+                checker(value, ctx.fork());
+                return ctx.completeFork();
+            }) && !ctx.failed();
+        };
+    };
+    return TIntersection;
+}(TType));
+exports.TIntersection = TIntersection;
+/**
+ * Defines an enum type, e.g. enum({'A': 1, 'B': 2}).
+ */
+function enumtype(values) {
+    return new TEnumType(values);
+}
+exports.enumtype = enumtype;
+var TEnumType = /** @class */ (function (_super) {
+    __extends(TEnumType, _super);
+    function TEnumType(members) {
+        var _this = _super.call(this) || this;
+        _this.members = members;
+        _this.validValues = new Set();
+        _this._failMsg = "is not a valid enum value";
+        _this.validValues = new Set(Object.keys(members).map(function (name) { return members[name]; }));
+        return _this;
+    }
+    TEnumType.prototype.getChecker = function (suite, strict) {
+        var _this = this;
+        return function (value, ctx) {
+            return (_this.validValues.has(value) ? true : ctx.fail(null, _this._failMsg, 0));
+        };
+    };
+    return TEnumType;
+}(TType));
+exports.TEnumType = TEnumType;
+/**
+ * Defines a literal enum value, such as Direction.Up, specified as enumlit("Direction", "Up").
+ */
+function enumlit(name, prop) {
+    return new TEnumLiteral(name, prop);
+}
+exports.enumlit = enumlit;
+var TEnumLiteral = /** @class */ (function (_super) {
+    __extends(TEnumLiteral, _super);
+    function TEnumLiteral(enumName, prop) {
+        var _this = _super.call(this) || this;
+        _this.enumName = enumName;
+        _this.prop = prop;
+        _this._failMsg = "is not " + enumName + "." + prop;
+        return _this;
+    }
+    TEnumLiteral.prototype.getChecker = function (suite, strict) {
+        var _this = this;
+        var ttype = getNamedType(suite, this.enumName);
+        if (!(ttype instanceof TEnumType)) {
+            throw new Error("Type " + this.enumName + " used in enumlit is not an enum type");
+        }
+        var val = ttype.members[this.prop];
+        if (!ttype.members.hasOwnProperty(this.prop)) {
+            throw new Error("Unknown value " + this.enumName + "." + this.prop + " used in enumlit");
+        }
+        return function (value, ctx) { return (value === val) ? true : ctx.fail(null, _this._failMsg, -1); };
+    };
+    return TEnumLiteral;
+}(TType));
+exports.TEnumLiteral = TEnumLiteral;
+function makeIfaceProps(props) {
+    return Object.keys(props)
+        .filter(function (name) { return (name !== exports.indexKey); })
+        .map(function (name) { return makeIfaceProp(name, props[name]); });
+}
+function makeIfaceProp(name, prop) {
+    return prop instanceof TOptional ?
+        new TProp(name, prop.ttype, true) :
+        new TProp(name, parseSpec(prop), false);
+}
+/**
+ * indexKey is a special key that indicates an index signature when used as a key in an interface.
+ * E.g. {[key: string]: number} becomes t.iface([], {[t.indexKey]: "number"}).
+ *
+ * We don't distinguish between string- and number-type index signatures, and don't support
+ * multiple index signatures.
+ */
+exports.indexKey = Symbol();
+/**
+ * Defines an interface. The first argument is an array of interfaces that it extends, and the
+ * second is an array of properties.
+ */
+function iface(bases, props) {
+    return new TIface(bases, makeIfaceProps(props), props[exports.indexKey]);
+}
+exports.iface = iface;
+var TIface = /** @class */ (function (_super) {
+    __extends(TIface, _super);
+    function TIface(bases, props, indexType) {
+        var _this = _super.call(this) || this;
+        _this.bases = bases;
+        _this.props = props;
+        _this.indexType = indexType ? parseSpec(indexType) : undefined;
+        _this.propSet = new Set(props.map(function (p) { return p.name; }));
+        return _this;
+    }
+    TIface.prototype.getChecker = function (suite, strict, allowedProps) {
+        var _this = this;
+        var _a;
+        if (allowedProps === void 0) { allowedProps = new Set(); }
+        this.propSet.forEach(function (prop) { return allowedProps.add(prop); });
+        var baseCheckers = this.bases.map(function (b) { return getNamedType(suite, b).getChecker(suite, strict, allowedProps); });
+        var propCheckers = this.props.map(function (prop) { return prop.ttype.getChecker(suite, strict); });
+        var indexTypeChecker = (_a = this.indexType) === null || _a === void 0 ? void 0 : _a.getChecker(suite, strict);
+        var testCtx = new util_1.NoopContext();
+        // Consider a prop required if it's not optional AND does not allow for undefined as a value.
+        var isPropRequired = this.props.map(function (prop, i) {
+            return !prop.isOpt && !propCheckers[i](undefined, testCtx);
+        });
+        return function (value, ctx) {
+            if (typeof value !== "object" || value === null) {
+                return ctx.fail(null, "is not an object", 0);
+            }
+            for (var i = 0; i < baseCheckers.length; i++) {
+                baseCheckers[i](value, ctx.fork());
+                if (!ctx.completeFork()) {
+                    return false;
+                }
+            }
+            for (var i = 0; i < propCheckers.length; i++) {
+                var name_1 = _this.props[i].name;
+                var v = value[name_1];
+                if (v === undefined) {
+                    if (isPropRequired[i]) {
+                        ctx.fork().fail(name_1, "is missing", 1);
+                        if (!ctx.completeFork()) {
+                            return false;
+                        }
+                    }
+                }
+                else {
+                    var fork = ctx.fork();
+                    var ok = propCheckers[i](v, fork);
+                    if (!ok) {
+                        fork.fail(name_1, null, 1);
+                    }
+                    if (!ctx.completeFork()) {
+                        return false;
+                    }
+                }
+            }
+            if (indexTypeChecker) {
+                for (var prop in value) {
+                    var fork = ctx.fork();
+                    if (!indexTypeChecker(value[prop], fork)) {
+                        fork.fail(prop, null, 1);
+                    }
+                    if (!ctx.completeFork()) {
+                        return false;
+                    }
+                }
+            }
+            else if (strict) {
+                // In strict mode, check also for unknown enumerable properties.
+                for (var prop in value) {
+                    if (!allowedProps.has(prop)) {
+                        ctx.fork().fail(prop, "is extraneous", 2);
+                        if (!ctx.completeFork()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return !ctx.failed();
+        };
+    };
+    return TIface;
+}(TType));
+exports.TIface = TIface;
+/**
+ * Defines an optional property on an interface.
+ */
+function opt(typeSpec) { return new TOptional(parseSpec(typeSpec)); }
+exports.opt = opt;
+var TOptional = /** @class */ (function (_super) {
+    __extends(TOptional, _super);
+    function TOptional(ttype) {
+        var _this = _super.call(this) || this;
+        _this.ttype = ttype;
+        return _this;
+    }
+    TOptional.prototype.getChecker = function (suite, strict) {
+        var itemChecker = this.ttype.getChecker(suite, strict);
+        return function (value, ctx) {
+            return value === undefined || itemChecker(value, ctx);
+        };
+    };
+    return TOptional;
+}(TType));
+exports.TOptional = TOptional;
+/**
+ * Defines a property in an interface.
+ */
+var TProp = /** @class */ (function () {
+    function TProp(name, ttype, isOpt) {
+        this.name = name;
+        this.ttype = ttype;
+        this.isOpt = isOpt;
+    }
+    return TProp;
+}());
+exports.TProp = TProp;
+/**
+ * Defines a function. The first argument declares the function's return type, the rest declare
+ * its parameters.
+ */
+function func(resultSpec) {
+    var params = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        params[_i - 1] = arguments[_i];
+    }
+    return new TFunc(new TParamList(params), parseSpec(resultSpec));
+}
+exports.func = func;
+var TFunc = /** @class */ (function (_super) {
+    __extends(TFunc, _super);
+    function TFunc(paramList, result) {
+        var _this = _super.call(this) || this;
+        _this.paramList = paramList;
+        _this.result = result;
+        return _this;
+    }
+    TFunc.prototype.getChecker = function (suite, strict) {
+        return function (value, ctx) {
+            return typeof value === "function" ? true : ctx.fail(null, "is not a function", 0);
+        };
+    };
+    return TFunc;
+}(TType));
+exports.TFunc = TFunc;
+/**
+ * Defines a function parameter.
+ */
+function param(name, typeSpec, isOpt) {
+    return new TParam(name, parseSpec(typeSpec), Boolean(isOpt));
+}
+exports.param = param;
+var TParam = /** @class */ (function () {
+    function TParam(name, ttype, isOpt) {
+        this.name = name;
+        this.ttype = ttype;
+        this.isOpt = isOpt;
+    }
+    return TParam;
+}());
+exports.TParam = TParam;
+/**
+ * Defines a function parameter list.
+ */
+var TParamList = /** @class */ (function (_super) {
+    __extends(TParamList, _super);
+    function TParamList(params) {
+        var _this = _super.call(this) || this;
+        _this.params = params;
+        return _this;
+    }
+    TParamList.prototype.getChecker = function (suite, strict) {
+        var _this = this;
+        var itemCheckers = this.params.map(function (t) { return t.ttype.getChecker(suite, strict); });
+        var testCtx = new util_1.NoopContext();
+        var isParamRequired = this.params.map(function (param, i) {
+            return !param.isOpt && !itemCheckers[i](undefined, testCtx);
+        });
+        var checker = function (value, ctx) {
+            if (!Array.isArray(value)) {
+                return ctx.fail(null, "is not an array", 0);
+            }
+            for (var i = 0; i < itemCheckers.length; i++) {
+                var p = _this.params[i];
+                if (value[i] === undefined) {
+                    if (isParamRequired[i]) {
+                        return ctx.fail(p.name, "is missing", 1);
+                    }
+                }
+                else {
+                    var ok = itemCheckers[i](value[i], ctx);
+                    if (!ok) {
+                        return ctx.fail(p.name, null, 1);
+                    }
+                }
+            }
+            return true;
+        };
+        if (!strict) {
+            return checker;
+        }
+        return function (value, ctx) {
+            if (!checker(value, ctx)) {
+                return false;
+            }
+            return value.length <= itemCheckers.length ? true :
+                ctx.fail(itemCheckers.length, "is extraneous", 2);
+        };
+    };
+    return TParamList;
+}(TType));
+exports.TParamList = TParamList;
+/**
+ * Single TType implementation for all basic built-in types.
+ */
+var BasicType = /** @class */ (function (_super) {
+    __extends(BasicType, _super);
+    function BasicType(validator, message) {
+        var _this = _super.call(this) || this;
+        _this.validator = validator;
+        _this.message = message;
+        return _this;
+    }
+    BasicType.prototype.getChecker = function (suite, strict) {
+        var _this = this;
+        return function (value, ctx) { return _this.validator(value) ? true : ctx.fail(null, _this.message, 0); };
+    };
+    return BasicType;
+}(TType));
+exports.BasicType = BasicType;
+/**
+ * Defines the suite of basic types.
+ */
+exports.basicTypes = {
+    any: new BasicType(function (v) { return true; }, "is invalid"),
+    unknown: new BasicType(function (v) { return true; }, "is invalid"),
+    number: new BasicType(function (v) { return (typeof v === "number"); }, "is not a number"),
+    object: new BasicType(function (v) { return (typeof v === "object" && v); }, "is not an object"),
+    boolean: new BasicType(function (v) { return (typeof v === "boolean"); }, "is not a boolean"),
+    string: new BasicType(function (v) { return (typeof v === "string"); }, "is not a string"),
+    symbol: new BasicType(function (v) { return (typeof v === "symbol"); }, "is not a symbol"),
+    void: new BasicType(function (v) { return (v == null); }, "is not void"),
+    undefined: new BasicType(function (v) { return (v === undefined); }, "is not undefined"),
+    null: new BasicType(function (v) { return (v === null); }, "is not null"),
+    never: new BasicType(function (v) { return false; }, "is unexpected"),
+    Date: new BasicType(getIsNativeChecker("[object Date]"), "is not a Date"),
+    RegExp: new BasicType(getIsNativeChecker("[object RegExp]"), "is not a RegExp"),
+};
+// This approach for checking native object types mirrors that of lodash. Its advantage over
+// `isinstance` is that it can still return true for native objects created in different JS
+// execution environments.
+var nativeToString = Object.prototype.toString;
+function getIsNativeChecker(tag) {
+    return function (v) { return typeof v === "object" && v && nativeToString.call(v) === tag; };
+}
+if (typeof Buffer !== "undefined") {
+    exports.basicTypes.Buffer = new BasicType(function (v) { return Buffer.isBuffer(v); }, "is not a Buffer");
+}
+var _loop_1 = function (array_1) {
+    exports.basicTypes[array_1.name] = new BasicType(function (v) { return (v instanceof array_1); }, "is not a " + array_1.name);
+};
+// Support typed arrays of various flavors
+for (var _i = 0, _a = [Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array,
+    Int32Array, Uint32Array, Float32Array, Float64Array, ArrayBuffer]; _i < _a.length; _i++) {
+    var array_1 = _a[_i];
+    _loop_1(array_1);
+}
+function getTypeName(t) {
+    if (t instanceof TName || t instanceof TLiteral || t instanceof TArray) {
+        return t.name;
+    }
+}
+
+}).call(this)}).call(this,require("buffer").Buffer)
+},{"./util":73,"buffer":32}],73:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DetailContext = exports.NoopContext = exports.VError = void 0;
+/**
+ * Error thrown by validation. Besides an informative message, it includes the path to the
+ * property which triggered the failure.
+ */
+var VError = /** @class */ (function (_super) {
+    __extends(VError, _super);
+    function VError(path, message) {
+        var _this = _super.call(this, message) || this;
+        _this.path = path;
+        // See https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work for info about this workaround.
+        Object.setPrototypeOf(_this, VError.prototype);
+        return _this;
+    }
+    return VError;
+}(Error));
+exports.VError = VError;
+/**
+ * Fast implementation of IContext used for first-pass validation. If that fails, we can validate
+ * using DetailContext to collect error messages. That's faster for the common case when messages
+ * normally pass validation.
+ */
+var NoopContext = /** @class */ (function () {
+    function NoopContext() {
+        this._failed = false;
+    }
+    NoopContext.prototype.fail = function (relPath, message, score) {
+        this._failed = true;
+        return false;
+    };
+    NoopContext.prototype.fork = function () {
+        return this;
+    };
+    NoopContext.prototype.completeFork = function () {
+        return !this._failed;
+    };
+    NoopContext.prototype.failed = function () {
+        return this._failed;
+    };
+    NoopContext.prototype.unionResolver = function () { return this; };
+    NoopContext.prototype.createContext = function () {
+        this._failed = false;
+        return this;
+    };
+    NoopContext.prototype.resolveUnion = function (ur) { };
+    return NoopContext;
+}());
+exports.NoopContext = NoopContext;
+/**
+ * Complete implementation of IContext that collects meaningfull errors.
+ */
+var DetailContext = /** @class */ (function () {
+    function DetailContext() {
+        // Stack of property names and associated messages for reporting helpful error messages.
+        this._propNames = [];
+        this._messages = [];
+        /** Contexts created by fork() which have completed and contain failures */
+        this._failedForks = [];
+        /**
+         * Contains the context returned by fork() which should be checked until
+         * completeFork() is called.
+         * Will be reused for the next fork() if there are no failures.
+         */
+        this._currentFork = null;
+        // Score is used to choose the best union member whose DetailContext to use for reporting.
+        // Higher score means better match (or rather less severe mismatch).
+        this._score = 0;
+    }
+    DetailContext.prototype.fail = function (relPath, message, score) {
+        this._propNames.push(relPath);
+        this._messages.push(message);
+        this._score += score;
+        return false;
+    };
+    DetailContext.prototype.unionResolver = function () {
+        return new DetailUnionResolver();
+    };
+    DetailContext.prototype.resolveUnion = function (unionResolver) {
+        var _a, _b, _c;
+        var u = unionResolver;
+        var best = null;
+        for (var _i = 0, _d = u.contexts; _i < _d.length; _i++) {
+            var ctx = _d[_i];
+            if (!best || ctx._score >= best._score) {
+                best = ctx;
+            }
+        }
+        if (best && best._score > 0) {
+            (_a = this._propNames).push.apply(_a, best._propNames);
+            (_b = this._messages).push.apply(_b, best._messages);
+            (_c = this._failedForks).push.apply(_c, best._failedForks);
+        }
+    };
+    DetailContext.prototype.getError = function (path) {
+        var fullMessage = flatten(this.getErrorDetails(path).map(errorLines))
+            .join("\n");
+        return new VError(path, fullMessage);
+    };
+    DetailContext.prototype.getErrorDetails = function (path) {
+        var detail = null;
+        var nested;
+        var details = [];
+        // As checkers call fail() and return to their parent checkers,
+        // the deepest failures are recorded first.
+        // Go through failures in reverse to start from the root type
+        for (var i = this._propNames.length - 1; i >= 0; i--) {
+            var p = this._propNames[i];
+            path += (typeof p === "number") ? "[" + p + "]" : (p ? "." + p : "");
+            var message = this._messages[i];
+            if (!message) {
+                continue;
+            }
+            nested = { path: path, message: message };
+            if (detail) {
+                detail.nested = [nested];
+            }
+            else {
+                // This is the root failure, so it will be returned
+                details.push(nested);
+            }
+            // Move into the deeper error
+            detail = nested;
+        }
+        var forkErrors = flatten(this._failedForks.map(function (fork) { return fork.getErrorDetails(path); }));
+        if (detail) {
+            // don't put an empty array in detail.nested
+            if (forkErrors.length) {
+                // detail is the deepest nested error, so detail.nested is null at this point
+                detail.nested = forkErrors;
+            }
+        }
+        else {
+            // There were no 'plain' failures, only fork failures
+            details = forkErrors;
+        }
+        return details;
+    };
+    DetailContext.prototype.fork = function () {
+        if (this._currentFork == null) {
+            this._currentFork = new DetailContext();
+        }
+        return this._currentFork;
+    };
+    DetailContext.prototype.completeFork = function () {
+        var fork = this._currentFork;
+        if (fork._failed()) {
+            this._failedForks.push(fork);
+            this._currentFork = null;
+            // To preserve old behaviour, use the score of the first failure
+            // Might want to revise this
+            if (this._failedForks.length === 1) {
+                this._score = fork._score;
+            }
+        }
+        return this._failedForks.length < DetailContext.maxForks;
+    };
+    // failed() is the public interface,
+    // it gets monkeypatched to ensure correct usage in checkers.
+    // _failed() may be called internally
+    // in ways which would fail the monkeypatched assertions.
+    DetailContext.prototype.failed = function () {
+        return this._failed();
+    };
+    DetailContext.prototype._failed = function () {
+        return this._propNames.length + this._failedForks.length > 0;
+    };
+    /**
+     * Maximum number of errors recorded at one level for an object,
+     * i.e. the maximum length of Checker.validate() or IErrorDetail.nested.
+     */
+    // If _failedForks has this length then completeFork() should return false
+    // so that the checker stops making more forks.
+    DetailContext.maxForks = 3;
+    return DetailContext;
+}());
+exports.DetailContext = DetailContext;
+var DetailUnionResolver = /** @class */ (function () {
+    function DetailUnionResolver() {
+        this.contexts = [];
+    }
+    DetailUnionResolver.prototype.createContext = function () {
+        var ctx = new DetailContext();
+        this.contexts.push(ctx);
+        return ctx;
+    };
+    return DetailUnionResolver;
+}());
+/**
+ * Returns lines of a message describing `error`.
+ * The lines should be newline separated in the final message.
+ * Only returns multiple lines if `error` or a descendant
+ * has multiple errors in its `.nested` array.
+ * Simple paths of nested errors anywhere in the tree
+ * are collapsed into a single line until a branch is reached.
+ */
+var errorLines = function (error) {
+    var rootMessage = error.path + " " + error.message;
+    var nestedErrors = error.nested || [];
+    var nestedLines = flatten(nestedErrors.map(errorLines));
+    if (nestedErrors.length == 1) {
+        // Single nested errors are collapsed into the first line,
+        // but they may have branches deeper down leading to more lines
+        // which are already indented
+        var first = nestedLines[0], rest = nestedLines.slice(1);
+        return __spreadArrays([
+            rootMessage + "; " + first
+        ], rest);
+    }
+    else {
+        // Indent messages from nested errors
+        // or just return [rootMessage] if there are no nested errors
+        return __spreadArrays([
+            rootMessage
+        ], nestedLines.map(function (line) { return "    " + line; }));
+    }
+};
+/** Shallow flatten a 2D array into a 1D array */
+function flatten(arr) {
+    var _a;
+    return (_a = []).concat.apply(_a, arr);
+}
+
+},{}],74:[function(require,module,exports){
 (function (global){(function (){
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -24007,7 +25154,7 @@ var __createBinding;
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],72:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 'use strict';
 
 module.exports = WebSocket;
