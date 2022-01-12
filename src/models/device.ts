@@ -4,6 +4,7 @@ import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { Value } from './value';
+import { ValueTemplate } from '../util/value_template';
 import { printDebug } from '../util/debug';
 import {
     IDevice,
@@ -60,7 +61,7 @@ export class Device extends StreamModel implements IDevice {
         return this.value.filter((val) => val.type === type);
     }
 
-    public async createValue(params: IValue): Promise<Value> {
+    private async _createValue(params: IValue): Promise<Value> {
         this.validate('createValue', arguments);
 
         let value = new Value();
@@ -68,9 +69,6 @@ export class Device extends StreamModel implements IDevice {
         if (values.length !== 0) {
             printDebug(`Using existing value with id ${values[0].meta.id}`);
             value = values[0];
-        }
-        if (!params.number && !params.string && !params.blob && !params.xml) {
-            throw new Error('You must suply a valid type');
         }
 
         let oldJson = value.toJSON();
@@ -95,6 +93,35 @@ export class Device extends StreamModel implements IDevice {
         return value;
     }
 
+    public async createValue(
+        name: string,
+        permission: 'r' | 'w' | 'rw' | 'wr',
+        valueTemplate: ValueTemplate
+    ): Promise<Value> {
+        this.validate('createValue', arguments);
+
+        let value = {} as IValue;
+        value.name = name;
+        value.permission = permission;
+        value.type = valueTemplate.template.type;
+        switch (valueTemplate.template.value_type) {
+            case 'number':
+                value.number = valueTemplate.template.number;
+                break;
+            case 'string':
+                value.string = valueTemplate.template.string;
+                break;
+            case 'blob':
+                value.blob = valueTemplate.template.blob;
+                break;
+            case 'xml':
+                value.xml = valueTemplate.template.xml;
+                break;
+        }
+
+        return this._createValue(value);
+    }
+
     public async createNumberValue(
         params: IValue & IValueNumber
     ): Promise<Value> {
@@ -112,7 +139,7 @@ export class Device extends StreamModel implements IDevice {
 
         params.number = numberValue;
 
-        return this.createValue(params);
+        return this._createValue(params);
     }
 
     public async createStringValue(
@@ -126,7 +153,7 @@ export class Device extends StreamModel implements IDevice {
 
         params.string = stringValue;
 
-        return this.createValue(params);
+        return this._createValue(params);
     }
 
     public async createBlobValue(params: IValue & IValueBlob): Promise<Value> {
@@ -138,7 +165,7 @@ export class Device extends StreamModel implements IDevice {
 
         params.blob = blobValue;
 
-        return this.createValue(params);
+        return this._createValue(params);
     }
 
     public async createXmlValue(params: IValue & IValueXml): Promise<Value> {
@@ -150,7 +177,7 @@ export class Device extends StreamModel implements IDevice {
 
         params.xml = xmlValue;
 
-        return this.createValue(params);
+        return this._createValue(params);
     }
 
     static find = async (

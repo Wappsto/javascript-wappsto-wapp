@@ -85,7 +85,11 @@ export interface IDeviceFunc {
     constructor(name?: string): void;
     findValueByName(name: string): IValue[];
     findValueByType(type: string): IValue[];
-    createValue(params: IValue): Promise<IValue>;
+    createValue(
+        name: string,
+        permission: 'r' | 'w' | 'rw' | 'wr',
+        valueTemplate: IValueTemplate
+    ): Promise<IValue>;
     createNumberValue(params: IValue & IValueNumber): Promise<IValue>;
     createStringValue(params: IValue & IValueString): Promise<IValue>;
     createBlobValue(params: IValue & IValueBlob): Promise<IValue>;
@@ -154,6 +158,15 @@ export interface IValueBlob {
 export interface IValueXml {
     xsd?: string;
     namespace?: string;
+}
+
+export interface IValueTemplate {
+    type: string;
+    value_type: 'number' | 'string' | 'blob' | 'xml';
+    number?: IValueNumber;
+    string?: IValueString;
+    blob?: IValueBlob;
+    xml?: IValueXml;
 }
 
 export interface IValueFunc {

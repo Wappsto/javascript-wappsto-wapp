@@ -104,7 +104,15 @@ export const IDeviceFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string', true)),
     findValueByName: t.func(t.array('IValue'), t.param('name', 'string')),
     findValueByType: t.func(t.array('IValue'), t.param('type', 'string')),
-    createValue: t.func('IValue', t.param('params', 'IValue')),
+    createValue: t.func(
+        'IValue',
+        t.param('name', 'string'),
+        t.param(
+            'permission',
+            t.union(t.lit('r'), t.lit('w'), t.lit('rw'), t.lit('wr'))
+        ),
+        t.param('valueTemplate', 'IValueTemplate')
+    ),
     createNumberValue: t.func(
         'IValue',
         t.param('params', t.intersection('IValue', 'IValueNumber'))
@@ -197,6 +205,20 @@ export const IValueBlob = t.iface([], {
 export const IValueXml = t.iface([], {
     xsd: t.opt('string'),
     namespace: t.opt('string'),
+});
+
+export const IValueTemplate = t.iface([], {
+    type: 'string',
+    value_type: t.union(
+        t.lit('number'),
+        t.lit('string'),
+        t.lit('blob'),
+        t.lit('xml')
+    ),
+    number: t.opt('IValueNumber'),
+    string: t.opt('IValueString'),
+    blob: t.opt('IValueBlob'),
+    xml: t.opt('IValueXml'),
 });
 
 export const IValueFunc = t.iface([], {
@@ -346,6 +368,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IValueString,
     IValueBlob,
     IValueXml,
+    IValueTemplate,
     IValueFunc,
     IState,
     IStateFunc,

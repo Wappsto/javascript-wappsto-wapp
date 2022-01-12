@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { plainToClass } from 'class-transformer';
+import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { config } from '../util/config';
@@ -92,6 +93,22 @@ export class Model implements IModel {
         params: Record<string, any> = {}
     ): Promise<void> => {
         Model.validateMethod('Model', 'create', [params]);
+        if (this.parent) {
+            let valid = false;
+            this.getUrl()
+                .split('/')
+                .forEach((u) => {
+                    if (isUUID(u)) {
+                        valid = true;
+                    }
+                });
+            if (!valid) {
+                throw new Error(
+                    "Can't create a child under a parent that do not have an ID" +
+                        this.getUrl()
+                );
+            }
+        }
         let response = await wappsto.post(
             this.getUrl(),
             this.toJSON(),
