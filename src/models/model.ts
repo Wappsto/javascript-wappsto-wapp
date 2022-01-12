@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { plainToClass } from 'class-transformer';
+import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { config } from '../util/config';
@@ -33,6 +34,7 @@ export class Model implements IModel {
         }
     }
 
+    /* istanbul ignore next */
     public attributes(): string[] {
         return [];
     }
@@ -92,6 +94,22 @@ export class Model implements IModel {
         params: Record<string, any> = {}
     ): Promise<void> => {
         Model.validateMethod('Model', 'create', [params]);
+        if (this.parent) {
+            let valid = false;
+            this.getUrl()
+                .split('/')
+                .forEach((u) => {
+                    if (isUUID(u)) {
+                        valid = true;
+                    }
+                });
+            if (!valid) {
+                /* istanbul ignore next */
+                throw new Error(
+                    "Can't create a child under a parent that do not have an ID"
+                );
+            }
+        }
         let response = await wappsto.post(
             this.getUrl(),
             this.toJSON(),
@@ -147,6 +165,7 @@ export class Model implements IModel {
         params?: Record<string, any>
     ): Promise<Record<string, any>[]> => {
         Model.validateMethod('Model', 'fetch', [endpoint, params]);
+        let res = [];
         try {
             let response = await wappsto.get(
                 endpoint,
@@ -155,17 +174,15 @@ export class Model implements IModel {
 
             if (response?.data) {
                 if (_.isArray(response?.data)) {
-                    return response.data;
+                    res = response.data;
                 } else if (response.data) {
-                    return [response.data];
+                    res = [response.data];
                 }
-            } else {
-                return [];
             }
         } catch (e) {
             printHttpError(e);
         }
-        return [];
+        return res;
     };
 
     public parse(json: Record<string, any>): boolean {
@@ -183,11 +200,27 @@ export class Model implements IModel {
         return plainToClass(this, json);
     }
 
+    private removeUndefined(obj: Record<string, any>) {
+        Object.keys(obj).forEach((key) => {
+            var value = obj[key];
+            var type = typeof value;
+            if (type === 'object') {
+                this.removeUndefined(value);
+            } else if (type === 'undefined') {
+                delete obj[key];
+            }
+        });
+        return obj;
+    }
+
     public toJSON(): Record<string, any> {
         let meta = Object.assign(
             {},
             _.pick(this.meta, ['id', 'type', 'version'])
         );
-        return Object.assign({ meta: meta }, _.pick(this, this.attributes()));
+        return Object.assign(
+            { meta: meta },
+            this.removeUndefined(_.pick(this, this.attributes()))
+        );
     }
 }

@@ -26,20 +26,20 @@ describe('network', () => {
         device: [
             {
                 meta: {
-                    id: 'device_id',
+                    id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
                 },
                 name: 'Device Name',
                 product: 'Device Product',
                 value: [
                     {
                         meta: {
-                            id: 'value_id',
+                            id: 'c5a73d64-b398-434e-a236-df15342339d5',
                         },
                         name: 'Value Name',
                         state: [
                             {
                                 meta: {
-                                    id: 'state_id',
+                                    id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
                                 },
                                 type: 'Control',
                             },
@@ -308,7 +308,7 @@ describe('network', () => {
         });
 
         let network = new Network();
-        network.meta.id = 'network_id';
+        network.meta.id = '0a4de380-1c16-4b5c-a081-912b931ff891';
         let device = await network.createDevice({
             name: 'Device Name',
             product: 'product',
@@ -322,7 +322,7 @@ describe('network', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/network/network_id/device',
+            '/2.0/network/0a4de380-1c16-4b5c-a081-912b931ff891/device',
             {
                 communication: 'communication',
                 description: 'description',
@@ -363,11 +363,15 @@ describe('network', () => {
                         id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     },
                     name: 'Network Name',
+                    description: 'Description',
                 },
             ],
         });
 
-        let network = await createNetwork({ name: 'Network Name' });
+        let network = await createNetwork({
+            name: 'Network Name',
+            description: 'Description',
+        });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
@@ -378,6 +382,7 @@ describe('network', () => {
             },
         });
         expect(network.name).toEqual('Network Name');
+        expect(network.description).toEqual('Description');
         expect(network.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
@@ -405,7 +410,7 @@ describe('network', () => {
         let oldDevice = new Device('Device Name');
         oldDevice.meta.id = 'f589b816-1f2b-412b-ac36-1ca5a6db0273';
         let network = new Network();
-        network.meta.id = 'network_id';
+        network.meta.id = '0a4de380-1c16-4b5c-a081-912b931ff891';
         network.device.push(oldDevice);
         let device = await network.createDevice({
             name: 'Device Name',
@@ -532,5 +537,19 @@ describe('network', () => {
             },
         });
         expect(network[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
+    it('can delete a network', async () => {
+        mockedAxios.delete.mockResolvedValueOnce({ data: [] });
+
+        let network = new Network('network');
+        network.meta.id = 'f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02';
+        await network.delete();
+
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(
+            '/2.0/network/f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02',
+            {}
+        );
     });
 });

@@ -123,9 +123,9 @@ describe('value', () => {
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         let value = new Value();
-        value.meta.id = 'value_id';
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
         let oldState = new State('Report');
-        oldState.meta.id = 'state_id';
+        oldState.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(oldState);
 
         let state = await value.createState({
@@ -136,12 +136,12 @@ describe('value', () => {
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/state/state_id',
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
                     type: 'state',
                     version: '2.0',
-                    id: 'state_id',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
                 },
                 type: 'Report',
                 data: 'new',
@@ -149,7 +149,7 @@ describe('value', () => {
             },
             {}
         );
-        expect(state.meta.id).toBe('state_id');
+        expect(state.meta.id).toBe('6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7');
     });
 
     it('can find a value by name', async () => {
@@ -231,9 +231,9 @@ describe('value', () => {
             .mockResolvedValueOnce({ data: [] });
 
         let value = new Value();
-        value.meta.id = 'value_id';
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
         let state = new State('Report');
-        state.meta.id = 'state_id';
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
         await value.report(10);
         await value.report('test', 'timestamp');
@@ -242,12 +242,12 @@ describe('value', () => {
         expect(value.getReportData()).toBe('test');
         expect(value.getControlData()).toBe(undefined);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/state/state_id',
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
                     type: 'state',
                     version: '2.0',
-                    id: 'state_id',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
                 },
                 type: 'Report',
                 data: '10',
@@ -255,12 +255,12 @@ describe('value', () => {
             {}
         );
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/state/state_id',
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
                     type: 'state',
                     version: '2.0',
-                    id: 'state_id',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
                 },
                 type: 'Report',
                 data: 'test',
@@ -278,21 +278,21 @@ describe('value', () => {
             .mockResolvedValueOnce({ data: [] });
 
         let value = new Value();
-        value.meta.id = 'value_id';
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
         let state = new State('Control');
-        state.meta.id = 'state_id';
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
         await value.control(10);
         await value.control('test', 'timestamp');
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/state/state_id',
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
                     type: 'state',
                     version: '2.0',
-                    id: 'state_id',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
                 },
                 type: 'Control',
                 data: '10',
@@ -302,12 +302,12 @@ describe('value', () => {
         expect(value.getControlData()).toBe('test');
         expect(value.getReportData()).toBe(undefined);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/state/state_id',
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
                     type: 'state',
                     version: '2.0',
-                    id: 'state_id',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
                 },
                 type: 'Control',
                 data: 'test',
