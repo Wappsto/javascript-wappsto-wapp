@@ -382,7 +382,7 @@ describe('network', () => {
     });
 
     it('can return device as a child', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
+        mockedAxios.patch.mockResolvedValueOnce({
             data: [
                 {
                     communication: 'communication',
@@ -402,8 +402,11 @@ describe('network', () => {
             ],
         });
 
+        let oldDevice = new Device('Device Name');
+        oldDevice.meta.id = 'f589b816-1f2b-412b-ac36-1ca5a6db0273';
         let network = new Network();
         network.meta.id = 'network_id';
+        network.device.push(oldDevice);
         let device = await network.createDevice({
             name: 'Device Name',
             product: 'product',
@@ -415,10 +418,11 @@ describe('network', () => {
             manufacturer: 'manufacturer',
         });
 
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/network/network_id/device',
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/device/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             {
                 communication: 'communication',
                 description: 'description',
@@ -426,6 +430,7 @@ describe('network', () => {
                 meta: {
                     type: 'device',
                     version: '2.0',
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                 },
                 name: 'Device Name',
                 product: 'product',

@@ -712,4 +712,26 @@ describe('device', () => {
         expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
         expect(device[1].meta.id === '7c1611da-46e2-4f0d-85fa-1b010561b35d');
     });
+
+    it('can use custom find', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: response2Devices });
+
+        let r = Device.find({ name: 'test' });
+        let device = await r;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+            params: {
+                expand: 3,
+                quantity: 1,
+                message: 'Find 1 device',
+                identifier: 'device-1-Find 1 device',
+                this_name: 'test',
+                method: ['retrieve', 'update'],
+            },
+        });
+
+        expect(device[0].toJSON).toBeDefined();
+        expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
 });
