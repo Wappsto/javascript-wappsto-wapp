@@ -91,6 +91,7 @@ export class Model implements IModel {
     public _create = async (
         params: Record<string, any> = {}
     ): Promise<void> => {
+        Model.validateMethod('Model', 'create', [params]);
         let response = await wappsto.post(
             this.getUrl(),
             this.toJSON(),

@@ -79,10 +79,8 @@ export class Device extends StreamModel implements IDevice {
         let newJson = value.toJSON();
 
         if (!_.isEqual(oldJson, newJson)) {
-            if (values.length !== 0) {
-                await value.update();
-            } else {
-                await value.create();
+            await value.create();
+            if (values.length === 0) {
                 this.value.push(value);
             }
         }
