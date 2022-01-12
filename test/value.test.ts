@@ -225,7 +225,7 @@ describe('value', () => {
         expect(value[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
-    it('can send a report', () => {
+    it('can send a report', async () => {
         mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
@@ -235,8 +235,8 @@ describe('value', () => {
         let state = new State('Report');
         state.meta.id = 'state_id';
         value.state.push(state);
-        value.report(10);
-        value.report('test', 'timestamp');
+        await value.report(10);
+        await value.report('test', 'timestamp');
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(value.getReportData()).toBe('test');
@@ -272,7 +272,7 @@ describe('value', () => {
         expect(value.getControlTimestamp()).toBe(undefined);
     });
 
-    it('can send a control', () => {
+    it('can send a control', async () => {
         mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
@@ -282,8 +282,8 @@ describe('value', () => {
         let state = new State('Control');
         state.meta.id = 'state_id';
         value.state.push(state);
-        value.control(10);
-        value.control('test', 'timestamp');
+        await value.control(10);
+        await value.control('test', 'timestamp');
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
