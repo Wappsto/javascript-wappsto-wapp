@@ -538,4 +538,18 @@ describe('network', () => {
         });
         expect(network[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
+
+    it('can delete a network', async () => {
+        mockedAxios.delete.mockResolvedValueOnce({ data: [] });
+
+        let network = new Network('network');
+        network.meta.id = 'f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02';
+        await network.delete();
+
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(
+            '/2.0/network/f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02',
+            {}
+        );
+    });
 });
