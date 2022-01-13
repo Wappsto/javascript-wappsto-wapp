@@ -343,12 +343,12 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
-    it('can create a value from a IMAGE template', async () => {
+    it('can create a value from a XML template', async () => {
         templateHelperStart();
 
         let device = new Device();
         device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
-        let value = await device.createValue('name', 'rw', ValueTemplate.IMAGE);
+        let value = await device.createValue('name', 'rw', ValueTemplate.XML);
 
         templateHelperDone();
 
@@ -356,14 +356,49 @@ describe('device', () => {
             '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 permission: 'rw',
-                type: 'image',
+                type: 'xml',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
+                },
+                name: 'name',
+                xml: {
+                    xsd: '',
+                    namespace: '',
+                },
+            },
+            {}
+        );
+
+        expect(value.name).toEqual('name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('xml');
+        expect(value.xml?.xsd).toEqual('');
+        expect(value.xml?.namespace).toEqual('');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can create a value from a BLOB template', async () => {
+        templateHelperStart();
+
+        let device = new Device();
+        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
+        let value = await device.createValue('name', 'rw', ValueTemplate.BLOB);
+
+        templateHelperDone();
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            {
+                permission: 'rw',
+                type: 'blob',
                 meta: {
                     type: 'value',
                     version: '2.0',
                 },
                 name: 'name',
                 blob: {
-                    max: 255,
+                    max: 64,
                     encoding: 'base64',
                 },
             },
@@ -372,8 +407,8 @@ describe('device', () => {
 
         expect(value.name).toEqual('name');
         expect(value.permission).toEqual('rw');
-        expect(value.type).toEqual('image');
-        expect(value.blob?.max).toEqual(255);
+        expect(value.type).toEqual('blob');
+        expect(value.blob?.max).toEqual(64);
         expect(value.blob?.encoding).toEqual('base64');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
