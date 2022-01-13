@@ -13,15 +13,15 @@
     "scripts": {
         "start": "tsdx watch",
         "build": "tsdx build",
-        "pretest": "tsdx lint",
+        "pretest": "tsdx lint src test",
         "test": "tsdx test --coverage",
-        "lint": "tsdx lint",
-        "fix-lint": "tsdx lint --fix",
+        "lint": "tsdx lint src test",
+        "fix-lint": "tsdx lint src test --fix",
         "prepare": "tsdx build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
         "doc": "npx typedoc --tsconfig tsconfig.typedoc.json src/index.ts",
         "size": "size-limit",
         "analyze": "size-limit --why",
-        "generate-types": "`npm bin`/ts-interface-builder -v -g -c src/util/interfaces.ts"
+        "generate-types": "`npm bin`/ts-interface-builder -v -g -c src/util/interfaces.ts; tsdx lint src/util --fix"
     },
     "peerDependencies": {},
     "husky": {

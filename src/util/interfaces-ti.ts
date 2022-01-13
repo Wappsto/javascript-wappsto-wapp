@@ -107,10 +107,7 @@ export const IDeviceFunc = t.iface([], {
     createValue: t.func(
         'IValue',
         t.param('name', 'string'),
-        t.param(
-            'permission',
-            t.union(t.lit('r'), t.lit('w'), t.lit('rw'), t.lit('wr'))
-        ),
+        t.param('permission', 'ValuePermission'),
         t.param('valueTemplate', 'IValueTemplate')
     ),
     createNumberValue: t.func(
@@ -169,9 +166,16 @@ export const IPermissionModelFunc = t.iface([], {
     ),
 });
 
+export const ValuePermission = t.union(
+    t.lit('r'),
+    t.lit('w'),
+    t.lit('rw'),
+    t.lit('wr')
+);
+
 export const IValue = t.iface([], {
     name: 'string',
-    permission: t.union(t.lit('r'), t.lit('w'), t.lit('rw'), t.lit('wr')),
+    permission: 'ValuePermission',
     type: t.opt('string'),
     period: t.opt('string'),
     delta: t.opt('string'),
@@ -207,14 +211,16 @@ export const IValueXml = t.iface([], {
     namespace: t.opt('string'),
 });
 
+export const ValueTemplateType = t.union(
+    t.lit('number'),
+    t.lit('string'),
+    t.lit('blob'),
+    t.lit('xml')
+);
+
 export const IValueTemplate = t.iface([], {
     type: 'string',
-    value_type: t.union(
-        t.lit('number'),
-        t.lit('string'),
-        t.lit('blob'),
-        t.lit('xml')
-    ),
+    value_type: 'ValueTemplateType',
     number: t.opt('IValueNumber'),
     string: t.opt('IValueString'),
     blob: t.opt('IValueBlob'),
@@ -269,23 +275,68 @@ export const IValueFunc = t.iface([], {
     ),
 });
 
+export const StateType = t.union(t.lit('Report'), t.lit('Control'));
+
 export const IState = t.iface([], {
-    type: t.union(t.lit('Report'), t.lit('Control')),
+    type: 'StateType',
     data: t.opt('string'),
     timestamp: t.opt('string'),
 });
 
 export const IStateFunc = t.iface([], {
-    constructor: t.func(
-        'IState',
-        t.param('type', t.union(t.lit('Report'), t.lit('Control')), true)
-    ),
+    constructor: t.func('IState', t.param('type', 'StateType', true)),
 });
 
+export const LogOperation = t.union(
+    t.lit('arbitrary'),
+    t.lit('array_agg'),
+    t.lit('avg'),
+    t.lit('mean'),
+    t.lit('count'),
+    t.lit('geometric_mean'),
+    t.lit('max'),
+    t.lit('min'),
+    t.lit('sqrdiff'),
+    t.lit('stddev'),
+    t.lit('sum'),
+    t.lit('variance'),
+    t.lit('harmonic_mean'),
+    t.lit('first'),
+    t.lit('last'),
+    t.lit('count_distinct'),
+    t.lit('median'),
+    t.lit('percentile'),
+    t.lit('lower_quartile'),
+    t.lit('upper_quartile'),
+    t.lit('mode')
+);
+
+export const LogGroupBy = t.union(
+    t.lit('year'),
+    t.lit('quarter'),
+    t.lit('month'),
+    t.lit('week'),
+    t.lit('day'),
+    t.lit('hour'),
+    t.lit('minute'),
+    t.lit('second'),
+    t.lit('millisecond'),
+    t.lit('microsecond'),
+    t.lit('dow'),
+    t.lit('doy')
+);
+
 export const ILogRequest = t.iface([], {
-    count: t.opt('number'),
     start: t.opt('Date'),
     end: t.opt('Date'),
+    limit: t.opt('number'),
+    offset: t.opt('number'),
+    operation: t.opt('LogOperation'),
+    group_by: t.opt('LogGroupBy'),
+    timestamp_format: t.opt('string'),
+    timezone: t.opt('string'),
+    order: t.opt(t.union(t.lit('ascending'), t.lit('descending'))),
+    order_by: t.opt('string'),
 });
 
 export const ILogResponse = t.iface([], {
@@ -363,15 +414,20 @@ const exportedTypeSuite: t.ITypeSuite = {
     IDevice,
     IDeviceFunc,
     IPermissionModelFunc,
+    ValuePermission,
     IValue,
     IValueNumber,
     IValueString,
     IValueBlob,
     IValueXml,
+    ValueTemplateType,
     IValueTemplate,
     IValueFunc,
+    StateType,
     IState,
     IStateFunc,
+    LogOperation,
+    LogGroupBy,
     ILogRequest,
     ILogResponse,
     IStreamEvent,

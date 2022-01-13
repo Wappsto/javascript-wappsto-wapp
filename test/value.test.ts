@@ -318,4 +318,72 @@ describe('value', () => {
         expect(value.getControlTimestamp()).toBe('timestamp');
         expect(value.getReportTimestamp()).toBe(undefined);
     });
+
+    it('can get log data', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            id: '',
+                            type: 'log',
+                            version: '2.1',
+                        },
+                        data: [],
+                        more: false,
+                        type: 'state',
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            id: '',
+                            type: 'log',
+                            version: '2.1',
+                        },
+                        data: [],
+                        more: false,
+                        type: 'state',
+                    },
+                ],
+            });
+
+        let value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        let stateR = new State('Report');
+        stateR.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(stateR);
+        let stateC = new State('Control');
+        stateC.meta.id = '1b743fa5-85a1-48e9-935c-b98ba27c0ffe';
+        value.state.push(stateC);
+
+        let d = new Date(500000000000);
+
+        let logsR = await value.getReportLog({ limit: 1 });
+        let logsC = await value.getControlLog({ start: d });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/log/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7/state',
+            {
+                params: { limit: 1 },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/log/1b743fa5-85a1-48e9-935c-b98ba27c0ffe/state',
+            {
+                params: { start: d },
+            }
+        );
+
+        expect(logsR.meta.type).toBe('log');
+        expect(logsR.more).toBe(false);
+        expect(logsR.type).toBe('state');
+        expect(logsC.meta.type).toBe('log');
+        expect(logsC.more).toBe(false);
+        expect(logsC.type).toBe('state');
+    });
 });

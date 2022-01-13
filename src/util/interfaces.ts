@@ -87,7 +87,7 @@ export interface IDeviceFunc {
     findValueByType(type: string): IValue[];
     createValue(
         name: string,
-        permission: 'r' | 'w' | 'rw' | 'wr',
+        permission: ValuePermission,
         valueTemplate: IValueTemplate
     ): Promise<IValue>;
     createNumberValue(params: IValue & IValueNumber): Promise<IValue>;
@@ -122,9 +122,11 @@ export interface IPermissionModelFunc {
     ): Promise<Record<string, any>[]>;
 }
 
+export type ValuePermission = 'r' | 'w' | 'rw' | 'wr';
+
 export interface IValue {
     name: string;
-    permission: 'r' | 'w' | 'rw' | 'wr';
+    permission: ValuePermission;
     type?: string;
     period?: string;
     delta?: string;
@@ -160,9 +162,11 @@ export interface IValueXml {
     namespace?: string;
 }
 
+type ValueTemplateType = 'number' | 'string' | 'blob' | 'xml';
+
 export interface IValueTemplate {
     type: string;
-    value_type: 'number' | 'string' | 'blob' | 'xml';
+    value_type: ValueTemplateType;
     number?: IValueNumber;
     string?: IValueString;
     blob?: IValueBlob;
@@ -190,20 +194,66 @@ export interface IValueFunc {
     findAllByType(type: string, usage: string): IValue[];
 }
 
+export type StateType = 'Report' | 'Control';
+
 export interface IState {
-    type: 'Report' | 'Control';
+    type: StateType;
     data?: string;
     timestamp?: string;
 }
 
 export interface IStateFunc {
-    constructor(type?: 'Report' | 'Control'): IState;
+    constructor(type?: StateType): IState;
 }
 
+export type LogOperation =
+    | 'arbitrary'
+    | 'array_agg'
+    | 'avg'
+    | 'mean'
+    | 'count'
+    | 'geometric_mean'
+    | 'max'
+    | 'min'
+    | 'sqrdiff'
+    | 'stddev'
+    | 'sum'
+    | 'variance'
+    | 'harmonic_mean'
+    | 'first'
+    | 'last'
+    | 'count_distinct'
+    | 'median'
+    | 'percentile'
+    | 'lower_quartile'
+    | 'upper_quartile'
+    | 'mode';
+
+export type LogGroupBy =
+    | 'year'
+    | 'quarter'
+    | 'month'
+    | 'week'
+    | 'day'
+    | 'hour'
+    | 'minute'
+    | 'second'
+    | 'millisecond'
+    | 'microsecond'
+    | 'dow'
+    | 'doy';
+
 export interface ILogRequest {
-    count?: number;
     start?: Date;
     end?: Date;
+    limit?: number;
+    offset?: number;
+    operation?: LogOperation;
+    group_by?: LogGroupBy;
+    timestamp_format?: string;
+    timezone?: string;
+    order?: 'ascending' | 'descending';
+    order_by?: string;
 }
 
 export interface ILogResponse {
