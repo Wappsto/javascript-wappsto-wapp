@@ -51,7 +51,7 @@ let device = network.createDevice({
 Then you need to create new values.
 To create a new value under an exsisting device, you should call createValue. If a value exsists with the given name, the existing value will be returned.
 There will also be created the states nedded based on the permission. The only allowed values for permission is 'r', 'w' and 'rw'.
-The list of avaible value templates can be seen in the [value_template.ts](../tree/main/src/util/value_template.ts) file.
+The list of avaible value templates can be seen in the [value_template.ts](../blob/main/src/util/value_template.ts) file.
 
 ```javascript
 let value = device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS);
