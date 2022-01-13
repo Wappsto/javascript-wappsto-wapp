@@ -11,7 +11,9 @@ import {
     IValueString,
     IValueBlob,
     IValueXml,
+    ValuePermission,
     IState,
+    StateType,
     ILogRequest,
     ILogResponse,
     RefreshStreamCallback,
@@ -22,7 +24,7 @@ export class Value extends StreamModel implements IValue {
     static endpoint = '/2.0/value';
 
     name: string;
-    permission: 'r' | 'w' | 'rw' | 'wr' = 'r';
+    permission: ValuePermission = 'r';
     type?: string;
     period?: string;
     delta?: string;
@@ -67,7 +69,7 @@ export class Value extends StreamModel implements IValue {
         return Value.fromArray(data);
     };
 
-    private findState(type: string): State | undefined {
+    private findState(type: StateType): State | undefined {
         let res: State | undefined = undefined;
         this.state.forEach((state) => {
             if (state.type === type) {
@@ -82,7 +84,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     private async findStateAndUpdate(
-        type: string,
+        type: StateType,
         data: string | number,
         timestamp: string | undefined
     ): Promise<void> {
@@ -95,7 +97,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     private findStateAndCallback(
-        type: string,
+        type: StateType,
         callback: ValueStreamCallback
     ): void {
         let state = this.findState(type);
@@ -137,7 +139,7 @@ export class Value extends StreamModel implements IValue {
         return state;
     };
 
-    private findStateAndData(type: string): string | undefined {
+    private findStateAndData(type: StateType): string | undefined {
         let state = this.findState(type);
         if (state) {
             return state.data;
@@ -145,7 +147,7 @@ export class Value extends StreamModel implements IValue {
         return undefined;
     }
 
-    private findStateAndTimestamp(type: string): string | undefined {
+    private findStateAndTimestamp(type: StateType): string | undefined {
         let state = this.findState(type);
         if (state) {
             return state.timestamp;
@@ -211,7 +213,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     private findStateAndLog = async (
-        type: string,
+        type: StateType,
         request: ILogRequest
     ): Promise<ILogResponse> => {
         let state = this.findState(type);
