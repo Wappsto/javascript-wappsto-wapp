@@ -98,6 +98,7 @@ export class Stream extends Model {
             this.ignoreReconnect = false;
 
             let openTimeout: ReturnType<typeof setTimeout> = setTimeout(() => {
+                /* istanbul ignore next */
                 self.reconnect();
             }, 1000 + this.backoff);
 
@@ -196,6 +197,7 @@ export class Stream extends Model {
             let response = await wappsto.post('/2.0/extsync/request', msg);
             result = response.data;
         } catch (e) {
+            /* istanbul ignore next */
             printHttpError(e);
         }
         return result;
@@ -301,6 +303,7 @@ export class Stream extends Model {
                 .split('/')
                 .filter((s) => s.length > 0);
             if (!items) {
+                /* istanbul ignore next */
                 return;
             }
 
@@ -374,6 +377,7 @@ export class Stream extends Model {
         let self = this;
 
         if (!this.socket) {
+            /* istanbul ignore next */
             return;
         }
 
@@ -390,10 +394,13 @@ export class Stream extends Model {
                 try {
                     message = JSON.parse(ev.data);
                 } catch (e) {
+                    /* istanbul ignore next */
                     printError('Failed to parse stream event');
+                    /* istanbul ignore next */
                     return;
                 }
             } else {
+                /* istanbul ignore next */
                 printError("Can't handle binary stream data");
             }
 
@@ -443,6 +450,7 @@ export class Stream extends Model {
             try {
                 self.handleEvent('error', event);
             } catch (e) {
+                /* istanbul ignore next */
                 printError('Stream error: ' + self.websocketUrl);
             }
         };
@@ -500,6 +508,7 @@ function handleRequest(type: string, callback: RequestHandler): void {
                 return callback(data.message);
             }
         } catch (e) {
+            /* istanbul ignore next */
             printDebug('Failed to parse event - Foreground/Background handler');
         }
         return undefined;

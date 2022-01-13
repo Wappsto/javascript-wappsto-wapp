@@ -27,6 +27,7 @@ export function startLogging(): void {
     console.error = newFunc('error');
     console.warn = newFunc('warn');
 
+    /* istanbul ignore next */
     process.on('uncaughtException', (err) => {
         const req = sendExtsync('error', [err.stack]);
         req.finally(function () {
