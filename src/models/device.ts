@@ -30,7 +30,7 @@ export class Device extends StreamModel implements IDevice {
 
     constructor(name?: string) {
         super('device');
-        this.validate('constructor', arguments);
+        Model.validateMethod('Device', 'constructor', arguments);
         this.name = name || '';
     }
 
