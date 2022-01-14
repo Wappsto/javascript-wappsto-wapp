@@ -38,7 +38,7 @@ export class Network extends StreamModel implements INetwork {
 
     constructor(name?: string) {
         super('network');
-        this.validate('constructor', arguments);
+        Model.validateMethod('Network', 'constructor', arguments);
         this.name = name || '';
     }
 

@@ -38,7 +38,7 @@ export class Value extends StreamModel implements IValue {
 
     constructor(name?: string) {
         super('value');
-        this.validate('constructor', arguments);
+        Model.validateMethod('Value', 'constructor', arguments);
         this.name = name || '';
     }
 

@@ -14,17 +14,22 @@ export class OAuth extends Model {
 
     constructor(name: string) {
         super('2.0', 'oauth');
-        this.validate('constructor', arguments);
+        Model.validateMethod('OAuth', 'constructor', arguments);
         this.name = name;
     }
 
     public getToken = async () => {
-        return new Promise<Record<string, any>>(async (resolve) => {
+        return new Promise<Record<string, any>>(async (resolve, reject) => {
             let data = await Model.fetch(`/2.0/oauth_connect/${this.name}`, {});
             let oauth = data[0];
 
             if (oauth?.params?.oauth_token) {
                 resolve(oauth?.params);
+                return;
+            }
+
+            if (typeof process !== 'object') {
+                reject(oauth?.data?.request);
                 return;
             }
 
@@ -42,23 +47,6 @@ export class OAuth extends Model {
                     return;
                 }
             );
-
-            if (oauth?.code === 436000002) {
-                printDebug('OAuth is missing');
-                // configure oauth
-                if (typeof window !== 'undefined' && window.open) {
-                    printDebug('Open new window with oauth request');
-                    let w = window.open(
-                        oauth?.data?.request,
-                        `OAuth - ${oauth.message}`,
-                        'popup'
-                    );
-
-                    console.log(w);
-                } else {
-                    printDebug('OAuth running without window');
-                }
-            }
         });
     };
 

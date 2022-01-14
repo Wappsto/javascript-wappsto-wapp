@@ -222,10 +222,17 @@ console.log("Result from foreground: "+foregroundResult);
 
 ### OAuth
 
-To get an already created OAuth token, call the getToken with the gived name of the oauth.
+To get an already created OAuth token, call the getToken with the name of the oauth. If there is no token generated yet,
+then depending on if the wapp is running in a browser or in node. If it running in a browser, then you need to catch the error
+that contains the url that the user needs to visit to generate the token. Else when it is running in node, it just waits for
+the token to be generated.
 
 ```javascript
-let token = await Wappsto.OAuth.getToken('oauth name');
+try {
+  let token = await Wappsto.OAuth.getToken('oauth name');
+} catch(token_url) {
+  console.log("Please visit " + token_url);
+}
 ```
 
 ### Background loggering
