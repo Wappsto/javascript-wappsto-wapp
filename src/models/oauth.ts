@@ -28,6 +28,7 @@ export class OAuth extends Model {
                 return;
             }
 
+            /* istanbul ignore next */
             if (typeof process !== 'object') {
                 reject(oauth?.data?.request);
                 return;
