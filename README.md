@@ -13,12 +13,12 @@ npm i --save wappsto-wapp
 To use it in a webpage, include this script tag:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/wappsto-wapp@v0.5.5/dist/wappsto-wapp.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/wappsto-wapp@latest/dist/wappsto-wapp.min.js"></script>
 ```
 
 ## Usage
 
-Here are some examlples on how to use the library.
+Here are some examples on how to use the library.
 
 
 ### Create a new IoT Device
