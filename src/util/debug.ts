@@ -1,8 +1,8 @@
 import { config } from '../util/config';
 
 export function printDebug(message: string): void {
+    /* istanbul ignore next */
     if (config().debug) {
-        /* istanbul ignore next */
         console.log(`WAPPSTO DEBUG: ${message}`);
     }
 }

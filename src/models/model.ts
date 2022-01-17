@@ -180,6 +180,7 @@ export class Model implements IModel {
                 }
             }
         } catch (e) {
+            console.log(e);
             printHttpError(e);
         }
         return res;

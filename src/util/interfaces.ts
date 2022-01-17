@@ -284,6 +284,13 @@ export interface IOAuthFunc {
     getToken(name: string): void;
 }
 
+export interface IWappStorageFunc {
+    wappStorage(name?: string): void;
+    constructor(name: string): void;
+    set(name: string, item: any): Promise<void>;
+    get(name: string): any;
+}
+
 export type SignalHandler = (event: string) => void;
 export type ServiceHandler = (
     event: any
