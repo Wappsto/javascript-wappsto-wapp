@@ -5,13 +5,9 @@ import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { printError } from '../util/debug';
 import { config } from '../util/config';
-import { IMeta } from '../util/interfaces';
+import { IMeta, IModel } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { createCheckers } from 'ts-interface-checker';
-
-interface IModel {
-    getUrl(): string;
-}
 
 export class Model implements IModel {
     meta: IMeta = {};

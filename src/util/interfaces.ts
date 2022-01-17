@@ -4,6 +4,10 @@ export interface IConfig {
     validation?: 'none' | 'normal' | 'strict';
 }
 
+export interface IModel {
+    getUrl(): string;
+}
+
 export interface IModelFunc {
     create(params: Record<string, any>): Promise<void>;
     fetch(
