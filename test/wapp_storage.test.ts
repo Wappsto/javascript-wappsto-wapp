@@ -45,6 +45,10 @@ describe('WappStorage', () => {
         mockedAxios.get.mockResolvedValueOnce({
             data: [
                 {
+                    data_meta: {
+                        id: 'wapp_storage_default',
+                        type: 'wapp_storage',
+                    },
                     key: 'item',
                 },
             ],
@@ -69,8 +73,8 @@ describe('WappStorage', () => {
             '/2.0/data',
             {
                 data_meta: {
-                    //                    id: 'wapp_storage_default',
-                    //                    type: 'wapp_storage',
+                    id: 'wapp_storage_default',
+                    type: 'wapp_storage',
                 },
                 meta: {
                     type: 'data',
