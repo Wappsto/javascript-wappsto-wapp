@@ -8,11 +8,18 @@ class Config {
     validation: 'none' | 'normal' | 'strict' = 'normal';
 }
 
+let _checker = createCheckers(interfaceTI);
 let _config = new Config();
 
-export function config(param: IConfig = {}): Config {
-    const checker = createCheckers(interfaceTI);
-    checker.IConfig.check(param);
+export { _config };
+
+export function config(param: IConfig): Config {
+    let m = _checker.IConfigFunc.methodArgs('config');
+    if (_config.validation === 'strict') {
+        m.strictCheck(Array.from(arguments));
+    } else {
+        m.check(Array.from(arguments));
+    }
 
     if (param.debug !== undefined) {
         _config.debug = param.debug;

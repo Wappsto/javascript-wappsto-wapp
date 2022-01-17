@@ -10,6 +10,10 @@ export const IConfig = t.iface([], {
     validation: t.opt(t.union(t.lit('none'), t.lit('normal'), t.lit('strict'))),
 });
 
+export const IConfigFunc = t.iface([], {
+    config: t.func('IConfig', t.param('param', 'IConfig')),
+});
+
 export const IModel = t.iface([], {
     getUrl: t.func('string'),
 });
@@ -417,6 +421,7 @@ export const RefreshStreamCallback = t.func('void', t.param('value', 'IValue'));
 
 const exportedTypeSuite: t.ITypeSuite = {
     IConfig,
+    IConfigFunc,
     IModel,
     IModelFunc,
     IConnection,

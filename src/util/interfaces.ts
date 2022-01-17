@@ -4,6 +4,10 @@ export interface IConfig {
     validation?: 'none' | 'normal' | 'strict';
 }
 
+export interface IConfigFunc {
+    config(param: IConfig): IConfig;
+}
+
 export interface IModel {
     getUrl(): string;
 }

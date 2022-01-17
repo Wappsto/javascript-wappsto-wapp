@@ -4,7 +4,7 @@ import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { printError } from '../util/debug';
-import { config } from '../util/config';
+import { _config } from '../util/config';
 import { IMeta, IModel } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { createCheckers } from 'ts-interface-checker';
@@ -45,13 +45,13 @@ export class Model implements IModel {
         name: string,
         params: any
     ): void {
-        if (config().validation !== 'none') {
+        if (_config.validation !== 'none') {
             let c = Object.keys(Model.checker).find(
                 (k) => k.toLowerCase() === `i${type.toLowerCase()}func`
             );
             if (c) {
                 let m = Model.checker[c].methodArgs(name);
-                if (config().validation === 'strict') {
+                if (_config.validation === 'strict') {
                     m.strictCheck(Array.from(params));
                 } else {
                     m.check(Array.from(params));
@@ -72,7 +72,7 @@ export class Model implements IModel {
         if (params) {
             Object.assign(options.params, params);
         }
-        if (config().verbose) {
+        if (_config.verbose) {
             options.params['verbose'] = true;
         }
         if (Object.keys(options.params).length === 0) {
