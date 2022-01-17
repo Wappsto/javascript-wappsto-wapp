@@ -4,7 +4,6 @@ import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { Value } from './value';
-import { ValueTemplate } from '../util/value_template';
 import { printDebug } from '../util/debug';
 import {
     IDevice,
@@ -13,6 +12,7 @@ import {
     IValueString,
     IValueBlob,
     IValueXml,
+    IValueTemplate,
 } from '../util/interfaces';
 
 export class Device extends StreamModel implements IDevice {
@@ -62,8 +62,6 @@ export class Device extends StreamModel implements IDevice {
     }
 
     private async _createValue(params: IValue): Promise<Value> {
-        this.validate('createValue', arguments);
-
         let value = new Value();
         let values = this.findValueByName(params.name);
         if (values.length !== 0) {
@@ -96,26 +94,26 @@ export class Device extends StreamModel implements IDevice {
     public async createValue(
         name: string,
         permission: 'r' | 'w' | 'rw' | 'wr',
-        valueTemplate: ValueTemplate
+        valueTemplate: IValueTemplate
     ): Promise<Value> {
         this.validate('createValue', arguments);
 
         let value = {} as IValue;
         value.name = name;
         value.permission = permission;
-        value.type = valueTemplate.template.type;
-        switch (valueTemplate.template.value_type) {
+        value.type = valueTemplate.type;
+        switch (valueTemplate.value_type) {
             case 'number':
-                value.number = valueTemplate.template.number;
+                value.number = valueTemplate.number;
                 break;
             case 'string':
-                value.string = valueTemplate.template.string;
+                value.string = valueTemplate.string;
                 break;
             case 'blob':
-                value.blob = valueTemplate.template.blob;
+                value.blob = valueTemplate.blob;
                 break;
             case 'xml':
-                value.xml = valueTemplate.template.xml;
+                value.xml = valueTemplate.xml;
                 break;
         }
 

@@ -3,6 +3,7 @@ import { plainToClass } from 'class-transformer';
 import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
+import { printError } from '../util/debug';
 import { config } from '../util/config';
 import { IMeta } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
@@ -50,7 +51,7 @@ export class Model implements IModel {
     ): void {
         if (config().validation !== 'none') {
             let c = Object.keys(Model.checker).find(
-                (k) => k === `I${type}Func`
+                (k) => k.toLowerCase() === `i${type.toLowerCase()}func`
             );
             if (c) {
                 let m = Model.checker[c].methodArgs(name);
@@ -59,6 +60,9 @@ export class Model implements IModel {
                 } else {
                     m.check(Array.from(params));
                 }
+            } else {
+                /* istanbul ignore next */
+                printError(`Failed to find functions for ${type}`);
             }
         }
     }

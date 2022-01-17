@@ -27,6 +27,7 @@ describe('network', () => {
             {
                 meta: {
                     id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                    type: 'device',
                 },
                 name: 'Device Name',
                 product: 'Device Product',
@@ -34,12 +35,14 @@ describe('network', () => {
                     {
                         meta: {
                             id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                            type: 'value',
                         },
                         name: 'Value Name',
                         state: [
                             {
                                 meta: {
                                     id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                    type: 'state',
                                 },
                                 type: 'Control',
                             },

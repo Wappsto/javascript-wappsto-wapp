@@ -1,11 +1,9 @@
 import { IValueTemplate } from './interfaces';
 
 export class ValueTemplate {
-    template: IValueTemplate;
-
     static version = '0.0.1';
 
-    static TEMPERATURE = new ValueTemplate({
+    static TEMPERATURE: IValueTemplate = {
         value_type: 'number',
         type: 'temperature',
         number: {
@@ -17,8 +15,8 @@ export class ValueTemplate {
             step: 0.01,
             unit: 'K',
         },
-    });
-    static TEMPERATURE_CELSIUS = new ValueTemplate({
+    };
+    static TEMPERATURE_CELSIUS: IValueTemplate = {
         value_type: 'number',
         type: 'temperature',
         number: {
@@ -30,8 +28,8 @@ export class ValueTemplate {
             step: 0.01,
             unit: '°C',
         },
-    });
-    static BOOLEAN = new ValueTemplate({
+    };
+    static BOOLEAN: IValueTemplate = {
         value_type: 'number',
         type: 'boolean',
         number: {
@@ -43,16 +41,16 @@ export class ValueTemplate {
             step: 1,
             unit: undefined,
         },
-    });
-    static IMAGE = new ValueTemplate({
+    };
+    static IMAGE: IValueTemplate = {
         value_type: 'blob',
         type: 'image',
         blob: {
             max: 255,
             encoding: 'base64',
         },
-    });
-    static NUMBER = new ValueTemplate({
+    };
+    static NUMBER: IValueTemplate = {
         value_type: 'number',
         type: 'number',
         number: {
@@ -64,33 +62,29 @@ export class ValueTemplate {
             step: 0.01,
             unit: undefined,
         },
-    });
-    static STRING = new ValueTemplate({
+    };
+    static STRING: IValueTemplate = {
         value_type: 'string',
         type: 'string',
         string: {
             max: 64,
             encoding: 'utf-8',
         },
-    });
-    static BLOB = new ValueTemplate({
+    };
+    static BLOB: IValueTemplate = {
         value_type: 'blob',
         type: 'blob',
         blob: {
             max: 64,
             encoding: 'base64',
         },
-    });
-    static XML = new ValueTemplate({
+    };
+    static XML: IValueTemplate = {
         value_type: 'xml',
         type: 'xml',
         xml: {
             xsd: '',
             namespace: '',
         },
-    });
-
-    private constructor(template: IValueTemplate) {
-        this.template = template;
-    }
+    };
 }
