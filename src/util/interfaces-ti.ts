@@ -384,6 +384,13 @@ export const IOAuthFunc = t.iface([], {
     getToken: t.func('void', t.param('name', 'string')),
 });
 
+export const IWappStorageFunc = t.iface([], {
+    wappStorage: t.func('void', t.param('name', 'string', true)),
+    constructor: t.func('void', t.param('name', 'string')),
+    set: t.func('void', t.param('name', 'string'), t.param('item', 'any')),
+    get: t.func('any', t.param('name', 'string')),
+});
+
 export const SignalHandler = t.func('void', t.param('event', 'string'));
 
 export const ServiceHandler = t.func(
@@ -434,6 +441,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IStreamModel,
     IStreamFunc,
     IOAuthFunc,
+    IWappStorageFunc,
     SignalHandler,
     ServiceHandler,
     RequestHandler,

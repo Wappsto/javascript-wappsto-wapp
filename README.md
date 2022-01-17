@@ -220,6 +220,20 @@ let foregroundResult = await Wappsto.sendToForeground("hello");
 console.log("Result from foreground: "+foregroundResult);
 ```
 
+### Wapp Storage
+
+It is possible to storage configuration parameters and other information in the Wapp Storage.
+This data is persisted on Wappsto and can be read from the foreground and background wapp.
+The data can be deleted by calling the ´clear` function.
+
+```javascript
+let storage = await Wappsto.wappStorage();
+await storage.set('key', 'item');
+let data = storage.get('key');
+// Delete all the saved data
+await storage.clear();
+```
+
 ### OAuth
 
 To get an already created OAuth token, call the getToken with the name of the oauth. If there is no token generated yet,
