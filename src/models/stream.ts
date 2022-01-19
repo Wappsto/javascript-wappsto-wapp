@@ -5,7 +5,6 @@ import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import {
-    IMeta,
     IStreamEvent,
     ServiceHandler,
     SignalHandler,
@@ -25,23 +24,6 @@ interface StreamServiceHash {
 
 interface StreamSignalHash {
     [key: string]: SignalHandler[];
-}
-
-export const enum EventType {
-    create = 'create',
-    update = 'update',
-    delete = 'delete',
-    direct = 'direct',
-}
-
-export class StreamEvent implements IStreamEvent {
-    meta: IMeta = {};
-    path: string = '';
-    timestamp: string = '';
-    event: EventType = EventType.update;
-    data?: any;
-    extsync?: any;
-    meta_object?: IMeta;
 }
 
 export class Stream extends Model {
@@ -215,7 +197,10 @@ export class Stream extends Model {
                 code: code,
                 body: msg,
             };
-            await wappsto.patch(`/2.0/extsync/response/${event.meta.id}`, data);
+            await wappsto.patch(
+                `/2.0/extsync/response/${event?.meta?.id}`,
+                data
+            );
         } catch (e) {
             printHttpError(e);
         }
@@ -293,7 +278,7 @@ export class Stream extends Model {
 
     private handleMessage(
         type: string,
-        event: StreamEvent,
+        event: IStreamEvent,
         _: string = ''
     ): void {
         let paths: string[] = [];
@@ -421,14 +406,14 @@ export class Stream extends Model {
                 return;
             }
 
-            let messages: StreamEvent[] = [];
+            let messages: IStreamEvent[] = [];
             if (message.constructor !== Array) {
                 messages = [message];
             } else {
                 messages = message;
             }
 
-            messages.forEach((msg: StreamEvent) => {
+            messages.forEach((msg: IStreamEvent) => {
                 printDebug(JSON.stringify(msg));
                 if (msg.meta_object?.type === 'extsync') {
                     const newData = msg.extsync || msg.data;
@@ -464,7 +449,7 @@ export class Stream extends Model {
         };
     }
 
-    private checkAndSendTrace(_: StreamEvent): string {
+    private checkAndSendTrace(_: IStreamEvent): string {
         return '';
         /*if (message.hasOwnProperty('meta') && message.meta.hasOwnProperty('trace')) {
           return Tracer.sendTrace(this.stream.util.session, message.meta.trace, null, null, {
