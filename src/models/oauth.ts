@@ -21,34 +21,43 @@ export class OAuth extends Model {
 
     public getToken = async () => {
         return new Promise<Record<string, any>>(async (resolve, reject) => {
-            let data = await Model.fetch(`/2.0/oauth_connect/${this.name}`, {});
-            let oauth = data[0];
+            try {
+                let data = await Model.fetch(
+                    `/2.0/oauth_connect/${this.name}`,
+                    {},
+                    true
+                );
 
-            if (oauth?.params?.oauth_token) {
-                resolve(oauth?.params);
-                return;
-            }
-
-            /* istanbul ignore next */
-            if (isBrowser()) {
-                reject(oauth?.data?.request);
-                return;
-            }
-
-            printDebug('OAuth token is not valid, waiting for token on stream');
-            openStream.subscribeService(
-                '/oauth_connect',
-                async (
-                    event: Record<string, any>
-                ): Promise<true | undefined> => {
-                    if (event?.data?.name === this.name) {
-                        printDebug('Got OAuth token from stream');
-                        resolve(event?.data?.params);
-                        return true;
-                    }
+                let oauth = data[0];
+                if (oauth?.params?.oauth_token) {
+                    resolve(oauth?.params);
                     return;
                 }
-            );
+
+                if (isBrowser()) {
+                    resolve(oauth?.data);
+                    return;
+                }
+
+                printDebug(
+                    'OAuth token is not valid, waiting for token on stream'
+                );
+                openStream.subscribeService(
+                    '/oauth_connect',
+                    async (
+                        event: Record<string, any>
+                    ): Promise<true | undefined> => {
+                        if (event?.data?.name === this.name) {
+                            printDebug('Got OAuth token from stream');
+                            resolve(event?.data?.params);
+                            return true;
+                        }
+                        return;
+                    }
+                );
+            } catch (e) {
+                reject(e);
+            }
         });
     };
 

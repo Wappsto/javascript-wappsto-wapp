@@ -1,3 +1,6 @@
 export function isBrowser(): boolean {
-    return typeof process !== 'object' && typeof window === 'object';
+    return !(
+        typeof process !== 'undefined' &&
+        Object.prototype.toString.call(process) === '[object process]'
+    );
 }

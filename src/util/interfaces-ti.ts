@@ -23,7 +23,8 @@ export const IModelFunc = t.iface([], {
     fetch: t.func(
         t.array('any'),
         t.param('endpoint', 'string'),
-        t.param('params', 'any', true)
+        t.param('params', 'any', true),
+        t.param('throwError', 'boolean', true)
     ),
     parse: t.func('boolean', t.param('json', 'any')),
 });
@@ -354,7 +355,21 @@ export const ILogResponse = t.iface([], {
     type: 'string',
 });
 
-export const IStreamEvent = t.iface([], {});
+export const EventType = t.union(
+    t.lit('create'),
+    t.lit('update'),
+    t.lit('delete'),
+    t.lit('direct')
+);
+
+export const IStreamEvent = t.iface([], {
+    path: 'string',
+    event: 'EventType',
+    data: t.opt('any'),
+    meta_object: t.opt('IMeta'),
+    meta: t.opt('IMeta'),
+    extsync: t.opt('any'),
+});
 
 export const IStreamModel = t.iface([], {
     path: t.func('string'),
@@ -447,6 +462,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     LogGroupBy,
     ILogRequest,
     ILogResponse,
+    EventType,
     IStreamEvent,
     IStreamModel,
     IStreamFunc,

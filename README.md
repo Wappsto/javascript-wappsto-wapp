@@ -237,15 +237,21 @@ await storage.clear();
 ### OAuth
 
 To get an already created OAuth token, call the getToken with the name of the oauth. If there is no token generated yet,
-then depending on if the wapp is running in a browser or in node. If it running in a browser, then you need to catch the error
-that contains the url that the user needs to visit to generate the token. Else when it is running in node, it just waits for
+then depending on if the wapp is running in a browser or in node. If it running in a browser, 
+then you need to check if the token object contains the request key or it is a valid token. 
+The request contains the url that the user needs to visit to generate the token. Else when it is running in node, it just waits for
 the token to be generated.
 
 ```javascript
 try {
   let token = await Wappsto.OAuth.getToken('oauth name');
-} catch(token_url) {
-  console.log("Please visit " + token_url);
+  if(token.request) {
+  	console.log("Please visit " + token.request);
+  } else {
+  	console.log("OAuth Token", token);
+  }
+} catch(e) {
+  console.log("Failed to get OAuth token", e);
 }
 ```
 

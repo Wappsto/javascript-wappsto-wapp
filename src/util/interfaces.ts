@@ -16,7 +16,8 @@ export interface IModelFunc {
     create(params: Record<string, any>): Promise<void>;
     fetch(
         endpoint: string,
-        params?: Record<string, any>
+        params?: Record<string, any>,
+        throwError?: boolean
     ): Promise<Record<string, any>[]>;
     parse(json: Record<string, any>): boolean;
 }
@@ -271,7 +272,16 @@ export interface ILogResponse {
     type: string;
 }
 
-export interface IStreamEvent {}
+export type EventType = 'create' | 'update' | 'delete' | 'direct';
+
+export interface IStreamEvent {
+    path: string;
+    event: EventType;
+    data?: any;
+    meta_object?: IMeta;
+    meta?: IMeta;
+    extsync?: any;
+}
 
 export interface IStreamModel {
     path(): string;

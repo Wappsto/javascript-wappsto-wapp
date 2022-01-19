@@ -162,7 +162,8 @@ export class Model implements IModel {
 
     public static fetch = async (
         endpoint: string,
-        params?: Record<string, any>
+        params?: Record<string, any>,
+        throwError?: boolean
     ): Promise<Record<string, any>[]> => {
         Model.validateMethod('Model', 'fetch', [endpoint, params]);
         let res = [];
@@ -180,8 +181,10 @@ export class Model implements IModel {
                 }
             }
         } catch (e) {
-            console.log(e);
-            printHttpError(e);
+            let msg = printHttpError(e);
+            if (throwError) {
+                throw msg;
+            }
         }
         return res;
     };

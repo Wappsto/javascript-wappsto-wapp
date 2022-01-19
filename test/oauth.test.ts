@@ -1,6 +1,7 @@
 import WS from 'jest-websocket-mock';
 import axios from 'axios';
 jest.mock('axios');
+console.error = jest.fn();
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { OAuth } from '../src/index';
@@ -81,5 +82,35 @@ describe('oauth', () => {
             {}
         );
         expect(token.oauth_token).toBe('oauth test token');
+    });
+
+    it('it will fail when there is no oauth', async () => {
+        mockedAxios.get.mockRejectedValueOnce({
+            response: {
+                data: {
+                    message:
+                        'This installation does not have any oauth external with this name',
+                    data: {
+                        wrong_value: 'name',
+                        wrong_attribute: 'test',
+                    },
+                    code: 436000001,
+                    service: 'installation',
+                    internal_code: 'oauth_connect_no_oauth_found',
+                },
+            },
+        });
+
+        let error: string = '';
+        try {
+            await OAuth.getToken('test');
+        } catch (e: any) {
+            error = e.toString();
+        }
+
+        expect(console.error).toHaveBeenCalledTimes(1);
+        expect(error).toBe(
+            'This installation does not have any oauth external with this name'
+        );
     });
 });
