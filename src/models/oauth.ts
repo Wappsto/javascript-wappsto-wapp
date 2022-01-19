@@ -1,6 +1,7 @@
 import { Model } from './model';
 import { openStream } from './stream';
 import { printDebug } from '../util/debug';
+import { isBrowser } from '../util/browser';
 
 export class OAuth extends Model {
     static endpoint = '/2.0/oauth_connect';
@@ -29,7 +30,7 @@ export class OAuth extends Model {
             }
 
             /* istanbul ignore next */
-            if (typeof process !== 'object') {
+            if (isBrowser()) {
                 reject(oauth?.data?.request);
                 return;
             }
