@@ -1,3 +1,3 @@
 export function isBrowser(): boolean {
-    return typeof process !== 'object';
+    return typeof process !== 'object' && typeof window === 'object';
 }
