@@ -4,6 +4,7 @@ import { printDebug, printError } from '../util/debug';
 import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
+import { trace } from '../util/trace';
 import {
     IMeta,
     IStreamEvent,
@@ -464,13 +465,11 @@ export class Stream extends Model {
         };
     }
 
-    private checkAndSendTrace(_: StreamEvent): string {
+    private checkAndSendTrace(event: StreamEvent): string {
+        if (event?.meta?.trace) {
+            return trace(event.meta.trace, 'ok');
+        }
         return '';
-        /*if (message.hasOwnProperty('meta') && message.meta.hasOwnProperty('trace')) {
-          return Tracer.sendTrace(this.stream.util.session, message.meta.trace, null, null, {
-          'stream_id': message.meta.id
-          });
-          }*/
     }
 
     public static fetch = async (): Promise<Stream[]> => {
