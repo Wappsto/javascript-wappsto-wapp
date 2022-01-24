@@ -1,8 +1,8 @@
 import { Model } from './model';
-import { StreamEvent, openStream } from './stream';
+import { openStream } from './stream';
 import { printError } from '../util/debug';
 import { PermissionModel } from './model.permission';
-import { IStreamModel, StreamCallback } from '../util/interfaces';
+import { IStreamModel, IStreamEvent, StreamCallback } from '../util/interfaces';
 
 interface IStreamCallbacks {
     change: StreamCallback[];
@@ -42,7 +42,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         this.streamCallback.create = [];
     }
 
-    handleStream(event: StreamEvent): void {
+    handleStream(event: IStreamEvent): void {
         switch (event?.event) {
             case 'create':
                 this.streamCallback.create.forEach((cb) => {
