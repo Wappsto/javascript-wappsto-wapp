@@ -226,9 +226,14 @@ It is possible to store configuration parameters and other information in the Wa
 This data is persisted on Wappsto and can be read from the foreground and background wapp.
 The data can be reload from the server by calling `refresh` function.
 The data can be deleted by calling the `clear` function.
+A callback can also be registered to be notified when the storage is updated.
 
 ```javascript
 let storage = await Wappsto.wappStorage();
+//Signal when storage is changed
+storage.onCahnge(() => {
+	console.log("Storage is updated");
+});
 await storage.set('key', 'item');
 let data = storage.get('key');
 // Refresh the data from the server
