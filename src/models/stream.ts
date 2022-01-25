@@ -156,6 +156,28 @@ export class Stream extends Model {
         });
     }
 
+    public async sendInternal(type: string): Promise<any> {
+        this.validate('sendInternal', arguments);
+
+        return await this.sendEvent(type, '');
+    }
+
+    public subscribeInternal(type: string, handler: ServiceHandler): void {
+        this.validate('subscribeInternal', arguments);
+
+        this.subscribeService('extsync', (event) => {
+            try {
+                let body = JSON.parse(event.body);
+                if (body.type === type) {
+                    return handler(body);
+                }
+            } catch (e) {
+                printError('Failed to parse body in internal event as JSON');
+            }
+            return false;
+        });
+    }
+
     public subscribeService(service: string, handler: ServiceHandler): void {
         this.validate('subscribeService', arguments);
 
@@ -184,6 +206,24 @@ export class Stream extends Model {
             }
             this.handlers[type].push(handler);
         });
+    }
+
+    public async sendEvent(type: string, msg: string): Promise<any> {
+        this.validate('sendEvent', arguments);
+
+        let result = {};
+        try {
+            let data = {
+                type: type,
+                msg: msg,
+            };
+            let response = await wappsto.post('/2.0/extsync', data);
+            result = response.data;
+        } catch (e) {
+            /* istanbul ignore next */
+            printHttpError(e);
+        }
+        return result;
     }
 
     public async sendRequest(msg: any): Promise<any> {
@@ -299,6 +339,9 @@ export class Stream extends Model {
         let paths: string[] = [];
         let services: string[] = [];
         if (type === 'message') {
+            if (!event.path) {
+                return;
+            }
             let items: string[] = event.path
                 .split('/')
                 .filter((s) => s.length > 0);

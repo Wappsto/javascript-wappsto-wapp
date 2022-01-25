@@ -291,9 +291,12 @@ export interface IStreamModel {
 
 export interface IStreamFunc {
     subscribe(model: IStreamModel): void;
+    sendInternal(type: string): Promise<any>;
+    subscribeInternal(type: string, handler: ServiceHandler): void;
     subscribeService(service: string, handler: ServiceHandler): void;
     addSignalHandler(type: string, handler: SignalHandler): void;
     sendRequest(msg: any): Promise<any>;
+    sendEvent(type: string, msg: string): Promise<any>;
     sendResponse(event: any, code: number, msg: any): Promise<void>;
     onRequest(handler: RequestHandler, internal: boolean): void;
 }
@@ -311,8 +314,10 @@ export interface IWappStorageFunc {
     constructor(name: string): void;
     set(name: string, item: any): Promise<void>;
     get(name: string): any;
+    onChange(cb: StorageChangeHandler): void;
 }
 
+export type StorageChangeHandler = () => void;
 export type SignalHandler = (event: string) => void;
 export type ServiceHandler = (
     event: any

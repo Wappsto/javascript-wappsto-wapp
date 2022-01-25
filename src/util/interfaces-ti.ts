@@ -379,6 +379,12 @@ export const IStreamModel = t.iface([], {
 
 export const IStreamFunc = t.iface([], {
     subscribe: t.func('void', t.param('model', 'IStreamModel')),
+    sendInternal: t.func('any', t.param('type', 'string')),
+    subscribeInternal: t.func(
+        'void',
+        t.param('type', 'string'),
+        t.param('handler', 'ServiceHandler')
+    ),
     subscribeService: t.func(
         'void',
         t.param('service', 'string'),
@@ -390,6 +396,11 @@ export const IStreamFunc = t.iface([], {
         t.param('handler', 'SignalHandler')
     ),
     sendRequest: t.func('any', t.param('msg', 'any')),
+    sendEvent: t.func(
+        'any',
+        t.param('type', 'string'),
+        t.param('msg', 'string')
+    ),
     sendResponse: t.func(
         'void',
         t.param('event', 'any'),
@@ -420,7 +431,10 @@ export const IWappStorageFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string')),
     set: t.func('void', t.param('name', 'string'), t.param('item', 'any')),
     get: t.func('any', t.param('name', 'string')),
+    onChange: t.func('void', t.param('cb', 'StorageChangeHandler')),
 });
+
+export const StorageChangeHandler = t.func('void');
 
 export const SignalHandler = t.func('void', t.param('event', 'string'));
 
@@ -477,6 +491,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     OAuthRequestHandler,
     IOAuthFunc,
     IWappStorageFunc,
+    StorageChangeHandler,
     SignalHandler,
     ServiceHandler,
     RequestHandler,
