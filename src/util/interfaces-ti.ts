@@ -8,6 +8,7 @@ export const IConfig = t.iface([], {
     verbose: t.opt('boolean'),
     debug: t.opt('boolean'),
     validation: t.opt(t.union(t.lit('none'), t.lit('normal'), t.lit('strict'))),
+    reconnectCount: t.opt('number'),
 });
 
 export const IConfigFunc = t.iface([], {

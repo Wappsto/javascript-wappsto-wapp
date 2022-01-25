@@ -2,6 +2,7 @@ export interface IConfig {
     verbose?: boolean;
     debug?: boolean;
     validation?: 'none' | 'normal' | 'strict';
+    reconnectCount?: number;
 }
 
 export interface IConfigFunc {

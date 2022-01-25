@@ -294,3 +294,13 @@ It is possible to send your own requests to wappsto by using the 'request' objec
 let netwoks = await Wappsto.request.get('/network');
 await Wappsto.request.post('/network', {name: 'Network Name'});
 ```
+
+### Stream Reconnect Count
+
+It is possible to change from the default 10 times the stream will try to reconnect in case of connection errors.
+
+```javascript
+wappsto.config({
+	reconnectCount: 3
+});
+```

@@ -1,7 +1,9 @@
 import { Model } from './model';
 import { session, baseUrl } from '../session';
+import { _config } from '../util/config';
 import { printDebug, printError } from '../util/debug';
 import { isUUID } from '../util/uuid';
+import { isBrowser } from '../util/browser';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import {
@@ -36,7 +38,7 @@ export class Stream extends Model {
     handlers: StreamSignalHash = {};
     subscriptions: string[] = [];
     opened: boolean = false;
-    backoff: number = 1000;
+    backoff: number = 1;
     waiting: any = [];
 
     constructor() {
@@ -61,6 +63,20 @@ export class Stream extends Model {
         this.websocketUrl += '?X-Session=' + session;
     }
 
+    private getTimeout(): number {
+        if (this.backoff >= _config.reconnectCount) {
+            printError(
+                `Stream failed to connect after ${this.backoff} attemps, exit!`
+            );
+            if (isBrowser()) {
+                return Infinity;
+            } else {
+                process.exit(-1);
+            }
+        }
+        return this.backoff * 2 * 1000;
+    }
+
     private open(): Promise<void> {
         return new Promise<void>((resolve, _) => {
             let self = this;
@@ -82,13 +98,12 @@ export class Stream extends Model {
             let openTimeout: ReturnType<typeof setTimeout> = setTimeout(() => {
                 /* istanbul ignore next */
                 self.reconnect();
-            }, 1000 + this.backoff);
+            }, 1000 + this.getTimeout());
 
             let socket = new WebSocket(this.websocketUrl);
 
             if (socket) {
                 socket.onopen = () => {
-                    this.backoff = 1000;
                     this.socket = socket;
                     clearTimeout(openTimeout);
                     this.addListeners();
@@ -247,8 +262,8 @@ export class Stream extends Model {
     }
 
     private reconnect() {
-        this.backoff = this.backoff * 2;
-        printDebug('Stream Reconnecting');
+        this.backoff++;
+        printDebug(`Stream Reconnecting for the ${this.backoff} times`);
         this.close();
         this.open().then(() => {
             this.sendMessage('PATCH', '/services/2.1/websocket/open', {
@@ -367,10 +382,9 @@ export class Stream extends Model {
         }
 
         let reconnect = () => {
-            printDebug('Starting reconnect');
             setTimeout(function () {
                 self.reconnect();
-            }, self.backoff);
+            }, self.getTimeout());
         };
 
         this.socket.onmessage = function (ev: any): void {
@@ -392,6 +406,7 @@ export class Stream extends Model {
             if (message.jsonrpc) {
                 if (message.result) {
                     if (message.result.value !== true) {
+                        self.backoff = 1;
                         printDebug(
                             `Stream rpc result: ${JSON.stringify(
                                 message.result.value

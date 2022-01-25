@@ -2,10 +2,11 @@ import { IConfig } from './interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { createCheckers } from 'ts-interface-checker';
 
-class Config {
+class Config implements IConfig {
     debug: boolean = false;
     verbose: boolean = false;
     validation: 'none' | 'normal' | 'strict' = 'normal';
+    reconnectCount: number = 10;
 }
 
 let _checker = createCheckers(interfaceTI);
@@ -29,6 +30,9 @@ export function config(param: IConfig): Config {
     }
     if (param.validation !== undefined) {
         _config.validation = param.validation;
+    }
+    if (param.reconnectCount !== undefined) {
+        _config.reconnectCount = param.reconnectCount;
     }
     return _config;
 }
