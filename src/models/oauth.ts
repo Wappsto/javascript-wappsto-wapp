@@ -35,10 +35,6 @@ export class OAuth extends Model {
                     return;
                 }
 
-                if (handler) {
-                    handler(oauth?.data?.request);
-                }
-
                 printDebug(
                     'OAuth token is not valid, waiting for token on stream'
                 );
@@ -55,6 +51,10 @@ export class OAuth extends Model {
                         return;
                     }
                 );
+
+                if (handler) {
+                    handler(oauth?.data?.request);
+                }
             } catch (e) {
                 reject(e);
             }
