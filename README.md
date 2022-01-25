@@ -259,7 +259,7 @@ try {
 }
 ```
 
-### Background loggering
+### Background logging
 
 The debug log from the background wapp can be turn on like this:
 
