@@ -231,7 +231,7 @@ A callback can also be registered to be notified when the storage is updated.
 ```javascript
 let storage = await Wappsto.wappStorage();
 //Signal when storage is changed
-storage.onCahnge(() => {
+storage.onChange(() => {
 	console.log("Storage is updated");
 });
 await storage.set('key', 'item');
