@@ -48,6 +48,10 @@ export class WappStorage {
         return this.data.get(name);
     }
 
+    async refresh(): Promise<void> {
+        await this.data.refresh();
+    }
+
     reset(): void {
         this.data.delete();
         this.data = new Data(this.id, 'wapp_storage');

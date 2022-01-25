@@ -86,6 +86,33 @@ describe('WappStorage', () => {
         );
     });
 
+    it('can load new data from the server', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    data_meta: {
+                        id: 'wapp_storage_default',
+                        type: 'wapp_storage',
+                    },
+                    missing: 'item',
+                },
+            ],
+        });
+
+        let c = await wappStorage();
+        let oldData = c.get('missing');
+        await c.refresh();
+        let newData = c.get('missing');
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+
+        expect(oldData).toBe(undefined);
+        expect(newData).toBe('item');
+    });
+
     it('can reset the data', async () => {
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
@@ -99,6 +126,7 @@ describe('WappStorage', () => {
         expect(resOld).toBe('item');
         expect(resNew).toBe(undefined);
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
