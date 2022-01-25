@@ -31,6 +31,27 @@ describe('oauth', () => {
         jest.clearAllMocks();
     });
 
+    it('can call requet handler', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    data: {
+                        request: 'https://wappsto.com/oauth',
+                    },
+                },
+            ],
+        });
+
+        let requestUrl = '';
+        OAuth.getToken('test', (url) => {
+            requestUrl = url;
+        });
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(requestUrl).toBe('https://wappsto.com/oauth');
+    });
+
     it('can return a token comming from stream', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
 

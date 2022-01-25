@@ -297,9 +297,12 @@ export interface IStreamFunc {
     onRequest(handler: RequestHandler, internal: boolean): void;
 }
 
+export type OAuthRequestHandler = (url: string) => void;
+
 export interface IOAuthFunc {
     constructor(name?: string): void;
-    getToken(name: string): void;
+    getToken(handler?: OAuthRequestHandler): void;
+    staticGetToken(name: string, handler?: OAuthRequestHandler): void;
 }
 
 export interface IWappStorageFunc {

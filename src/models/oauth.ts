@@ -1,7 +1,7 @@
 import { Model } from './model';
 import { openStream } from './stream';
 import { printDebug } from '../util/debug';
-import { isBrowser } from '../util/browser';
+import { OAuthRequestHandler } from '../util/interfaces';
 
 export class OAuth extends Model {
     static endpoint = '/2.0/oauth_connect';
@@ -19,7 +19,8 @@ export class OAuth extends Model {
         this.name = name;
     }
 
-    public getToken = async () => {
+    public getToken = async (handler?: OAuthRequestHandler) => {
+        OAuth.validate('getToken', [handler]);
         return new Promise<Record<string, any>>(async (resolve, reject) => {
             try {
                 let data = await Model.fetch(
@@ -30,13 +31,12 @@ export class OAuth extends Model {
 
                 let oauth = data[0];
                 if (oauth?.params?.oauth_token) {
-                    resolve(oauth?.params);
+                    resolve(oauth.params);
                     return;
                 }
 
-                if (isBrowser()) {
-                    resolve(oauth?.data);
-                    return;
+                if (handler) {
+                    handler(oauth?.data?.request);
                 }
 
                 printDebug(
@@ -61,10 +61,10 @@ export class OAuth extends Model {
         });
     };
 
-    static getToken = async (name: string) => {
-        OAuth.validate('getToken', [name]);
+    static getToken = async (name: string, handler?: OAuthRequestHandler) => {
+        OAuth.validate('staticGetToken', [name, handler]);
         let oauth = new OAuth(name);
-        return await oauth.getToken();
+        return await oauth.getToken(handler);
     };
 
     private static validate(name: string, params: any): void {

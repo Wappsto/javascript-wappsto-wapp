@@ -222,9 +222,9 @@ console.log("Result from foreground: "+foregroundResult);
 
 ### Wapp Storage
 
-It is possible to storage configuration parameters and other information in the Wapp Storage.
+It is possible to store configuration parameters and other information in the Wapp Storage.
 This data is persisted on Wappsto and can be read from the foreground and background wapp.
-The data can be deleted by calling the ´clear` function.
+The data can be deleted by calling the `clear` function.
 
 ```javascript
 let storage = await Wappsto.wappStorage();
@@ -236,20 +236,16 @@ await storage.clear();
 
 ### OAuth
 
-To get an already created OAuth token, call the getToken with the name of the oauth. If there is no token generated yet,
-then depending on if the wapp is running in a browser or in node. If it running in a browser, 
-then you need to check if the token object contains the request key or it is a valid token. 
-The request contains the url that the user needs to visit to generate the token. Else when it is running in node, it just waits for
-the token to be generated.
+To get an already created OAuth token, call the getToken with the name of the oauth.
+If there is no token generated yet, a `Request Handler` needs to be supplied,
+so that the library can call it with the url that the user needs to visit, in order to generate the OAuth Token.
 
 ```javascript
 try {
-  let token = await Wappsto.OAuth.getToken('oauth name');
-  if(token.request) {
-  	console.log("Please visit " + token.request);
-  } else {
-  	console.log("OAuth Token", token);
-  }
+  let token = await Wappsto.OAuth.getToken('oauth name', (url) => {
+	console.log("Please visit " + url + " to generate the OAuth token");
+  });
+  console.log("OAuth Token", token);
 } catch(e) {
   console.log("Failed to get OAuth token", e);
 }
