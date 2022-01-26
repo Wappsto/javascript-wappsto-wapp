@@ -297,6 +297,40 @@ export const IStateFunc = t.iface([], {
     constructor: t.func('IState', t.param('type', 'StateType', true)),
 });
 
+export const INotificationCustomData = t.iface([], {
+    all: 'boolean',
+    future: 'boolean',
+    selected: t.array('any'),
+});
+
+export const INotificationCustom = t.iface([], {
+    type: 'string',
+    quantity: 'number',
+    limitation: t.array('any'),
+    method: t.array('any'),
+    option: 'any',
+    message: 'string',
+    name_installation: 'string',
+    title_installation: t.union('string', 'null'),
+    data: t.opt('INotificationCustomData'),
+});
+
+export const INotificationBase = t.iface([], {
+    action: 'string',
+    code: 'number',
+    type: 'string',
+    from: 'string',
+    to: 'string',
+    from_type: 'string',
+    from_name: 'string',
+    to_type: 'string',
+    type_ids: 'string',
+    priority: 'number',
+    ids: t.array('string'),
+    info: t.array('any'),
+    identifier: 'string',
+});
+
 export const LogOperation = t.union(
     t.lit('arbitrary'),
     t.lit('array_agg'),
@@ -480,6 +514,9 @@ const exportedTypeSuite: t.ITypeSuite = {
     StateType,
     IState,
     IStateFunc,
+    INotificationCustomData,
+    INotificationCustom,
+    INotificationBase,
     LogOperation,
     LogGroupBy,
     ILogRequest,

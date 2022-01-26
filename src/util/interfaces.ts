@@ -216,6 +216,40 @@ export interface IStateFunc {
     constructor(type?: StateType): IState;
 }
 
+export interface INotificationCustomData {
+    all: boolean;
+    future: boolean;
+    selected: Record<string, any>[];
+}
+
+export interface INotificationCustom {
+    type: string;
+    quantity: number;
+    limitation: Record<string, any>[];
+    method: Record<string, any>[];
+    option: Record<string, any>;
+    message: string;
+    name_installation: string;
+    title_installation: string | null;
+    data?: INotificationCustomData;
+}
+
+export interface INotificationBase {
+    action: string;
+    code: number;
+    type: string;
+    from: string;
+    to: string;
+    from_type: string;
+    from_name: string;
+    to_type: string;
+    type_ids: string;
+    priority: number;
+    ids: string[];
+    info: Record<string, any>[];
+    identifier: string;
+}
+
 export type LogOperation =
     | 'arbitrary'
     | 'array_agg'
