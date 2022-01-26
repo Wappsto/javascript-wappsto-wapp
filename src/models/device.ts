@@ -15,6 +15,8 @@ import {
     IValueTemplate,
 } from '../util/interfaces';
 
+class Status {}
+
 export class Device extends StreamModel implements IDevice {
     static endpoint = '/2.0/device';
     name: string;
@@ -27,6 +29,7 @@ export class Device extends StreamModel implements IDevice {
     manufacturer?: string;
     @Type(() => Value)
     value: Value[] = [];
+    status: Status[] = [];
 
     constructor(name?: string) {
         super('device');

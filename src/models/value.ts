@@ -14,6 +14,7 @@ import {
     ValuePermission,
     IState,
     StateType,
+    StateStatus,
     ILogRequest,
     ILogResponse,
     RefreshStreamCallback,
@@ -85,11 +86,13 @@ export class Value extends StreamModel implements IValue {
 
     private async findStateAndUpdate(
         type: StateType,
+        status: StateStatus,
         data: string | number,
         timestamp: string | undefined
     ): Promise<void> {
         let state = this.findState(type);
         if (state) {
+            state.status = status;
             state.data = data.toString();
             state.timestamp = timestamp || this.getTime();
             await state.update();
@@ -177,7 +180,7 @@ export class Value extends StreamModel implements IValue {
     ): Promise<void> {
         this.validate('report', arguments);
 
-        this.findStateAndUpdate('Report', data, timestamp);
+        this.findStateAndUpdate('Report', 'Send', data, timestamp);
     }
 
     public async control(
@@ -186,7 +189,7 @@ export class Value extends StreamModel implements IValue {
     ): Promise<void> {
         this.validate('control', arguments);
 
-        this.findStateAndUpdate('Control', data, timestamp);
+        this.findStateAndUpdate('Control', 'Pending', data, timestamp);
     }
 
     public onControl(callback: ValueStreamCallback): void {

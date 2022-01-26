@@ -204,6 +204,7 @@ export interface IValueFunc {
     findAllByType(type: string, usage: string): IValue[];
 }
 
+export type StateStatus = 'Send' | 'Pending' | 'Failed';
 export type StateType = 'Report' | 'Control';
 
 export interface IState {
