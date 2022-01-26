@@ -124,9 +124,9 @@ export class Value extends StreamModel implements IValue {
 
         let oldJson = state.toJSON();
         state.parse(params);
-        state.parent = this;
         let newJson = state.toJSON();
 
+        state.parent = this;
         if (create || !_.isEqual(oldJson, newJson)) {
             if (create) {
                 await state.create();

@@ -86,8 +86,9 @@ export class Network extends StreamModel implements INetwork {
 
         let oldJson = device.toJSON();
         device.parse(params);
-        device.parent = this;
         let newJson = device.toJSON();
+
+        device.parent = this;
 
         if (!_.isEqual(oldJson, newJson)) {
             if (devices.length !== 0) {

@@ -71,9 +71,9 @@ export class Device extends StreamModel implements IDevice {
 
         let oldJson = value.toJSON();
         value.parse(params);
-        value.parent = this;
         let newJson = value.toJSON();
 
+        value.parent = this;
         if (!_.isEqual(oldJson, newJson)) {
             await value.create();
             if (values.length === 0) {
@@ -117,7 +117,7 @@ export class Device extends StreamModel implements IDevice {
                 break;
         }
 
-        return this._createValue(value);
+        return await this._createValue(value);
     }
 
     public async createNumberValue(
@@ -137,7 +137,7 @@ export class Device extends StreamModel implements IDevice {
 
         params.number = numberValue;
 
-        return this._createValue(params);
+        return await this._createValue(params);
     }
 
     public async createStringValue(
@@ -151,7 +151,7 @@ export class Device extends StreamModel implements IDevice {
 
         params.string = stringValue;
 
-        return this._createValue(params);
+        return await this._createValue(params);
     }
 
     public async createBlobValue(params: IValue & IValueBlob): Promise<Value> {
@@ -163,7 +163,7 @@ export class Device extends StreamModel implements IDevice {
 
         params.blob = blobValue;
 
-        return this._createValue(params);
+        return await this._createValue(params);
     }
 
     public async createXmlValue(params: IValue & IValueXml): Promise<Value> {
@@ -175,7 +175,7 @@ export class Device extends StreamModel implements IDevice {
 
         params.xml = xmlValue;
 
-        return this._createValue(params);
+        return await this._createValue(params);
     }
 
     static find = async (
