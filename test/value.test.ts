@@ -57,6 +57,7 @@ describe('value', () => {
             {}
         );
         expect(value.name).toEqual('test');
+        expect(value.permission).toEqual('r');
         expect(value.states).toEqual([]);
         expect(value.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
@@ -69,6 +70,7 @@ describe('value', () => {
         await value.create();
         let oldName = response.name;
         response.name = 'new name';
+        response.permission = 'r';
         value.name = 'new name';
         await value.update();
 
@@ -81,6 +83,7 @@ describe('value', () => {
         );
 
         response.name = oldName;
+        response.permission = '';
     });
 
     it('can create a new value from wappsto', async () => {

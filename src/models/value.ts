@@ -25,6 +25,7 @@ export class Value extends StreamModel implements IValue {
 
     name: string;
     permission: ValuePermission = 'r';
+    tmp_permission: ValuePermission = 'r';
     type?: string;
     period?: string;
     delta?: string;
@@ -59,6 +60,14 @@ export class Value extends StreamModel implements IValue {
             'xml',
             'status',
         ];
+    }
+
+    public perserve(): void {
+        this.tmp_permission = this.permission;
+    }
+
+    public restore(): void {
+        this.permission = this.tmp_permission;
     }
 
     public static fetch = async () => {

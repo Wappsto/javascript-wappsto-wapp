@@ -36,6 +36,10 @@ export class Model implements IModel {
         return [];
     }
 
+    public perserve(): void {}
+
+    public restore(): void {}
+
     protected validate(name: string, params: any): void {
         Model.validateMethod(this.meta.type || '', name, params);
     }
@@ -115,7 +119,9 @@ export class Model implements IModel {
             this.toJSON(),
             Model.generateOptions(params)
         );
+        this.perserve();
         this.parse(response.data);
+        this.restore();
     };
 
     public create = async (params: Record<string, any> = {}): Promise<void> => {

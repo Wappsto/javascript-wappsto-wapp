@@ -422,6 +422,7 @@ describe('device', () => {
                             version: '2.0',
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
+                        permission: '',
                     },
                 ],
             })
@@ -462,6 +463,18 @@ describe('device', () => {
             unit: 'unit',
             si_conversion: 'si_conversion',
         });
+
+        expect(value.name).toEqual('Value Name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('type');
+        expect(value.period).toEqual('period');
+        expect(value.delta).toEqual('delta');
+        expect(value.number?.min).toEqual(0);
+        expect(value.number?.max).toEqual(1);
+        expect(value.number?.step).toEqual(1);
+        expect(value.number?.unit).toEqual('unit');
+        expect(value.number?.si_conversion).toEqual('si_conversion');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
@@ -512,17 +525,6 @@ describe('device', () => {
             }),
             {}
         );
-        expect(value.name).toEqual('Value Name');
-        expect(value.permission).toEqual('rw');
-        expect(value.type).toEqual('type');
-        expect(value.period).toEqual('period');
-        expect(value.delta).toEqual('delta');
-        expect(value.number?.min).toEqual(0);
-        expect(value.number?.max).toEqual(1);
-        expect(value.number?.step).toEqual(1);
-        expect(value.number?.unit).toEqual('unit');
-        expect(value.number?.si_conversion).toEqual('si_conversion');
-        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
     it('can create a new string value as a child', async () => {
@@ -834,6 +836,18 @@ describe('device', () => {
             si_conversion: 'si_conversion',
         });
 
+        expect(value.name).toEqual('Value Name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('type');
+        expect(value.period).toEqual('period');
+        expect(value.delta).toEqual('delta');
+        expect(value.number?.min).toEqual(0);
+        expect(value.number?.max).toEqual(1);
+        expect(value.number?.step).toEqual(1);
+        expect(value.number?.unit).toEqual('unit');
+        expect(value.number?.si_conversion).toEqual('si_conversion');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
@@ -859,18 +873,6 @@ describe('device', () => {
             }),
             {}
         );
-
-        expect(value.name).toEqual('Value Name');
-        expect(value.permission).toEqual('rw');
-        expect(value.type).toEqual('type');
-        expect(value.period).toEqual('period');
-        expect(value.delta).toEqual('delta');
-        expect(value.number?.min).toEqual(0);
-        expect(value.number?.max).toEqual(1);
-        expect(value.number?.step).toEqual(1);
-        expect(value.number?.unit).toEqual('unit');
-        expect(value.number?.si_conversion).toEqual('si_conversion');
-        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
     it('can find all devices by name', async () => {
