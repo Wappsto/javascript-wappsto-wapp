@@ -67,7 +67,7 @@
         "eslint-plugin-prettier": "^3.4.1",
         "husky": "^7.0.4",
         "jest-websocket-mock": "^2.2.1",
-        "mock-socket": "^9.0.8",
+        "mock-socket": "^9.1.2",
         "prettier": "^2.4.1",
         "pretty-quick": "^3.1.1",
         "size-limit": "^7.0.5",
