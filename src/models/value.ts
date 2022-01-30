@@ -78,6 +78,17 @@ export class Value extends StreamModel implements IValue {
         return Value.fromArray(data);
     };
 
+    public async loadAllChildren(): Promise<void> {
+        for (let i = 0; i < this.state.length; i++) {
+            if (typeof this.state[i] === 'string') {
+                let id: string = this.state[i] as unknown as string;
+                this.state[i] = new State();
+                this.state[i].meta.id = id;
+                await this.state[i].refresh();
+            }
+        }
+    }
+
     private findState(type: StateType): State | undefined {
         let res: State | undefined = undefined;
         this.state.forEach((state) => {

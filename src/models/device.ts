@@ -61,6 +61,18 @@ export class Device extends StreamModel implements IDevice {
         return this.value.filter((val) => val.type === type);
     }
 
+    public async loadAllChildren(): Promise<void> {
+        for (let i = 0; i < this.value.length; i++) {
+            if (typeof this.value[i] === 'string') {
+                let id: string = this.value[i] as unknown as string;
+                this.value[i] = new Value();
+                this.value[i].meta.id = id;
+                await this.value[i].refresh();
+            }
+            this.value[i].loadAllChildren();
+        }
+    }
+
     private async _createValue(params: IValue): Promise<Value> {
         let value = new Value();
         let values = this.findValueByName(params.name);
@@ -250,7 +262,11 @@ export class Device extends StreamModel implements IDevice {
         let params = { expand: 3 };
         let url = Device.endpoint;
         let data = await Model.fetch(url, params);
-        return Device.fromArray(data);
+        let res = Device.fromArray(data);
+        for (let i = 0; i < res.length; i++) {
+            await res[i].loadAllChildren();
+        }
+        return res;
     };
 
     private static validate(name: string, params: any): void {
