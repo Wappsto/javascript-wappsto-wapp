@@ -258,6 +258,12 @@ export class Device extends StreamModel implements IDevice {
         return Device.findByProduct(product, 'all', usage);
     };
 
+    static findById = async (id: string) => {
+        Device.validate('findById', [id]);
+        let res = await Model.fetch(`${Device.endpoint}/${id}`, {});
+        return this.fromArray(res)[0];
+    };
+
     public static fetch = async () => {
         let params = { expand: 3 };
         let url = Device.endpoint;

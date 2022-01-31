@@ -344,6 +344,18 @@ describe('network', () => {
         expect(value[0].type).toEqual('test');
     });
 
+    it('can find network by id', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
+
+        let network = await Network.findById(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(network.name).toEqual('Network Name');
+        expect(network.toJSON).toBeDefined();
+    });
+
     it('can create a new device as a child', async () => {
         mockedAxios.post.mockResolvedValueOnce({
             data: [{ meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],

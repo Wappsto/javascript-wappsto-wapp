@@ -17,10 +17,10 @@
     "scripts": {
         "start": "tsdx watch",
         "build": "tsdx build",
-        "pretest": "tsdx lint src test",
+        "pretest": "tsdx lint src test --fix",
         "test": "tsdx test --coverage",
         "lint": "tsdx lint src test",
-        "fix-lint": "tsdx lint src test --fix",
+        "lint:fix": "tsdx lint src test --fix",
         "prepare": "tsdx build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
         "doc": "npx typedoc --tsconfig tsconfig.typedoc.json src/index.ts",
         "size": "size-limit",

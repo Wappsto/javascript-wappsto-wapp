@@ -77,6 +77,7 @@ export interface INetworkFunc {
         usage: string
     ): INetwork[];
     findAllByName(name: string, usage: string): IDevice[];
+    findById(id: string): INetwork;
     fetch(name: string, params: Record<string, any>): IDevice;
 }
 
@@ -121,6 +122,7 @@ export interface IDeviceFunc {
         usage: string
     ): IDevice[];
     findAllByProduct(product: string, usage: string): IDevice[];
+    findById(id: string): IDevice;
 }
 
 export interface IPermissionModelFunc {
@@ -202,6 +204,7 @@ export interface IValueFunc {
     findByType(type: string, quantity: number | 'all', usage: string): IValue[];
     findAllByName(name: string, usage: string): IValue[];
     findAllByType(type: string, usage: string): IValue[];
+    findById(id: string): IValue;
 }
 
 export type StateType = 'Report' | 'Control';

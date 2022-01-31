@@ -155,6 +155,18 @@ describe('value', () => {
         expect(state.meta.id).toBe('6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7');
     });
 
+    it('can find value by id', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+
+        let value = await Value.findById(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(value.name).toEqual('test');
+        expect(value.toJSON).toBeDefined();
+    });
+
     it('can find a value by name', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })

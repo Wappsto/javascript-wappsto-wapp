@@ -126,6 +126,18 @@ describe('device', () => {
         expect(devices[0]?.name).toEqual('test');
     });
 
+    it('can find device by id', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+
+        let device = await Device.findById(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(device.name).toEqual('test');
+        expect(device.toJSON).toBeDefined();
+    });
+
     it('can find a device by name', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })

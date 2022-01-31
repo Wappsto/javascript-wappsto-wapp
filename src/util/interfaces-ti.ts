@@ -28,6 +28,7 @@ export const IModelFunc = t.iface([], {
         t.param('throwError', 'boolean', true)
     ),
     parse: t.func('boolean', t.param('json', 'any')),
+    findById: t.func('any', t.param('url', 'string'), t.param('id', 'string')),
 });
 
 export const IConnection = t.iface([], {
@@ -92,6 +93,7 @@ export const INetworkFunc = t.iface([], {
         t.param('name', 'string'),
         t.param('usage', 'string')
     ),
+    findById: t.func('INetwork', t.param('id', 'string')),
     fetch: t.func(
         'IDevice',
         t.param('name', 'string'),
@@ -164,6 +166,7 @@ export const IDeviceFunc = t.iface([], {
         t.param('product', 'string'),
         t.param('usage', 'string')
     ),
+    findById: t.func('IDevice', t.param('id', 'string')),
 });
 
 export const IPermissionModelFunc = t.iface([], {
@@ -283,6 +286,7 @@ export const IValueFunc = t.iface([], {
         t.param('type', 'string'),
         t.param('usage', 'string')
     ),
+    findById: t.func('IValue', t.param('id', 'string')),
 });
 
 export const StateType = t.union(t.lit('Report'), t.lit('Control'));

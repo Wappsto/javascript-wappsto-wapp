@@ -157,6 +157,12 @@ export class Network extends StreamModel implements INetwork {
         return Network.findByName(name, 'all', usage);
     };
 
+    static findById = async (id: string) => {
+        Network.validate('findById', [id]);
+        let res = await Model.fetch(`${Network.endpoint}/${id}`, {});
+        return this.fromArray(res)[0];
+    };
+
     static fetch = async (
         name: string = '',
         params: Record<string, any> = {}
