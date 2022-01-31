@@ -70,6 +70,45 @@ describe('network', () => {
             name: 'test',
         },
     ];
+    let responseHalf = {
+        meta: {
+            type: 'network',
+            version: '2.0',
+            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+        },
+        name: 'Network Name',
+        device: [
+            {
+                meta: {
+                    id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                    type: 'device',
+                },
+                name: 'Device Name',
+                product: 'Device Product',
+                value: [
+                    {
+                        meta: {
+                            id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                            type: 'value',
+                        },
+                        name: 'Value Name',
+                        state: [
+                            {
+                                meta: {
+                                    id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                    type: 'state',
+                                },
+                                type: 'Report',
+                            },
+                            '9ee509d7-07ce-4e71-9016-340d53867af4',
+                        ],
+                    },
+                    'ffeed32d-c8f4-47f9-b12b-ce7d9f2342ca',
+                ],
+            },
+            'd9fd72a2-fd2e-4079-b114-d8927f88d9ab',
+        ],
+    };
 
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
@@ -554,5 +593,32 @@ describe('network', () => {
             '/2.0/network/f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02',
             {}
         );
+    });
+
+    it('can load all missing object using lazy loading', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [responseHalf] })
+            .mockResolvedValueOnce({ data: { type: 'Control' } })
+            .mockResolvedValueOnce({ data: { name: 'Value Name 2' } })
+            .mockResolvedValueOnce({ data: { name: 'Device Name 2' } });
+
+        let networks = await Network.fetch();
+        let device1 = networks[0].device[0];
+        let device2 = networks[0].device[1];
+        let value1 = device1.value[0];
+        let value2 = device1.value[1];
+        let state1 = value1.state[0];
+        let state2 = value1.state[1];
+
+        expect(device1.name).toEqual('Device Name');
+        expect(device2.name).toEqual('Device Name 2');
+
+        expect(value1.name).toEqual('Value Name');
+        expect(value2.name).toEqual('Value Name 2');
+
+        expect(state1.type).toEqual('Report');
+        expect(state2.type).toEqual('Control');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
     });
 });

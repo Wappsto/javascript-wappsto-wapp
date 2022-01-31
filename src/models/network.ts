@@ -74,6 +74,18 @@ export class Network extends StreamModel implements INetwork {
         return values;
     }
 
+    public async loadAllChildren(): Promise<void> {
+        for (let i = 0; i < this.device.length; i++) {
+            if (typeof this.device[i] === 'string') {
+                let id: string = this.device[i] as unknown as string;
+                this.device[i] = new Device();
+                this.device[i].meta.id = id;
+                await this.device[i].refresh();
+            }
+            this.device[i].loadAllChildren();
+        }
+    }
+
     public async createDevice(params: IDevice): Promise<Device> {
         this.validate('createDevice', arguments);
 
@@ -157,7 +169,11 @@ export class Network extends StreamModel implements INetwork {
             });
         }
         let data = await Model.fetch(Network.endpoint, params);
-        return Network.fromArray(data);
+        let res = Network.fromArray(data);
+        for (let i = 0; i < res.length; i++) {
+            await res[i].loadAllChildren();
+        }
+        return res;
     };
 
     private static validate(name: string, params: any): void {
