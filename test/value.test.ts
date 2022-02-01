@@ -112,16 +112,6 @@ describe('value', () => {
         expect(values[0]?.name).toEqual('test');
     });
 
-    /*it('will throw an error when the state type is wrong', async () => {
-        let value = new Value();
-        try {
-            await value.createState({ type: 'wrong' });
-            expect(true).toBe(false);
-        } catch (e: any) {
-            expect(e.message).toBe('Invalid value for state type');
-        }
-    });*/
-
     it('can return an old state when creating', async () => {
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
@@ -165,6 +155,13 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(value.name).toEqual('test');
         expect(value.toJSON).toBeDefined();
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/value/b62e285a-5188-4304-85a0-3982dcb575bc',
+            {
+                params: { expand: 2 },
+            }
+        );
     });
 
     it('can find a value by name', async () => {

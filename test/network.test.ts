@@ -354,6 +354,13 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(network.name).toEqual('Network Name');
         expect(network.toJSON).toBeDefined();
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/network/b62e285a-5188-4304-85a0-3982dcb575bc',
+            {
+                params: { expand: 4 },
+            }
+        );
     });
 
     it('can create a new device as a child', async () => {

@@ -155,6 +155,16 @@ let values = network.findValueByType('value type');
 let values = device.findValueByType('value type');
 ```
 
+### Get retrive object by ID
+
+If you already have access to some objects, you can retrive them directly by their ID.
+
+```javascript
+let network = Network.findByID('655937ac-c054-4cc0-80d7-400486b4ceb3');
+let device = Device.findByID('066c65d7-6612-4826-9e23-e63a579fbe8b');
+let value = Value.findByID('1157b4fa-2745-4940-9201-99eee5929eff');
+```
+
 ### To report a change in the value
 
 To send a new data point to wappsto, just call the 'report' function on the value.

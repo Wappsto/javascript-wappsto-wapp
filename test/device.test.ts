@@ -136,6 +136,13 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(device.name).toEqual('test');
         expect(device.toJSON).toBeDefined();
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/device/b62e285a-5188-4304-85a0-3982dcb575bc',
+            {
+                params: { expand: 3 },
+            }
+        );
     });
 
     it('can find a device by name', async () => {
