@@ -21,7 +21,7 @@ export class SharingModel extends Model {
     ) => {
         try {
             let response = await wappsto.patch(
-                `/acl/${this.meta.id}`,
+                `/acl/${this.id()}`,
                 {
                     permission: [
                         {

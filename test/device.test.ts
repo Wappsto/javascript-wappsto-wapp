@@ -961,4 +961,64 @@ describe('device', () => {
         expect(device[0].toJSON).toBeDefined();
         expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
     });
+
+    it('can delete a value and make sure that it is not valid', async () => {
+        mockedAxios.delete.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: [response] })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        },
+                        name: 'Test Value',
+                        permission: '',
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        },
+                        name: 'Test Value',
+                        permission: '',
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({ data: [] });
+
+        let device = new Device();
+        await device.create();
+        let val1 = await device.createValue(
+            'Test Value',
+            'r',
+            ValueTemplate.NUMBER
+        );
+        await val1.delete();
+
+        let val2 = await device.createValue(
+            'Test Value',
+            'r',
+            ValueTemplate.NUMBER
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+
+        expect(val1.name).toEqual('Test Value');
+        expect(val2.name).toEqual('Test Value');
+
+        expect(val1.meta.id).toEqual(undefined);
+        expect(val2.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
 });

@@ -398,4 +398,11 @@ describe('value', () => {
         expect(logsC.more).toBe(false);
         expect(logsC.type).toBe('state');
     });
+
+    it('can get empty log data', async () => {
+        let value = new Value();
+        let logs = await value.getReportLog({});
+
+        expect(logs.data.length).toBe(0);
+    });
 });

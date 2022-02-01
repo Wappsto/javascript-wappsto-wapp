@@ -16,7 +16,9 @@ export const IConfigFunc = t.iface([], {
 });
 
 export const IModel = t.iface([], {
+    id: t.func('string'),
     getUrl: t.func('string'),
+    removeChild: t.func('void', t.param('child', 'IModel')),
 });
 
 export const IModelFunc = t.iface([], {
@@ -28,7 +30,6 @@ export const IModelFunc = t.iface([], {
         t.param('throwError', 'boolean', true)
     ),
     parse: t.func('boolean', t.param('json', 'any')),
-    findById: t.func('any', t.param('url', 'string'), t.param('id', 'string')),
 });
 
 export const IConnection = t.iface([], {

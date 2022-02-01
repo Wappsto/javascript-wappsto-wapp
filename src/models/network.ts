@@ -6,14 +6,14 @@ import { Model } from './model';
 import { Device } from './device';
 import { Value } from './value';
 import { printDebug } from '../util/debug';
-import { INetwork, IDevice } from '../util/interfaces';
+import { IModel, INetwork, IDevice } from '../util/interfaces';
 
 export async function createNetwork(params: INetwork): Promise<Network> {
     Model.validateMethod('Network', 'createNetwork', arguments);
 
     let networks = await Network.fetch(params.name);
     if (networks.length !== 0) {
-        printDebug(`Using existing network with id ${networks[0].meta.id}`);
+        printDebug(`Using existing network with id ${networks[0].id()}`);
         return networks[0];
     }
 
@@ -92,7 +92,7 @@ export class Network extends StreamModel implements INetwork {
         let device = new Device();
         let devices = this.findDeviceByName(params.name);
         if (devices.length !== 0) {
-            printDebug(`Using existing device with id ${devices[0]?.meta.id}`);
+            printDebug(`Using existing device with id ${devices[0]?.id()}`);
             device = devices[0];
         }
 
@@ -112,6 +112,12 @@ export class Network extends StreamModel implements INetwork {
         }
 
         return device;
+    }
+
+    public removeChild(child: IModel): void {
+        this.device = this.device.filter((device: Device) => {
+            return child !== device;
+        });
     }
 
     static find = async (

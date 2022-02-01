@@ -20,18 +20,6 @@ export class User extends Model {
         super('user', '2.1');
     }
 
-    attributes(): string[] {
-        return [
-            'first_name',
-            'lat_name',
-            'email',
-            'phone',
-            'name',
-            'nickname',
-            'language',
-        ];
-    }
-
     public static me = async (): Promise<User> => {
         let users = await User.fetch();
         return users[0];
@@ -44,6 +32,6 @@ export class User extends Model {
         return User.fromArray(data);
     };
 
-    public create = async (): Promise<void> => {};
-    public update = async (): Promise<void> => {};
+    public async create(): Promise<void> {}
+    public async update(): Promise<void> {}
 }

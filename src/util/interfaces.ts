@@ -10,7 +10,9 @@ export interface IConfigFunc {
 }
 
 export interface IModel {
+    id(): string;
     getUrl(): string;
+    removeChild(child: IModel): void;
 }
 
 export interface IModelFunc {

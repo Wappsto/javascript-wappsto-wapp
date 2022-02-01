@@ -39,6 +39,10 @@ function getErrorMessage(error: any): string {
         }
     }
 
+    if (error instanceof TypeError) {
+        return error.toString();
+    }
+
     printDebug(JSON.stringify(error));
     return `Unknown HTTP error: ${error.errno} (${error.code})`;
 }

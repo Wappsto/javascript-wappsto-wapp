@@ -19,17 +19,23 @@ export class Model implements IModel {
         this.meta.version = version;
     }
 
+    public id(): string {
+        return this.meta.id || '';
+    }
+
     public url(): string {
         return `/${this.meta.version}/${this.meta.type}`;
     }
 
     public path(): string {
         if (this.meta.id) {
-            return `/${this.meta.type}/${this.meta.id}`;
+            return `/${this.meta.type}/${this.id()}`;
         } else {
             return `/${this.meta.type}`;
         }
     }
+
+    public removeChild(_: IModel): void {}
 
     /* istanbul ignore next */
     public attributes(): string[] {
@@ -42,6 +48,145 @@ export class Model implements IModel {
 
     protected validate(name: string, params: any): void {
         Model.validateMethod(this.meta.type || '', name, params);
+    }
+
+    public getUrl(): string {
+        if (this.meta.id) {
+            return this.url() + '/' + this.id();
+        } else if (this.parent) {
+            return this.parent.getUrl() + '/' + this.meta.type;
+        }
+        return this.url();
+    }
+
+    public async _create(params: Record<string, any> = {}): Promise<void> {
+        Model.validateMethod('Model', 'create', arguments);
+        if (this.parent) {
+            let valid = false;
+            this.getUrl()
+                .split('/')
+                .forEach((u) => {
+                    if (isUUID(u)) {
+                        valid = true;
+                    }
+                });
+            if (!valid) {
+                /* istanbul ignore next */
+                throw new Error(
+                    "Can't create a child under a parent that do not have an ID"
+                );
+            }
+        }
+        let response = await wappsto.post(
+            this.getUrl(),
+            this.toJSON(),
+            Model.generateOptions(params)
+        );
+        this.perserve();
+        this.parse(response.data);
+        this.restore();
+    }
+
+    public async create(params: Record<string, any> = {}): Promise<void> {
+        Model.validateMethod('Model', 'create', arguments);
+        try {
+            await this._create(params);
+        } catch (e) {
+            printHttpError(e);
+        }
+    }
+
+    public async update(): Promise<void> {
+        try {
+            let response = await wappsto.patch(
+                this.getUrl(),
+                this.toJSON(),
+                Model.generateOptions()
+            );
+            this.parse(response.data);
+        } catch (e) {
+            printHttpError(e);
+        }
+    }
+
+    public async refresh(): Promise<void> {
+        try {
+            let response = await wappsto.get(
+                this.getUrl(),
+                Model.generateOptions()
+            );
+            this.parse(response.data);
+        } catch (e) {
+            printHttpError(e);
+        }
+    }
+
+    public async delete(): Promise<void> {
+        try {
+            await wappsto.delete(this.getUrl(), Model.generateOptions());
+            this.parent?.removeChild(this);
+            this.meta.id = undefined;
+        } catch (e) {
+            printHttpError(e);
+        }
+    }
+
+    public parse(json: Record<string, any>): boolean {
+        Model.validateMethod('Model', 'parse', arguments);
+        if (_.isArray(json)) {
+            json = json[0];
+        }
+        let oldModel = this.toJSON();
+        Object.assign(this, _.pick(json, this.attributes().concat(['meta'])));
+        let newModel = this.toJSON();
+        return !_.isEqual(oldModel, newModel);
+    }
+
+    public toJSON(): Record<string, any> {
+        let meta = Object.assign(
+            {},
+            _.pick(this.meta, ['id', 'type', 'version'])
+        );
+        return Object.assign(
+            { meta: meta },
+            this.removeUndefined(_.pick(this, this.attributes()))
+        );
+    }
+
+    public static fetch = async (
+        endpoint: string,
+        params?: Record<string, any>,
+        throwError?: boolean
+    ): Promise<Record<string, any>[]> => {
+        Model.validateMethod('Model', 'fetch', [endpoint, params]);
+        let res = [];
+        try {
+            let response = await wappsto.get(
+                endpoint,
+                Model.generateOptions(params)
+            );
+
+            if (response?.data) {
+                if (_.isArray(response?.data)) {
+                    res = response.data;
+                } else if (response.data) {
+                    res = [response.data];
+                }
+            }
+        } catch (e) {
+            let msg = printHttpError(e);
+            if (throwError) {
+                throw msg;
+            }
+        }
+        return res;
+    };
+
+    public static fromArray<T>(
+        this: new () => T,
+        json: Record<string, any>[]
+    ): T[] {
+        return plainToClass(this, json);
     }
 
     public static validateMethod(
@@ -85,131 +230,6 @@ export class Model implements IModel {
         return options;
     }
 
-    public getUrl(): string {
-        if (this.meta.id) {
-            return this.url() + '/' + this.meta.id;
-        } else if (this.parent) {
-            return this.parent.getUrl() + '/' + this.meta.type;
-        }
-        return this.url();
-    }
-
-    public _create = async (
-        params: Record<string, any> = {}
-    ): Promise<void> => {
-        Model.validateMethod('Model', 'create', [params]);
-        if (this.parent) {
-            let valid = false;
-            this.getUrl()
-                .split('/')
-                .forEach((u) => {
-                    if (isUUID(u)) {
-                        valid = true;
-                    }
-                });
-            if (!valid) {
-                /* istanbul ignore next */
-                throw new Error(
-                    "Can't create a child under a parent that do not have an ID"
-                );
-            }
-        }
-        let response = await wappsto.post(
-            this.getUrl(),
-            this.toJSON(),
-            Model.generateOptions(params)
-        );
-        this.perserve();
-        this.parse(response.data);
-        this.restore();
-    };
-
-    public create = async (params: Record<string, any> = {}): Promise<void> => {
-        Model.validateMethod('Model', 'create', [params]);
-        try {
-            await this._create(params);
-        } catch (e) {
-            printHttpError(e);
-        }
-    };
-
-    public update = async (): Promise<void> => {
-        try {
-            let response = await wappsto.patch(
-                this.getUrl(),
-                this.toJSON(),
-                Model.generateOptions()
-            );
-            this.parse(response.data);
-        } catch (e) {
-            printHttpError(e);
-        }
-    };
-
-    public refresh = async (): Promise<void> => {
-        try {
-            let response = await wappsto.get(
-                this.getUrl(),
-                Model.generateOptions()
-            );
-            this.parse(response.data);
-        } catch (e) {
-            printHttpError(e);
-        }
-    };
-
-    public delete = async (): Promise<void> => {
-        try {
-            await wappsto.delete(this.getUrl(), Model.generateOptions());
-        } catch (e) {
-            printHttpError(e);
-        }
-    };
-
-    public static fetch = async (
-        endpoint: string,
-        params?: Record<string, any>,
-        throwError?: boolean
-    ): Promise<Record<string, any>[]> => {
-        Model.validateMethod('Model', 'fetch', [endpoint, params]);
-        let res = [];
-        try {
-            let response = await wappsto.get(
-                endpoint,
-                Model.generateOptions(params)
-            );
-
-            if (response?.data) {
-                if (_.isArray(response?.data)) {
-                    res = response.data;
-                } else if (response.data) {
-                    res = [response.data];
-                }
-            }
-        } catch (e) {
-            let msg = printHttpError(e);
-            if (throwError) {
-                throw msg;
-            }
-        }
-        return res;
-    };
-
-    public parse(json: Record<string, any>): boolean {
-        Model.validateMethod('Model', 'parse', arguments);
-        if (_.isArray(json)) {
-            json = json[0];
-        }
-        let oldModel = this.toJSON();
-        Object.assign(this, _.pick(json, this.attributes().concat(['meta'])));
-        let newModel = this.toJSON();
-        return !_.isEqual(oldModel, newModel);
-    }
-
-    static fromArray<T>(this: new () => T, json: Record<string, any>[]): T[] {
-        return plainToClass(this, json);
-    }
-
     private removeUndefined(obj: Record<string, any>) {
         Object.keys(obj).forEach((key) => {
             var value = obj[key];
@@ -221,16 +241,5 @@ export class Model implements IModel {
             }
         });
         return obj;
-    }
-
-    public toJSON(): Record<string, any> {
-        let meta = Object.assign(
-            {},
-            _.pick(this.meta, ['id', 'type', 'version'])
-        );
-        return Object.assign(
-            { meta: meta },
-            this.removeUndefined(_.pick(this, this.attributes()))
-        );
     }
 }

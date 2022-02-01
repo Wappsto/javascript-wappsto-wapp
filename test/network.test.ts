@@ -640,4 +640,56 @@ describe('network', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(4);
     });
+
+    it('can delete a device and make sure that it is not valid', async () => {
+        mockedAxios.delete.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: [response] })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'device',
+                            version: '2.0',
+                            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        },
+                        name: 'Device Test',
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'device',
+                            version: '2.0',
+                            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        },
+                        name: 'Device Test',
+                    },
+                ],
+            });
+
+        let network = new Network();
+        await network.create();
+        let dev1 = await network.createDevice({
+            name: 'Device Test',
+        });
+        await dev1.delete();
+
+        let dev2 = await network.createDevice({
+            name: 'Device Test',
+        });
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+
+        expect(dev1.name).toEqual('Device Test');
+        expect(dev2.name).toEqual('Device Test');
+
+        expect(dev1.meta.id).toEqual(undefined);
+        expect(dev2.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
 });

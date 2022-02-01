@@ -6,6 +6,7 @@ import { Model } from './model';
 import { Value } from './value';
 import { printDebug } from '../util/debug';
 import {
+    IModel,
     IDevice,
     IValue,
     IValueNumber,
@@ -77,7 +78,7 @@ export class Device extends StreamModel implements IDevice {
         let value = new Value();
         let values = this.findValueByName(params.name);
         if (values.length !== 0) {
-            printDebug(`Using existing value with id ${values[0].meta.id}`);
+            printDebug(`Using existing value with id ${values[0].id()}`);
             value = values[0];
         }
 
@@ -190,7 +191,13 @@ export class Device extends StreamModel implements IDevice {
         return await this._createValue(params);
     }
 
-    static find = async (
+    public removeChild(child: IModel): void {
+        this.value = this.value.filter((value: Value) => {
+            return child !== value;
+        });
+    }
+
+    public static find = async (
         params: Record<string, any>,
         quantity: number | 'all' = 1,
         usage: string = ''
@@ -258,7 +265,7 @@ export class Device extends StreamModel implements IDevice {
         return Device.findByProduct(product, 'all', usage);
     };
 
-    static findById = async (id: string) => {
+    public static findById = async (id: string) => {
         Device.validate('findById', [id]);
         let res = await Model.fetch(`${Device.endpoint}/${id}`, { expand: 3 });
         return Device.fromArray(res)[0];

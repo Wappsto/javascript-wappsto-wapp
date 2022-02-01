@@ -130,8 +130,8 @@ export class Value extends StreamModel implements IValue {
         }
     }
 
-    public createState = async (params: IState) => {
-        this.validate('createState', [params]);
+    public async createState(params: IState) {
+        this.validate('createState', arguments);
 
         let create = false;
         let state = this.findState(params.type);
@@ -139,7 +139,7 @@ export class Value extends StreamModel implements IValue {
             state = new State(params.type);
             create = true;
         } else {
-            printDebug(`Using existing state with id ${state.meta.id}`);
+            printDebug(`Using existing state with id ${state.id()}`);
         }
 
         let oldJson = state.toJSON();
@@ -157,7 +157,7 @@ export class Value extends StreamModel implements IValue {
         }
 
         return state;
-    };
+    }
 
     private findStateAndData(type: StateType): string | undefined {
         let state = this.findState(type);
@@ -232,14 +232,14 @@ export class Value extends StreamModel implements IValue {
         });
     }
 
-    private findStateAndLog = async (
+    private async findStateAndLog(
         type: StateType,
         request: ILogRequest
-    ): Promise<ILogResponse> => {
+    ): Promise<ILogResponse> {
         let state = this.findState(type);
         if (state) {
             let response = await Model.fetch(
-                `/2.1/log/${state.meta.id}/state`,
+                `/2.1/log/${state.id()}/state`,
                 request
             );
             return response[0] as ILogResponse;
@@ -254,23 +254,19 @@ export class Value extends StreamModel implements IValue {
             more: false,
             type: 'state',
         };
-    };
+    }
 
-    public getReportLog = async (
-        request: ILogRequest
-    ): Promise<ILogResponse> => {
-        this.validate('getReportLog', [request]);
+    public async getReportLog(request: ILogRequest): Promise<ILogResponse> {
+        this.validate('getReportLog', arguments);
 
         return this.findStateAndLog('Report', request);
-    };
+    }
 
-    public getControlLog = async (
-        request: ILogRequest
-    ): Promise<ILogResponse> => {
-        this.validate('getControlLog', [request]);
+    public async getControlLog(request: ILogRequest): Promise<ILogResponse> {
+        this.validate('getControlLog', arguments);
 
         return this.findStateAndLog('Control', request);
-    };
+    }
 
     static find = async (
         params: Record<string, any>,

@@ -13,7 +13,7 @@ export class PermissionModel extends Model {
         return `${type}-${quantity}-${message}`;
     }
 
-    public create = async (): Promise<void> => {
+    public async create(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 await this._create();
@@ -66,7 +66,7 @@ export class PermissionModel extends Model {
                 }
             }
         });
-    };
+    }
 
     public static request = async (
         endpoint: string,
