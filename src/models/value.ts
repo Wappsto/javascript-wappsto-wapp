@@ -335,7 +335,7 @@ export class Value extends StreamModel implements IValue {
     static findById = async (id: string) => {
         Value.validate('findById', [id]);
         let res = await Model.fetch(`${Value.endpoint}/${id}`, { expand: 2 });
-        return this.fromArray(res)[0];
+        return Value.fromArray(res)[0];
     };
 
     private static validate(name: string, params: any): void {
