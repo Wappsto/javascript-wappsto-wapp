@@ -1,4 +1,5 @@
 import { Model } from './model';
+import { printError } from '../util/debug';
 
 export class User extends Model {
     static endpoint = '/2.1/user';
@@ -21,17 +22,19 @@ export class User extends Model {
     }
 
     public static me = async (): Promise<User> => {
-        let users = await User.fetch();
+        const users = await User.fetch();
         return users[0];
     };
 
     public static fetch = async (): Promise<User[]> => {
-        let data: any[] = await Model.fetch(User.endpoint + '/me', {
+        const data: any[] = await Model.fetch(User.endpoint + '/me', {
             expand: 1,
         });
         return User.fromArray(data);
     };
 
-    public async create(): Promise<void> {}
-    public async update(): Promise<void> {}
+    public async create(): Promise<void> {
+        printError("User can't be created");
+    }
+    public async update(): Promise<void> {printError("User can't be updated");}
 }

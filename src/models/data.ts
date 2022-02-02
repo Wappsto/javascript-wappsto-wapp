@@ -35,14 +35,14 @@ export class Data extends Model {
     }
 
     public static findByDataId = async (id: string) => {
-        let json: any[] = await Model.fetch(Data.endpoint, {
+        const json: any[] = await Model.fetch(Data.endpoint, {
             'this_data_meta.id': id,
             expand: 1,
         });
 
-        let res: Data[] = [];
+        const res: Data[] = [];
         json.forEach((item) => {
-            let data = new Data();
+            const data = new Data();
             data.parse(item);
             res.push(data);
         });
@@ -54,16 +54,16 @@ export class Data extends Model {
         if (_.isArray(json)) {
             json = json[0];
         }
-        let oldModel = this.toJSON();
+        const oldModel = this.toJSON();
         Object.assign(this, _.pick(json, this.attributes()));
         Object.assign(this.data, _.omit(json, this.attributes()));
-        let newModel = this.toJSON();
+        const newModel = this.toJSON();
 
         return !_.isEqual(oldModel, newModel);
     }
 
     public toJSON(): Record<string, any> {
-        let obj = super.toJSON();
+        const obj = super.toJSON();
         return Object.assign(obj, this.data);
     }
 }

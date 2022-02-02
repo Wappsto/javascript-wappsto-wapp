@@ -23,13 +23,13 @@ export class OAuth extends Model {
         OAuth.validate('getToken', arguments);
         return new Promise<Record<string, any>>(async (resolve, reject) => {
             try {
-                let data = await Model.fetch(
+                const data = await Model.fetch(
                     `/2.0/oauth_connect/${this.name}`,
                     {},
                     true
                 );
 
-                let oauth = data[0];
+                const oauth = data[0];
                 if (oauth?.params?.oauth_token) {
                     resolve(oauth.params);
                     return;
@@ -63,7 +63,7 @@ export class OAuth extends Model {
 
     static getToken = async (name: string, handler?: OAuthRequestHandler) => {
         OAuth.validate('staticGetToken', [name, handler]);
-        let oauth = new OAuth(name);
+        const oauth = new OAuth(name);
         return await oauth.getToken(handler);
     };
 

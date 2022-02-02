@@ -48,7 +48,7 @@ function getErrorMessage(error: any): string {
 }
 
 export function printHttpError(error: any): string {
-    let msg = getErrorMessage(error);
+    const msg = getErrorMessage(error);
     printError(msg);
     return msg;
 }

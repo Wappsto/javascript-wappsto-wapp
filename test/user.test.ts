@@ -1,11 +1,9 @@
-import axios from 'axios';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
+import mockedAxios from 'axios';
+console.error = jest.fn();
 import { User, config } from '../src/index';
 
 describe('user', () => {
-    let response = {
+    const response = {
         meta: {
             type: 'user',
             version: '2.0',
@@ -24,21 +22,21 @@ describe('user', () => {
     });
 
     it('can not create a user on wappsto', async () => {
-        let user = new User();
+        const user = new User();
         await user.create();
 
         expect(mockedAxios.post).not.toHaveBeenCalled();
     });
 
     it('can not update a user on wappsto', async () => {
-        let user = new User();
+        const user = new User();
         await user.update();
 
         expect(mockedAxios.patch).not.toHaveBeenCalled();
     });
 
     it('can create a new user from wappsto', async () => {
-        let user = await User.me();
+        const user = await User.me();
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
             params: {
@@ -51,7 +49,7 @@ describe('user', () => {
 
     it('can create a new user from wappsto with verbose', async () => {
         config({ verbose: true });
-        let users = await User.fetch();
+        const users = await User.fetch();
         config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {

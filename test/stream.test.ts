@@ -1,9 +1,6 @@
 console.error = jest.fn();
 import WS from 'jest-websocket-mock';
-import axios from 'axios';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
+import mockedAxios from 'axios';
 import { Value, State, onWebHook } from '../src/index';
 import {
     openStream,
@@ -21,9 +18,9 @@ describe('stream', () => {
     });
 
     it('can trigger an onReport handler', async () => {
-        let fun = jest.fn();
-        let value = new Value();
-        let state = new State('Report');
+        const fun = jest.fn();
+        const value = new Value();
+        const state = new State('Report');
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         value.state.push(state);
@@ -53,9 +50,9 @@ describe('stream', () => {
     });
 
     it('can trigger an onControl handler', async () => {
-        let fun = jest.fn();
-        let value = new Value();
-        let state = new State('Control');
+        const fun = jest.fn();
+        const value = new Value();
+        const state = new State('Control');
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         value.state.push(state);
@@ -85,11 +82,11 @@ describe('stream', () => {
     });
 
     it('can trigger an onReport and onControl handler', async () => {
-        let funR = jest.fn();
-        let funC = jest.fn();
-        let value = new Value();
-        let stateR = new State('Report');
-        let stateC = new State('Control');
+        const funR = jest.fn();
+        const funC = jest.fn();
+        const value = new Value();
+        const stateR = new State('Report');
+        const stateC = new State('Control');
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         stateR.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         stateC.meta.id = '2e91c9a5-1ca5-4a93-b4d5-74bd662e6d59';
@@ -128,9 +125,9 @@ describe('stream', () => {
     });
 
     it('can trigger an onDelete handler', async () => {
-        let fun = jest.fn();
-        let value = new Value();
-        let state = new State('Control');
+        const fun = jest.fn();
+        const value = new Value();
+        const state = new State('Control');
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         value.state.push(state);
@@ -153,8 +150,8 @@ describe('stream', () => {
     });
 
     it('can trigger an onRefresh handler', async () => {
-        let fun = jest.fn();
-        let value = new Value();
+        const fun = jest.fn();
+        const value = new Value();
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         value.onRefresh(fun);
         await server.connected;
@@ -174,9 +171,9 @@ describe('stream', () => {
     });
 
     it('can handle a stream error', async () => {
-        let fun = jest.fn();
-        let value = new Value();
-        let state = new State('Report');
+        const fun = jest.fn();
+        const value = new Value();
+        const state = new State('Report');
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         value.state.push(state);
@@ -203,9 +200,9 @@ describe('stream', () => {
     });
 
     it('can handle a stream close', async () => {
-        let fun = jest.fn();
-        let value = new Value();
-        let state = new State('Report');
+        const fun = jest.fn();
+        const value = new Value();
+        const state = new State('Report');
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         value.state.push(state);
@@ -232,7 +229,7 @@ describe('stream', () => {
     });
 
     it('can handle extsync requests', async () => {
-        let fun = jest.fn();
+        const fun = jest.fn();
         fun.mockReturnValue(
             new Promise<boolean>((resolve) => {
                 resolve(true);
@@ -272,15 +269,17 @@ describe('stream', () => {
     });
 
     it('can send to background and foreground', async () => {
-        let msg = { test: 'test message' };
-        let res = { result: 'true' };
-        let funF = jest.fn();
+        let responseForground = undefined;
+        let responseBackground = undefined;
+        const msg = { test: 'test message' };
+        const res = { result: 'true' };
+        const funF = jest.fn();
         funF.mockReturnValue(
             new Promise<boolean>((resolve) => {
                 resolve(true);
             })
         );
-        let funB = jest.fn();
+        const funB = jest.fn();
         funB.mockReturnValue(
             new Promise<boolean>((resolve) => {
                 resolve(true);
@@ -291,14 +290,15 @@ describe('stream', () => {
             .mockResolvedValueOnce({ data: res })
             .mockResolvedValueOnce({ data: res });
 
+
         fromBackground(funB);
         sendToForeground(msg).then((result) => {
-            expect(result).toBe(res);
+            responseForground = result;
         });
 
         fromForeground(funF);
         sendToBackground(msg).then((result) => {
-            expect(result).toBe(res);
+            responseBackground = result;
         });
 
         await server.connected;
@@ -326,6 +326,8 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
+        expect(responseForground).toBe(res);
+        expect(responseBackground).toBe(res);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
             message: {
@@ -345,16 +347,17 @@ describe('stream', () => {
         expect(funB.mock.calls.length).toBe(1);
     });
 
-    it('can use webhook and sendToForeground ', async () => {
-        let msg = { test: 'test message' };
-        let res = { result: 'true' };
-        let funWeb = jest.fn();
+    it('can use webhook and sendToForeground', async () => {
+        let responseForeground = undefined;
+        const msg = { test: 'test message' };
+        const res = { result: 'true' };
+        const funWeb = jest.fn();
         funWeb.mockReturnValue(
             new Promise<boolean>((resolve) => {
                 resolve(true);
             })
         );
-        let funFore = jest.fn();
+        const funFore = jest.fn();
         funFore.mockReturnValue(
             new Promise<boolean>((resolve) => {
                 resolve(true);
@@ -368,7 +371,7 @@ describe('stream', () => {
         onWebHook(funWeb);
         fromBackground(funFore);
         sendToForeground(msg).then((result) => {
-            expect(result).toBe(res);
+            responseForeground = result;
         });
 
         await server.connected;
@@ -396,6 +399,7 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
+        expect(responseForeground).toBe(res);
         expect(funWeb.mock.calls.length).toBe(1);
         expect(funFore.mock.calls.length).toBe(1);
         expect(funWeb).toHaveBeenCalledWith('test');

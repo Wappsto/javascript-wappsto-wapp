@@ -13,8 +13,8 @@ import {
     RequestHandler,
     IStreamModel,
 } from '../util/interfaces';
-
-var WebSocket = require('universal-websocket-client');
+import WebSocket from 'universal-websocket-client';
+//const WebSocket = require('universal-websocket-client');
 
 interface StreamModelHash {
     [key: string]: IStreamModel[];
@@ -31,14 +31,14 @@ interface StreamSignalHash {
 export class Stream extends Model {
     static endpoint = '/2.1/stream';
     socket?: WebSocket;
-    websocketUrl: string = '';
-    ignoreReconnect: boolean = false;
+    websocketUrl = '';
+    ignoreReconnect = false;
     models: StreamModelHash = {};
     services: StreamServiceHash = {};
     handlers: StreamSignalHash = {};
     subscriptions: string[] = [];
-    opened: boolean = false;
-    backoff: number = 1;
+    opened = false;
+    backoff = 1;
     waiting: any = [];
 
     constructor() {
@@ -78,8 +78,8 @@ export class Stream extends Model {
     }
 
     private open(): Promise<void> {
-        return new Promise<void>((resolve, _) => {
-            let self = this;
+        return new Promise<void>((resolve) => {
+            const self = this;
 
             if (this.socket) {
                 resolve();
@@ -95,12 +95,12 @@ export class Stream extends Model {
             printDebug(`Open WebSocket on ${this.websocketUrl}`);
             this.ignoreReconnect = false;
 
-            let openTimeout: ReturnType<typeof setTimeout> = setTimeout(() => {
+            const openTimeout: ReturnType<typeof setTimeout> = setTimeout(() => {
                 /* istanbul ignore next */
                 self.reconnect();
             }, 1000 + this.getTimeout());
 
-            let socket = new WebSocket(this.websocketUrl);
+            const socket = new WebSocket(this.websocketUrl);
 
             if (socket) {
                 socket.onopen = () => {
@@ -167,7 +167,7 @@ export class Stream extends Model {
 
         this.subscribeService('extsync', (event) => {
             try {
-                let body = JSON.parse(event.body);
+                const body = JSON.parse(event.body);
                 if (body.type === type) {
                     return handler(body);
                 }
@@ -213,11 +213,11 @@ export class Stream extends Model {
 
         let result = {};
         try {
-            let data = {
+            const data = {
                 type: type,
                 msg: msg,
             };
-            let response = await wappsto.post('/2.0/extsync', data);
+            const response = await wappsto.post('/2.0/extsync', data);
             result = response.data;
         } catch (e) {
             /* istanbul ignore next */
@@ -231,7 +231,7 @@ export class Stream extends Model {
 
         let result = {};
         try {
-            let response = await wappsto.post('/2.0/extsync/request', msg);
+            const response = await wappsto.post('/2.0/extsync/request', msg);
             result = response.data;
         } catch (e) {
             /* istanbul ignore next */
@@ -248,7 +248,7 @@ export class Stream extends Model {
         this.validate('sendResponse', arguments);
 
         try {
-            let data = {
+            const data = {
                 code: code,
                 body: msg,
             };
@@ -278,7 +278,7 @@ export class Stream extends Model {
                         );
                         return;
                     }
-                    let p = handler(event.body);
+                    const p = handler(event.body);
                     if (p) {
                         if (p.then) {
                             p.then((res: any) => {
@@ -334,15 +334,15 @@ export class Stream extends Model {
     private handleMessage(
         type: string,
         event: IStreamEvent,
-        _: string = ''
+        _ = ''
     ): void {
-        let paths: string[] = [];
-        let services: string[] = [];
+        const paths: string[] = [];
+        const services: string[] = [];
         if (type === 'message') {
             if (!event.path) {
                 return;
             }
-            let items: string[] = event.path
+            const items: string[] = event.path
                 .split('/')
                 .filter((s) => s.length > 0);
             if (!items) {
@@ -350,7 +350,7 @@ export class Stream extends Model {
                 return;
             }
 
-            let last = items[items.length - 1];
+            const last = items[items.length - 1];
 
             paths.push(
                 '/' + items.slice(items.length - 2, items.length).join('/')
@@ -376,9 +376,9 @@ export class Stream extends Model {
             });
         });
         services.forEach((path) => {
-            let tmpList = this.services[path];
+            const tmpList = this.services[path];
             tmpList?.forEach((callback: ServiceHandler) => {
-                let p = callback(event);
+                const p = callback(event);
                 if (p) {
                     if (p === true) {
                         this.filterCallback(callback, path, p);
@@ -397,7 +397,7 @@ export class Stream extends Model {
         url: string,
         body: any | undefined = undefined
     ) {
-        var hash = {
+        const hash = {
             jsonrpc: '2.0',
             method: method,
             id: Math.floor(Math.random() * 100000),
@@ -417,14 +417,14 @@ export class Stream extends Model {
     }
 
     private addListeners() {
-        let self = this;
+        const self = this;
 
         if (!this.socket) {
             /* istanbul ignore next */
             return;
         }
 
-        let reconnect = () => {
+        const reconnect = () => {
             setTimeout(function () {
                 self.reconnect();
             }, self.getTimeout());
@@ -484,7 +484,7 @@ export class Stream extends Model {
                     }
                     return;
                 }
-                let traceId = self.checkAndSendTrace(msg);
+                const traceId = self.checkAndSendTrace(msg);
                 self.handleMessage('message', msg, traceId);
             });
         };
@@ -517,17 +517,17 @@ export class Stream extends Model {
     }
 
     public static fetch = async (): Promise<Stream[]> => {
-        let data: any = await Model.fetch(Stream.endpoint);
+        const data: any = await Model.fetch(Stream.endpoint);
         return Stream.fromArray(data);
     };
 }
 
-let openStream: Stream = new Stream();
+const openStream: Stream = new Stream();
 
 export { openStream };
 
 async function sendRequest(type: string, msg: any): Promise<any> {
-    let data = {
+    const data = {
         type: type,
         message: msg,
     };
@@ -546,7 +546,7 @@ function handleRequest(type: string, callback: RequestHandler): void {
     Model.checker.RequestHandler.check(callback);
     openStream.onRequest(async (event: any) => {
         try {
-            let data = JSON.parse(event);
+            const data = JSON.parse(event);
             if (data.type === type) {
                 return callback(data.message);
             }

@@ -1,11 +1,8 @@
-import axios from 'axios';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
+import mockedAxios from 'axios';
 import { State, config } from '../src/index';
 
 describe('state', () => {
-    let response = {
+    const response = {
         meta: {
             type: 'state',
             version: '2.0',
@@ -21,7 +18,7 @@ describe('state', () => {
     });
 
     it('can create a new state class', () => {
-        let state = new State('Report');
+        const state = new State('Report');
 
         expect(state.type).toEqual('Report');
         expect(state.url()).toEqual('/2.0/state');
@@ -30,7 +27,7 @@ describe('state', () => {
     it('can create a state on wappsto', async () => {
         mockedAxios.post.mockResolvedValue({ data: response });
 
-        let state = new State('Report');
+        const state = new State('Report');
         await state.create();
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
@@ -53,9 +50,9 @@ describe('state', () => {
     it('can update a state on wappsto', async () => {
         mockedAxios.patch.mockResolvedValue({ data: response });
 
-        let state = new State('Report');
+        const state = new State('Report');
         await state.create();
-        let oldType = response.type;
+        const oldType = response.type;
         response.type = 'Control';
         state.type = 'Control';
         await state.update();
@@ -73,7 +70,7 @@ describe('state', () => {
     it('can create a new state from wappsto', async () => {
         mockedAxios.get.mockResolvedValue({ data: [response] });
 
-        let states = await State.fetch();
+        const states = await State.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state', {
@@ -86,7 +83,7 @@ describe('state', () => {
         mockedAxios.get.mockResolvedValue({ data: [response] });
 
         config({ verbose: true });
-        let states = await State.fetch();
+        const states = await State.fetch();
         config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
