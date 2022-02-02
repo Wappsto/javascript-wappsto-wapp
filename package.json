@@ -21,7 +21,7 @@
         "lint": "eslint src test",
         "lint:fix": "yarn lint --fix",
         "prepare": "yarn build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
-        "doc": "yarn typedoc --tsconfig tsconfig.typedoc.json src/index.ts",
+        "doc": "typedoc src/index.ts",
         "size": "size-limit",
         "analyze": "size-limit --why",
         "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
