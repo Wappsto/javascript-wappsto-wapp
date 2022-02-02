@@ -57,7 +57,7 @@ describe('session', () => {
         global.forceBrowser = true;
         global.window = {};
         global.window.sessionStorage = {};
-        global.window.sessionStorage.getItem = (key) => {return undefined};
+        global.window.sessionStorage.getItem = () => {return undefined};
         global.window.document = {};
         global.window.document.cookie =
             'sessionID=d9406290-6c3d-41b7-a84d-58b4e060f931; x-session=ab86cca5-16b0-4179-9dfc-0a139c274352;';
@@ -70,7 +70,7 @@ describe('session', () => {
         global.forceBrowser = true;
         global.window = {};
         global.window.sessionStorage = {};
-        global.window.sessionStorage.getItem = (key) => {return 'd9406290-6c3d-41b7-a84d-58b4e060f931'};
+        global.window.sessionStorage.getItem = () => {return 'd9406290-6c3d-41b7-a84d-58b4e060f931'};
 
         const session = require('../src/session').session;
 
