@@ -36,7 +36,7 @@ export class Model implements IModel {
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
-    public removeChild(child: IModel): void {}
+    public removeChild(_: IModel): void {}
 
     /* istanbul ignore next */
     public attributes(): string[] {
