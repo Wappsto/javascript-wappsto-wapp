@@ -24,12 +24,13 @@
         "doc": "yarn typedoc --tsconfig tsconfig.typedoc.json src/index.ts",
         "size": "size-limit",
         "analyze": "size-limit --why",
-        "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix"
+        "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
+        "postinstall": "husky install"
     },
     "peerDependencies": {},
     "husky": {
         "hooks": {
-            "pre-commit": "yarn lint && yarn build"
+            "pre-commit": "yarn test && yarn build"
         }
     },
     "prettier": {
