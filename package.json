@@ -20,7 +20,7 @@
         "test": "jest --coverage --coveragePathIgnorePatterns index.ts",
         "lint": "eslint src test",
         "lint:fix": "yarn lint --fix",
-        "prepare": "yarn build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
+        "browser": "yarn build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
         "doc": "typedoc src/index.ts",
         "size": "size-limit",
         "analyze": "size-limit --why",
