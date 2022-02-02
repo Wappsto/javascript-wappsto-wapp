@@ -16,15 +16,15 @@
     },
     "scripts": {
         "build": "tsc --build tsconfig.json",
-        "pretest": "npm run lint:fix",
+        "pretest": "yarn lint:fix",
         "test": "jest --coverage --coveragePathIgnorePatterns index.ts",
         "lint": "eslint src test",
-        "lint:fix": "npm run lint -- --fix",
-        "prepare": "npm run build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
-        "doc": "npx typedoc --tsconfig tsconfig.typedoc.json src/index.ts",
+        "lint:fix": "yarn lint --fix",
+        "prepare": "yarn build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
+        "doc": "yarn typedoc --tsconfig tsconfig.typedoc.json src/index.ts",
         "size": "size-limit",
         "analyze": "size-limit --why",
-        "generate-types": "`npm bin`/ts-interface-builder -v -g -c src/util/interfaces.ts; npm run lint:fix"
+        "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix"
     },
     "peerDependencies": {},
     "husky": {
