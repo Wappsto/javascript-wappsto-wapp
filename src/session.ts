@@ -1,4 +1,4 @@
-//import { isUUID } from './util/uuid';
+import { isBrowser } from './util/browser';
 
 /**
  * Reads a cookie with the giving name.
@@ -25,7 +25,7 @@ function readCookie(name: string): string {
  */
 function get(key: string) {
     let result = '';
-    if (typeof window !== 'undefined') {
+    if (isBrowser()) {
         result = window.sessionStorage.getItem(key) || '';
         if (!result) {
             result = readCookie(key);
