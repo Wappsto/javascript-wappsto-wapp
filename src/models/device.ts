@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
@@ -87,7 +87,7 @@ export class Device extends StreamModel implements IDevice {
         const newJson = value.toJSON();
 
         value.parent = this;
-        if (!_.isEqual(oldJson, newJson)) {
+        if (!isEqual(oldJson, newJson)) {
             await value.create();
             if (values.length === 0) {
                 this.value.push(value);

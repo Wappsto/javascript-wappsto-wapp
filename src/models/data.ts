@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isArray, isEqual, pick, omit } from 'lodash';
 import { Model } from './model';
 
 interface IDataMeta {
@@ -51,15 +51,15 @@ export class Data extends Model {
 
     public parse(json: Record<string, any>): boolean {
         Model.validateMethod('Model', 'parse', arguments);
-        if (_.isArray(json)) {
+        if (isArray(json)) {
             json = json[0];
         }
         const oldModel = this.toJSON();
-        Object.assign(this, _.pick(json, this.attributes()));
-        Object.assign(this.data, _.omit(json, this.attributes()));
+        Object.assign(this, pick(json, this.attributes()));
+        Object.assign(this.data, omit(json, this.attributes()));
         const newModel = this.toJSON();
 
-        return !_.isEqual(oldModel, newModel);
+        return !isEqual(oldModel, newModel);
     }
 
     public toJSON(): Record<string, any> {

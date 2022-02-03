@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
@@ -102,7 +102,7 @@ export class Network extends StreamModel implements INetwork {
 
         device.parent = this;
 
-        if (!_.isEqual(oldJson, newJson)) {
+        if (!isEqual(oldJson, newJson)) {
             if (devices.length !== 0) {
                 await device.update();
             } else {

@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
@@ -145,7 +145,7 @@ export class Value extends StreamModel implements IValue {
         const newJson = state.toJSON();
 
         state.parent = this;
-        if (create || !_.isEqual(oldJson, newJson)) {
+        if (create || !isEqual(oldJson, newJson)) {
             if (create) {
                 await state.create();
                 this.state.push(state);

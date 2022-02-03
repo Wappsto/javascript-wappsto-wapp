@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isArray, isEqual, pick, omit } from 'lodash';
 import { plainToClass } from 'class-transformer';
 import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
@@ -136,23 +136,23 @@ export class Model implements IModel {
 
     public parse(json: Record<string, any>): boolean {
         Model.validateMethod('Model', 'parse', arguments);
-        if (_.isArray(json)) {
+        if (isArray(json)) {
             json = json[0];
         }
         const oldModel = this.toJSON();
-        Object.assign(this, _.pick(json, this.attributes().concat(['meta'])));
+        Object.assign(this, pick(json, this.attributes().concat(['meta'])));
         const newModel = this.toJSON();
-        return !_.isEqual(oldModel, newModel);
+        return !isEqual(oldModel, newModel);
     }
 
     public toJSON(): Record<string, any> {
         const meta = Object.assign(
             {},
-            _.pick(this.meta, ['id', 'type', 'version'])
+            pick(this.meta, ['id', 'type', 'version'])
         );
         return Object.assign(
             { meta: meta },
-            this.removeUndefined(_.pick(this, this.attributes()))
+            this.removeUndefined(pick(this, this.attributes()))
         );
     }
 
@@ -170,7 +170,7 @@ export class Model implements IModel {
             );
 
             if (response?.data) {
-                if (_.isArray(response?.data)) {
+                if (isArray(response?.data)) {
                     res = response.data;
                 } else if (response.data) {
                     res = [response.data];
@@ -228,7 +228,7 @@ export class Model implements IModel {
             options.params['verbose'] = true;
         }
         if (Object.keys(options.params).length === 0) {
-            options = _.omit(options, 'params');
+            options = omit(options, 'params');
         }
         return options;
     }
