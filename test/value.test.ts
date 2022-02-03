@@ -195,6 +195,26 @@ describe('value', () => {
         expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
+    it('can find a value by name and extra parameters', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [response] });
+
+        const value = await Value.findByName('test', 2, 'msg');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
+            params: {
+                expand: 2,
+                quantity: 2,
+                message: 'msg',
+                identifier: 'value-2-msg',
+                this_name: 'test',
+                method: ['retrieve', 'update'],
+            },
+        });
+        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
     it('can find a value by type', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })
@@ -244,6 +264,7 @@ describe('value', () => {
         value.state.push(state);
         await value.report(10);
         await value.report('test', 'timestamp');
+        await value.control(10);
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(value.getReportData()).toBe('test');
@@ -400,4 +421,66 @@ describe('value', () => {
 
         expect(logs.data.length).toBe(0);
     });
+
+    it('can use custom find', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: response });
+
+        const value = await Value.find({ name: 'test' });
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
+            params: {
+                expand: 2,
+                quantity: 1,
+                message: 'Find 1 value',
+                identifier: 'value-1-Find 1 value',
+                this_name: 'test',
+                method: ['retrieve', 'update'],
+            },
+        });
+
+        expect(value[0].toJSON).toBeDefined();
+        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
+    it('can find all values by name', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [response] });
+
+        const value = await Value.findAllByName('test');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
+            params: {
+                expand: 2,
+                quantity: 'all',
+                message: 'Find all value with name test',
+                identifier: 'value-all-Find all value with name test',
+                this_name: 'test',
+                method: ['retrieve', 'update'],
+            },
+        });
+        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
+    it('can find all values by type', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [response] });
+
+        const value = await Value.findAllByType('test');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
+            params: {
+                expand: 2,
+                quantity: 'all',
+                message: 'Find all value with type test',
+                identifier: 'value-all-Find all value with type test',
+                this_type: 'test',
+                method: ['retrieve', 'update'],
+            },
+        });
+        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
 });

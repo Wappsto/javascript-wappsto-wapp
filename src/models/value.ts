@@ -123,9 +123,7 @@ export class Value extends StreamModel implements IValue {
         const state = this.findState(type);
         if (state) {
             state.onChange(() => {
-                if (state) {
-                    callback(this, state.data, state.timestamp);
-                }
+                callback(this, state.data, state.timestamp);
             });
         }
     }

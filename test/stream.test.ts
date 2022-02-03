@@ -57,6 +57,7 @@ describe('stream', () => {
         state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         value.state.push(state);
         value.onControl(fun);
+        value.onReport(fun);
         await server.connected;
 
         server.send({
@@ -155,6 +156,17 @@ describe('stream', () => {
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         value.onRefresh(fun);
         await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'update',
+            path: '/network/9a51cbd4-afb3-4628-9c8b-df64a0d729e9/device/c5fe846f-d6d8-413a-abb5-620519dd6b75/value/6c06b63e-39ec-44a5-866a-c081aafb6726',
+            data: {
+                status: 'send',
+            },
+        });
 
         server.send({
             meta_object: {
