@@ -70,7 +70,7 @@
         "mock-socket": "^9.0.8",
         "prettier": "^2.4.1",
         "pretty-quick": "^3.1.1",
-        "size-limit": "^7.0.5",
+        "size-limit": "^7.0.8",
         "ts-interface-builder": "^0.3.2",
         "tsdx": "^0.14.1",
         "typedoc": "^0.22.11",
