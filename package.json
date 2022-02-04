@@ -61,7 +61,7 @@
         }
     ],
     "devDependencies": {
-        "@size-limit/preset-big-lib": "^7.0.5",
+        "@size-limit/preset-big-lib": "^7.0.8",
         "@types/jest": "^27.0.2",
         "browserify": "^17.0.0",
         "eslint-plugin-prettier": "^3.4.1",
