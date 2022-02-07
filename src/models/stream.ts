@@ -13,8 +13,8 @@ import {
     RequestHandler,
     IStreamModel,
 } from '../util/interfaces';
-import WebSocket from 'universal-websocket-client';
-//const WebSocket = require('universal-websocket-client');
+/* eslint-disable @typescript-eslint/no-var-requires */
+const WebSocket = require('universal-websocket-client');
 
 interface StreamModelHash {
     [key: string]: IStreamModel[];
@@ -95,10 +95,13 @@ export class Stream extends Model {
             printDebug(`Open WebSocket on ${this.websocketUrl}`);
             this.ignoreReconnect = false;
 
-            const openTimeout: ReturnType<typeof setTimeout> = setTimeout(() => {
-                /* istanbul ignore next */
-                self.reconnect();
-            }, 1000 + this.getTimeout());
+            const openTimeout: ReturnType<typeof setTimeout> = setTimeout(
+                () => {
+                    /* istanbul ignore next */
+                    self.reconnect();
+                },
+                1000 + this.getTimeout()
+            );
 
             const socket = new WebSocket(this.websocketUrl);
 
@@ -331,11 +334,7 @@ export class Stream extends Model {
         }
     }
 
-    private handleMessage(
-        type: string,
-        event: IStreamEvent,
-        _ = ''
-    ): void {
+    private handleMessage(type: string, event: IStreamEvent, _ = ''): void {
         const paths: string[] = [];
         const services: string[] = [];
         if (type === 'message') {

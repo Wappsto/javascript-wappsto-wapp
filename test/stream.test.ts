@@ -1,6 +1,8 @@
-console.error = jest.fn();
 import WS from 'jest-websocket-mock';
-import mockedAxios from 'axios';
+import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios);
 import { Value, State, onWebHook } from '../src/index';
 import {
     openStream,
@@ -9,6 +11,7 @@ import {
     fromBackground,
     fromForeground,
 } from '../src/models/stream';
+console.error = jest.fn();
 
 describe('stream', () => {
     let server = new WS('ws://localhost:12345', { jsonProtocol: true });
@@ -301,7 +304,6 @@ describe('stream', () => {
         mockedAxios.post
             .mockResolvedValueOnce({ data: res })
             .mockResolvedValueOnce({ data: res });
-
 
         fromBackground(funB);
         sendToForeground(msg).then((result) => {

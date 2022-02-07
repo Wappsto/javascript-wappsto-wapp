@@ -256,10 +256,7 @@ export class Device extends StreamModel implements IDevice {
         return Device.find({ product: product }, quantity, usage);
     };
 
-    public static findAllByProduct = async (
-        product: string,
-        usage = ''
-    ) => {
+    public static findAllByProduct = async (product: string, usage = '') => {
         Device.validate('findAllByProduct', [product, usage]);
 
         return Device.findByProduct(product, 'all', usage);
@@ -267,7 +264,9 @@ export class Device extends StreamModel implements IDevice {
 
     public static findById = async (id: string) => {
         Device.validate('findById', [id]);
-        const res = await Model.fetch(`${Device.endpoint}/${id}`, { expand: 3 });
+        const res = await Model.fetch(`${Device.endpoint}/${id}`, {
+            expand: 3,
+        });
         return Device.fromArray(res)[0];
     };
 

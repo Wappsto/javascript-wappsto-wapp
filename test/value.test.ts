@@ -1,5 +1,8 @@
 import WS from 'jest-websocket-mock';
-import mockedAxios from 'axios';
+import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Value, State, config } from '../src/index';
 import { openStream } from '../src/models/stream';
@@ -192,12 +195,13 @@ describe('value', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(value[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can find a value by name and extra parameters', async () => {
-        mockedAxios.get
-            .mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 
         const value = await Value.findByName('test', 2, 'msg');
 
@@ -212,7 +216,9 @@ describe('value', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(value[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can find a value by type', async () => {
@@ -249,7 +255,9 @@ describe('value', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(value[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can send a report', async () => {
@@ -440,12 +448,13 @@ describe('value', () => {
         });
 
         expect(value[0].toJSON).toBeDefined();
-        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(value[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can find all values by name', async () => {
-        mockedAxios.get
-            .mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 
         const value = await Value.findAllByName('test');
 
@@ -460,12 +469,13 @@ describe('value', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(value[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can find all values by type', async () => {
-        mockedAxios.get
-            .mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 
         const value = await Value.findAllByType('test');
 
@@ -480,7 +490,8 @@ describe('value', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(value[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(value[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
-
 });

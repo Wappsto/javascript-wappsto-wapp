@@ -1,6 +1,9 @@
-import mockedAxios from 'axios';
-console.error = jest.fn();
+import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios);
 import { User, config } from '../src/index';
+console.error = jest.fn();
 
 describe('user', () => {
     const response = {

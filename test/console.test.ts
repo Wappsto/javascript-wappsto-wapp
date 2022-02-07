@@ -1,6 +1,8 @@
-import mockedAxios from 'axios'
+import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios);
 console.log = jest.fn();
-console.error = jest.fn();
 import { startLogging, stopLogging } from '../src/index';
 
 describe('console', () => {

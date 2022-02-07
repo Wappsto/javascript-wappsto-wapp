@@ -1,11 +1,13 @@
-import mockedAxios from 'axios';
-console.log = jest.fn();
-console.warn = jest.fn();
-console.error = jest.fn();
-
+import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios);
 import { config } from '../src/index';
 import { printDebug, printWarning, printError } from '../src/util/debug';
 import { IConfig } from '../src/util/interfaces';
+console.log = jest.fn();
+console.warn = jest.fn();
+console.error = jest.fn();
 
 describe('config', () => {
     beforeEach(() => {
@@ -50,7 +52,7 @@ describe('config', () => {
     });
 
     it('can change the stream reconnect count', () => {
-        const c = config({reconnectCount: 5});
+        const c = config({ reconnectCount: 5 });
         expect(c.reconnectCount).toEqual(5);
     });
 });

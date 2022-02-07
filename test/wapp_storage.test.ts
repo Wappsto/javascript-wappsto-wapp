@@ -1,5 +1,8 @@
 import WS from 'jest-websocket-mock';
-import mockedAxios from 'axios';
+import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios);
 import { wappStorage } from '../src/index';
 import { openStream } from '../src/models/stream';
 

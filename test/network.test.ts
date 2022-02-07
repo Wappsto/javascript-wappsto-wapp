@@ -1,6 +1,8 @@
 import WS from 'jest-websocket-mock';
-import mockedAxios from 'axios';
-import 'reflect-metadata';
+import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios);
 import { createNetwork, Network, Device, Value, config } from '../src/index';
 import { openStream } from '../src/models/stream';
 
@@ -295,7 +297,9 @@ describe('network', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(network[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(network[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can find device by name', async () => {
@@ -554,8 +558,12 @@ describe('network', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(network[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
-        expect(network[1].meta.id).toEqual('aa9da00a-b5e2-4651-a111-92cb0899ee7c');
+        expect(network[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+        expect(network[1].meta.id).toEqual(
+            'aa9da00a-b5e2-4651-a111-92cb0899ee7c'
+        );
     });
 
     it('can use custom find', async () => {
@@ -594,7 +602,9 @@ describe('network', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(network[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(network[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can delete a network', async () => {

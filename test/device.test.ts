@@ -1,6 +1,8 @@
 import WS from 'jest-websocket-mock';
-import mockedAxios from 'axios';
-import 'reflect-metadata';
+import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios);
 import { Device, Value, ValueTemplate, config } from '../src/index';
 import { openStream } from '../src/models/stream';
 
@@ -189,7 +191,9 @@ describe('device', () => {
             },
         });
         expect(device[0].toJSON).toBeDefined();
-        expect(device[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(device[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can find a device by product', async () => {
@@ -208,7 +212,9 @@ describe('device', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(devices[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(devices[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     const templateHelperStart = () => {
@@ -398,7 +404,11 @@ describe('device', () => {
 
         const device = new Device();
         device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
-        const value = await device.createValue('name', 'rw', ValueTemplate.BLOB);
+        const value = await device.createValue(
+            'name',
+            'rw',
+            ValueTemplate.BLOB
+        );
 
         templateHelperDone();
 
@@ -910,8 +920,12 @@ describe('device', () => {
         });
 
         expect(device[0].toJSON).toBeDefined();
-        expect(device[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
-        expect(device[1].meta.id).toEqual('7c1611da-46e2-4f0d-85fa-1b010561b35d');
+        expect(device[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+        expect(device[1].meta.id).toEqual(
+            '7c1611da-46e2-4f0d-85fa-1b010561b35d'
+        );
     });
 
     it('can find all devices by product', async () => {
@@ -933,8 +947,12 @@ describe('device', () => {
         });
 
         expect(device[0].toJSON).toBeDefined();
-        expect(device[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
-        expect(device[1].meta.id).toEqual('7c1611da-46e2-4f0d-85fa-1b010561b35d');
+        expect(device[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+        expect(device[1].meta.id).toEqual(
+            '7c1611da-46e2-4f0d-85fa-1b010561b35d'
+        );
     });
 
     it('can use custom find', async () => {
@@ -956,7 +974,9 @@ describe('device', () => {
         });
 
         expect(device[0].toJSON).toBeDefined();
-        expect(device[0].meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(device[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can delete a value and make sure that it is not valid', async () => {

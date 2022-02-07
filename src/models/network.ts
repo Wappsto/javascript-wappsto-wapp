@@ -165,14 +165,13 @@ export class Network extends StreamModel implements INetwork {
 
     static findById = async (id: string) => {
         Network.validate('findById', [id]);
-        const res = await Model.fetch(`${Network.endpoint}/${id}`, { expand: 4 });
+        const res = await Model.fetch(`${Network.endpoint}/${id}`, {
+            expand: 4,
+        });
         return Network.fromArray(res)[0];
     };
 
-    static fetch = async (
-        name = '',
-        params: Record<string, any> = {}
-    ) => {
+    static fetch = async (name = '', params: Record<string, any> = {}) => {
         Network.validate('fetch', [name, params]);
         Object.assign(params, { expand: 4 });
         if (name !== '') {
