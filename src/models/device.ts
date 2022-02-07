@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
@@ -65,7 +65,7 @@ export class Device extends StreamModel implements IDevice {
     public async loadAllChildren(): Promise<void> {
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'string') {
-                let id: string = this.value[i] as unknown as string;
+                const id: string = this.value[i] as unknown as string;
                 this.value[i] = new Value();
                 this.value[i].meta.id = id;
                 await this.value[i].refresh();
@@ -76,18 +76,18 @@ export class Device extends StreamModel implements IDevice {
 
     private async _createValue(params: IValue): Promise<Value> {
         let value = new Value();
-        let values = this.findValueByName(params.name);
+        const values = this.findValueByName(params.name);
         if (values.length !== 0) {
             printDebug(`Using existing value with id ${values[0].id()}`);
             value = values[0];
         }
 
-        let oldJson = value.toJSON();
+        const oldJson = value.toJSON();
         value.parse(params);
-        let newJson = value.toJSON();
+        const newJson = value.toJSON();
 
         value.parent = this;
-        if (!_.isEqual(oldJson, newJson)) {
+        if (!isEqual(oldJson, newJson)) {
             await value.create();
             if (values.length === 0) {
                 this.value.push(value);
@@ -111,7 +111,7 @@ export class Device extends StreamModel implements IDevice {
     ): Promise<Value> {
         this.validate('createValue', arguments);
 
-        let value = {} as IValue;
+        const value = {} as IValue;
         value.name = name;
         value.permission = permission;
         value.type = valueTemplate.type;
@@ -138,7 +138,7 @@ export class Device extends StreamModel implements IDevice {
     ): Promise<Value> {
         this.validate('createNumberValue', arguments);
 
-        let numberValue = {} as IValueNumber;
+        const numberValue = {} as IValueNumber;
         numberValue.min = params.min;
         numberValue.max = params.max;
         numberValue.step = params.step;
@@ -158,7 +158,7 @@ export class Device extends StreamModel implements IDevice {
     ): Promise<Value> {
         this.validate('createStringValue', arguments);
 
-        let stringValue = {} as IValueString;
+        const stringValue = {} as IValueString;
         stringValue.max = params.max;
         stringValue.encoding = params.encoding;
 
@@ -170,7 +170,7 @@ export class Device extends StreamModel implements IDevice {
     public async createBlobValue(params: IValue & IValueBlob): Promise<Value> {
         this.validate('createBlobValue', arguments);
 
-        let blobValue = {} as IValueBlob;
+        const blobValue = {} as IValueBlob;
         blobValue.max = params.max;
         blobValue.encoding = params.encoding;
 
@@ -182,7 +182,7 @@ export class Device extends StreamModel implements IDevice {
     public async createXmlValue(params: IValue & IValueXml): Promise<Value> {
         this.validate('createXmlValue', arguments);
 
-        let xmlValue = {} as IValueXml;
+        const xmlValue = {} as IValueXml;
         xmlValue.xsd = params.xsd;
         xmlValue.namespace = params.namespace;
 
@@ -200,7 +200,7 @@ export class Device extends StreamModel implements IDevice {
     public static find = async (
         params: Record<string, any>,
         quantity: number | 'all' = 1,
-        usage: string = ''
+        usage = ''
     ) => {
         Device.validate('find', [params, quantity, usage]);
 
@@ -208,14 +208,14 @@ export class Device extends StreamModel implements IDevice {
             usage = `Find ${quantity} device`;
         }
 
-        let query: Record<string, any> = {
+        const query: Record<string, any> = {
             expand: 3,
         };
-        for (let key in params) {
+        for (const key in params) {
             query[`this_${key}`] = params[key];
         }
 
-        let data = await PermissionModel.request(
+        const data = await PermissionModel.request(
             Device.endpoint,
             quantity,
             usage,
@@ -227,7 +227,7 @@ export class Device extends StreamModel implements IDevice {
     public static findByName = async (
         name: string,
         quantity: number | 'all' = 1,
-        usage: string = ''
+        usage = ''
     ) => {
         Device.validate('findByName', [name, quantity, usage]);
 
@@ -237,7 +237,7 @@ export class Device extends StreamModel implements IDevice {
         return Device.find({ name: name }, quantity, usage);
     };
 
-    public static findAllByName = async (name: string, usage: string = '') => {
+    public static findAllByName = async (name: string, usage = '') => {
         Device.validate('findAllByName', [name, usage]);
 
         return Device.findByName(name, 'all', usage);
@@ -246,7 +246,7 @@ export class Device extends StreamModel implements IDevice {
     public static findByProduct = async (
         product: string,
         quantity: number | 'all' = 1,
-        usage: string = ''
+        usage = ''
     ) => {
         Device.validate('findByProduct', [product, quantity, usage]);
 
@@ -256,10 +256,7 @@ export class Device extends StreamModel implements IDevice {
         return Device.find({ product: product }, quantity, usage);
     };
 
-    public static findAllByProduct = async (
-        product: string,
-        usage: string = ''
-    ) => {
+    public static findAllByProduct = async (product: string, usage = '') => {
         Device.validate('findAllByProduct', [product, usage]);
 
         return Device.findByProduct(product, 'all', usage);
@@ -267,15 +264,17 @@ export class Device extends StreamModel implements IDevice {
 
     public static findById = async (id: string) => {
         Device.validate('findById', [id]);
-        let res = await Model.fetch(`${Device.endpoint}/${id}`, { expand: 3 });
+        const res = await Model.fetch(`${Device.endpoint}/${id}`, {
+            expand: 3,
+        });
         return Device.fromArray(res)[0];
     };
 
     public static fetch = async () => {
-        let params = { expand: 3 };
-        let url = Device.endpoint;
-        let data = await Model.fetch(url, params);
-        let res = Device.fromArray(data);
+        const params = { expand: 3 };
+        const url = Device.endpoint;
+        const data = await Model.fetch(url, params);
+        const res = Device.fromArray(data);
         for (let i = 0; i < res.length; i++) {
             await res[i].loadAllChildren();
         }

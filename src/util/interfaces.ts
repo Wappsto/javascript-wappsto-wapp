@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-misused-new */
+
 export interface IConfig {
     verbose?: boolean;
     debug?: boolean;

@@ -7,7 +7,7 @@ import { wappStorage } from '../src/index';
 import { openStream } from '../src/models/stream';
 
 describe('WappStorage', () => {
-    let server = new WS('ws://localhost:12345', { jsonProtocol: true });
+    const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
     beforeAll(() => {
         openStream.websocketUrl = 'ws://localhost:12345';
@@ -21,7 +21,7 @@ describe('WappStorage', () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
 
-        let ws = await wappStorage('test');
+        const ws = await wappStorage('test');
         expect(ws.name).toEqual('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
@@ -83,12 +83,12 @@ describe('WappStorage', () => {
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
 
-        let fun = jest.fn();
-        let c = await wappStorage();
+        const fun = jest.fn();
+        const c = await wappStorage();
         c.onChange(fun);
-        let res = c.get('key');
+        const res = c.get('key');
         await c.set('new_key', 'new_item');
-        let newRes = c.get('new_key');
+        const newRes = c.get('new_key');
 
         await server.connected;
 
@@ -169,10 +169,10 @@ describe('WappStorage', () => {
             ],
         });
 
-        let c = await wappStorage();
-        let oldData = c.get('missing');
+        const c = await wappStorage();
+        const oldData = c.get('missing');
         await c.refresh();
-        let newData = c.get('missing');
+        const newData = c.get('missing');
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
@@ -190,11 +190,11 @@ describe('WappStorage', () => {
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
         mockedAxios.delete.mockResolvedValueOnce({ data: [] });
 
-        let c = await wappStorage();
+        const c = await wappStorage();
         await c.set('key', 'item');
-        let resOld = c.get('key');
+        const resOld = c.get('key');
         c.reset();
-        let resNew = c.get('key');
+        const resNew = c.get('key');
         expect(resOld).toBe('item');
         expect(resNew).toBe(undefined);
 

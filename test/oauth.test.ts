@@ -1,11 +1,11 @@
 import WS from 'jest-websocket-mock';
 import axios from 'axios';
 jest.mock('axios');
-console.error = jest.fn();
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { OAuth } from '../src/index';
 import { openStream } from '../src/models/stream';
+console.error = jest.fn();
 
 describe('oauth', () => {
     const response = {
@@ -55,7 +55,7 @@ describe('oauth', () => {
     it('can return a token comming from stream', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
 
-        let r = OAuth.getToken('test');
+        const r = OAuth.getToken('test');
         await server.connected;
 
         server.send({
@@ -81,7 +81,7 @@ describe('oauth', () => {
             data: response,
         });
 
-        let token = await r;
+        const token = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
@@ -95,7 +95,7 @@ describe('oauth', () => {
         //mockedAxios.get.mockResolvedValueOnce({ data: [{response}] });
         mockedAxios.get.mockResolvedValueOnce({ data: response });
 
-        let token = await OAuth.getToken('test');
+        const token = await OAuth.getToken('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
@@ -105,7 +105,7 @@ describe('oauth', () => {
         expect(token.oauth_token).toBe('oauth test token');
     });
 
-    it('it will fail when there is no oauth', async () => {
+    it('will fail when there is no oauth', async () => {
         mockedAxios.get.mockRejectedValueOnce({
             response: {
                 data: {
@@ -122,7 +122,7 @@ describe('oauth', () => {
             },
         });
 
-        let error: string = '';
+        let error = '';
         try {
             await OAuth.getToken('test');
         } catch (e: any) {

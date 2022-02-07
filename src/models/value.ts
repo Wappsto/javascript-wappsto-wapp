@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
@@ -71,17 +71,17 @@ export class Value extends StreamModel implements IValue {
     }
 
     public static fetch = async () => {
-        let params = { expand: 2 };
-        let url = Value.endpoint;
+        const params = { expand: 2 };
+        const url = Value.endpoint;
 
-        let data = await Model.fetch(url, params);
+        const data = await Model.fetch(url, params);
         return Value.fromArray(data);
     };
 
     public async loadAllChildren(): Promise<void> {
         for (let i = 0; i < this.state.length; i++) {
             if (typeof this.state[i] === 'string') {
-                let id: string = this.state[i] as unknown as string;
+                const id: string = this.state[i] as unknown as string;
                 this.state[i] = new State();
                 this.state[i].meta.id = id;
                 await this.state[i].refresh();
@@ -108,7 +108,7 @@ export class Value extends StreamModel implements IValue {
         data: string | number,
         timestamp: string | undefined
     ): Promise<void> {
-        let state = this.findState(type);
+        const state = this.findState(type);
         if (state) {
             state.data = data.toString();
             state.timestamp = timestamp || this.getTime();
@@ -120,12 +120,10 @@ export class Value extends StreamModel implements IValue {
         type: StateType,
         callback: ValueStreamCallback
     ): void {
-        let state = this.findState(type);
+        const state = this.findState(type);
         if (state) {
             state.onChange(() => {
-                if (state) {
-                    callback(this, state.data, state.timestamp);
-                }
+                callback(this, state.data, state.timestamp);
             });
         }
     }
@@ -142,12 +140,12 @@ export class Value extends StreamModel implements IValue {
             printDebug(`Using existing state with id ${state.id()}`);
         }
 
-        let oldJson = state.toJSON();
+        const oldJson = state.toJSON();
         state.parse(params);
-        let newJson = state.toJSON();
+        const newJson = state.toJSON();
 
         state.parent = this;
-        if (create || !_.isEqual(oldJson, newJson)) {
+        if (create || !isEqual(oldJson, newJson)) {
             if (create) {
                 await state.create();
                 this.state.push(state);
@@ -160,7 +158,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     private findStateAndData(type: StateType): string | undefined {
-        let state = this.findState(type);
+        const state = this.findState(type);
         if (state) {
             return state.data;
         }
@@ -168,7 +166,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     private findStateAndTimestamp(type: StateType): string | undefined {
-        let state = this.findState(type);
+        const state = this.findState(type);
         if (state) {
             return state.timestamp;
         }
@@ -236,9 +234,9 @@ export class Value extends StreamModel implements IValue {
         type: StateType,
         request: ILogRequest
     ): Promise<ILogResponse> {
-        let state = this.findState(type);
+        const state = this.findState(type);
         if (state) {
-            let response = await Model.fetch(
+            const response = await Model.fetch(
                 `/2.1/log/${state.id()}/state`,
                 request
             );
@@ -271,21 +269,21 @@ export class Value extends StreamModel implements IValue {
     static find = async (
         params: Record<string, any>,
         quantity: number | 'all' = 1,
-        usage: string = ''
+        usage = ''
     ) => {
         Value.validate('find', [params, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value`;
         }
 
-        let query: Record<string, any> = {
+        const query: Record<string, any> = {
             expand: 2,
         };
-        for (let key in params) {
+        for (const key in params) {
             query[`this_${key}`] = params[key];
         }
 
-        let data = await PermissionModel.request(
+        const data = await PermissionModel.request(
             Value.endpoint,
             quantity,
             usage,
@@ -297,7 +295,7 @@ export class Value extends StreamModel implements IValue {
     static findByName = async (
         name: string,
         quantity: number | 'all' = 1,
-        usage: string = ''
+        usage = ''
     ) => {
         Value.validate('findByName', [name, quantity, usage]);
         if (usage === '') {
@@ -309,7 +307,7 @@ export class Value extends StreamModel implements IValue {
     static findByType = async (
         type: string,
         quantity: number | 'all' = 1,
-        usage: string = ''
+        usage = ''
     ) => {
         Value.validate('findByType', [type, quantity, usage]);
         if (usage === '') {
@@ -318,19 +316,19 @@ export class Value extends StreamModel implements IValue {
         return Value.find({ type: type }, quantity, usage);
     };
 
-    static findAllByName = async (name: string, usage: string = '') => {
+    static findAllByName = async (name: string, usage = '') => {
         Value.validate('findAllByName', [name, usage]);
         return Value.findByName(name, 'all', usage);
     };
 
-    static findAllByType = async (type: string, usage: string = '') => {
+    static findAllByType = async (type: string, usage = '') => {
         Value.validate('findAllByType', [type, usage]);
         return Value.findByType(type, 'all', usage);
     };
 
     static findById = async (id: string) => {
         Value.validate('findById', [id]);
-        let res = await Model.fetch(`${Value.endpoint}/${id}`, { expand: 2 });
+        const res = await Model.fetch(`${Value.endpoint}/${id}`, { expand: 2 });
         return Value.fromArray(res)[0];
     };
 

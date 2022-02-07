@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { isArray, isEqual, pick, omit } from 'lodash';
 import { plainToClass } from 'class-transformer';
 import { isUUID } from '../util/uuid';
 import wappsto from '../util/http_wrapper';
@@ -35,6 +35,7 @@ export class Model implements IModel {
         }
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
     public removeChild(_: IModel): void {}
 
     /* istanbul ignore next */
@@ -42,8 +43,10 @@ export class Model implements IModel {
         return [];
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     public perserve(): void {}
 
+    /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     public restore(): void {}
 
     protected validate(name: string, params: any): void {
@@ -77,7 +80,7 @@ export class Model implements IModel {
                 );
             }
         }
-        let response = await wappsto.post(
+        const response = await wappsto.post(
             this.getUrl(),
             this.toJSON(),
             Model.generateOptions(params)
@@ -98,7 +101,7 @@ export class Model implements IModel {
 
     public async update(): Promise<void> {
         try {
-            let response = await wappsto.patch(
+            const response = await wappsto.patch(
                 this.getUrl(),
                 this.toJSON(),
                 Model.generateOptions()
@@ -111,7 +114,7 @@ export class Model implements IModel {
 
     public async refresh(): Promise<void> {
         try {
-            let response = await wappsto.get(
+            const response = await wappsto.get(
                 this.getUrl(),
                 Model.generateOptions()
             );
@@ -133,23 +136,23 @@ export class Model implements IModel {
 
     public parse(json: Record<string, any>): boolean {
         Model.validateMethod('Model', 'parse', arguments);
-        if (_.isArray(json)) {
+        if (isArray(json)) {
             json = json[0];
         }
-        let oldModel = this.toJSON();
-        Object.assign(this, _.pick(json, this.attributes().concat(['meta'])));
-        let newModel = this.toJSON();
-        return !_.isEqual(oldModel, newModel);
+        const oldModel = this.toJSON();
+        Object.assign(this, pick(json, this.attributes().concat(['meta'])));
+        const newModel = this.toJSON();
+        return !isEqual(oldModel, newModel);
     }
 
     public toJSON(): Record<string, any> {
-        let meta = Object.assign(
+        const meta = Object.assign(
             {},
-            _.pick(this.meta, ['id', 'type', 'version'])
+            pick(this.meta, ['id', 'type', 'version'])
         );
         return Object.assign(
             { meta: meta },
-            this.removeUndefined(_.pick(this, this.attributes()))
+            this.removeUndefined(pick(this, this.attributes()))
         );
     }
 
@@ -159,22 +162,22 @@ export class Model implements IModel {
         throwError?: boolean
     ): Promise<Record<string, any>[]> => {
         Model.validateMethod('Model', 'fetch', [endpoint, params]);
-        let res = [];
+        let res: any[] = [];
         try {
-            let response = await wappsto.get(
+            const response = await wappsto.get(
                 endpoint,
                 Model.generateOptions(params)
             );
 
             if (response?.data) {
-                if (_.isArray(response?.data)) {
+                if (isArray(response?.data)) {
                     res = response.data;
                 } else if (response.data) {
                     res = [response.data];
                 }
             }
         } catch (e) {
-            let msg = printHttpError(e);
+            const msg = printHttpError(e);
             if (throwError) {
                 throw msg;
             }
@@ -195,11 +198,11 @@ export class Model implements IModel {
         params: any
     ): void {
         if (_config.validation !== 'none') {
-            let c = Object.keys(Model.checker).find(
+            const c = Object.keys(Model.checker).find(
                 (k) => k.toLowerCase() === `i${type.toLowerCase()}func`
             );
             if (c) {
-                let m = Model.checker[c].methodArgs(name);
+                const m = Model.checker[c].methodArgs(name);
                 if (_config.validation === 'strict') {
                     m.strictCheck(Array.from(params));
                 } else {
@@ -225,15 +228,15 @@ export class Model implements IModel {
             options.params['verbose'] = true;
         }
         if (Object.keys(options.params).length === 0) {
-            options = _.omit(options, 'params');
+            options = omit(options, 'params');
         }
         return options;
     }
 
     private removeUndefined(obj: Record<string, any>) {
         Object.keys(obj).forEach((key) => {
-            var value = obj[key];
-            var type = typeof value;
+            const value = obj[key];
+            const type = typeof value;
             if (type === 'object') {
                 this.removeUndefined(value);
             } else if (type === 'undefined') {

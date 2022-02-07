@@ -3,19 +3,19 @@ import interfaceTI from '../util/interfaces-ti';
 import { createCheckers } from 'ts-interface-checker';
 
 class Config implements IConfig {
-    debug: boolean = false;
-    verbose: boolean = false;
+    debug = false;
+    verbose = false;
     validation: 'none' | 'normal' | 'strict' = 'normal';
-    reconnectCount: number = 10;
+    reconnectCount = 10;
 }
 
-let _checker = createCheckers(interfaceTI);
-let _config = new Config();
+const _checker = createCheckers(interfaceTI);
+const _config = new Config();
 
 export { _config };
 
 export function config(param: IConfig): Config {
-    let m = _checker.IConfigFunc.methodArgs('config');
+    const m = _checker.IConfigFunc.methodArgs('config');
     if (_config.validation === 'strict') {
         m.strictCheck(Array.from(arguments));
     } else {
