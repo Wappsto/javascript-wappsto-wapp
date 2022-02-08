@@ -63,9 +63,7 @@
       "lodash-es": "^4.17.21",
       "reflect-metadata": "^0.1.13",
       "ts-interface-checker": "^1.0.2",
-      "universal-websocket-client": "^1.0.2",
-      "universal-ws": "^0.2.9",
-      "ws": "^7.5.5"
+      "universal-websocket-client": "^1.0.2"
    },
    "devDependencies": {
       "@size-limit/preset-small-lib": "^7.0.8",
