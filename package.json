@@ -16,7 +16,7 @@
    },
    "scripts": {
       "analyze": "size-limit --why",
-      "build": "dts build",
+      "build": "dts build && yarn browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
       "lint": "dts lint src test",
       "lint:fix": "yarn lint --fix",
       "prepare": "dts build",
@@ -70,6 +70,7 @@
       "@tsconfig/recommended": "^1.0.1",
       "@types/lodash": "^4.14.178",
       "@types/ws": "^8.2.2",
+      "browserify": "^17.0.0",
       "dts-cli": "^1.2.0",
       "husky": "^7.0.4",
       "jest-websocket-mock": "^2.2.1",
