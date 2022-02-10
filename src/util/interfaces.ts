@@ -25,6 +25,9 @@ export interface IModelFunc {
         throwError?: boolean
     ): Promise<Record<string, any>[]>;
     parse(json: Record<string, any>): boolean;
+    onChange(callback: StreamCallback): void;
+    onDelete(callback: StreamCallback): void;
+    onCreate(callback: StreamCallback): void;
 }
 
 export interface IConnection {
@@ -340,6 +343,8 @@ export interface IStreamFunc {
     sendEvent(type: string, msg: string): Promise<any>;
     sendResponse(event: any, code: number, msg: any): Promise<void>;
     onRequest(handler: RequestHandler, internal: boolean): void;
+    onWebHook(handler: RequestHandler): void;
+    fromForeground(callback: RequestHandler): void;
 }
 
 export type OAuthRequestHandler = (url: string) => void;

@@ -30,6 +30,9 @@ export const IModelFunc = t.iface([], {
         t.param('throwError', 'boolean', true)
     ),
     parse: t.func('boolean', t.param('json', 'any')),
+    onChange: t.func('void', t.param('callback', 'StreamCallback')),
+    onDelete: t.func('void', t.param('callback', 'StreamCallback')),
+    onCreate: t.func('void', t.param('callback', 'StreamCallback')),
 });
 
 export const IConnection = t.iface([], {
@@ -451,6 +454,8 @@ export const IStreamFunc = t.iface([], {
         t.param('handler', 'RequestHandler'),
         t.param('internal', 'boolean')
     ),
+    onWebHook: t.func('void', t.param('handler', 'RequestHandler')),
+    fromForeground: t.func('void', t.param('callback', 'RequestHandler')),
 });
 
 export const OAuthRequestHandler = t.func('void', t.param('url', 'string'));
