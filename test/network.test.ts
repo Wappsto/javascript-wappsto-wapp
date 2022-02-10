@@ -163,6 +163,7 @@ describe('network', () => {
         network.name = 'new name';
         await network.update();
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -174,12 +175,13 @@ describe('network', () => {
         response.name = oldName;
     });
 
-    /*it('can request access to create new network', async () => {
-                mockedAxios.get.mockResolvedValueOnce({ data: [] });
-        mockedAxios.post.mockRejectedValueOnce({ code: 400013 });
-        // .mockResolvedValueOnce({ data: [response] });
-        console.log('can request');
-        const network = await createNetwork({ name: 'Wapp Network' });
+    it('can request access to create new network', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post
+            .mockRejectedValueOnce({ code: 400013 })
+            .mockResolvedValueOnce({ data: [] });
+
+        const p = createNetwork({ name: 'Network Name' });
         await server.connected;
 
         server.send({
@@ -195,17 +197,20 @@ describe('network', () => {
             },
         });
 
+        const network = await p;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(network?.name).toEqual('Network Name');
         expect(network?.toJSON).toBeDefined();
-    });*/
+    });
 
     it('can create a new network from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
         mockedAxios.post
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        //mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const network = await createNetwork({ name: 'Wapp Network' });
         const device = await network.createDevice({ name: 'Device Name' });
@@ -255,6 +260,7 @@ describe('network', () => {
         const networks = await Network.fetch();
         config({ verbose: false });
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: { expand: 4, verbose: true },
@@ -269,6 +275,7 @@ describe('network', () => {
 
         const r = Network.findByName('test');
         await server.connected;
+        await new Promise((r) => setTimeout(r, 1));
 
         server.send({
             meta_object: {
@@ -286,6 +293,7 @@ describe('network', () => {
 
         const network = await r;
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: {
@@ -526,7 +534,7 @@ describe('network', () => {
         const r = Network.findAllByName('test');
         await server.connected;
 
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 1));
 
         server.send({
             meta_object: {
