@@ -31,7 +31,7 @@ export class PermissionModel extends Model {
                     printDebug('Requesting permission to add data to user');
                     openStream.subscribeService(
                         '/notification',
-                        async (event) => {
+                        async (event: any) => {
                             if (event.meta_object?.type === 'notification') {
                                 const notification = Notification.fromArray([
                                     event.data,
@@ -74,7 +74,7 @@ export class PermissionModel extends Model {
         message: string,
         params?: Record<string, any>
     ): Promise<Record<string, any>[]> => {
-        Model.checker.IPermissionModelFunc.methodArgs('request').check([
+        Model.validateMethod('PermissionModel', 'request', [
             endpoint,
             quantity,
             message,
@@ -108,7 +108,7 @@ export class PermissionModel extends Model {
                 `Waiting for permission to access users data: ${message}`
             );
 
-            openStream.subscribeService('/notification', async (event) => {
+            openStream.subscribeService('/notification', async (event: any) => {
                 if (event.meta_object?.type === 'notification') {
                     const notification = Notification.fromArray([event.data]);
                     if (!notification || !notification[0]) {
