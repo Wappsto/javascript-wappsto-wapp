@@ -5,7 +5,10 @@ export {
     sendToBackground,
     fromBackground,
     fromForeground,
+    cancelFromForeground,
+    cancelFromBackground,
     onWebHook,
+    cancelOnWebHook,
 } from './stream';
 export { Device } from './device';
 export { Value } from './value';

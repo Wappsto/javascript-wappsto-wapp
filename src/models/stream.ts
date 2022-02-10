@@ -40,6 +40,7 @@ export class Stream extends Model {
     opened = false;
     backoff = 1;
     waiting: any = [];
+    onRequestHandlers: Record<number, RequestHandler[]> = { 0: [], 1: [] };
 
     constructor() {
         super('stream', '2.1');
@@ -120,7 +121,7 @@ export class Stream extends Model {
         });
     }
 
-    close() {
+    public close() {
         if (this.socket) {
             printDebug('Closing WebSocket');
             this.ignoreReconnect = true;
@@ -144,6 +145,22 @@ export class Stream extends Model {
         );
     }
 
+    private removeSubscription(subscription: string): void {
+        if (!this.subscriptions.includes(subscription)) {
+            return;
+        }
+
+        const index = this.subscriptions.indexOf(subscription);
+        if (index !== -1) {
+            this.subscriptions.splice(index, 1);
+        }
+        this.sendMessage(
+            'DELETE',
+            '/services/2.1/websocket/open/subscription',
+            subscription
+        );
+    }
+
     public subscribe(model: IStreamModel): void {
         this.validate('subscribe', arguments);
 
@@ -157,6 +174,19 @@ export class Stream extends Model {
 
             this.addSubscription(model.path());
         });
+    }
+
+    public unsubscribe(model: IStreamModel): void {
+        this.validate('subscribe', arguments);
+
+        if (this.models[model.path()]) {
+            const index = this.models[model.path()].indexOf(model);
+            if (index !== -1) {
+                this.models[model.path()].splice(index, 1);
+            }
+
+            this.removeSubscription(model.path());
+        }
     }
 
     public async sendInternal(type: string): Promise<any> {
@@ -197,6 +227,24 @@ export class Stream extends Model {
 
             this.addSubscription(service);
         });
+    }
+
+    public unsubscribeService(service: string, handler: ServiceHandler): void {
+        this.validate('subscribeService', arguments);
+
+        if (service[0] !== '/') {
+            service = '/' + service;
+        }
+        if (this.services[service] !== undefined) {
+            const index = this.services[service].indexOf(handler);
+            if (index !== -1) {
+                this.services[service].splice(index, 1);
+            }
+
+            if (this.services[service].length === 0) {
+                this.removeSubscription(service);
+            }
+        }
     }
 
     public addSignalHandler(type: string, handler: SignalHandler): void {
@@ -264,44 +312,64 @@ export class Stream extends Model {
         }
     }
 
+    private onRequestHandler = async (
+        event: any
+    ): Promise<true | undefined> => {
+        try {
+            let res;
+            const handlers =
+                this.onRequestHandlers[Number(event.uri === 'extsync/')];
+            for (let i = 0; i < handlers.length; i++) {
+                const p = handlers[i](event.body);
+                if (p) {
+                    if (p.then) {
+                        p.then((res: any) => {
+                            this.sendResponse(event, 200, res);
+                        }).catch((res: any) => {
+                            this.sendResponse(event, 400, res);
+                        });
+                        continue;
+                    } else {
+                        res = p;
+                    }
+                }
+                this.sendResponse(event, 200, res);
+            }
+        } catch (e) {
+            this.sendResponse(event, 501, e);
+            printError('An error happend when calling request handler');
+            printError(JSON.stringify(e));
+        }
+
+        return undefined;
+    };
+
     public onRequest(handler: RequestHandler, internal: boolean): void {
         this.validate('onRequest', arguments);
 
-        this.subscribeService(
-            '/extsync/request',
-            async (event: any): Promise<any> => {
-                try {
-                    let res;
-                    if (
-                        (internal && event.uri !== 'extsync/') ||
-                        (!internal && event.uri === 'extsync/')
-                    ) {
-                        printDebug(
-                            `Discarding extsync event (${internal} - ${event.uri})`
-                        );
-                        return;
-                    }
-                    const p = handler(event.body);
-                    if (p) {
-                        if (p.then) {
-                            p.then((res: any) => {
-                                this.sendResponse(event, 200, res);
-                            }).catch((res: any) => {
-                                this.sendResponse(event, 400, res);
-                            });
-                            return;
-                        } else {
-                            res = p;
-                        }
-                    }
-                    this.sendResponse(event, 200, res);
-                } catch (e) {
-                    this.sendResponse(event, 501, e);
-                    printError('An error happend when calling request handler');
-                    printError(JSON.stringify(e));
-                }
-            }
-        );
+        if (
+            this.onRequestHandlers[0].length === 0 &&
+            this.onRequestHandlers[1].length === 0
+        ) {
+            this.subscribeService('/extsync/request', this.onRequestHandler);
+        }
+        this.onRequestHandlers[Number(internal)].push(handler);
+    }
+
+    public cancelRequest(handler: RequestHandler, internal: boolean): void {
+        this.validate('onRequest', arguments);
+
+        const index = this.onRequestHandlers[Number(internal)].indexOf(handler);
+        if (index !== -1) {
+            this.onRequestHandlers[Number(internal)].splice(index, 1);
+        }
+
+        if (
+            this.onRequestHandlers[0].length === 0 &&
+            this.onRequestHandlers[1].length === 0
+        ) {
+            this.unsubscribeService('/extsync/request', this.onRequestHandler);
+        }
     }
 
     private reconnect() {
@@ -449,12 +517,12 @@ export class Stream extends Model {
                 if (message.result) {
                     if (message.result.value !== true) {
                         self.backoff = 1;
-                        printDebug(
-                            `Stream rpc result: ${JSON.stringify(
-                                message.result.value
-                            )}`
-                        );
                     }
+                    printDebug(
+                        `Stream rpc ${message.id} result: ${JSON.stringify(
+                            message.result.value
+                        )}`
+                    );
                 } else {
                     printError(
                         `Stream rpc error: ${JSON.stringify(message.error)}`
@@ -471,7 +539,7 @@ export class Stream extends Model {
             }
 
             messages.forEach((msg: IStreamEvent) => {
-                printDebug(JSON.stringify(msg));
+                printDebug(`Stream message: ${JSON.stringify(msg)}`);
                 if (msg.meta_object?.type === 'extsync') {
                     const newData = msg.extsync || msg.data;
                     if (newData.request) {
@@ -514,11 +582,6 @@ export class Stream extends Model {
           });
           }*/
     }
-
-    public static fetch = async (): Promise<Stream[]> => {
-        const data: any = await Model.fetch(Stream.endpoint);
-        return Stream.fromArray(data);
-    };
 }
 
 const openStream: Stream = new Stream();
@@ -541,33 +604,61 @@ export async function sendToBackground(msg: any): Promise<any> {
     return sendRequest('foreground', msg);
 }
 
-function handleRequest(type: string, callback: RequestHandler): void {
-    Model.checker.RequestHandler.check(callback);
-    openStream.onRequest(async (event: any) => {
-        try {
-            const data = JSON.parse(event);
-            if (data.type === type) {
-                return callback(data.message);
-            }
-        } catch (e) {
-            /* istanbul ignore next */
-            printDebug('Failed to parse event - Foreground/Background handler');
+const request_handlers: Record<string, RequestHandler> = {};
+
+async function _handleRequest(event: any) {
+    try {
+        const data = JSON.parse(event);
+        if (request_handlers[data.type]) {
+            return request_handlers[data.type](data.message);
         }
-        return undefined;
-    }, true);
+    } catch (e) {
+        /* istanbul ignore next */
+        printDebug('Failed to parse event - Foreground/Background handler');
+    }
+    return undefined;
+}
+
+function handleRequest(type: string, callback: RequestHandler): void {
+    if (Object.keys(request_handlers).length === 0) {
+        openStream.onRequest(_handleRequest, true);
+    }
+    request_handlers[type] = callback;
 }
 
 export function fromForeground(callback: RequestHandler): void {
-    Model.checker.RequestHandler.check(callback);
+    Model.validateMethod('Stream', 'fromForeground', arguments);
     handleRequest('foreground', callback);
 }
 
 export function fromBackground(callback: RequestHandler): void {
-    Model.checker.RequestHandler.check(callback);
+    Model.validateMethod('Stream', 'fromForeground', arguments);
     handleRequest('background', callback);
 }
 
 export function onWebHook(handler: RequestHandler): void {
-    Model.checker.RequestHandler.check(handler);
+    Model.validateMethod('Stream', 'onWebHook', arguments);
     openStream.onRequest(handler, false);
+}
+
+export function cancelOnWebHook(handler: RequestHandler): void {
+    Model.validateMethod('Stream', 'onWebHook', arguments);
+    openStream.cancelRequest(handler, false);
+}
+
+function cancelFrom(type: string): void {
+    if (request_handlers[type]) {
+        delete request_handlers[type];
+        if (Object.keys(request_handlers).length === 0) {
+            openStream.cancelRequest(_handleRequest, true);
+        }
+    }
+}
+
+export function cancelFromBackground(): void {
+    cancelFrom('background');
+}
+
+export function cancelFromForeground(): void {
+    cancelFrom('foreground');
 }

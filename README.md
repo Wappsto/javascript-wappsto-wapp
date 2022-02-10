@@ -212,6 +212,8 @@ value.onControl((value, data, timestamp) => {
 ### Sending messages to and from the background
 
 It is possible to send messages to and from the background and the foreground.
+When you register a event handler, it will be called for each event send.
+The return value of your event handler is send back to the sender of the event.
 
 ```javascript
 Wappsto.fromBackground((msg) => {
@@ -228,6 +230,29 @@ let backgroundResult = await Wappsto.sendToBackground("hello");
 console.log("Result from background: "+backgroundResult);
 let foregroundResult = await Wappsto.sendToForeground("hello");
 console.log("Result from foreground: "+foregroundResult);
+```
+
+If you do not want to receive anymore messages, you can cancel the event handler.
+
+```javascript
+Wappsto.cancelFromBackground();
+Wappsto.cancelFromForeground();
+```
+
+### Web Hook
+
+If the Ext Sync is enabled for the Wapp, a event handler for WebHooks can be registered.
+
+```javascript
+wappsto.onWebHook((event) => {
+  console.log("Web Hook event", event);
+});
+```
+
+And if you want to cancel the web hook event handler, you can call `cancelWebHook`.
+
+```javascript
+wappsto.cancelOnWebHook(handler);
 ```
 
 ### Wapp Storage

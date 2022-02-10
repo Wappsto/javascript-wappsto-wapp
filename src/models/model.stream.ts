@@ -11,32 +11,32 @@ interface IStreamCallbacks {
 }
 
 export class StreamModel extends PermissionModel implements IStreamModel {
-    streamCallback: IStreamCallbacks = {} as IStreamCallbacks;
-
-    constructor(type: string, version = '2.0') {
-        super(type, version);
-        this.clearAllCallbacks();
-    }
+    streamCallback: IStreamCallbacks = {
+        change: [],
+        delete: [],
+        create: [],
+    } as IStreamCallbacks;
 
     public onChange(callback: StreamCallback): void {
-        Model.checker.StreamCallback.check(callback);
+        Model.validateMethod('Model', 'onChange', arguments);
         openStream.subscribe(this);
         this.streamCallback.change.push(callback);
     }
 
     public onDelete(callback: StreamCallback): void {
-        Model.checker.StreamCallback.check(callback);
+        Model.validateMethod('Model', 'onDelete', arguments);
         openStream.subscribe(this);
         this.streamCallback.delete.push(callback);
     }
 
     public onCreate(callback: StreamCallback): void {
-        Model.checker.StreamCallback.check(callback);
+        Model.validateMethod('Model', 'onDelete', arguments);
         openStream.subscribe(this);
         this.streamCallback.create.push(callback);
     }
 
     public clearAllCallbacks(): void {
+        openStream.unsubscribe(this);
         this.streamCallback.change = [];
         this.streamCallback.delete = [];
         this.streamCallback.create = [];
