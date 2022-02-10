@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-var-requires: 0 */
 describe('session', () => {
     const OLD_ENV = process.env;
 
@@ -11,7 +12,6 @@ describe('session', () => {
     });
 
     it('loads session to empty session when ENV is not defined', () => {
-        /* eslint @typescript-eslint/no-var-requires: 0 */
         const session = require('../src/session').session;
 
         expect(session).toEqual('');
