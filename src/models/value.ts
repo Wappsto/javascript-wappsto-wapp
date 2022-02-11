@@ -4,6 +4,7 @@ import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { State } from './state';
+import { checkList } from '../util/check_list';
 import { printDebug } from '../util/debug';
 import {
     IValue,
@@ -36,6 +37,10 @@ export class Value extends StreamModel implements IValue {
     status?: string;
     @Type(() => State)
     state: State[] = [];
+    stateCallbacks: Record<string, ValueStreamCallback[]> = {
+        Control: [],
+        Report: [],
+    };
 
     constructor(name?: string) {
         super('value');
@@ -120,11 +125,16 @@ export class Value extends StreamModel implements IValue {
         type: StateType,
         callback: ValueStreamCallback
     ): void {
-        const state = this.findState(type);
-        if (state) {
-            state.onChange(() => {
-                callback(this, state.data, state.timestamp);
-            });
+        if (!checkList(this.stateCallbacks[type], callback)) {
+            this.stateCallbacks[type].push(callback);
+            const state = this.findState(type);
+            if (state) {
+                state.onChange(() => {
+                    this.stateCallbacks[state.type].forEach((c) => {
+                        c(this, state.data, state.timestamp);
+                    });
+                });
+            }
         }
     }
 

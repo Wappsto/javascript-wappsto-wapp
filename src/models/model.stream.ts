@@ -1,6 +1,7 @@
 import { Model } from './model';
 import { openStream } from './stream';
 import { printError } from '../util/debug';
+import { checkList } from '../util/check_list';
 import { PermissionModel } from './model.permission';
 import { IStreamModel, IStreamEvent, StreamCallback } from '../util/interfaces';
 
@@ -20,19 +21,25 @@ export class StreamModel extends PermissionModel implements IStreamModel {
     public onChange(callback: StreamCallback): void {
         Model.validateMethod('Model', 'onChange', arguments);
         openStream.subscribe(this);
-        this.streamCallback.change.push(callback);
+        if (!checkList(this.streamCallback.change, callback)) {
+            this.streamCallback.change.push(callback);
+        }
     }
 
     public onDelete(callback: StreamCallback): void {
         Model.validateMethod('Model', 'onDelete', arguments);
         openStream.subscribe(this);
-        this.streamCallback.delete.push(callback);
+        if (!checkList(this.streamCallback.delete, callback)) {
+            this.streamCallback.delete.push(callback);
+        }
     }
 
     public onCreate(callback: StreamCallback): void {
         Model.validateMethod('Model', 'onDelete', arguments);
         openStream.subscribe(this);
-        this.streamCallback.create.push(callback);
+        if (this.streamCallback.create.indexOf(callback) === -1) {
+            this.streamCallback.create.push(callback);
+        }
     }
 
     public clearAllCallbacks(): void {

@@ -159,19 +159,23 @@ export class Stream extends Model {
         );
     }
 
-    public subscribe(model: IStreamModel): void {
+    public subscribe(model: IStreamModel): boolean {
         this.validate('subscribe', arguments);
 
-        this.open().then(() => {
-            if (!this.models[model.path()]) {
-                this.models[model.path()] = [];
-            }
+        if (!this.models[model.path()]) {
+            this.models[model.path()] = [];
+        }
+        if (this.models[model.path()].indexOf(model) === -1) {
             this.models[model.path()].push(model);
 
-            printDebug(`Add subscription: ${model.path()}`);
+            this.open().then(() => {
+                printDebug(`Add subscription: ${model.path()}`);
+                this.addSubscription(model.path());
+            });
 
-            this.addSubscription(model.path());
-        });
+            return true;
+        }
+        return false;
     }
 
     public unsubscribe(model: IStreamModel): void {

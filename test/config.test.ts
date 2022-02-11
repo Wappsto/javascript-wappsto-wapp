@@ -34,13 +34,12 @@ describe('config', () => {
         } catch (e: any) {
             error = e.message;
         }
-        try {
-            let v = new Value();
-            v.onControl((v,t) => {
 
-            });
-        } catch (e: any) {
-        }
+        const v = new Value();
+        v.onControl((v, t) => {
+            console.log('control');
+        });
+
         expect(error).toBe(
             'value.param is not a IConfig; value.param.wrong is extraneous'
         );

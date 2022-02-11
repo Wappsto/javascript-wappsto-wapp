@@ -63,10 +63,18 @@ describe('stream', () => {
         const fun = jest.fn();
         const value = new Value();
         const state = new State('Control');
+        const datas: string[] = [];
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         value.state.push(state);
         value.onControl(fun);
+        value.onControl(fun);
+        value.onControl((v, s, t) => {
+            datas.push(s);
+        });
+        value.onControl((v, s, t) => {
+            datas.push(s);
+        });
         value.onReport(fun);
         await server.connected;
 
@@ -88,7 +96,9 @@ describe('stream', () => {
                 },
             },
         ]);
-
+        await new Promise((r) => setTimeout(r, 1));
+        expect(datas.length).toBe(1);
+        expect(fun).toHaveBeenCalledTimes(1);
         expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
     });
 
@@ -600,12 +610,14 @@ describe('stream', () => {
     });
 
     it('can handle timeout when sending a request', async () => {
-        mockedAxios.post.mockRejectedValueOnce({ response: { data : { code: 507000000 }}})
+        mockedAxios.post.mockRejectedValueOnce({
+            response: { data: { code: 507000000 } },
+        });
 
-        let res = await sendToForeground("test");
+        const res = await sendToForeground('test');
 
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
-            message: "test",
+            message: 'test',
             type: 'background',
         });
 
