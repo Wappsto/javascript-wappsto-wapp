@@ -598,4 +598,18 @@ describe('stream', () => {
         expect(funF).toHaveBeenCalledTimes(2);
         expect(funB).toHaveBeenCalledTimes(2);
     });
+
+    it('can handle timeout when sending a request', async () => {
+        mockedAxios.post.mockRejectedValueOnce({ response: { data : { code: 507000000 }}})
+
+        let res = await sendToForeground("test");
+
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
+            message: "test",
+            type: 'background',
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(res).toEqual({});
+    });
 });
