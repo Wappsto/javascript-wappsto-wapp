@@ -2,7 +2,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { config } from '../src/index';
+import { config, Value } from '../src/index';
 import { printDebug, printWarning, printError } from '../src/util/debug';
 import { IConfig } from '../src/util/interfaces';
 console.log = jest.fn();
@@ -29,11 +29,17 @@ describe('config', () => {
         const wrong = { wrong: 'test' } as IConfig;
         let error = undefined;
         try {
-            console.log(wrong);
             config(wrong);
             expect(true).toBe(false);
         } catch (e: any) {
             error = e.message;
+        }
+        try {
+            let v = new Value();
+            v.onControl((v,t) => {
+
+            });
+        } catch (e: any) {
         }
         expect(error).toBe(
             'value.param is not a IConfig; value.param.wrong is extraneous'

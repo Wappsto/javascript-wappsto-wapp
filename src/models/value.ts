@@ -203,19 +203,16 @@ export class Value extends StreamModel implements IValue {
         timestamp: string | undefined = undefined
     ): Promise<void> {
         this.validate('control', arguments);
-
         this.findStateAndUpdate('Control', data, timestamp);
     }
 
     public onControl(callback: ValueStreamCallback): void {
         this.validate('onControl', arguments);
-
         this.findStateAndCallback('Control', callback);
     }
 
     public onReport(callback: ValueStreamCallback): void {
         this.validate('onReport', arguments);
-
         this.findStateAndCallback('Report', callback);
     }
 

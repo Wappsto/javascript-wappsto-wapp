@@ -95,6 +95,7 @@ export class Model implements IModel {
         try {
             await this._create(params);
         } catch (e) {
+            /* istanbul ignore next */
             printHttpError(e);
         }
     }
@@ -108,6 +109,7 @@ export class Model implements IModel {
             );
             this.parse(response.data);
         } catch (e) {
+            /* istanbul ignore next */
             printHttpError(e);
         }
     }
@@ -120,6 +122,7 @@ export class Model implements IModel {
             );
             this.parse(response.data);
         } catch (e) {
+            /* istanbul ignore next */
             printHttpError(e);
         }
     }
@@ -130,6 +133,7 @@ export class Model implements IModel {
             this.parent?.removeChild(this);
             this.meta.id = undefined;
         } catch (e) {
+            /* istanbul ignore next */
             printHttpError(e);
         }
     }
