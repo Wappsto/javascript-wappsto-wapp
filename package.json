@@ -28,7 +28,7 @@
    },
    "husky": {
       "hooks": {
-         "pre-commit": "dts lint"
+         "pre-commit": "dts lint && dts test && dts build"
       }
    },
    "prettier": {
