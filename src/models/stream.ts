@@ -80,8 +80,6 @@ export class Stream extends Model {
 
     private open(): Promise<void> {
         return new Promise<void>((resolve) => {
-            const self = this;
-
             if (this.socket) {
                 resolve();
                 return;
@@ -99,7 +97,7 @@ export class Stream extends Model {
             const openTimeout: ReturnType<typeof setTimeout> = setTimeout(
                 () => {
                     /* istanbul ignore next */
-                    self.reconnect();
+                    this.reconnect();
                 },
                 1000 + this.getTimeout()
             );
@@ -484,20 +482,18 @@ export class Stream extends Model {
     }
 
     private addListeners() {
-        const self = this;
-
         if (!this.socket) {
             /* istanbul ignore next */
             return;
         }
 
         const reconnect = () => {
-            setTimeout(function () {
-                self.reconnect();
-            }, self.getTimeout());
+            setTimeout(() => {
+                this.reconnect();
+            }, this.getTimeout());
         };
 
-        this.socket.onmessage = function (ev: any): void {
+        this.socket.onmessage = (ev: any) => {
             let message;
             if (ev.type === 'message') {
                 try {
@@ -516,7 +512,7 @@ export class Stream extends Model {
             if (message.jsonrpc) {
                 if (message.result) {
                     if (message.result.value !== true) {
-                        self.backoff = 1;
+                        this.backoff = 1;
                     }
                     printDebug(
                         `Stream rpc ${message.id} result: ${JSON.stringify(
@@ -543,31 +539,31 @@ export class Stream extends Model {
                 if (msg.meta_object?.type === 'extsync') {
                     const newData = msg.extsync || msg.data;
                     if (newData.request) {
-                        self.handleMessage('extsync/request', newData);
+                        this.handleMessage('extsync/request', newData);
                     } else if (
                         newData.uri !== 'extsync/wappsto/editor/console'
                     ) {
-                        self.handleMessage('extsync', newData);
+                        this.handleMessage('extsync', newData);
                     }
                     return;
                 }
-                const traceId = self.checkAndSendTrace(msg);
-                self.handleMessage('message', msg, traceId);
+                const traceId = this.checkAndSendTrace(msg);
+                this.handleMessage('message', msg, traceId);
             });
         };
 
-        this.socket.onerror = function (event: any) {
+        this.socket.onerror = (event: any) => {
             try {
-                self.handleEvent('error', event);
+                this.handleEvent('error', event);
             } catch (e) {
                 /* istanbul ignore next */
-                printError('Stream error: ' + self.websocketUrl);
+                printError('Stream error: ' + this.websocketUrl);
             }
         };
 
-        this.socket.onclose = function (event: CloseEvent) {
-            if (self.ignoreReconnect) {
-                self.handleEvent('close', event);
+        this.socket.onclose = (event: CloseEvent) => {
+            if (this.ignoreReconnect) {
+                this.handleEvent('close', event);
             } else {
                 reconnect();
             }
