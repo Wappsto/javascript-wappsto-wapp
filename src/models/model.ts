@@ -80,6 +80,7 @@ export class Model implements IModel {
                 );
             }
         }
+
         const response = await wappsto.post(
             this.getUrl(),
             this.toJSON(),
@@ -238,15 +239,17 @@ export class Model implements IModel {
     }
 
     private removeUndefined(obj: Record<string, any>) {
-        Object.keys(obj).forEach((key) => {
-            const value = obj[key];
-            const type = typeof value;
-            if (type === 'object') {
-                this.removeUndefined(value);
-            } else if (type === 'undefined') {
-                delete obj[key];
-            }
-        });
+        if (obj) {
+            Object.keys(obj).forEach((key) => {
+                const value = obj[key];
+                const type = typeof value;
+                if (type === 'object') {
+                    this.removeUndefined(value);
+                } else if (type === 'undefined') {
+                    delete obj[key];
+                }
+            });
+        }
         return obj;
     }
 }

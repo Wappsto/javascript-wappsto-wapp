@@ -4,8 +4,8 @@ import { INotificationBase, INotificationCustom } from '../util/interfaces';
 export class Notification extends Model {
     static endpoint = '/2.1/notification';
     read?: string;
-    custom?: INotificationCustom;
     base?: INotificationBase;
+    custom?: INotificationCustom;
     times?: number;
     timestamp?: string;
     identifier?: string;
