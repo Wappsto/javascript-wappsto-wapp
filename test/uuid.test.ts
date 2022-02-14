@@ -9,5 +9,7 @@ describe('util', () => {
         expect(isUUID('asd')).toEqual(false);
         expect(isUUID('b8546b68-548a-420b-8882-b96dbaa1eda')).toEqual(false);
         expect(isUUID('b8546b68-548a-420b-8882-b96dbaa1edag')).toEqual(false);
+        expect(isUUID('b8546b68-548a-420b-8882-b96dbaa1edaee')).toEqual(false);
+        expect(isUUID('b8546b68-548a-420b-8882eb96dbaa1edae')).toEqual(false);
     });
 });
