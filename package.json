@@ -3,6 +3,7 @@
     "version": "0.7.5",
     "license": "MIT",
     "author": "Seluxit A/S",
+    "main": "dist/wappsto-wapp.cjs.production.min.js",
     "module": "dist/wappsto-wapp.esm.js",
     "typings": "dist/index.d.ts",
     "files": [
