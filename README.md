@@ -10,6 +10,12 @@ To install the node module in your project, run this command:
 npm i --save wappsto-wapp
 ```
 
+And include it in your project like this:
+
+```javascript
+let Wappsto = require('wappsto-wapp');
+```
+
 To use it in a webpage, include this script tag:
 
 ```html
@@ -292,6 +298,15 @@ try {
 } catch(e) {
   console.log("Failed to get OAuth token", e);
 }
+```
+
+### Notification
+
+It is possible to send custom notification to the main Wappsto.com
+dashboard.
+
+```javascript
+await wappsto.notifi('This is a custom notification from my Wapp');
 ```
 
 ### Background logging

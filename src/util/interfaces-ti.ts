@@ -339,6 +339,10 @@ export const INotificationBase = t.iface([], {
     identifier: 'string',
 });
 
+export const INotificationFunc = t.iface([], {
+    notify: t.func('void', t.param('message', 'string')),
+});
+
 export const LogOperation = t.union(
     t.lit('arbitrary'),
     t.lit('array_agg'),
@@ -527,6 +531,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     INotificationCustomData,
     INotificationCustom,
     INotificationBase,
+    INotificationFunc,
     LogOperation,
     LogGroupBy,
     ILogRequest,

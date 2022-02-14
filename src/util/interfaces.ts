@@ -260,6 +260,10 @@ export interface INotificationBase {
     identifier: string;
 }
 
+export interface INotificationFunc {
+    notify(message: string): Promise<void>;
+}
+
 export type LogOperation =
     | 'arbitrary'
     | 'array_agg'

@@ -8,7 +8,7 @@ describe('notification', () => {
     it('can create a new notification', () => {
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
 
-        notify({ message: 'message' });
+        notify('message');
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(

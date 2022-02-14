@@ -7,6 +7,8 @@
     "typings": "dist/index.d.ts",
     "files": [
         "dist/wappsto-wapp.esm.js",
+        "dist/wappsto-wapp.cjs.production.min.js",
+        "dist/wappsto-wapp.js",
         "dist/*.d.ts",
         "dist/**/*.d.ts"
     ],

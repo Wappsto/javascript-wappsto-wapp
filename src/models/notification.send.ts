@@ -1,18 +1,19 @@
 import { PermissionModel } from './model.permission';
-import { INotificationCustom } from '../util/interfaces';
+import { Model } from '../models/model';
 
-export async function notify(message: any): Promise<void> {
-    const noti = new SendNotification();
-    noti.custom = message;
+export async function notify(message: string): Promise<void> {
+    Model.validateMethod('notification', 'notify', arguments);
+    const noti = new SendNotification(message);
     await noti.create();
 }
 
 export class SendNotification extends PermissionModel {
     static endpoint = '/2.1/notification';
-    custom?: INotificationCustom;
+    custom: any = { message: '' };
 
-    constructor() {
+    constructor(message: string) {
         super('notification', '2.1');
+        this.custom.message = message;
     }
 
     attributes(): string[] {
