@@ -1,9 +1,10 @@
-import * as _ from 'lodash';
+import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { State } from './state';
+import { checkList } from '../util/helpers';
 import { printDebug } from '../util/debug';
 import {
     IValue,
@@ -25,6 +26,7 @@ export class Value extends StreamModel implements IValue {
 
     name: string;
     permission: ValuePermission = 'r';
+    tmp_permission: ValuePermission = 'r';
     type?: string;
     period?: string;
     delta?: string;
@@ -35,6 +37,10 @@ export class Value extends StreamModel implements IValue {
     status?: string;
     @Type(() => State)
     state: State[] = [];
+    stateCallbacks: Record<string, ValueStreamCallback[]> = {
+        Control: [],
+        Report: [],
+    };
 
     constructor(name?: string) {
         super('value');
@@ -61,13 +67,32 @@ export class Value extends StreamModel implements IValue {
         ];
     }
 
-    public static fetch = async () => {
-        let params = { expand: 2 };
-        let url = Value.endpoint;
+    public perserve(): void {
+        this.tmp_permission = this.permission;
+    }
 
-        let data = await Model.fetch(url, params);
+    public restore(): void {
+        this.permission = this.tmp_permission;
+    }
+
+    public static fetch = async () => {
+        const params = { expand: 2 };
+        const url = Value.endpoint;
+
+        const data = await Model.fetch(url, params);
         return Value.fromArray(data);
     };
+
+    public async loadAllChildren(): Promise<void> {
+        for (let i = 0; i < this.state.length; i++) {
+            if (typeof this.state[i] === 'string') {
+                const id: string = this.state[i] as unknown as string;
+                this.state[i] = new State();
+                this.state[i].meta.id = id;
+                await this.state[i].refresh();
+            }
+        }
+    }
 
     private findState(type: StateType): State | undefined {
         let res: State | undefined = undefined;
@@ -88,7 +113,7 @@ export class Value extends StreamModel implements IValue {
         data: string | number,
         timestamp: string | undefined
     ): Promise<void> {
-        let state = this.findState(type);
+        const state = this.findState(type);
         if (state) {
             state.data = data.toString();
             state.timestamp = timestamp || this.getTime();
@@ -100,18 +125,21 @@ export class Value extends StreamModel implements IValue {
         type: StateType,
         callback: ValueStreamCallback
     ): void {
-        let state = this.findState(type);
-        if (state) {
-            state.onChange(() => {
-                if (state) {
-                    callback(this, state.data, state.timestamp);
-                }
-            });
+        if (!checkList(this.stateCallbacks[type], callback)) {
+            this.stateCallbacks[type].push(callback);
+            const state = this.findState(type);
+            if (state) {
+                state.onChange(() => {
+                    this.stateCallbacks[state.type].forEach((c) => {
+                        c(this, state.data, state.timestamp);
+                    });
+                });
+            }
         }
     }
 
-    public createState = async (params: IState) => {
-        this.validate('createState', [params]);
+    public async createState(params: IState) {
+        this.validate('createState', arguments);
 
         let create = false;
         let state = this.findState(params.type);
@@ -119,15 +147,15 @@ export class Value extends StreamModel implements IValue {
             state = new State(params.type);
             create = true;
         } else {
-            printDebug(`Using existing state with id ${state.meta.id}`);
+            printDebug(`Using existing state with id ${state.id()}`);
         }
 
-        let oldJson = state.toJSON();
+        const oldJson = state.toJSON();
         state.parse(params);
-        state.parent = this;
-        let newJson = state.toJSON();
+        const newJson = state.toJSON();
 
-        if (create || !_.isEqual(oldJson, newJson)) {
+        state.parent = this;
+        if (create || !isEqual(oldJson, newJson)) {
             if (create) {
                 await state.create();
                 this.state.push(state);
@@ -137,10 +165,10 @@ export class Value extends StreamModel implements IValue {
         }
 
         return state;
-    };
+    }
 
     private findStateAndData(type: StateType): string | undefined {
-        let state = this.findState(type);
+        const state = this.findState(type);
         if (state) {
             return state.data;
         }
@@ -148,7 +176,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     private findStateAndTimestamp(type: StateType): string | undefined {
-        let state = this.findState(type);
+        const state = this.findState(type);
         if (state) {
             return state.timestamp;
         }
@@ -185,19 +213,16 @@ export class Value extends StreamModel implements IValue {
         timestamp: string | undefined = undefined
     ): Promise<void> {
         this.validate('control', arguments);
-
         this.findStateAndUpdate('Control', data, timestamp);
     }
 
     public onControl(callback: ValueStreamCallback): void {
         this.validate('onControl', arguments);
-
         this.findStateAndCallback('Control', callback);
     }
 
     public onReport(callback: ValueStreamCallback): void {
         this.validate('onReport', arguments);
-
         this.findStateAndCallback('Report', callback);
     }
 
@@ -212,14 +237,14 @@ export class Value extends StreamModel implements IValue {
         });
     }
 
-    private findStateAndLog = async (
+    private async findStateAndLog(
         type: StateType,
         request: ILogRequest
-    ): Promise<ILogResponse> => {
-        let state = this.findState(type);
+    ): Promise<ILogResponse> {
+        const state = this.findState(type);
         if (state) {
-            let response = await Model.fetch(
-                `/2.1/log/${state.meta.id}/state`,
+            const response = await Model.fetch(
+                `/2.1/log/${state.id()}/state`,
                 request
             );
             return response[0] as ILogResponse;
@@ -234,42 +259,38 @@ export class Value extends StreamModel implements IValue {
             more: false,
             type: 'state',
         };
-    };
+    }
 
-    public getReportLog = async (
-        request: ILogRequest
-    ): Promise<ILogResponse> => {
-        this.validate('getReportLog', [request]);
+    public async getReportLog(request: ILogRequest): Promise<ILogResponse> {
+        this.validate('getReportLog', arguments);
 
         return this.findStateAndLog('Report', request);
-    };
+    }
 
-    public getControlLog = async (
-        request: ILogRequest
-    ): Promise<ILogResponse> => {
-        this.validate('getControlLog', [request]);
+    public async getControlLog(request: ILogRequest): Promise<ILogResponse> {
+        this.validate('getControlLog', arguments);
 
         return this.findStateAndLog('Control', request);
-    };
+    }
 
     static find = async (
         params: Record<string, any>,
         quantity: number | 'all' = 1,
-        usage: string = ''
+        usage = ''
     ) => {
         Value.validate('find', [params, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value`;
         }
 
-        let query: Record<string, any> = {
+        const query: Record<string, any> = {
             expand: 2,
         };
-        for (let key in params) {
+        for (const key in params) {
             query[`this_${key}`] = params[key];
         }
 
-        let data = await PermissionModel.request(
+        const data = await PermissionModel.request(
             Value.endpoint,
             quantity,
             usage,
@@ -281,7 +302,7 @@ export class Value extends StreamModel implements IValue {
     static findByName = async (
         name: string,
         quantity: number | 'all' = 1,
-        usage: string = ''
+        usage = ''
     ) => {
         Value.validate('findByName', [name, quantity, usage]);
         if (usage === '') {
@@ -293,7 +314,7 @@ export class Value extends StreamModel implements IValue {
     static findByType = async (
         type: string,
         quantity: number | 'all' = 1,
-        usage: string = ''
+        usage = ''
     ) => {
         Value.validate('findByType', [type, quantity, usage]);
         if (usage === '') {
@@ -302,14 +323,20 @@ export class Value extends StreamModel implements IValue {
         return Value.find({ type: type }, quantity, usage);
     };
 
-    static findAllByName = async (name: string, usage: string = '') => {
+    static findAllByName = async (name: string, usage = '') => {
         Value.validate('findAllByName', [name, usage]);
         return Value.findByName(name, 'all', usage);
     };
 
-    static findAllByType = async (type: string, usage: string = '') => {
+    static findAllByType = async (type: string, usage = '') => {
         Value.validate('findAllByType', [type, usage]);
         return Value.findByType(type, 'all', usage);
+    };
+
+    static findById = async (id: string) => {
+        Value.validate('findById', [id]);
+        const res = await Model.fetch(`${Value.endpoint}/${id}`, { expand: 2 });
+        return Value.fromArray(res)[0];
     };
 
     private static validate(name: string, params: any): void {

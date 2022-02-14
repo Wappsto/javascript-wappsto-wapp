@@ -5,6 +5,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { OAuth } from '../src/index';
 import { openStream } from '../src/models/stream';
+console.error = jest.fn();
 
 describe('oauth', () => {
     const response = {
@@ -30,10 +31,31 @@ describe('oauth', () => {
         jest.clearAllMocks();
     });
 
+    it('can call requet handler', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    data: {
+                        request: 'https://wappsto.com/oauth',
+                    },
+                },
+            ],
+        });
+
+        let requestUrl = '';
+        OAuth.getToken('test', (url) => {
+            requestUrl = url;
+        });
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(requestUrl).toBe('https://wappsto.com/oauth');
+    });
+
     it('can return a token comming from stream', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
 
-        let r = OAuth.getToken('test');
+        const r = OAuth.getToken('test');
         await server.connected;
 
         server.send({
@@ -59,7 +81,7 @@ describe('oauth', () => {
             data: response,
         });
 
-        let token = await r;
+        const token = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
@@ -73,7 +95,7 @@ describe('oauth', () => {
         //mockedAxios.get.mockResolvedValueOnce({ data: [{response}] });
         mockedAxios.get.mockResolvedValueOnce({ data: response });
 
-        let token = await OAuth.getToken('test');
+        const token = await OAuth.getToken('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
@@ -81,5 +103,35 @@ describe('oauth', () => {
             {}
         );
         expect(token.oauth_token).toBe('oauth test token');
+    });
+
+    it('will fail when there is no oauth', async () => {
+        mockedAxios.get.mockRejectedValueOnce({
+            response: {
+                data: {
+                    message:
+                        'This installation does not have any oauth external with this name',
+                    data: {
+                        wrong_value: 'name',
+                        wrong_attribute: 'test',
+                    },
+                    code: 436000001,
+                    service: 'installation',
+                    internal_code: 'oauth_connect_no_oauth_found',
+                },
+            },
+        });
+
+        let error = '';
+        try {
+            await OAuth.getToken('test');
+        } catch (e: any) {
+            error = e.toString();
+        }
+
+        expect(console.error).toHaveBeenCalledTimes(1);
+        expect(error).toBe(
+            'This installation does not have any oauth external with this name'
+        );
     });
 });

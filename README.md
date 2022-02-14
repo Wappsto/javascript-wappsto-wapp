@@ -10,6 +10,12 @@ To install the node module in your project, run this command:
 npm i --save wappsto-wapp
 ```
 
+And include it in your project like this:
+
+```javascript
+let Wappsto = require('wappsto-wapp');
+```
+
 To use it in a webpage, include this script tag:
 
 ```html
@@ -155,6 +161,16 @@ let values = network.findValueByType('value type');
 let values = device.findValueByType('value type');
 ```
 
+### Get retrive object by ID
+
+If you already have access to some objects, you can retrive them directly by their ID.
+
+```javascript
+let network = Network.findByID('655937ac-c054-4cc0-80d7-400486b4ceb3');
+let device = Device.findByID('066c65d7-6612-4826-9e23-e63a579fbe8b');
+let value = Value.findByID('1157b4fa-2745-4940-9201-99eee5929eff');
+```
+
 ### To report a change in the value
 
 To send a new data point to wappsto, just call the 'report' function on the value.
@@ -202,6 +218,8 @@ value.onControl((value, data, timestamp) => {
 ### Sending messages to and from the background
 
 It is possible to send messages to and from the background and the foreground.
+When you register a event handler, it will be called for each event send.
+The return value of your event handler is send back to the sender of the event.
 
 ```javascript
 Wappsto.fromBackground((msg) => {
@@ -220,36 +238,78 @@ let foregroundResult = await Wappsto.sendToForeground("hello");
 console.log("Result from foreground: "+foregroundResult);
 ```
 
+If you do not want to receive anymore messages, you can cancel the event handler.
+
+```javascript
+Wappsto.cancelFromBackground();
+Wappsto.cancelFromForeground();
+```
+
+### Web Hook
+
+If the Ext Sync is enabled for the Wapp, a event handler for WebHooks can be registered.
+
+```javascript
+wappsto.onWebHook((event) => {
+  console.log("Web Hook event", event);
+});
+```
+
+And if you want to cancel the web hook event handler, you can call `cancelWebHook`.
+
+```javascript
+wappsto.cancelOnWebHook(handler);
+```
+
 ### Wapp Storage
 
-It is possible to storage configuration parameters and other information in the Wapp Storage.
+It is possible to store configuration parameters and other information in the Wapp Storage.
 This data is persisted on Wappsto and can be read from the foreground and background wapp.
-The data can be deleted by calling the ´clear` function.
+The data can be reload from the server by calling `refresh` function.
+The data can be deleted by calling the `clear` function.
+A callback can also be registered to be notified when the storage is updated.
 
 ```javascript
 let storage = await Wappsto.wappStorage();
+//Signal when storage is changed
+storage.onChange(() => {
+	console.log("Storage is updated");
+});
 await storage.set('key', 'item');
 let data = storage.get('key');
+// Refresh the data from the server
+await storage.refresh();
 // Delete all the saved data
 await storage.clear();
 ```
 
 ### OAuth
 
-To get an already created OAuth token, call the getToken with the name of the oauth. If there is no token generated yet,
-then depending on if the wapp is running in a browser or in node. If it running in a browser, then you need to catch the error
-that contains the url that the user needs to visit to generate the token. Else when it is running in node, it just waits for
-the token to be generated.
+To get an already created OAuth token, call the getToken with the name of the oauth.
+If there is no token generated yet, a `Request Handler` needs to be supplied,
+so that the library can call it with the url that the user needs to visit, in order to generate the OAuth Token.
 
 ```javascript
 try {
-  let token = await Wappsto.OAuth.getToken('oauth name');
-} catch(token_url) {
-  console.log("Please visit " + token_url);
+  let token = await Wappsto.OAuth.getToken('oauth name', (url) => {
+	console.log("Please visit " + url + " to generate the OAuth token");
+  });
+  console.log("OAuth Token", token);
+} catch(e) {
+  console.log("Failed to get OAuth token", e);
 }
 ```
 
-### Background loggering
+### Notification
+
+It is possible to send custom notification to the main Wappsto.com
+dashboard.
+
+```javascript
+await wappsto.notifi('This is a custom notification from my Wapp');
+```
+
+### Background logging
 
 The debug log from the background wapp can be turn on like this:
 
@@ -291,4 +351,14 @@ It is possible to send your own requests to wappsto by using the 'request' objec
 ```javascript
 let netwoks = await Wappsto.request.get('/network');
 await Wappsto.request.post('/network', {name: 'Network Name'});
+```
+
+### Stream Reconnect Count
+
+It is possible to change from the default 10 times the stream will try to reconnect in case of connection errors.
+
+```javascript
+wappsto.config({
+	reconnectCount: 3
+});
 ```

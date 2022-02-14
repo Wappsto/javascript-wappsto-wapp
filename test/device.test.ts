@@ -3,12 +3,11 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import 'reflect-metadata';
 import { Device, Value, ValueTemplate, config } from '../src/index';
 import { openStream } from '../src/models/stream';
 
 describe('device', () => {
-    let response = {
+    const response = {
         meta: {
             type: 'device',
             version: '2.0',
@@ -17,7 +16,7 @@ describe('device', () => {
         name: 'test',
     };
 
-    let response2Devices = [
+    const response2Devices = [
         {
             meta: {
                 type: 'device',
@@ -48,7 +47,7 @@ describe('device', () => {
 
     it('can create a new device class', () => {
         const name = 'Test Device';
-        let device = new Device(name);
+        const device = new Device(name);
 
         expect(device.name).toEqual(name);
     });
@@ -56,7 +55,7 @@ describe('device', () => {
     it('can create a device on wappsto', async () => {
         mockedAxios.post.mockResolvedValueOnce({ data: response });
 
-        let device = new Device('test');
+        const device = new Device('test');
         await device.create();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -81,9 +80,9 @@ describe('device', () => {
         mockedAxios.post.mockResolvedValueOnce({ data: response });
         mockedAxios.patch.mockResolvedValueOnce({ data: response });
 
-        let device = new Device('test');
+        const device = new Device('test');
         await device.create();
-        let oldName = response.name;
+        const oldName = response.name;
         response.name = 'new name';
         device.name = 'new name';
         await device.update();
@@ -103,7 +102,7 @@ describe('device', () => {
     it('can create a new device from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 
-        let devices = await Device.fetch();
+        const devices = await Device.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
@@ -116,7 +115,7 @@ describe('device', () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 
         config({ verbose: true });
-        let devices = await Device.fetch();
+        const devices = await Device.fetch();
         config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
@@ -126,12 +125,31 @@ describe('device', () => {
         expect(devices[0]?.name).toEqual('test');
     });
 
+    it('can find device by id', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+
+        const device = await Device.findById(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(device.name).toEqual('test');
+        expect(device.toJSON).toBeDefined();
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/device/b62e285a-5188-4304-85a0-3982dcb575bc',
+            {
+                params: { expand: 3 },
+            }
+        );
+    });
+
     it('can find a device by name', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [response] });
 
-        let r = Device.findByName('test');
+        const r = Device.findByName('test');
         await server.connected;
 
         server.send({
@@ -148,7 +166,7 @@ describe('device', () => {
             },
         });
 
-        let device = await r;
+        const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
@@ -173,13 +191,15 @@ describe('device', () => {
             },
         });
         expect(device[0].toJSON).toBeDefined();
-        expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(device[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
     it('can find a device by product', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 
-        let devices = await Device.findByProduct('test');
+        const devices = await Device.findByProduct('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
@@ -192,10 +212,12 @@ describe('device', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(devices[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(devices[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
     });
 
-    let templateHelperStart = () => {
+    const templateHelperStart = () => {
         mockedAxios.post
             .mockResolvedValueOnce({
                 data: [
@@ -232,7 +254,7 @@ describe('device', () => {
             });
     };
 
-    let templateHelperDone = () => {
+    const templateHelperDone = () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
@@ -265,9 +287,9 @@ describe('device', () => {
     it('can create a value from a NUMBER template', async () => {
         templateHelperStart();
 
-        let device = new Device();
+        const device = new Device();
         device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
-        let value = await device.createValue(
+        const value = await device.createValue(
             'name',
             'rw',
             ValueTemplate.NUMBER
@@ -306,9 +328,9 @@ describe('device', () => {
     it('can create a value from a STRING template', async () => {
         templateHelperStart();
 
-        let device = new Device();
+        const device = new Device();
         device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
-        let value = await device.createValue(
+        const value = await device.createValue(
             'name',
             'rw',
             ValueTemplate.STRING
@@ -345,9 +367,9 @@ describe('device', () => {
     it('can create a value from a XML template', async () => {
         templateHelperStart();
 
-        let device = new Device();
+        const device = new Device();
         device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
-        let value = await device.createValue('name', 'rw', ValueTemplate.XML);
+        const value = await device.createValue('name', 'rw', ValueTemplate.XML);
 
         templateHelperDone();
 
@@ -380,9 +402,13 @@ describe('device', () => {
     it('can create a value from a BLOB template', async () => {
         templateHelperStart();
 
-        let device = new Device();
+        const device = new Device();
         device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
-        let value = await device.createValue('name', 'rw', ValueTemplate.BLOB);
+        const value = await device.createValue(
+            'name',
+            'rw',
+            ValueTemplate.BLOB
+        );
 
         templateHelperDone();
 
@@ -422,6 +448,7 @@ describe('device', () => {
                             version: '2.0',
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
+                        permission: '',
                     },
                 ],
             })
@@ -448,9 +475,9 @@ describe('device', () => {
                 ],
             });
 
-        let device = new Device();
+        const device = new Device();
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
-        let value = await device.createNumberValue({
+        const value = await device.createNumberValue({
             name: 'Value Name',
             permission: 'rw',
             type: 'type',
@@ -462,6 +489,18 @@ describe('device', () => {
             unit: 'unit',
             si_conversion: 'si_conversion',
         });
+
+        expect(value.name).toEqual('Value Name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('type');
+        expect(value.period).toEqual('period');
+        expect(value.delta).toEqual('delta');
+        expect(value.number?.min).toEqual(0);
+        expect(value.number?.max).toEqual(1);
+        expect(value.number?.step).toEqual(1);
+        expect(value.number?.unit).toEqual('unit');
+        expect(value.number?.si_conversion).toEqual('si_conversion');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
@@ -512,17 +551,6 @@ describe('device', () => {
             }),
             {}
         );
-        expect(value.name).toEqual('Value Name');
-        expect(value.permission).toEqual('rw');
-        expect(value.type).toEqual('type');
-        expect(value.period).toEqual('period');
-        expect(value.delta).toEqual('delta');
-        expect(value.number?.min).toEqual(0);
-        expect(value.number?.max).toEqual(1);
-        expect(value.number?.step).toEqual(1);
-        expect(value.number?.unit).toEqual('unit');
-        expect(value.number?.si_conversion).toEqual('si_conversion');
-        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
     it('can create a new string value as a child', async () => {
@@ -561,9 +589,9 @@ describe('device', () => {
                 ],
             });
 
-        let device = new Device();
+        const device = new Device();
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
-        let value = await device.createStringValue({
+        const value = await device.createStringValue({
             name: 'Value Name',
             permission: 'wr',
             type: 'type',
@@ -653,9 +681,9 @@ describe('device', () => {
                 ],
             });
 
-        let device = new Device();
+        const device = new Device();
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
-        let value = await device.createBlobValue({
+        const value = await device.createBlobValue({
             name: 'Value Name',
             permission: 'r',
             type: 'type',
@@ -733,9 +761,9 @@ describe('device', () => {
                 ],
             });
 
-        let device = new Device();
+        const device = new Device();
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
-        let value = await device.createXmlValue({
+        const value = await device.createXmlValue({
             name: 'Value Name',
             permission: 'w',
             type: 'type',
@@ -816,12 +844,12 @@ describe('device', () => {
             .mockResolvedValueOnce({ data: {} })
             .mockResolvedValueOnce({ data: {} });
 
-        let device = new Device();
+        const device = new Device();
         device.meta.id = '61e94999-c6c4-4051-8b5d-97ba73bbb312';
-        let val = new Value();
+        const val = new Value();
         val.name = 'Value Name';
         device.value.push(val);
-        let value = await device.createNumberValue({
+        const value = await device.createNumberValue({
             name: 'Value Name',
             permission: 'rw',
             type: 'type',
@@ -833,6 +861,18 @@ describe('device', () => {
             unit: 'unit',
             si_conversion: 'si_conversion',
         });
+
+        expect(value.name).toEqual('Value Name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('type');
+        expect(value.period).toEqual('period');
+        expect(value.delta).toEqual('delta');
+        expect(value.number?.min).toEqual(0);
+        expect(value.number?.max).toEqual(1);
+        expect(value.number?.step).toEqual(1);
+        expect(value.number?.unit).toEqual('unit');
+        expect(value.number?.si_conversion).toEqual('si_conversion');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
@@ -859,25 +899,13 @@ describe('device', () => {
             }),
             {}
         );
-
-        expect(value.name).toEqual('Value Name');
-        expect(value.permission).toEqual('rw');
-        expect(value.type).toEqual('type');
-        expect(value.period).toEqual('period');
-        expect(value.delta).toEqual('delta');
-        expect(value.number?.min).toEqual(0);
-        expect(value.number?.max).toEqual(1);
-        expect(value.number?.step).toEqual(1);
-        expect(value.number?.unit).toEqual('unit');
-        expect(value.number?.si_conversion).toEqual('si_conversion');
-        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
     it('can find all devices by name', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: response2Devices });
 
-        let r = Device.findAllByName('test');
-        let device = await r;
+        const r = Device.findAllByName('test');
+        const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
@@ -892,15 +920,19 @@ describe('device', () => {
         });
 
         expect(device[0].toJSON).toBeDefined();
-        expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
-        expect(device[1].meta.id === '7c1611da-46e2-4f0d-85fa-1b010561b35d');
+        expect(device[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+        expect(device[1].meta.id).toEqual(
+            '7c1611da-46e2-4f0d-85fa-1b010561b35d'
+        );
     });
 
     it('can find all devices by product', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: response2Devices });
 
-        let r = Device.findAllByProduct('test');
-        let device = await r;
+        const r = Device.findAllByProduct('test');
+        const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
@@ -915,15 +947,19 @@ describe('device', () => {
         });
 
         expect(device[0].toJSON).toBeDefined();
-        expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
-        expect(device[1].meta.id === '7c1611da-46e2-4f0d-85fa-1b010561b35d');
+        expect(device[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+        expect(device[1].meta.id).toEqual(
+            '7c1611da-46e2-4f0d-85fa-1b010561b35d'
+        );
     });
 
     it('can use custom find', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: response2Devices });
 
-        let r = Device.find({ name: 'test' });
-        let device = await r;
+        const r = Device.find({ name: 'test' });
+        const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
@@ -938,6 +974,68 @@ describe('device', () => {
         });
 
         expect(device[0].toJSON).toBeDefined();
-        expect(device[0].meta.id === 'b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(device[0].meta.id).toEqual(
+            'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+    });
+
+    it('can delete a value and make sure that it is not valid', async () => {
+        mockedAxios.delete.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: [response] })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        },
+                        name: 'Test Value',
+                        permission: '',
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        },
+                        name: 'Test Value',
+                        permission: '',
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({ data: [] });
+
+        const device = new Device();
+        await device.create();
+        const val1 = await device.createValue(
+            'Test Value',
+            'r',
+            ValueTemplate.NUMBER
+        );
+        await val1.delete();
+
+        const val2 = await device.createValue(
+            'Test Value',
+            'r',
+            ValueTemplate.NUMBER
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+
+        expect(val1.name).toEqual('Test Value');
+        expect(val2.name).toEqual('Test Value');
+
+        expect(val1.meta.id).toEqual(undefined);
+        expect(val2.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 });

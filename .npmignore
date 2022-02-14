@@ -1,0 +1,7 @@
+test
+src
+coverage
+node_modules
+__mocks__
+dist/*.ts
+dist/**/*.ts

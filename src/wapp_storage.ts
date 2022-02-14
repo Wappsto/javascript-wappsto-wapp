@@ -1,7 +1,9 @@
 import { Model } from './models/model';
 import { Data } from './models/data';
+import { openStream } from './models/stream';
+import { StorageChangeHandler } from './util/interfaces';
 
-let storages: Record<string, WappStorage> = {};
+const storages: Record<string, WappStorage> = {};
 
 export async function wappStorage(name?: string) {
     Model.validateMethod('WappStorage', 'wappStorage', arguments);
@@ -9,7 +11,7 @@ export async function wappStorage(name?: string) {
         name = 'default';
     }
     if (storages[name] === undefined) {
-        let storage = new WappStorage(name);
+        const storage = new WappStorage(name);
         await storage.init();
         storages[name] = storage;
     }
@@ -29,7 +31,7 @@ export class WappStorage {
     }
 
     async init(): Promise<void> {
-        let data = await Data.findByDataId(this.id);
+        const data = await Data.findByDataId(this.id);
         if (data.length > 0) {
             this.data = data[0];
         } else {
@@ -41,11 +43,29 @@ export class WappStorage {
         WappStorage.validate('set', arguments);
         this.data.set(name, item);
         await this.data.update();
+        openStream.sendInternal(`storage_${this.name}_updated`);
     }
 
     get(name: string): any {
         WappStorage.validate('get', arguments);
         return this.data.get(name);
+    }
+
+    onChange(cb: StorageChangeHandler): void {
+        WappStorage.validate('onChange', arguments);
+        openStream.subscribeInternal(
+            `storage_${this.name}_updated`,
+            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+            async (_: any) => {
+                await this.data.refresh();
+                cb();
+                return undefined;
+            }
+        );
+    }
+
+    async refresh(): Promise<void> {
+        await this.data.refresh();
     }
 
     reset(): void {

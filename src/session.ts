@@ -1,4 +1,4 @@
-//import { isUUID } from './util/uuid';
+import { isBrowser } from './util/helpers';
 
 /**
  * Reads a cookie with the giving name.
@@ -7,33 +7,33 @@
  *
  * @return The content of the cookie if found, else null
  */
-function readCookie(name: string) {
+function readCookie(name: string): string {
     const nameEQ = name + '=';
     const ca = window.document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
         c = c.trim();
         if (c.indexOf(nameEQ) === 0) {
             return c.substring(nameEQ.length, c.length);
         }
     }
-    return null;
+    return '';
 }
 
 /**
  * @param {the key to }
  */
 function get(key: string) {
-    let result = null;
-    if (typeof window !== 'undefined') {
-        result = window.sessionStorage.getItem(key);
+    let result = '';
+    if (isBrowser()) {
+        result = window.sessionStorage.getItem(key) || '';
         if (!result) {
             result = readCookie(key);
         }
     }
 
     if (!result) {
-        result = process.env[key] || null;
+        result = process.env[key] || '';
     }
     return result;
 }

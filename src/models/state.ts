@@ -5,7 +5,7 @@ import { IState } from '../util/interfaces';
 export class State extends StreamModel implements IState {
     static endpoint = '/2.0/state';
 
-    data: string = '';
+    data = '';
     status?: string;
     type: 'Report' | 'Control' = 'Report';
     timestamp: string = new Date().toISOString();
@@ -22,10 +22,10 @@ export class State extends StreamModel implements IState {
     }
 
     public static fetch = async () => {
-        let params = { expand: 1 };
-        let url = State.endpoint;
+        const params = { expand: 1 };
+        const url = State.endpoint;
 
-        let data = await Model.fetch(url, params);
+        const data = await Model.fetch(url, params);
         return State.fromArray(data);
     };
 }

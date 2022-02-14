@@ -1,4 +1,5 @@
 import wappsto from './util/http_wrapper';
+import { printDebug } from './util/debug';
 
 const defaultConsole = Object.assign({}, console);
 
@@ -12,11 +13,14 @@ function sendExtsync(key: string, ...args: any[]): any {
 
     return wappsto
         .post('/2.0/extsync/wappsto/editor/console', data)
-        .catch(function () {});
+        .catch((e) => {
+            /* istanbul ignore next */
+            printDebug(e);
+        });
 }
 
 export function startLogging(): void {
-    let newFunc = function (name: string) {
+    const newFunc = function (name: string) {
         return function (...args: any[]) {
             sendExtsync(name, arguments);
             defaultConsole.log(...args);

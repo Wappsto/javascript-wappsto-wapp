@@ -1,6 +1,7 @@
 import { Model } from './model';
 import { openStream } from './stream';
 import { printDebug } from '../util/debug';
+import { OAuthRequestHandler } from '../util/interfaces';
 
 export class OAuth extends Model {
     static endpoint = '/2.0/oauth_connect';
@@ -18,43 +19,52 @@ export class OAuth extends Model {
         this.name = name;
     }
 
-    public getToken = async () => {
+    public async getToken(handler?: OAuthRequestHandler) {
+        OAuth.validate('getToken', arguments);
         return new Promise<Record<string, any>>(async (resolve, reject) => {
-            let data = await Model.fetch(`/2.0/oauth_connect/${this.name}`, {});
-            let oauth = data[0];
+            try {
+                const data = await Model.fetch(
+                    `/2.0/oauth_connect/${this.name}`,
+                    {},
+                    true
+                );
 
-            if (oauth?.params?.oauth_token) {
-                resolve(oauth?.params);
-                return;
-            }
-
-            /* istanbul ignore next */
-            if (typeof process !== 'object') {
-                reject(oauth?.data?.request);
-                return;
-            }
-
-            printDebug('OAuth token is not valid, waiting for token on stream');
-            openStream.subscribeService(
-                '/oauth_connect',
-                async (
-                    event: Record<string, any>
-                ): Promise<true | undefined> => {
-                    if (event?.data?.name === this.name) {
-                        printDebug('Got OAuth token from stream');
-                        resolve(event?.data?.params);
-                        return true;
-                    }
+                const oauth = data[0];
+                if (oauth?.params?.oauth_token) {
+                    resolve(oauth.params);
                     return;
                 }
-            );
-        });
-    };
 
-    static getToken = async (name: string) => {
-        OAuth.validate('getToken', [name]);
-        let oauth = new OAuth(name);
-        return await oauth.getToken();
+                printDebug(
+                    'OAuth token is not valid, waiting for token on stream'
+                );
+                openStream.subscribeService(
+                    '/oauth_connect',
+                    async (
+                        event: Record<string, any>
+                    ): Promise<true | undefined> => {
+                        if (event?.data?.name === this.name) {
+                            printDebug('Got OAuth token from stream');
+                            resolve(event?.data?.params);
+                            return true;
+                        }
+                        return;
+                    }
+                );
+
+                if (handler) {
+                    handler(oauth?.data?.request);
+                }
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    static getToken = async (name: string, handler?: OAuthRequestHandler) => {
+        OAuth.validate('staticGetToken', [name, handler]);
+        const oauth = new OAuth(name);
+        return await oauth.getToken(handler);
     };
 
     private static validate(name: string, params: any): void {

@@ -1,6 +1,6 @@
 import { Model } from './model';
 import { Notification } from './notification';
-import { printDebug } from '../util/debug';
+import { printDebug, printError } from '../util/debug';
 import { openStream } from './stream';
 import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 
@@ -13,13 +13,13 @@ export class PermissionModel extends Model {
         return `${type}-${quantity}-${message}`;
     }
 
-    public create = async (): Promise<void> => {
+    public async create(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 await this._create();
                 resolve();
             } catch (error) {
-                let data = getErrorResponse(error);
+                const data = getErrorResponse(error);
 
                 if (!data) {
                     printHttpError(error);
@@ -31,9 +31,9 @@ export class PermissionModel extends Model {
                     printDebug('Requesting permission to add data to user');
                     openStream.subscribeService(
                         '/notification',
-                        async (event) => {
+                        async (event: any) => {
                             if (event.meta_object?.type === 'notification') {
-                                let notification = Notification.fromArray([
+                                const notification = Notification.fromArray([
                                     event.data,
                                 ]);
                                 if (!notification || !notification[0]) {
@@ -51,9 +51,10 @@ export class PermissionModel extends Model {
                                         resolve();
                                         return true;
                                     } catch (e) {
-                                        printDebug(
+                                        printError(
                                             'Failed to get permission to save data under users account'
                                         );
+                                        printDebug(JSON.stringify(e));
                                     }
                                 }
                             }
@@ -66,7 +67,7 @@ export class PermissionModel extends Model {
                 }
             }
         });
-    };
+    }
 
     public static request = async (
         endpoint: string,
@@ -74,14 +75,14 @@ export class PermissionModel extends Model {
         message: string,
         params?: Record<string, any>
     ): Promise<Record<string, any>[]> => {
-        Model.checker.IPermissionModelFunc.methodArgs('request').check([
+        Model.validateMethod('PermissionModel', 'request', [
             endpoint,
             quantity,
             message,
             params,
         ]);
         return new Promise<Record<string, any>[]>(async (resolve) => {
-            let id = PermissionModel.getPermissionHash(
+            const id = PermissionModel.getPermissionHash(
                 endpoint.split('/')[2],
                 quantity,
                 message
@@ -93,7 +94,7 @@ export class PermissionModel extends Model {
                 identifier: id,
                 method: ['retrieve', 'update'],
             });
-            let result = await Model.fetch(endpoint, params);
+            const result = await Model.fetch(endpoint, params);
 
             if (result.length === 0) {
                 printDebug(`Requesting new access to users data: ${message}`);
@@ -108,14 +109,14 @@ export class PermissionModel extends Model {
                 `Waiting for permission to access users data: ${message}`
             );
 
-            openStream.subscribeService('/notification', async (event) => {
+            openStream.subscribeService('/notification', async (event: any) => {
                 if (event.meta_object?.type === 'notification') {
-                    let notification = Notification.fromArray([event.data]);
+                    const notification = Notification.fromArray([event.data]);
                     if (!notification || !notification[0]) {
                         return;
                     }
 
-                    let ids = notification[0].getIds();
+                    const ids = notification[0].getIds();
                     if (
                         (notification[0].base?.code === 1100004 ||
                             notification[0].base?.code === 1100013) &&
@@ -134,7 +135,7 @@ export class PermissionModel extends Model {
                         printDebug(
                             `Got permission to ${JSON.stringify(params?.id)}`
                         );
-                        let result = await Model.fetch(endpoint, params);
+                        const result = await Model.fetch(endpoint, params);
                         resolve(result);
                         return true;
                     }

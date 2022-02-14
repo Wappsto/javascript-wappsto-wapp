@@ -8,6 +8,7 @@ export const IConfig = t.iface([], {
     verbose: t.opt('boolean'),
     debug: t.opt('boolean'),
     validation: t.opt(t.union(t.lit('none'), t.lit('normal'), t.lit('strict'))),
+    reconnectCount: t.opt('number'),
 });
 
 export const IConfigFunc = t.iface([], {
@@ -15,7 +16,9 @@ export const IConfigFunc = t.iface([], {
 });
 
 export const IModel = t.iface([], {
+    id: t.func('string'),
     getUrl: t.func('string'),
+    removeChild: t.func('void', t.param('child', 'IModel')),
 });
 
 export const IModelFunc = t.iface([], {
@@ -23,9 +26,13 @@ export const IModelFunc = t.iface([], {
     fetch: t.func(
         t.array('any'),
         t.param('endpoint', 'string'),
-        t.param('params', 'any', true)
+        t.param('params', 'any', true),
+        t.param('throwError', 'boolean', true)
     ),
     parse: t.func('boolean', t.param('json', 'any')),
+    onChange: t.func('void', t.param('callback', 'StreamCallback')),
+    onDelete: t.func('void', t.param('callback', 'StreamCallback')),
+    onCreate: t.func('void', t.param('callback', 'StreamCallback')),
 });
 
 export const IConnection = t.iface([], {
@@ -90,6 +97,7 @@ export const INetworkFunc = t.iface([], {
         t.param('name', 'string'),
         t.param('usage', 'string')
     ),
+    findById: t.func('INetwork', t.param('id', 'string')),
     fetch: t.func(
         'IDevice',
         t.param('name', 'string'),
@@ -162,6 +170,7 @@ export const IDeviceFunc = t.iface([], {
         t.param('product', 'string'),
         t.param('usage', 'string')
     ),
+    findById: t.func('IDevice', t.param('id', 'string')),
 });
 
 export const IPermissionModelFunc = t.iface([], {
@@ -281,6 +290,7 @@ export const IValueFunc = t.iface([], {
         t.param('type', 'string'),
         t.param('usage', 'string')
     ),
+    findById: t.func('IValue', t.param('id', 'string')),
 });
 
 export const StateType = t.union(t.lit('Report'), t.lit('Control'));
@@ -293,6 +303,44 @@ export const IState = t.iface([], {
 
 export const IStateFunc = t.iface([], {
     constructor: t.func('IState', t.param('type', 'StateType', true)),
+});
+
+export const INotificationCustomData = t.iface([], {
+    all: 'boolean',
+    future: 'boolean',
+    selected: t.array('any'),
+});
+
+export const INotificationCustom = t.iface([], {
+    type: 'string',
+    quantity: 'number',
+    limitation: t.array('any'),
+    method: t.array('any'),
+    option: 'any',
+    message: 'string',
+    name_installation: 'string',
+    title_installation: t.union('string', 'null'),
+    data: t.opt('INotificationCustomData'),
+});
+
+export const INotificationBase = t.iface([], {
+    action: 'string',
+    code: 'number',
+    type: 'string',
+    from: 'string',
+    to: 'string',
+    from_type: 'string',
+    from_name: 'string',
+    to_type: 'string',
+    type_ids: 'string',
+    priority: 'number',
+    ids: t.array('string'),
+    info: t.array('any'),
+    identifier: 'string',
+});
+
+export const INotificationFunc = t.iface([], {
+    notify: t.func('void', t.param('message', 'string')),
 });
 
 export const LogOperation = t.union(
@@ -354,7 +402,21 @@ export const ILogResponse = t.iface([], {
     type: 'string',
 });
 
-export const IStreamEvent = t.iface([], {});
+export const EventType = t.union(
+    t.lit('create'),
+    t.lit('update'),
+    t.lit('delete'),
+    t.lit('direct')
+);
+
+export const IStreamEvent = t.iface([], {
+    path: 'string',
+    event: 'EventType',
+    data: t.opt('any'),
+    meta_object: t.opt('IMeta'),
+    meta: t.opt('IMeta'),
+    extsync: t.opt('any'),
+});
 
 export const IStreamModel = t.iface([], {
     path: t.func('string'),
@@ -363,6 +425,12 @@ export const IStreamModel = t.iface([], {
 
 export const IStreamFunc = t.iface([], {
     subscribe: t.func('void', t.param('model', 'IStreamModel')),
+    sendInternal: t.func('any', t.param('type', 'string')),
+    subscribeInternal: t.func(
+        'void',
+        t.param('type', 'string'),
+        t.param('handler', 'ServiceHandler')
+    ),
     subscribeService: t.func(
         'void',
         t.param('service', 'string'),
@@ -374,6 +442,11 @@ export const IStreamFunc = t.iface([], {
         t.param('handler', 'SignalHandler')
     ),
     sendRequest: t.func('any', t.param('msg', 'any')),
+    sendEvent: t.func(
+        'any',
+        t.param('type', 'string'),
+        t.param('msg', 'string')
+    ),
     sendResponse: t.func(
         'void',
         t.param('event', 'any'),
@@ -385,11 +458,20 @@ export const IStreamFunc = t.iface([], {
         t.param('handler', 'RequestHandler'),
         t.param('internal', 'boolean')
     ),
+    onWebHook: t.func('void', t.param('handler', 'RequestHandler')),
+    fromForeground: t.func('void', t.param('callback', 'RequestHandler')),
 });
+
+export const OAuthRequestHandler = t.func('void', t.param('url', 'string'));
 
 export const IOAuthFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string', true)),
-    getToken: t.func('void', t.param('name', 'string')),
+    getToken: t.func('void', t.param('handler', 'OAuthRequestHandler', true)),
+    staticGetToken: t.func(
+        'void',
+        t.param('name', 'string'),
+        t.param('handler', 'OAuthRequestHandler', true)
+    ),
 });
 
 export const IWappStorageFunc = t.iface([], {
@@ -397,7 +479,10 @@ export const IWappStorageFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string')),
     set: t.func('void', t.param('name', 'string'), t.param('item', 'any')),
     get: t.func('any', t.param('name', 'string')),
+    onChange: t.func('void', t.param('cb', 'StorageChangeHandler')),
 });
+
+export const StorageChangeHandler = t.func('void');
 
 export const SignalHandler = t.func('void', t.param('event', 'string'));
 
@@ -443,15 +528,22 @@ const exportedTypeSuite: t.ITypeSuite = {
     StateType,
     IState,
     IStateFunc,
+    INotificationCustomData,
+    INotificationCustom,
+    INotificationBase,
+    INotificationFunc,
     LogOperation,
     LogGroupBy,
     ILogRequest,
     ILogResponse,
+    EventType,
     IStreamEvent,
     IStreamModel,
     IStreamFunc,
+    OAuthRequestHandler,
     IOAuthFunc,
     IWappStorageFunc,
+    StorageChangeHandler,
     SignalHandler,
     ServiceHandler,
     RequestHandler,

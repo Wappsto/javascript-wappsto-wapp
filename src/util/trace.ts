@@ -13,7 +13,7 @@ export function trace(parent: string, status: string): string {
         .toString(36)
         .replace(/[^a-z]+/g, '')}`;
 
-    let response = wappsto.get(url, {
+    const response = wappsto.get(url, {
         params: {
             parent: parent,
             id: id,

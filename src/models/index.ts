@@ -5,7 +5,10 @@ export {
     sendToBackground,
     fromBackground,
     fromForeground,
+    cancelFromForeground,
+    cancelFromBackground,
     onWebHook,
+    cancelOnWebHook,
 } from './stream';
 export { Device } from './device';
 export { Value } from './value';
@@ -13,4 +16,5 @@ export { State } from './state';
 export { User } from './user';
 export { Data } from './data';
 export { Notification } from './notification';
+export { notify } from './notification.send';
 export { OAuth } from './oauth';

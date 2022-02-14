@@ -1,0 +1,28 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+    "jest": true
+  },
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "jest"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:jest/recommended"
+  ],
+  "rules": {
+    "no-async-promise-executor": "off",
+    "prefer-rest-params": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "no-native-reassign": "off",
+    "no-global-assign": "off",
+    "import/first": "off"
+  }
+}

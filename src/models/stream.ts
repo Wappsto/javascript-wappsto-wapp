@@ -1,20 +1,20 @@
 import { Model } from './model';
 import { session, baseUrl } from '../session';
+import { _config } from '../util/config';
 import { printDebug, printError } from '../util/debug';
-import { isUUID } from '../util/uuid';
+import { isUUID, isBrowser } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { trace } from '../util/trace';
 import {
-    IMeta,
     IStreamEvent,
     ServiceHandler,
     SignalHandler,
     RequestHandler,
     IStreamModel,
 } from '../util/interfaces';
-
-var WebSocket = require('universal-websocket-client');
+/* eslint-disable @typescript-eslint/no-var-requires */
+const WebSocket = require('universal-websocket-client');
 
 interface StreamModelHash {
     [key: string]: IStreamModel[];
@@ -28,35 +28,19 @@ interface StreamSignalHash {
     [key: string]: SignalHandler[];
 }
 
-export const enum EventType {
-    create = 'create',
-    update = 'update',
-    delete = 'delete',
-    direct = 'direct',
-}
-
-export class StreamEvent implements IStreamEvent {
-    meta: IMeta = {};
-    path: string = '';
-    timestamp: string = '';
-    event: EventType = EventType.update;
-    data?: any;
-    extsync?: any;
-    meta_object?: IMeta;
-}
-
 export class Stream extends Model {
     static endpoint = '/2.1/stream';
     socket?: WebSocket;
-    websocketUrl: string = '';
-    ignoreReconnect: boolean = false;
+    websocketUrl = '';
+    ignoreReconnect = false;
     models: StreamModelHash = {};
     services: StreamServiceHash = {};
     handlers: StreamSignalHash = {};
     subscriptions: string[] = [];
-    opened: boolean = false;
-    backoff: number = 1000;
+    opened = false;
+    backoff = 1;
     waiting: any = [];
+    onRequestHandlers: Record<number, RequestHandler[]> = { 0: [], 1: [] };
 
     constructor() {
         super('stream', '2.1');
@@ -80,10 +64,22 @@ export class Stream extends Model {
         this.websocketUrl += '?X-Session=' + session;
     }
 
-    private open(): Promise<void> {
-        return new Promise<void>((resolve, _) => {
-            let self = this;
+    private getTimeout(): number {
+        if (this.backoff >= _config.reconnectCount) {
+            printError(
+                `Stream failed to connect after ${this.backoff} attemps, exit!`
+            );
+            if (isBrowser()) {
+                return Infinity;
+            } else {
+                process.exit(-1);
+            }
+        }
+        return this.backoff * 2 * 1000;
+    }
 
+    private open(): Promise<void> {
+        return new Promise<void>((resolve) => {
             if (this.socket) {
                 resolve();
                 return;
@@ -98,16 +94,18 @@ export class Stream extends Model {
             printDebug(`Open WebSocket on ${this.websocketUrl}`);
             this.ignoreReconnect = false;
 
-            let openTimeout: ReturnType<typeof setTimeout> = setTimeout(() => {
-                /* istanbul ignore next */
-                self.reconnect();
-            }, 1000 + this.backoff);
+            const openTimeout: ReturnType<typeof setTimeout> = setTimeout(
+                () => {
+                    /* istanbul ignore next */
+                    this.reconnect();
+                },
+                1000 + this.getTimeout()
+            );
 
-            let socket = new WebSocket(this.websocketUrl);
+            const socket = new WebSocket(this.websocketUrl);
 
             if (socket) {
                 socket.onopen = () => {
-                    this.backoff = 1000;
                     this.socket = socket;
                     clearTimeout(openTimeout);
                     this.addListeners();
@@ -121,7 +119,7 @@ export class Stream extends Model {
         });
     }
 
-    close() {
+    public close() {
         if (this.socket) {
             printDebug('Closing WebSocket');
             this.ignoreReconnect = true;
@@ -145,18 +143,73 @@ export class Stream extends Model {
         );
     }
 
-    public subscribe(model: IStreamModel): void {
+    private removeSubscription(subscription: string): void {
+        if (!this.subscriptions.includes(subscription)) {
+            return;
+        }
+
+        const index = this.subscriptions.indexOf(subscription);
+        if (index !== -1) {
+            this.subscriptions.splice(index, 1);
+        }
+        this.sendMessage(
+            'DELETE',
+            '/services/2.1/websocket/open/subscription',
+            subscription
+        );
+    }
+
+    public subscribe(model: IStreamModel): boolean {
         this.validate('subscribe', arguments);
 
-        this.open().then(() => {
-            if (!this.models[model.path()]) {
-                this.models[model.path()] = [];
-            }
+        if (!this.models[model.path()]) {
+            this.models[model.path()] = [];
+        }
+        if (this.models[model.path()].indexOf(model) === -1) {
             this.models[model.path()].push(model);
 
-            printDebug(`Add subscription: ${model.path()}`);
+            this.open().then(() => {
+                printDebug(`Add subscription: ${model.path()}`);
+                this.addSubscription(model.path());
+            });
 
-            this.addSubscription(model.path());
+            return true;
+        }
+        return false;
+    }
+
+    public unsubscribe(model: IStreamModel): void {
+        this.validate('subscribe', arguments);
+
+        if (this.models[model.path()]) {
+            const index = this.models[model.path()].indexOf(model);
+            if (index !== -1) {
+                this.models[model.path()].splice(index, 1);
+            }
+
+            this.removeSubscription(model.path());
+        }
+    }
+
+    public async sendInternal(type: string): Promise<any> {
+        this.validate('sendInternal', arguments);
+
+        return await this.sendEvent(type, '');
+    }
+
+    public subscribeInternal(type: string, handler: ServiceHandler): void {
+        this.validate('subscribeInternal', arguments);
+
+        this.subscribeService('extsync', (event) => {
+            try {
+                const body = JSON.parse(event.body);
+                if (body.type === type) {
+                    return handler(body);
+                }
+            } catch (e) {
+                printError('Failed to parse body in internal event as JSON');
+            }
+            return false;
         });
     }
 
@@ -178,6 +231,24 @@ export class Stream extends Model {
         });
     }
 
+    public unsubscribeService(service: string, handler: ServiceHandler): void {
+        this.validate('subscribeService', arguments);
+
+        if (service[0] !== '/') {
+            service = '/' + service;
+        }
+        if (this.services[service] !== undefined) {
+            const index = this.services[service].indexOf(handler);
+            if (index !== -1) {
+                this.services[service].splice(index, 1);
+            }
+
+            if (this.services[service].length === 0) {
+                this.removeSubscription(service);
+            }
+        }
+    }
+
     public addSignalHandler(type: string, handler: SignalHandler): void {
         this.validate('addSignalHandler', arguments);
 
@@ -190,12 +261,30 @@ export class Stream extends Model {
         });
     }
 
+    public async sendEvent(type: string, msg: string): Promise<any> {
+        this.validate('sendEvent', arguments);
+
+        let result = {};
+        try {
+            const data = {
+                type: type,
+                msg: msg,
+            };
+            const response = await wappsto.post('/2.0/extsync', data);
+            result = response.data;
+        } catch (e) {
+            /* istanbul ignore next */
+            printHttpError(e);
+        }
+        return result;
+    }
+
     public async sendRequest(msg: any): Promise<any> {
         this.validate('sendRequest', arguments);
 
         let result = {};
         try {
-            let response = await wappsto.post('/2.0/extsync/request', msg);
+            const response = await wappsto.post('/2.0/extsync/request', msg);
             result = response.data;
         } catch (e) {
             /* istanbul ignore next */
@@ -212,59 +301,82 @@ export class Stream extends Model {
         this.validate('sendResponse', arguments);
 
         try {
-            let data = {
+            const data = {
                 code: code,
                 body: msg,
             };
-            await wappsto.patch(`/2.0/extsync/response/${event.meta.id}`, data);
+            await wappsto.patch(
+                `/2.0/extsync/response/${event?.meta?.id}`,
+                data
+            );
         } catch (e) {
             printHttpError(e);
         }
     }
 
+    private onRequestHandler = async (
+        event: any
+    ): Promise<true | undefined> => {
+        try {
+            let res;
+            const handlers =
+                this.onRequestHandlers[Number(event.uri === 'extsync/')];
+            for (let i = 0; i < handlers.length; i++) {
+                const p = handlers[i](event.body);
+                if (p) {
+                    if (p.then) {
+                        p.then((res: any) => {
+                            this.sendResponse(event, 200, res);
+                        }).catch((res: any) => {
+                            this.sendResponse(event, 400, res);
+                        });
+                        continue;
+                    } else {
+                        res = p;
+                    }
+                }
+                this.sendResponse(event, 200, res);
+            }
+        } catch (e) {
+            this.sendResponse(event, 501, e);
+            printError('An error happend when calling request handler');
+            printError(JSON.stringify(e));
+        }
+
+        return undefined;
+    };
+
     public onRequest(handler: RequestHandler, internal: boolean): void {
         this.validate('onRequest', arguments);
 
-        this.subscribeService(
-            '/extsync/request',
-            async (event: any): Promise<any> => {
-                try {
-                    let res;
-                    if (
-                        (internal && event.uri !== 'extsync/') ||
-                        (!internal && event.uri === 'extsync/')
-                    ) {
-                        printDebug(
-                            `Discarding extsync event (${internal} - ${event.uri})`
-                        );
-                        return;
-                    }
-                    let p = handler(event.body);
-                    if (p) {
-                        if (p.then) {
-                            p.then((res: any) => {
-                                this.sendResponse(event, 200, res);
-                            }).catch((res: any) => {
-                                this.sendResponse(event, 400, res);
-                            });
-                            return;
-                        } else {
-                            res = p;
-                        }
-                    }
-                    this.sendResponse(event, 200, res);
-                } catch (e) {
-                    this.sendResponse(event, 501, e);
-                    printError('An error happend when calling request handler');
-                    printError(JSON.stringify(e));
-                }
-            }
-        );
+        if (
+            this.onRequestHandlers[0].length === 0 &&
+            this.onRequestHandlers[1].length === 0
+        ) {
+            this.subscribeService('/extsync/request', this.onRequestHandler);
+        }
+        this.onRequestHandlers[Number(internal)].push(handler);
+    }
+
+    public cancelRequest(handler: RequestHandler, internal: boolean): void {
+        this.validate('onRequest', arguments);
+
+        const index = this.onRequestHandlers[Number(internal)].indexOf(handler);
+        if (index !== -1) {
+            this.onRequestHandlers[Number(internal)].splice(index, 1);
+        }
+
+        if (
+            this.onRequestHandlers[0].length === 0 &&
+            this.onRequestHandlers[1].length === 0
+        ) {
+            this.unsubscribeService('/extsync/request', this.onRequestHandler);
+        }
     }
 
     private reconnect() {
-        this.backoff = this.backoff * 2;
-        printDebug('Stream Reconnecting');
+        this.backoff++;
+        printDebug(`Stream Reconnecting for the ${this.backoff} times`);
         this.close();
         this.open().then(() => {
             this.sendMessage('PATCH', '/services/2.1/websocket/open', {
@@ -292,15 +404,14 @@ export class Stream extends Model {
         }
     }
 
-    private handleMessage(
-        type: string,
-        event: StreamEvent,
-        _: string = ''
-    ): void {
-        let paths: string[] = [];
-        let services: string[] = [];
+    private handleMessage(type: string, event: IStreamEvent, _ = ''): void {
+        const paths: string[] = [];
+        const services: string[] = [];
         if (type === 'message') {
-            let items: string[] = event.path
+            if (!event.path) {
+                return;
+            }
+            const items: string[] = event.path
                 .split('/')
                 .filter((s) => s.length > 0);
             if (!items) {
@@ -308,7 +419,7 @@ export class Stream extends Model {
                 return;
             }
 
-            let last = items[items.length - 1];
+            const last = items[items.length - 1];
 
             paths.push(
                 '/' + items.slice(items.length - 2, items.length).join('/')
@@ -334,9 +445,9 @@ export class Stream extends Model {
             });
         });
         services.forEach((path) => {
-            let tmpList = this.services[path];
+            const tmpList = this.services[path];
             tmpList?.forEach((callback: ServiceHandler) => {
-                let p = callback(event);
+                const p = callback(event);
                 if (p) {
                     if (p === true) {
                         this.filterCallback(callback, path, p);
@@ -355,7 +466,7 @@ export class Stream extends Model {
         url: string,
         body: any | undefined = undefined
     ) {
-        var hash = {
+        const hash = {
             jsonrpc: '2.0',
             method: method,
             id: Math.floor(Math.random() * 100000),
@@ -375,21 +486,18 @@ export class Stream extends Model {
     }
 
     private addListeners() {
-        let self = this;
-
         if (!this.socket) {
             /* istanbul ignore next */
             return;
         }
 
-        let reconnect = () => {
-            printDebug('Starting reconnect');
-            setTimeout(function () {
-                self.reconnect();
-            }, self.backoff);
+        const reconnect = () => {
+            setTimeout(() => {
+                this.reconnect();
+            }, this.getTimeout());
         };
 
-        this.socket.onmessage = function (ev: any): void {
+        this.socket.onmessage = (ev: any) => {
             let message;
             if (ev.type === 'message') {
                 try {
@@ -408,12 +516,13 @@ export class Stream extends Model {
             if (message.jsonrpc) {
                 if (message.result) {
                     if (message.result.value !== true) {
-                        printDebug(
-                            `Stream rpc result: ${JSON.stringify(
-                                message.result.value
-                            )}`
-                        );
+                        this.backoff = 1;
                     }
+                    printDebug(
+                        `Stream rpc ${message.id} result: ${JSON.stringify(
+                            message.result.value
+                        )}`
+                    );
                 } else {
                     printError(
                         `Stream rpc error: ${JSON.stringify(message.error)}`
@@ -422,68 +531,64 @@ export class Stream extends Model {
                 return;
             }
 
-            let messages: StreamEvent[] = [];
+            let messages: IStreamEvent[] = [];
             if (message.constructor !== Array) {
                 messages = [message];
             } else {
                 messages = message;
             }
 
-            messages.forEach((msg: StreamEvent) => {
-                printDebug(JSON.stringify(msg));
+            messages.forEach((msg: IStreamEvent) => {
+                printDebug(`Stream message: ${JSON.stringify(msg)}`);
                 if (msg.meta_object?.type === 'extsync') {
                     const newData = msg.extsync || msg.data;
                     if (newData.request) {
-                        self.handleMessage('extsync/request', newData);
+                        this.handleMessage('extsync/request', newData);
                     } else if (
                         newData.uri !== 'extsync/wappsto/editor/console'
                     ) {
-                        self.handleMessage('extsync', newData);
+                        this.handleMessage('extsync', newData);
                     }
                     return;
                 }
-                let traceId = self.checkAndSendTrace(msg);
-                self.handleMessage('message', msg, traceId);
+                const traceId = this.checkAndSendTrace(msg);
+                this.handleMessage('message', msg, traceId);
             });
         };
 
-        this.socket.onerror = function (event: any) {
+        this.socket.onerror = (event: any) => {
             try {
-                self.handleEvent('error', event);
+                this.handleEvent('error', event);
             } catch (e) {
                 /* istanbul ignore next */
-                printError('Stream error: ' + self.websocketUrl);
+                printError('Stream error: ' + this.websocketUrl);
             }
         };
 
-        this.socket.onclose = function (event: CloseEvent) {
-            if (self.ignoreReconnect) {
-                self.handleEvent('close', event);
+        this.socket.onclose = (event: CloseEvent) => {
+            if (this.ignoreReconnect) {
+                this.handleEvent('close', event);
             } else {
                 reconnect();
             }
         };
     }
 
-    private checkAndSendTrace(event: StreamEvent): string {
+    private checkAndSendTrace(event: IStreamEvent): string {
         if (event?.meta?.trace) {
             return trace(event.meta.trace, 'ok');
         }
+
         return '';
     }
-
-    public static fetch = async (): Promise<Stream[]> => {
-        let data: any = await Model.fetch(Stream.endpoint);
-        return Stream.fromArray(data);
-    };
 }
 
-let openStream: Stream = new Stream();
+const openStream: Stream = new Stream();
 
 export { openStream };
 
 async function sendRequest(type: string, msg: any): Promise<any> {
-    let data = {
+    const data = {
         type: type,
         message: msg,
     };
@@ -498,33 +603,61 @@ export async function sendToBackground(msg: any): Promise<any> {
     return sendRequest('foreground', msg);
 }
 
-function handleRequest(type: string, callback: RequestHandler): void {
-    Model.checker.RequestHandler.check(callback);
-    openStream.onRequest(async (event: any) => {
-        try {
-            let data = JSON.parse(event);
-            if (data.type === type) {
-                return callback(data.message);
-            }
-        } catch (e) {
-            /* istanbul ignore next */
-            printDebug('Failed to parse event - Foreground/Background handler');
+const request_handlers: Record<string, RequestHandler> = {};
+
+async function _handleRequest(event: any) {
+    try {
+        const data = JSON.parse(event);
+        if (request_handlers[data.type]) {
+            return request_handlers[data.type](data.message);
         }
-        return undefined;
-    }, true);
+    } catch (e) {
+        /* istanbul ignore next */
+        printDebug('Failed to parse event - Foreground/Background handler');
+    }
+    return undefined;
+}
+
+function handleRequest(type: string, callback: RequestHandler): void {
+    if (Object.keys(request_handlers).length === 0) {
+        openStream.onRequest(_handleRequest, true);
+    }
+    request_handlers[type] = callback;
 }
 
 export function fromForeground(callback: RequestHandler): void {
-    Model.checker.RequestHandler.check(callback);
+    Model.validateMethod('Stream', 'fromForeground', arguments);
     handleRequest('foreground', callback);
 }
 
 export function fromBackground(callback: RequestHandler): void {
-    Model.checker.RequestHandler.check(callback);
+    Model.validateMethod('Stream', 'fromForeground', arguments);
     handleRequest('background', callback);
 }
 
 export function onWebHook(handler: RequestHandler): void {
-    Model.checker.RequestHandler.check(handler);
+    Model.validateMethod('Stream', 'onWebHook', arguments);
     openStream.onRequest(handler, false);
+}
+
+export function cancelOnWebHook(handler: RequestHandler): void {
+    Model.validateMethod('Stream', 'onWebHook', arguments);
+    openStream.cancelRequest(handler, false);
+}
+
+function cancelFrom(type: string): void {
+    if (request_handlers[type]) {
+        delete request_handlers[type];
+        if (Object.keys(request_handlers).length === 0) {
+            openStream.cancelRequest(_handleRequest, true);
+        }
+    }
+}
+
+export function cancelFromBackground(): void {
+    cancelFrom('background');
+}
+
+export function cancelFromForeground(): void {
+    cancelFrom('foreground');
 }

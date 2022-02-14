@@ -1,32 +1,45 @@
 {
-    "version": "0.6.4",
+    "name": "wappsto-wapp",
+    "version": "0.7.6",
     "license": "MIT",
-    "main": "dist/index.js",
+    "author": "Seluxit A/S",
+    "main": "dist/wappsto-wapp.cjs.production.min.js",
+    "module": "dist/wappsto-wapp.esm.js",
     "typings": "dist/index.d.ts",
     "files": [
-        "dist",
-        "src"
+        "dist/wappsto-wapp.esm.js",
+        "dist/wappsto-wapp.cjs.production.min.js",
+        "dist/wappsto-wapp.js",
+        "dist/*.d.ts",
+        "dist/**/*.d.ts"
     ],
-    "engines": {
-        "node": ">=10"
+    "keywords": [
+        "wappsto",
+        "wapp",
+        "api",
+        "iot",
+        "seluxit"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Wappsto/javascript-wappsto-wapp"
     },
     "scripts": {
-        "start": "tsdx watch",
-        "build": "tsdx build",
-        "pretest": "tsdx lint src test",
-        "test": "tsdx test --coverage",
-        "lint": "tsdx lint src test",
-        "fix-lint": "tsdx lint src test --fix",
-        "prepare": "tsdx build; npx browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
-        "doc": "npx typedoc --tsconfig tsconfig.typedoc.json src/index.ts",
-        "size": "size-limit",
         "analyze": "size-limit --why",
-        "generate-types": "`npm bin`/ts-interface-builder -v -g -c src/util/interfaces.ts; tsdx lint src/util --fix"
+        "build": "dts build",
+        "postbuild": "yarn browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
+        "lint": "dts lint src test",
+        "lint:fix": "yarn lint --fix",
+        "prepare": "yarn build",
+        "size": "size-limit",
+        "start": "dts watch",
+        "test": "dts test --coverage",
+        "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
+        "prepublish": "dts build"
     },
-    "peerDependencies": {},
     "husky": {
         "hooks": {
-            "pre-commit": "tsdx lint"
+            "pre-commit": "dts lint && dts test && dts build"
         }
     },
     "prettier": {
@@ -36,54 +49,45 @@
         "singleQuote": true,
         "trailingComma": "es5"
     },
-    "eslintConfig": {
-        "rules": {
-            "no-native-reassign": "off",
-            "no-global-assign": "off",
-            "import/first": "off"
-        }
+    "jest": {
+        "testEnvironment": "node"
     },
-    "name": "wappsto-wapp",
-    "author": "Andreas Bomholtz",
-    "module": "dist/wappsto-wapp.esm.js",
+    "peerDependencies": {},
+    "engines": {
+        "node": ">=12"
+    },
     "size-limit": [
         {
             "path": "dist/wappsto-wapp.cjs.production.min.js",
-            "limit": "60 KB"
+            "limit": "70 KB"
         },
         {
             "path": "dist/wappsto-wapp.esm.js",
-            "limit": "40 KB"
+            "limit": "50 KB"
         }
     ],
-    "devDependencies": {
-        "@size-limit/preset-big-lib": "^7.0.5",
-        "@types/jest": "^27.0.2",
-        "browserify": "^17.0.0",
-        "eslint-plugin-prettier": "^3.4.1",
-        "husky": "^7.0.4",
-        "jest-websocket-mock": "^2.2.1",
-        "mock-socket": "^9.0.8",
-        "prettier": "^2.4.1",
-        "pretty-quick": "^3.1.1",
-        "size-limit": "^7.0.5",
-        "ts-interface-builder": "^0.3.2",
-        "tsdx": "^0.14.1",
-        "typedoc": "^0.22.7",
-        "typescript": "^4.4.4"
-    },
     "dependencies": {
-        "@types/lodash": "^4.14.176",
-        "@types/ws": "^8.2.0",
-        "axios": "^0.24.0",
+        "axios": "^0.25.0",
         "class-transformer": "^0.5.1",
         "isomorphic-ws": "^4.0.1",
         "lodash": "^4.17.21",
         "lodash-es": "^4.17.21",
         "reflect-metadata": "^0.1.13",
         "ts-interface-checker": "^1.0.2",
+        "universal-websocket-client": "^1.0.2"
+    },
+    "devDependencies": {
+        "@size-limit/preset-small-lib": "^7.0.8",
+        "@tsconfig/recommended": "^1.0.1",
+        "@types/lodash": "^4.14.178",
+        "@types/ws": "^8.2.2",
+        "browserify": "^17.0.0",
+        "dts-cli": "^1.2.0",
+        "husky": "^7.0.4",
+        "jest-websocket-mock": "^2.2.1",
+        "size-limit": "^7.0.8",
+        "ts-interface-builder": "^0.3.3",
         "tslib": "^2.3.1",
-        "universal-websocket-client": "^1.0.2",
-        "ws": "^7.5.5"
+        "typescript": "^4.5.5"
     }
 }

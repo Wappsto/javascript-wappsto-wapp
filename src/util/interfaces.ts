@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-misused-new */
+
 export interface IConfig {
     verbose?: boolean;
     debug?: boolean;
     validation?: 'none' | 'normal' | 'strict';
+    reconnectCount?: number;
 }
 
 export interface IConfigFunc {
@@ -9,16 +12,22 @@ export interface IConfigFunc {
 }
 
 export interface IModel {
+    id(): string;
     getUrl(): string;
+    removeChild(child: IModel): void;
 }
 
 export interface IModelFunc {
     create(params: Record<string, any>): Promise<void>;
     fetch(
         endpoint: string,
-        params?: Record<string, any>
+        params?: Record<string, any>,
+        throwError?: boolean
     ): Promise<Record<string, any>[]>;
     parse(json: Record<string, any>): boolean;
+    onChange(callback: StreamCallback): void;
+    onDelete(callback: StreamCallback): void;
+    onCreate(callback: StreamCallback): void;
 }
 
 export interface IConnection {
@@ -75,6 +84,7 @@ export interface INetworkFunc {
         usage: string
     ): INetwork[];
     findAllByName(name: string, usage: string): IDevice[];
+    findById(id: string): INetwork;
     fetch(name: string, params: Record<string, any>): IDevice;
 }
 
@@ -119,6 +129,7 @@ export interface IDeviceFunc {
         usage: string
     ): IDevice[];
     findAllByProduct(product: string, usage: string): IDevice[];
+    findById(id: string): IDevice;
 }
 
 export interface IPermissionModelFunc {
@@ -200,6 +211,7 @@ export interface IValueFunc {
     findByType(type: string, quantity: number | 'all', usage: string): IValue[];
     findAllByName(name: string, usage: string): IValue[];
     findAllByType(type: string, usage: string): IValue[];
+    findById(id: string): IValue;
 }
 
 export type StateType = 'Report' | 'Control';
@@ -212,6 +224,44 @@ export interface IState {
 
 export interface IStateFunc {
     constructor(type?: StateType): IState;
+}
+
+export interface INotificationCustomData {
+    all: boolean;
+    future: boolean;
+    selected: Record<string, any>[];
+}
+
+export interface INotificationCustom {
+    type: string;
+    quantity: number;
+    limitation: Record<string, any>[];
+    method: Record<string, any>[];
+    option: Record<string, any>;
+    message: string;
+    name_installation: string;
+    title_installation: string | null;
+    data?: INotificationCustomData;
+}
+
+export interface INotificationBase {
+    action: string;
+    code: number;
+    type: string;
+    from: string;
+    to: string;
+    from_type: string;
+    from_name: string;
+    to_type: string;
+    type_ids: string;
+    priority: number;
+    ids: string[];
+    info: Record<string, any>[];
+    identifier: string;
+}
+
+export interface INotificationFunc {
+    notify(message: string): Promise<void>;
 }
 
 export type LogOperation =
@@ -271,7 +321,16 @@ export interface ILogResponse {
     type: string;
 }
 
-export interface IStreamEvent {}
+export type EventType = 'create' | 'update' | 'delete' | 'direct';
+
+export interface IStreamEvent {
+    path: string;
+    event: EventType;
+    data?: any;
+    meta_object?: IMeta;
+    meta?: IMeta;
+    extsync?: any;
+}
 
 export interface IStreamModel {
     path(): string;
@@ -280,16 +339,24 @@ export interface IStreamModel {
 
 export interface IStreamFunc {
     subscribe(model: IStreamModel): void;
+    sendInternal(type: string): Promise<any>;
+    subscribeInternal(type: string, handler: ServiceHandler): void;
     subscribeService(service: string, handler: ServiceHandler): void;
     addSignalHandler(type: string, handler: SignalHandler): void;
     sendRequest(msg: any): Promise<any>;
+    sendEvent(type: string, msg: string): Promise<any>;
     sendResponse(event: any, code: number, msg: any): Promise<void>;
     onRequest(handler: RequestHandler, internal: boolean): void;
+    onWebHook(handler: RequestHandler): void;
+    fromForeground(callback: RequestHandler): void;
 }
+
+export type OAuthRequestHandler = (url: string) => void;
 
 export interface IOAuthFunc {
     constructor(name?: string): void;
-    getToken(name: string): void;
+    getToken(handler?: OAuthRequestHandler): void;
+    staticGetToken(name: string, handler?: OAuthRequestHandler): void;
 }
 
 export interface IWappStorageFunc {
@@ -297,8 +364,10 @@ export interface IWappStorageFunc {
     constructor(name: string): void;
     set(name: string, item: any): Promise<void>;
     get(name: string): any;
+    onChange(cb: StorageChangeHandler): void;
 }
 
+export type StorageChangeHandler = () => void;
 export type SignalHandler = (event: string) => void;
 export type ServiceHandler = (
     event: any

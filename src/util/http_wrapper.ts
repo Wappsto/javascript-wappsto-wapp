@@ -11,41 +11,52 @@ export default axios.create({
 });
 
 export function getErrorResponse(error: any): any {
+    /* istanbul ignore next */
     if (axios.isAxiosError(error)) {
+        /* istanbul ignore next */
         return error?.response?.data;
     } else {
         return error;
     }
 }
 
-export function printHttpError(error: any): void {
+function getErrorMessage(error: any): string {
+    /* istanbul ignore next */
     if (error.errno && error.errno === -111) {
-        printError(`Failed to connect to ${error.address}`);
-        return;
+        /* istanbul ignore next */
+        return `Failed to connect to ${error.address}`;
     }
 
     if (error.response) {
+        /* istanbul ignore next */
         if (error?.response?.data?.code) {
             switch (error.response.data.code) {
-                case 400017:
-                    printError(`You can't share with yourself`);
-                    break;
                 case 507000000:
-                    printError(
-                        'Timeout, waiting for response on extsync request'
-                    );
-                    break;
+                    return 'Timeout, waiting for response on extsync request';
                 default:
-                    printError(error.response.data.message);
                     printDebug(JSON.stringify(error.response.data));
-                    break;
+                    return error.response.data.message;
             }
         } else {
-            printError(`${error.response.statusText} for ${error.config.url}`);
+            /* istanbul ignore next */
+            return `${error.response.statusText} for ${error.config.url}`;
         }
-        return;
     }
 
-    printError(`Unknown HTTP error: ${error.errno} (${error.code})`);
+    /* istanbul ignore next */
+    if (error instanceof TypeError) {
+        /* istanbul ignore next */
+        return error.toString();
+    }
+
+    /* istanbul ignore next */
     printDebug(JSON.stringify(error));
+    /* istanbul ignore next */
+    return `Unknown HTTP error: ${error.errno} (${error.code})`;
+}
+
+export function printHttpError(error: any): string {
+    const msg = getErrorMessage(error);
+    printError(msg);
+    return msg;
 }
