@@ -16,4 +16,5 @@ export { State } from './state';
 export { User } from './user';
 export { Data } from './data';
 export { Notification } from './notification';
+export { notify } from './notification.send';
 export { OAuth } from './oauth';

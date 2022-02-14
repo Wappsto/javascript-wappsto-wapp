@@ -1,4 +1,4 @@
-import { isBrowser } from './util/browser';
+import { isBrowser } from './util/helpers';
 
 /**
  * Reads a cookie with the giving name.

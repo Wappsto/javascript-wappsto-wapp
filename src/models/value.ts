@@ -4,7 +4,7 @@ import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { State } from './state';
-import { checkList } from '../util/check_list';
+import { checkList } from '../util/helpers';
 import { printDebug } from '../util/debug';
 import {
     IValue,

@@ -1,6 +1,6 @@
 import { Model } from './model';
 import { Notification } from './notification';
-import { printDebug } from '../util/debug';
+import { printDebug, printError } from '../util/debug';
 import { openStream } from './stream';
 import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 
@@ -51,9 +51,10 @@ export class PermissionModel extends Model {
                                         resolve();
                                         return true;
                                     } catch (e) {
-                                        printDebug(
+                                        printError(
                                             'Failed to get permission to save data under users account'
                                         );
+                                        printDebug(JSON.stringify(e));
                                     }
                                 }
                             }

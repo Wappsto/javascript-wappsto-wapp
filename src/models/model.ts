@@ -1,6 +1,6 @@
 import { isArray, isEqual, pick, omit } from 'lodash';
 import { plainToClass } from 'class-transformer';
-import { isUUID } from '../util/uuid';
+import { isUUID } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { printError } from '../util/debug';
@@ -80,6 +80,7 @@ export class Model implements IModel {
                 );
             }
         }
+
         const response = await wappsto.post(
             this.getUrl(),
             this.toJSON(),
@@ -238,15 +239,17 @@ export class Model implements IModel {
     }
 
     private removeUndefined(obj: Record<string, any>) {
-        Object.keys(obj).forEach((key) => {
-            const value = obj[key];
-            const type = typeof value;
-            if (type === 'object') {
-                this.removeUndefined(value);
-            } else if (type === 'undefined') {
-                delete obj[key];
-            }
-        });
+        if (obj) {
+            Object.keys(obj).forEach((key) => {
+                const value = obj[key];
+                const type = typeof value;
+                if (type === 'object') {
+                    this.removeUndefined(value);
+                } else if (type === 'undefined') {
+                    delete obj[key];
+                }
+            });
+        }
         return obj;
     }
 }
