@@ -25,7 +25,6 @@
         "start": "dts watch",
         "test": "dts test --coverage",
         "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
-        "postinstall": "husky install",
         "prepublish": "dts build"
     },
     "husky": {
