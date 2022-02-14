@@ -1,4 +1,4 @@
-import { isUUID } from '../src/util/uuid';
+import { isUUID } from '../src/util/helpers';
 
 describe('util', () => {
     it('can validate an UUID', () => {

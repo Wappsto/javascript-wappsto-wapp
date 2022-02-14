@@ -10,6 +10,13 @@
         "dist/*.d.ts",
         "dist/**/*.d.ts"
     ],
+    "keywords": [
+        "wappsto",
+        "wapp",
+        "api",
+        "iot",
+        "seluxit"
+    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Wappsto/javascript-wappsto-wapp"

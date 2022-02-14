@@ -2,8 +2,7 @@ import { Model } from './model';
 import { session, baseUrl } from '../session';
 import { _config } from '../util/config';
 import { printDebug, printError } from '../util/debug';
-import { isUUID } from '../util/uuid';
-import { isBrowser } from '../util/browser';
+import { isUUID, isBrowser } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import {
