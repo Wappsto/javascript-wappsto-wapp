@@ -72,6 +72,7 @@ describe('value', () => {
         value.name = 'new name';
         await value.update();
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -89,6 +90,7 @@ describe('value', () => {
 
         const values = await Value.fetch();
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
             params: { expand: 2 },
@@ -103,6 +105,7 @@ describe('value', () => {
         const values = await Value.fetch();
         config({ verbose: false });
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/value', {
             params: { expand: 2, verbose: true },
@@ -125,6 +128,7 @@ describe('value', () => {
             timestamp: 'timestamp',
         });
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',

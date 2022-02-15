@@ -3,9 +3,10 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { Value, State, onWebHook } from '../src/index';
 import {
-    openStream,
+    Value,
+    State,
+    onWebHook,
     sendToForeground,
     sendToBackground,
     fromBackground,
@@ -13,7 +14,8 @@ import {
     cancelOnWebHook,
     cancelFromForeground,
     cancelFromBackground,
-} from '../src/models/stream';
+} from '../src/index';
+import { openStream } from '../src/models/stream';
 console.error = jest.fn();
 
 describe('stream', () => {
