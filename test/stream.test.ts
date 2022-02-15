@@ -15,7 +15,7 @@ import {
     cancelFromForeground,
     cancelFromBackground,
 } from '../src/index';
-import { openStream } from '../src/models/stream';
+import { openStream } from '../src/stream_helpers';
 console.error = jest.fn();
 
 describe('stream', () => {
@@ -99,6 +99,24 @@ describe('stream', () => {
             },
         ]);
         await new Promise((r) => setTimeout(r, 1));
+
+        value.clearAllCallbacks();
+
+        server.send([
+            {
+                meta_object: {
+                    type: 'event',
+                },
+                event: 'update',
+                path: '/network/9a51cbd4-afb3-4628-9c8b-df64a0d729e9/device/c5fe846f-d6d8-413a-abb5-620519dd6b75/value/6c06b63e-39ec-44a5-866a-c081aafb6726/state/cda4d978-39e9-47bf-8497-9813b0f94973',
+                data: {
+                    data: 'data',
+                    timestamp: 'timestamp',
+                },
+            },
+        ]);
+        await new Promise((r) => setTimeout(r, 1));
+
         expect(datas.length).toBe(1);
         expect(fun).toHaveBeenCalledTimes(1);
         expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');

@@ -1,7 +1,7 @@
 import { Model } from './model';
 import { Notification } from './notification';
 import { printDebug, printError } from '../util/debug';
-import { openStream } from './stream';
+import { openStream } from '../stream_helpers';
 import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 
 export class PermissionModel extends Model {
@@ -21,6 +21,7 @@ export class PermissionModel extends Model {
             } catch (error) {
                 const data = getErrorResponse(error);
 
+                /* istanbul ignore next */
                 if (!data) {
                     printHttpError(error);
                     reject(error);
@@ -37,6 +38,7 @@ export class PermissionModel extends Model {
                                     event.data,
                                 ]);
                                 if (!notification || !notification[0]) {
+                                    /* istanbul ignore next */
                                     return;
                                 }
                                 if (notification[0]?.base?.code === 1100013) {
@@ -51,18 +53,23 @@ export class PermissionModel extends Model {
                                         resolve();
                                         return true;
                                     } catch (e) {
+                                        /* istanbul ignore next */
                                         printError(
                                             'Failed to get permission to save data under users account'
                                         );
+                                        /* istanbul ignore next */
                                         printDebug(JSON.stringify(e));
                                     }
                                 }
                             }
+                            /* istanbul ignore next */
                             return undefined;
                         }
                     );
                 } else {
+                    /* istanbul ignore next */
                     printHttpError(error);
+                    /* istanbul ignore next */
                     reject(data);
                 }
             }
@@ -113,6 +120,7 @@ export class PermissionModel extends Model {
                 if (event.meta_object?.type === 'notification') {
                     const notification = Notification.fromArray([event.data]);
                     if (!notification || !notification[0]) {
+                        /* istanbul ignore next */
                         return;
                     }
 

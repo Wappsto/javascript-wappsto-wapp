@@ -4,7 +4,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { wappStorage } from '../src/index';
-import { openStream } from '../src/models/stream';
+import { openStream } from '../src/stream_helpers';
 
 describe('WappStorage', () => {
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });

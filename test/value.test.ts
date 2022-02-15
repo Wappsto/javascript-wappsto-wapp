@@ -5,7 +5,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Value, State, config } from '../src/index';
-import { openStream } from '../src/models/stream';
+import { openStream } from '../src/stream_helpers';
 
 describe('value', () => {
     const response = {

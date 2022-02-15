@@ -1,5 +1,5 @@
 import { Model } from './model';
-import { openStream } from './stream';
+import { openStream } from '../stream_helpers';
 import { printError } from '../util/debug';
 import { checkList } from '../util/helpers';
 import { PermissionModel } from './model.permission';

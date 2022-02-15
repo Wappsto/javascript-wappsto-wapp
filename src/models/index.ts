@@ -1,15 +1,5 @@
 export { createNetwork, Network } from './network';
-export {
-    Stream,
-    sendToForeground,
-    sendToBackground,
-    fromBackground,
-    fromForeground,
-    cancelFromForeground,
-    cancelFromBackground,
-    onWebHook,
-    cancelOnWebHook,
-} from './stream';
+export { Stream } from './stream';
 export { Device } from './device';
 export { Value } from './value';
 export { State } from './state';

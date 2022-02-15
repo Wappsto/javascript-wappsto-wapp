@@ -57,6 +57,7 @@ export class Stream extends Model {
             window.location &&
             window.location.origin
         ) {
+            /* istanbul ignore next */
             this.websocketUrl = window.location.origin + this.websocketUrl;
         }
         this.websocketUrl = this.websocketUrl.replace(/^http/, 'ws');
@@ -207,8 +208,10 @@ export class Stream extends Model {
                     return handler(body);
                 }
             } catch (e) {
+                /* istanbul ignore next */
                 printError('Failed to parse body in internal event as JSON');
             }
+            /* istanbul ignore next */
             return false;
         });
     }
@@ -310,6 +313,7 @@ export class Stream extends Model {
                 data
             );
         } catch (e) {
+            /* istanbul ignore next */
             printHttpError(e);
         }
     }
@@ -409,6 +413,7 @@ export class Stream extends Model {
         const services: string[] = [];
         if (type === 'message') {
             if (!event.path) {
+                /* istanbul ignore next */
                 return;
             }
             const items: string[] = event.path
@@ -580,83 +585,4 @@ export class Stream extends Model {
             trace(event.meta.trace);
         }
     }
-}
-
-const openStream: Stream = new Stream();
-
-export { openStream };
-
-async function sendRequest(type: string, msg: any): Promise<any> {
-    const data = {
-        type: type,
-        message: msg,
-    };
-    return await openStream.sendRequest(data);
-}
-
-export async function sendToForeground(msg: any): Promise<any> {
-    return sendRequest('background', msg);
-}
-
-export async function sendToBackground(msg: any): Promise<any> {
-    return sendRequest('foreground', msg);
-}
-
-const request_handlers: Record<string, RequestHandler> = {};
-
-async function _handleRequest(event: any) {
-    try {
-        const data = JSON.parse(event);
-        if (request_handlers[data.type]) {
-            return request_handlers[data.type](data.message);
-        }
-    } catch (e) {
-        /* istanbul ignore next */
-        printDebug('Failed to parse event - Foreground/Background handler');
-    }
-    return undefined;
-}
-
-function handleRequest(type: string, callback: RequestHandler): void {
-    if (Object.keys(request_handlers).length === 0) {
-        openStream.onRequest(_handleRequest, true);
-    }
-    request_handlers[type] = callback;
-}
-
-export function fromForeground(callback: RequestHandler): void {
-    Model.validateMethod('Stream', 'fromForeground', arguments);
-    handleRequest('foreground', callback);
-}
-
-export function fromBackground(callback: RequestHandler): void {
-    Model.validateMethod('Stream', 'fromForeground', arguments);
-    handleRequest('background', callback);
-}
-
-export function onWebHook(handler: RequestHandler): void {
-    Model.validateMethod('Stream', 'onWebHook', arguments);
-    openStream.onRequest(handler, false);
-}
-
-export function cancelOnWebHook(handler: RequestHandler): void {
-    Model.validateMethod('Stream', 'onWebHook', arguments);
-    openStream.cancelRequest(handler, false);
-}
-
-function cancelFrom(type: string): void {
-    if (request_handlers[type]) {
-        delete request_handlers[type];
-        if (Object.keys(request_handlers).length === 0) {
-            openStream.cancelRequest(_handleRequest, true);
-        }
-    }
-}
-
-export function cancelFromBackground(): void {
-    cancelFrom('background');
-}
-
-export function cancelFromForeground(): void {
-    cancelFrom('foreground');
 }

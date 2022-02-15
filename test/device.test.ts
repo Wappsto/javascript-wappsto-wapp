@@ -4,7 +4,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { Device, Value, ValueTemplate, config } from '../src/index';
-import { openStream } from '../src/models/stream';
+import { openStream } from '../src/stream_helpers';
 
 describe('device', () => {
     const response = {

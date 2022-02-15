@@ -1,5 +1,5 @@
 import { Model } from './model';
-import { openStream } from './stream';
+import { openStream } from '../stream_helpers';
 import { printDebug } from '../util/debug';
 import { OAuthRequestHandler } from '../util/interfaces';
 

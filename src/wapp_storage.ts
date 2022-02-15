@@ -1,6 +1,6 @@
 import { Model } from './models/model';
 import { Data } from './models/data';
-import { openStream } from './models/stream';
+import { openStream } from './stream_helpers';
 import { StorageChangeHandler } from './util/interfaces';
 
 const storages: Record<string, WappStorage> = {};
