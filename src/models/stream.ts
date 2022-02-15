@@ -5,7 +5,7 @@ import { printDebug, printError } from '../util/debug';
 import { isUUID, isBrowser } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
-import { trace } from '../util/trace';
+import { trace, clearTrace } from '../util/trace';
 import {
     IStreamEvent,
     ServiceHandler,
@@ -404,7 +404,7 @@ export class Stream extends Model {
         }
     }
 
-    private handleMessage(type: string, event: IStreamEvent, _ = ''): void {
+    private handleMessage(type: string, event: IStreamEvent): void {
         const paths: string[] = [];
         const services: string[] = [];
         if (type === 'message') {
@@ -551,8 +551,9 @@ export class Stream extends Model {
                     }
                     return;
                 }
-                const traceId = this.checkAndSendTrace(msg);
-                this.handleMessage('message', msg, traceId);
+                this.checkAndSendTrace(msg);
+                this.handleMessage('message', msg);
+                clearTrace('ok');
             });
         };
 
@@ -574,12 +575,10 @@ export class Stream extends Model {
         };
     }
 
-    private checkAndSendTrace(event: IStreamEvent): string {
+    private checkAndSendTrace(event: IStreamEvent): void {
         if (event?.meta?.trace) {
-            return trace(event.meta.trace, 'ok');
+            trace(event.meta.trace);
         }
-
-        return '';
     }
 }
 

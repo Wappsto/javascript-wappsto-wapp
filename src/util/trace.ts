@@ -1,25 +1,61 @@
-import wappsto from '../util/http_wrapper';
+import wappsto from './http_wrapper';
+import { isBrowser } from './helpers';
 
 const url = 'https://tracer.iot.seluxit.com/trace';
+let traceId = '';
+let parentId = '';
+let name = '';
 
-export function trace(parent: string, status: string): string {
-    let id = '';
-    if (typeof process !== 'object') {
-        id += 'FG_';
-    } else {
-        id += 'BG_';
+export function getTraceId(): string {
+    return traceId;
+}
+
+export function clearTrace(status: string): void {
+    if (parentId !== '') {
+        _trace(parentId, status);
     }
-    id += `WAPP_${Math.random()
+
+    traceId = '';
+    name = '';
+    parentId = '';
+}
+
+function _trace(parent: string, status: string): void {
+    const params: any = {
+        parent: parent,
+        name: name,
+        id: traceId,
+        status: status,
+    };
+
+    if (!isBrowser()) {
+        /* istanbul ignore next */
+        params['user'] = process.env['USER'] || process.env['USERNAME'];
+        params['installation'] = process.env['installationID'] || 'local';
+        params['development'] = process.env['development'] || 'true';
+    }
+
+    wappsto.get(url, {
+        params: params,
+    });
+}
+
+export function trace(parent: string): void {
+    parentId = parent;
+
+    traceId = `WAPP_${Math.random()
         .toString(36)
         .replace(/[^a-z]+/g, '')}`;
 
-    const response = wappsto.get(url, {
-        params: {
-            parent: parent,
-            id: id,
-            status: status,
-        },
-    });
-    console.log(response);
-    return id;
+    name = 'STREAM ';
+    /* istanbul ignore next */
+    if (isBrowser()) {
+        /* istanbul ignore next */
+        name += 'Foreground ';
+    } else {
+        name += 'Background ';
+    }
+    name += 'Wapp';
+
+    _trace(parent, 'pending');
 }

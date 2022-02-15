@@ -624,4 +624,65 @@ describe('stream', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(res).toEqual({});
     });
+
+    it('can handle trace messages', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        const value = new Value();
+        const state = new State('Control');
+        value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
+        state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
+        value.state.push(state);
+
+        value.onControl((v, s, t) => {
+            value.control(10);
+        });
+
+        await server.connected;
+
+        server.send([
+            {
+                meta: {
+                    trace: '4992e9cf-e280-4986-930e-02720be086be',
+                },
+                meta_object: {
+                    type: 'event',
+                },
+                event: 'update',
+                path: '/network/9a51cbd4-afb3-4628-9c8b-df64a0d729e9/device/c5fe846f-d6d8-413a-abb5-620519dd6b75/value/6c06b63e-39ec-44a5-866a-c081aafb6726/state/cda4d978-39e9-47bf-8497-9813b0f94973',
+                data: {
+                    data: 'data',
+                    timestamp: 'timestamp',
+                },
+            },
+        ]);
+        await new Promise((r) => setTimeout(r, 1));
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            'https://tracer.iot.seluxit.com/trace',
+            {
+                params: expect.objectContaining({
+                    development: 'true',
+                    installation: 'local',
+                    name: 'STREAM Background Wapp',
+                    parent: '4992e9cf-e280-4986-930e-02720be086be',
+                    status: 'pending',
+                    user: 'andreas',
+                }),
+            }
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            'https://tracer.iot.seluxit.com/trace',
+            {
+                params: expect.objectContaining({
+                    development: 'true',
+                    installation: 'local',
+                    name: 'STREAM Background Wapp',
+                    parent: '4992e9cf-e280-4986-930e-02720be086be',
+                    status: 'ok',
+                    user: 'andreas',
+                }),
+            }
+        );
+    });
 });

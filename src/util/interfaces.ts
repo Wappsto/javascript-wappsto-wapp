@@ -215,9 +215,11 @@ export interface IValueFunc {
 }
 
 export type StateType = 'Report' | 'Control';
+export type StateStatus = 'Send' | 'Pending' | 'Failed';
 
 export interface IState {
     type: StateType;
+    status?: StateStatus;
     data?: string;
     timestamp?: string;
 }
