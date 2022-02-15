@@ -666,7 +666,6 @@ describe('stream', () => {
                     name: 'STREAM Background Wapp',
                     parent: '4992e9cf-e280-4986-930e-02720be086be',
                     status: 'pending',
-                    user: 'andreas',
                 }),
             }
         );
@@ -680,7 +679,6 @@ describe('stream', () => {
                     name: 'STREAM Background Wapp',
                     parent: '4992e9cf-e280-4986-930e-02720be086be',
                     status: 'ok',
-                    user: 'andreas',
                 }),
             }
         );
