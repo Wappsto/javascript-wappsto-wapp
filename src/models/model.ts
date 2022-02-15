@@ -5,6 +5,7 @@ import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { printError } from '../util/debug';
 import { _config } from '../util/config';
+import { getTraceId } from '../util/trace';
 import { IMeta, IModel } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { createCheckers } from 'ts-interface-checker';
@@ -155,6 +156,7 @@ export class Model implements IModel {
             {},
             pick(this.meta, ['id', 'type', 'version'])
         );
+
         return Object.assign(
             { meta: meta },
             this.removeUndefined(pick(this, this.attributes()))
@@ -231,6 +233,9 @@ export class Model implements IModel {
         }
         if (_config.verbose) {
             options.params['verbose'] = true;
+        }
+        if (getTraceId()) {
+            options.params['trace'] = getTraceId();
         }
         if (Object.keys(options.params).length === 0) {
             options = omit(options, 'params');

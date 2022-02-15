@@ -5,6 +5,7 @@ import { printDebug, printError } from '../util/debug';
 import { isUUID, isBrowser } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
+import { trace, clearTrace } from '../util/trace';
 import {
     IStreamEvent,
     ServiceHandler,
@@ -403,7 +404,7 @@ export class Stream extends Model {
         }
     }
 
-    private handleMessage(type: string, event: IStreamEvent, _ = ''): void {
+    private handleMessage(type: string, event: IStreamEvent): void {
         const paths: string[] = [];
         const services: string[] = [];
         if (type === 'message') {
@@ -550,8 +551,9 @@ export class Stream extends Model {
                     }
                     return;
                 }
-                const traceId = this.checkAndSendTrace(msg);
-                this.handleMessage('message', msg, traceId);
+                this.checkAndSendTrace(msg);
+                this.handleMessage('message', msg);
+                clearTrace('ok');
             });
         };
 
@@ -573,13 +575,10 @@ export class Stream extends Model {
         };
     }
 
-    private checkAndSendTrace(_: IStreamEvent): string {
-        return '';
-        /*if (message.hasOwnProperty('meta') && message.meta.hasOwnProperty('trace')) {
-          return Tracer.sendTrace(this.stream.util.session, message.meta.trace, null, null, {
-          'stream_id': message.meta.id
-          });
-          }*/
+    private checkAndSendTrace(event: IStreamEvent): void {
+        if (event?.meta?.trace) {
+            trace(event.meta.trace);
+        }
     }
 }
 

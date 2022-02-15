@@ -295,8 +295,15 @@ export const IValueFunc = t.iface([], {
 
 export const StateType = t.union(t.lit('Report'), t.lit('Control'));
 
+export const StateStatus = t.union(
+    t.lit('Send'),
+    t.lit('Pending'),
+    t.lit('Failed')
+);
+
 export const IState = t.iface([], {
     type: 'StateType',
+    status: t.opt('StateStatus'),
     data: t.opt('string'),
     timestamp: t.opt('string'),
 });
@@ -526,6 +533,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IValueTemplate,
     IValueFunc,
     StateType,
+    StateStatus,
     IState,
     IStateFunc,
     INotificationCustomData,

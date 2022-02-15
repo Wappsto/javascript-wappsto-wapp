@@ -1,12 +1,12 @@
 import { Model } from './model';
 import { StreamModel } from './model.stream';
-import { IState } from '../util/interfaces';
+import { IState, StateStatus } from '../util/interfaces';
 
 export class State extends StreamModel implements IState {
     static endpoint = '/2.0/state';
 
     data = '';
-    status?: string;
+    status?: StateStatus;
     type: 'Report' | 'Control' = 'Report';
     timestamp: string = new Date().toISOString();
     status_payment?: string;
