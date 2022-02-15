@@ -70,7 +70,7 @@ export class Device extends StreamModel implements IDevice {
                 this.value[i].meta.id = id;
                 await this.value[i].refresh();
             }
-            this.value[i].loadAllChildren();
+            await this.value[i].loadAllChildren();
         }
     }
 

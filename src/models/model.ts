@@ -168,7 +168,7 @@ export class Model implements IModel {
         params?: Record<string, any>,
         throwError?: boolean
     ): Promise<Record<string, any>[]> => {
-        Model.validateMethod('Model', 'fetch', [endpoint, params]);
+        Model.validateMethod('Model', 'fetch', [endpoint, params, throwError]);
         let res: any[] = [];
         try {
             const response = await wappsto.get(

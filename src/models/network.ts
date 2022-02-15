@@ -82,7 +82,7 @@ export class Network extends StreamModel implements INetwork {
                 this.device[i].meta.id = id;
                 await this.device[i].refresh();
             }
-            this.device[i].loadAllChildren();
+            await this.device[i].loadAllChildren();
         }
     }
 
