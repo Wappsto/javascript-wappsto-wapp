@@ -19,6 +19,7 @@ export const IModel = t.iface([], {
     id: t.func('string'),
     getUrl: t.func('string'),
     removeChild: t.func('void', t.param('child', 'IModel')),
+    setParent: t.func('void', t.param('parent', 'IModel', true)),
 });
 
 export const IModelFunc = t.iface([], {

@@ -44,6 +44,10 @@ export class Model implements IModel {
         return [];
     }
 
+    public setParent(parent: IModel): void {
+        this.parent = parent;
+    }
+
     /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     public perserve(): void {}
 
@@ -194,9 +198,15 @@ export class Model implements IModel {
 
     public static fromArray<T>(
         this: new () => T,
-        json: Record<string, any>[]
+        json: Record<string, any>[],
+        parent?: IModel
     ): T[] {
-        return plainToClass(this, json);
+        const obj = plainToClass(this, json);
+        obj.forEach((o: T) => {
+            const o2 = o as unknown as IModel;
+            o2.setParent(parent);
+        });
+        return obj;
     }
 
     public static validateMethod(

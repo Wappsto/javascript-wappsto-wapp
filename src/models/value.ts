@@ -7,6 +7,7 @@ import { State } from './state';
 import { checkList } from '../util/helpers';
 import { printDebug } from '../util/debug';
 import {
+    IModel,
     IValue,
     IValueNumber,
     IValueString,
@@ -75,6 +76,15 @@ export class Value extends StreamModel implements IValue {
         this.permission = this.tmp_permission;
     }
 
+    public setParent(parent: IModel): void {
+        super.setParent(parent);
+        this.state.forEach((sta) => {
+            if (typeof sta !== 'string') {
+                sta.parent = this;
+            }
+        });
+    }
+
     public static fetch = async () => {
         const params = { expand: 2 };
         const url = Value.endpoint;
@@ -89,6 +99,7 @@ export class Value extends StreamModel implements IValue {
                 const id: string = this.state[i] as unknown as string;
                 this.state[i] = new State();
                 this.state[i].meta.id = id;
+                this.state[i].parent = this;
                 await this.state[i].refresh();
             }
         }

@@ -66,9 +66,8 @@ export class Device extends StreamModel implements IDevice {
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'string') {
                 const id: string = this.value[i] as unknown as string;
-                this.value[i] = new Value();
-                this.value[i].meta.id = id;
-                await this.value[i].refresh();
+                this.value[i] = await Value.findById(id);
+                this.value[i].parent = this;
             }
             await this.value[i].loadAllChildren();
         }
@@ -194,6 +193,15 @@ export class Device extends StreamModel implements IDevice {
     public removeChild(child: IModel): void {
         this.value = this.value.filter((value: Value) => {
             return child !== value;
+        });
+    }
+
+    public setParent(parent: IModel): void {
+        super.setParent(parent);
+        this.value.forEach((val) => {
+            if (typeof val !== 'string') {
+                val.setParent(this);
+            }
         });
     }
 

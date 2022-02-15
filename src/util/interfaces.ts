@@ -15,6 +15,7 @@ export interface IModel {
     id(): string;
     getUrl(): string;
     removeChild(child: IModel): void;
+    setParent(parent?: IModel): void;
 }
 
 export interface IModelFunc {
