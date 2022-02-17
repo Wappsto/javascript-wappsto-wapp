@@ -29,11 +29,7 @@ export class Model implements IModel {
     }
 
     public path(): string {
-        if (this.meta.id) {
-            return `/${this.meta.type}/${this.id()}`;
-        } else {
-            return `/${this.meta.type}`;
-        }
+        return `/${this.meta.type}/${this.id()}`;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
@@ -78,6 +74,7 @@ export class Model implements IModel {
                         valid = true;
                     }
                 });
+            /* istanbul ignore next */
             if (!valid) {
                 /* istanbul ignore next */
                 throw new Error(
@@ -218,6 +215,7 @@ export class Model implements IModel {
             const c = Object.keys(Model.checker).find(
                 (k) => k.toLowerCase() === `i${type.toLowerCase()}func`
             );
+            /* istanbul ignore next */
             if (c) {
                 const m = Model.checker[c].methodArgs(name);
                 if (_config.validation === 'strict') {
