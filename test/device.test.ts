@@ -308,9 +308,9 @@ describe('device', () => {
                 },
                 name: 'name',
                 number: {
-                    min: -1e38,
-                    max: 1e38,
-                    step: 0.01,
+                    min: -128,
+                    max: 128,
+                    step: 0.1,
                 },
             },
             {}
@@ -319,9 +319,9 @@ describe('device', () => {
         expect(value.name).toEqual('name');
         expect(value.permission).toEqual('rw');
         expect(value.type).toEqual('number');
-        expect(value.number?.min).toEqual(-1e38);
-        expect(value.number?.max).toEqual(1e38);
-        expect(value.number?.step).toEqual(0.01);
+        expect(value.number?.min).toEqual(-128);
+        expect(value.number?.max).toEqual(128);
+        expect(value.number?.step).toEqual(0.1);
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
@@ -423,7 +423,7 @@ describe('device', () => {
                 },
                 name: 'name',
                 blob: {
-                    max: 64,
+                    max: 280,
                     encoding: 'base64',
                 },
             },
@@ -433,7 +433,7 @@ describe('device', () => {
         expect(value.name).toEqual('name');
         expect(value.permission).toEqual('rw');
         expect(value.type).toEqual('blob');
-        expect(value.blob?.max).toEqual(64);
+        expect(value.blob?.max).toEqual(280);
         expect(value.blob?.encoding).toEqual('base64');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
