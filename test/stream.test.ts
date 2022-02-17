@@ -101,6 +101,7 @@ describe('stream', () => {
         await new Promise((r) => setTimeout(r, 1));
 
         value.clearAllCallbacks();
+        value.clearAllCallbacks();
 
         server.send([
             {

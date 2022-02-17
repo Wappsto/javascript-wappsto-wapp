@@ -106,6 +106,15 @@ describe('network', () => {
                 ],
             },
             'd9fd72a2-fd2e-4079-b114-d8927f88d9ab',
+            'b8b4864c-1da5-41db-8fd3-22191176b266',
+            {
+                meta: {
+                    id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                    type: 'device',
+                },
+                name: 'Device Name',
+                product: 'Device Product',
+            },
         ],
     };
 
@@ -634,11 +643,42 @@ describe('network', () => {
             .mockResolvedValueOnce({ data: [responseHalf] })
             .mockResolvedValueOnce({ data: { type: 'Control' } })
             .mockResolvedValueOnce({ data: { name: 'Value Name 2' } })
-            .mockResolvedValueOnce({ data: { name: 'Device Name 2' } });
+            .mockResolvedValueOnce({ data: { name: 'Device Name 2' } })
+            .mockResolvedValueOnce({ data: { name: 'Device Name 3' } })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                        type: 'device',
+                    },
+                    name: 'Device Name 4',
+                    product: 'Device Product',
+                    value: [
+                        {
+                            meta: {
+                                id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                                type: 'value',
+                            },
+                            name: 'Value Name',
+                            state: [
+                                {
+                                    meta: {
+                                        id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                        type: 'state',
+                                    },
+                                    type: 'Control',
+                                },
+                            ],
+                        },
+                    ],
+                },
+            });
 
         const networks = await Network.fetch();
         const device1 = networks[0].device[0];
         const device2 = networks[0].device[1];
+        const device3 = networks[0].device[2];
+        const device4 = networks[0].device[3];
         const value1 = device1.value[0];
         const value2 = device1.value[1];
         const state1 = value1.state[0];
@@ -646,6 +686,8 @@ describe('network', () => {
 
         expect(device1.name).toEqual('Device Name');
         expect(device2.name).toEqual('Device Name 2');
+        expect(device3.name).toEqual('Device Name 3');
+        expect(device4.name).toEqual('Device Name 4');
 
         expect(value1.name).toEqual('Value Name');
         expect(value2.name).toEqual('Value Name 2');
@@ -653,7 +695,9 @@ describe('network', () => {
         expect(state1.type).toEqual('Report');
         expect(state2.type).toEqual('Control');
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+        expect(device4.value[0].state[0].toJSON).toBeDefined();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(6);
     });
 
     it('can delete a device and make sure that it is not valid', async () => {

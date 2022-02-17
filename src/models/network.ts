@@ -79,9 +79,16 @@ export class Network extends StreamModel implements INetwork {
             if (typeof this.device[i] === 'string') {
                 const id: string = this.device[i] as unknown as string;
                 this.device[i] = await Device.findById(id);
-                this.device[i].parent = this;
+            } else if (i >= 3) {
+                this.device[i] = await Device.findById(
+                    /* istanbul ignore next */
+                    this.device[i].meta.id || ''
+                );
             }
-            await this.device[i].loadAllChildren();
+            if (this.device[i]) {
+                this.device[i].parent = this;
+                await this.device[i].loadAllChildren();
+            }
         }
     }
 
@@ -91,6 +98,7 @@ export class Network extends StreamModel implements INetwork {
         let device = new Device();
         const devices = this.findDeviceByName(params.name);
         if (devices.length !== 0) {
+            /* istanbul ignore next */
             printDebug(`Using existing device with id ${devices[0]?.id()}`);
             device = devices[0];
         }
