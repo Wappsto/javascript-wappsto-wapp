@@ -16,6 +16,15 @@ import {
 /* eslint-disable @typescript-eslint/no-var-requires */
 const WebSocket = require('universal-websocket-client');
 
+export class IgnoreError extends Error {
+    constructor(msg: string) {
+        super(msg);
+
+        // Set the prototype explicitly.
+        Object.setPrototypeOf(this, IgnoreError.prototype);
+    }
+}
+
 interface StreamModelHash {
     [key: string]: IStreamModel[];
 }
@@ -326,13 +335,22 @@ export class Stream extends Model {
             const handlers =
                 this.onRequestHandlers[Number(event.uri === 'extsync/')];
             for (let i = 0; i < handlers.length; i++) {
-                const p = handlers[i](event.body);
+                let p;
+                try {
+                    p = handlers[i](event.body);
+                } catch (err) {
+                    if (!(err instanceof IgnoreError)) {
+                        this.sendResponse(event, 400, err);
+                    }
+                }
                 if (p) {
                     if (p.then) {
                         p.then((res: any) => {
                             this.sendResponse(event, 200, res);
-                        }).catch((res: any) => {
-                            this.sendResponse(event, 400, res);
+                        }).catch((err: any) => {
+                            if (!(err instanceof IgnoreError)) {
+                                this.sendResponse(event, 400, err);
+                            }
                         });
                         continue;
                     } else {
@@ -346,7 +364,6 @@ export class Stream extends Model {
             printError('An error happend when calling request handler');
             printError(JSON.stringify(e));
         }
-
         return undefined;
     };
 

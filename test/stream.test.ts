@@ -547,6 +547,29 @@ describe('stream', () => {
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
     });
 
+    it('can filter out foreground messages send from the foreground', async () => {
+        const fun = jest.fn();
+        fromBackground(fun);
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                request: 'request',
+                uri: 'extsync/',
+                body: '{"type": "foreground","message": {"test": "foreground"}}',
+            },
+        });
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(fun).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+    });
+
     it('can stop stream', async () => {
         const funF = jest.fn();
         const funB = jest.fn();

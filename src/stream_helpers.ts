@@ -1,5 +1,5 @@
 import { Model } from './models/model';
-import { Stream } from './models/stream';
+import { IgnoreError, Stream } from './models/stream';
 import { printDebug } from './util/debug';
 import { RequestHandler } from './util/interfaces';
 
@@ -35,8 +35,8 @@ async function _handleRequest(event: any) {
         /* istanbul ignore next */
         printDebug('Failed to parse event - Foreground/Background handler');
     }
-    /* istanbul ignore next */
-    return undefined;
+
+    throw new IgnoreError('Wrong request handler');
 }
 
 function handleRequest(type: string, callback: RequestHandler): void {
