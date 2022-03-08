@@ -68,6 +68,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
                     cb(this);
                 });
                 break;
+            /* istanbul ignore next */
             default:
                 printError('Unhandled stream event type: ' + event?.event);
                 break;
