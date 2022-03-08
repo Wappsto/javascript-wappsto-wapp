@@ -194,7 +194,8 @@ export const ValuePermission = t.union(
 export const IValue = t.iface([], {
     name: 'string',
     permission: 'ValuePermission',
-    type: t.opt('string'),
+    type: 'string',
+    description: t.opt('string'),
     period: t.opt('string'),
     delta: t.opt('string'),
     number: t.opt('IValueNumber'),
@@ -207,7 +208,7 @@ export const IValueNumber = t.iface([], {
     min: 'number',
     max: 'number',
     step: 'number',
-    unit: t.opt('string'),
+    unit: 'string',
     si_conversion: t.opt('string'),
     mapping: t.opt('any'),
     ordered_mapping: t.opt('boolean'),
@@ -249,6 +250,11 @@ export const IValueFunc = t.iface([], {
     constructor: t.func('IState', t.param('name', 'string', true)),
     createState: t.func('IState', t.param('params', 'IState')),
     report: t.func(
+        'void',
+        t.param('data', t.union('string', 'number')),
+        t.param('timestamp', t.union('string', 'undefined'))
+    ),
+    forceReport: t.func(
         'void',
         t.param('data', t.union('string', 'number')),
         t.param('timestamp', t.union('string', 'undefined'))

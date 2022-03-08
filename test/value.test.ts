@@ -16,6 +16,9 @@ describe('value', () => {
         },
         name: 'test',
         permission: '',
+        type: '',
+        period: '0',
+        delta: '0',
     };
 
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
@@ -50,7 +53,9 @@ describe('value', () => {
                     version: '2.0',
                 },
                 name: 'test',
+                type: '',
                 permission: 'r',
+                period: '0',
             },
             {}
         );
@@ -324,6 +329,9 @@ describe('value', () => {
         value.state.push(state);
         await value.control(10);
         await value.control('test', 'timestamp');
+        await value.report(10);
+        value.delta = '1';
+        await value.report(20);
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -496,6 +504,84 @@ describe('value', () => {
         });
         expect(value[0].meta.id).toEqual(
             'b62e285a-5188-4304-85a0-3982dcb575bc'
+        );
+    });
+
+    it('drops message when there is a delta', async () => {
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        value.delta = '2';
+        const state = new State('Report');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+        await value.report(1);
+        await value.report(2);
+        await value.report('3');
+        await value.report('error');
+        await value.report('error');
+        value.delta = 'Inf';
+        await value.report(123123);
+        await value.forceReport(444);
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: '1',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: '3',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: 'error',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.0',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: '444',
+            }),
+            {}
         );
     });
 });

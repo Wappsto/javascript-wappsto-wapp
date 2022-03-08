@@ -147,7 +147,8 @@ export type ValuePermission = 'r' | 'w' | 'rw' | 'wr';
 export interface IValue {
     name: string;
     permission: ValuePermission;
-    type?: string;
+    type: string;
+    description?: string;
     period?: string;
     delta?: string;
     number?: IValueNumber;
@@ -160,7 +161,7 @@ export interface IValueNumber {
     min: number;
     max: number;
     step: number;
-    unit?: string;
+    unit: string;
     si_conversion?: string;
     mapping?: Record<string, any>;
     ordered_mapping?: boolean;
@@ -197,6 +198,7 @@ export interface IValueFunc {
     constructor(name?: string): IState;
     createState(params: IState): IState;
     report(data: string | number, timestamp: string | undefined): void;
+    forceReport(data: string | number, timestamp: string | undefined): void;
     control(data: string | number, timestamp: string | undefined): void;
     onControl(callback: ValueStreamCallback): void;
     onReport(callback: ValueStreamCallback): void;

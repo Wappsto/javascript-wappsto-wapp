@@ -14,7 +14,7 @@ export class ValueTemplate {
             max: 1,
             step: 1,
             si_conversion: undefined,
-            unit: undefined,
+            unit: '',
         },
     };
     static VOLTAGE_V: IValueTemplate = {
@@ -366,7 +366,7 @@ export class ValueTemplate {
             max: 128,
             step: 0.1,
             si_conversion: undefined,
-            unit: undefined,
+            unit: '',
         },
     };
     static STRING: IValueTemplate = {

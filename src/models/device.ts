@@ -117,6 +117,7 @@ export class Device extends StreamModel implements IDevice {
         switch (valueTemplate.value_type) {
             case 'number':
                 value.number = valueTemplate.number;
+                value.delta = '0';
                 break;
             case 'string':
                 value.string = valueTemplate.string;
@@ -149,6 +150,9 @@ export class Device extends StreamModel implements IDevice {
 
         params.number = numberValue;
 
+        if (params.delta === undefined) {
+            params.delta = '0';
+        }
         return await this._createValue(params);
     }
 
