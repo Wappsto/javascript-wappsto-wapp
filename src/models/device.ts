@@ -74,16 +74,31 @@ export class Device extends StreamModel implements IDevice {
     }
 
     private async _createValue(params: IValue): Promise<Value> {
+        let oldDelta;
+        let oldPeriod = '0';
         let value = new Value();
         const values = this.findValueByName(params.name);
         if (values.length !== 0) {
             printDebug(`Using existing value with id ${values[0].id()}`);
             value = values[0];
+            oldDelta = params.delta;
+            params.delta = value.delta;
+            if (params.period) {
+                oldPeriod = params.period;
+            }
+            params.period = value.period;
         }
 
         const oldJson = value.toJSON();
         value.parse(params);
         const newJson = value.toJSON();
+
+        if (value.delta === undefined) {
+            value.delta = oldDelta;
+        }
+        if (value.period === undefined) {
+            value.period = oldPeriod;
+        }
 
         value.parent = this;
         if (!isEqual(oldJson, newJson)) {

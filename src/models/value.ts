@@ -30,7 +30,7 @@ export class Value extends StreamModel implements IValue {
     permission: ValuePermission = 'r';
     tmp_permission: ValuePermission = 'r';
     type = '';
-    period = '0';
+    period?: string;
     delta?: string;
     number?: IValueNumber;
     string?: IValueString;
