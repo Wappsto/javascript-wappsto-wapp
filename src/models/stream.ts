@@ -131,7 +131,7 @@ export class Stream extends Model {
 
     public close() {
         if (this.socket) {
-            printDebug('Closing WebSocket');
+            printDebug(`Closing WebSocket on ${this.url}`);
             this.ignoreReconnect = true;
             this.socket.close();
             this.opened = false;
@@ -211,17 +211,17 @@ export class Stream extends Model {
         this.validate('subscribeInternal', arguments);
 
         this.subscribeService('extsync', (event) => {
+            let res: boolean | Promise<undefined | true> = false;
             try {
                 const body = JSON.parse(event.body);
                 if (body.type === type) {
-                    return handler(body);
+                    res = handler(body);
                 }
             } catch (e) {
                 /* istanbul ignore next */
                 printError('Failed to parse body in internal event as JSON');
             }
-            /* istanbul ignore next */
-            return false;
+            return res;
         });
     }
 
@@ -524,6 +524,7 @@ export class Stream extends Model {
 
         this.socket.onmessage = (ev: any) => {
             let message;
+            /* istanbul ignore else */
             if (ev.type === 'message') {
                 try {
                     message = JSON.parse(ev.data);
@@ -534,7 +535,6 @@ export class Stream extends Model {
                     return;
                 }
             } else {
-                /* istanbul ignore next */
                 printError("Can't handle binary stream data");
             }
 

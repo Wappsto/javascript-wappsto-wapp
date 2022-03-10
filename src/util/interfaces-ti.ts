@@ -11,6 +11,8 @@ export const IConfig = t.iface([], {
     debug: t.opt('boolean'),
     validation: t.opt('ValidationType'),
     reconnectCount: t.opt('number'),
+    jitterMin: t.opt('number'),
+    jitterMax: t.opt('number'),
 });
 
 export const IConfigFunc = t.iface([], {

@@ -853,6 +853,7 @@ describe('value', () => {
     });
 
     it('can send a report with a high delta when it is triggered by period', async () => {
+        config({ jitterMin: 1, jitterMax: 1 });
         mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });

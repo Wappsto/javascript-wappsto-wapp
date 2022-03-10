@@ -6,6 +6,8 @@ export interface IConfig {
     debug?: boolean;
     validation?: ValidationType;
     reconnectCount?: number;
+    jitterMin?: number;
+    jitterMax?: number;
 }
 
 export interface IConfigFunc {

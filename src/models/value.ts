@@ -4,6 +4,7 @@ import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { State } from './state';
+import { _config } from '../util/config';
 import {
     checkList,
     getSecondsToNextPeriod,
@@ -148,7 +149,10 @@ export class Value extends StreamModel implements IValue {
             state.timestamp = timestamp || this.getTime();
             if (this.sendReportWithJitter && type === 'Report') {
                 this.sendReportWithJitter = false;
-                const timeout = randomIntFromInterval(1, 1);
+                const timeout = randomIntFromInterval(
+                    _config.jitterMin,
+                    _config.jitterMax
+                );
                 await new Promise((r) => setTimeout(r, timeout));
             }
             await state.update();
