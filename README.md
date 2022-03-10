@@ -391,8 +391,6 @@ Wappsto.config({
 });
 ```
 
-
-
 #### Stream Reconnect Count
 
 It is possible to change from the default 10 times the stream will try to reconnect in case of connection errors.
