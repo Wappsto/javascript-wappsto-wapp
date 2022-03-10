@@ -782,4 +782,34 @@ describe('network', () => {
         expect(dev1.meta.id).toEqual(undefined);
         expect(dev2.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
+
+    it('can handle a device create', async () => {
+        const f = jest.fn();
+        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        const n = new Network();
+        n.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
+        n.onCreate(f);
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'create',
+            path: '/network/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
+            data: {
+                meta: {
+                    id: '60323236-54bf-499e-a438-608a24619c94',
+                    type: 'device',
+                },
+                name: 'Device Name',
+            },
+        });
+
+        expect(f).toHaveBeenCalledTimes(1);
+        expect(n.device.length).toBe(1);
+        expect(n.device[0].name).toEqual('Device Name');
+        expect(n.device[0].toJSON).toBeDefined();
+    });
 });
