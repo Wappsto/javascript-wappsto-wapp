@@ -1,6 +1,6 @@
 # Wappsto Wapp API [![CI](https://github.com/Wappsto/wappsto-wapp/actions/workflows/main.yml/badge.svg)](https://github.com/Wappsto/wappsto-wapp/actions/workflows/main.yml) [![codecov](https://codecov.io/gh/Wappsto/javascript-wappsto-wapp/branch/main/graph/badge.svg?token=Y7SPYV4G97)](https://codecov.io/gh/Wappsto/javascript-wappsto-wapp)
 
-This is a node/js library for easily creating wapps for [Wappsto](https://wappsto.com)
+This is a node/js library for easily creating wapps for [Wappsto](https://wappsto.com).
 
 ## Table of Contents 
   * [Install](#install)
@@ -14,6 +14,7 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     + [To report a change in the value](#to-report-a-change-in-the-value)
     + [To change a value on another networks value](#to-change-a-value-on-another-networks-value)
     + [Listing for changes on values](#listing-for-changes-on-values)
+    + [Sending an update event to a device](#sending-an-update-event-to-a-device)
     + [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
     + [Web Hook](#web-hook)
     + [Wapp Storage](#wapp-storage)
@@ -134,33 +135,33 @@ let value = device.createStringValue({
 To request access to an exsisting object, a request have to be send. You can request a single object or multiple objects of the same type.
 
 
-To request access to a network with a spefict name, use 'findByName'.
+To request access to a network with a spefict name, use `findByName`.
 
 ```javascript
 let networks = await Wappsto.Network.findByName('Network name');
 ```
 
 
-To request access to a device with a spefict name, use 'findByName'.
+To request access to a device with a spefict name, use `findByName`.
 
 ```javascript
 let devices = await Wappsto.Device.findByName('Device name');
 ```
 
 
-To request access to a device with a spefict product, use 'findByProduct'.
+To request access to a device with a spefict product, use `findByProduct`.
 
 ```javascript
 let devices = await Wappsto.Device.findByProduct('Product name');
 ```
 
-To request access to a value with a spefict name, use 'findByName'.
+To request access to a value with a spefict name, use `findByName`.
 
 ```javascript
 let values = await Wappsto.Value.findByName('Value name');
 ```
 
-To request access to a value with a spefict type, use 'findByType'.
+To request access to a value with a spefict type, use `findByType`.
 
 ```javascript
 let values = await Wappsto.Value.findByType('Type name');
@@ -169,7 +170,7 @@ let values = await Wappsto.Value.findByType('Type name');
 
 ### To find a child from an exsisting object
 
-To find devices under a network, you can call 'findDeviceByName' to search for all devices with the given name.
+To find devices under a network, you can call `findDeviceByName` to search for all devices with the given name.
 
 ```javascript
 let devices = network.findDeviceByName('Device name');
@@ -181,14 +182,14 @@ Or you can search for all devices with a given product.
 let devices = network.findDeviceByProduct('Device product');
 ```
 
-To find all values under a network or device, you can call 'findValueByName' to search for all values with the given name.
+To find all values under a network or device, you can call `findValueByName` to search for all values with the given name.
 
 ```javascript
 let values = network.findValueByName('value name');
 let values = device.findValueByName('value name');
 ```
 
-Or you can find all values with a given type, by calling 'findValueByType'.
+Or you can find all values with a given type, by calling `findValueByType`.
 
 ```javascript
 let values = network.findValueByType('value type');
@@ -207,7 +208,7 @@ let value = Value.findByID('1157b4fa-2745-4940-9201-99eee5929eff');
 
 ### To report a change in the value
 
-To send a new data point to wappsto, just call the 'report' function on the value.
+To send a new data point to wappsto, just call the `report` function on the value.
 
 ```javascript
 await value.report('1');
@@ -222,7 +223,7 @@ let timestamp = value.getReportTimestamp();
 
 ### To change a value on another networks value
 
-To send a new data point to another value, just call the 'control' function on the value.
+To send a new data point to another value, just call the `control` function on the value.
 
 ```javascript
 await value.control('1');
@@ -247,6 +248,14 @@ value.onReport((value, data, timestamp) => {
 value.onControl((value, data, timestamp) => {
 	console.log(`Request to change ${value.name} to ${data}`);
 });
+```
+
+### Sending an update event to a device
+
+To send an event to a device to get a new report data.
+
+```javascript
+await value.refresh();
 ```
 
 ### Sending messages to and from the background
@@ -359,7 +368,7 @@ Wappsto.stopLogging();
 
 ### Raw requests
 
-It is possible to send your own requests to wappsto by using the 'request' object in wappsto.
+It is possible to send your own requests to wappsto by using the `request` object in wappsto.
 
 ```javascript
 let netwoks = await Wappsto.request.get('/network');

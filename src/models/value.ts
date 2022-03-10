@@ -119,7 +119,7 @@ export class Value extends StreamModel implements IValue {
                 this.state[i] = new State();
                 this.state[i].meta.id = id;
                 this.state[i].parent = this;
-                await this.state[i].refresh();
+                await this.state[i].reload();
             }
         }
     }
@@ -338,6 +338,11 @@ export class Value extends StreamModel implements IValue {
                 this.status = '';
             }
         });
+    }
+
+    public async refresh(): Promise<void> {
+        this.status = 'update';
+        await this.update();
     }
 
     private async findStateAndLog(

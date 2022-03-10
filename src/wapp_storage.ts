@@ -57,15 +57,15 @@ export class WappStorage {
             `storage_${this.name}_updated`,
             /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
             async (_: any) => {
-                await this.data.refresh();
+                await this.data.reload();
                 cb();
                 return undefined;
             }
         );
     }
 
-    async refresh(): Promise<void> {
-        await this.data.refresh();
+    async reload(): Promise<void> {
+        await this.data.reload();
     }
 
     reset(): void {

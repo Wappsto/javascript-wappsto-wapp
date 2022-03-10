@@ -151,6 +151,33 @@ describe('value', () => {
         expect(state.meta.id).toBe('6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7');
     });
 
+    it('can trigger an refresh event to the device', async () => {
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+
+        await value.refresh();
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
+            {
+                meta: {
+                    type: 'value',
+                    version: '2.0',
+                    id: '1b969edb-da8b-46ba-9ed3-59edadcc24b1',
+                },
+                name: '',
+                permission: 'r',
+                status: 'update',
+                type: '',
+            },
+            {}
+        );
+    });
+
     it('can find value by id', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response] });
 

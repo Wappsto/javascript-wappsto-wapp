@@ -171,7 +171,7 @@ describe('WappStorage', () => {
 
         const c = await wappStorage();
         const oldData = c.get('missing');
-        await c.refresh();
+        await c.reload();
         const newData = c.get('missing');
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);

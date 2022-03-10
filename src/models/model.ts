@@ -117,7 +117,7 @@ export class Model implements IModel {
         }
     }
 
-    public async refresh(): Promise<void> {
+    public async reload(): Promise<void> {
         try {
             const response = await wappsto.get(
                 this.getUrl(),
