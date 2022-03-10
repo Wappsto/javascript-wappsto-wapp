@@ -50,8 +50,9 @@ export class StreamModel extends PermissionModel implements IStreamModel {
     }
 
     handleStream(event: IStreamEvent): void {
-        switch (event?.event) {
+        switch (event.event) {
             case 'create':
+                this.parseChildren(event.data);
                 this.streamCallback.create.forEach((cb) => {
                     cb(this);
                 });
@@ -68,8 +69,9 @@ export class StreamModel extends PermissionModel implements IStreamModel {
                     cb(this);
                 });
                 break;
+            /* istanbul ignore next */
             default:
-                printError('Unhandled stream event type: ' + event?.event);
+                printError('Unhandled stream event type: ' + event.event);
                 break;
         }
     }

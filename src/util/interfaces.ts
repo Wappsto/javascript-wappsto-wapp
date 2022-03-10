@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
+export type ValidationType = 'none' | 'normal' | 'strict';
 export interface IConfig {
     verbose?: boolean;
     debug?: boolean;
-    validation?: 'none' | 'normal' | 'strict';
+    validation?: ValidationType;
     reconnectCount?: number;
 }
 
@@ -26,6 +27,7 @@ export interface IModelFunc {
         throwError?: boolean
     ): Promise<Record<string, any>[]>;
     parse(json: Record<string, any>): boolean;
+    parseChildren(json: Record<string, any>): boolean;
     onChange(callback: StreamCallback): void;
     onDelete(callback: StreamCallback): void;
     onCreate(callback: StreamCallback): void;
@@ -384,4 +386,7 @@ export type ValueStreamCallback = (
     data: string,
     timestamp: string
 ) => void;
-export type RefreshStreamCallback = (value: IValue) => void;
+export type RefreshStreamCallback = (
+    value: IValue,
+    origin: 'user' | 'period'
+) => void;

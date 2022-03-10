@@ -449,7 +449,10 @@ export class Stream extends Model {
 
             if (!isUUID(last)) {
                 paths.push(
-                    '/' + items.slice(items.length - 3, items.length).join('/')
+                    '/' +
+                        items
+                            .slice(items.length - 3, items.length - 1)
+                            .join('/')
                 );
             }
             items.forEach((i) => {

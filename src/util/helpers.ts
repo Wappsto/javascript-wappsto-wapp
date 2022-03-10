@@ -19,3 +19,17 @@ export function checkList(list: any[], check: any): boolean {
     }
     return false;
 }
+
+export function getSecondsToNextPeriod(period: number): number {
+    const now = Date.now();
+    const midnight = new Date(new Date().setUTCHours(0, 0, 0, 0)).getTime();
+
+    const seconds_since_midnight = (now - midnight) / 1000;
+    const seconds_to_next_period =
+        (Math.floor(seconds_since_midnight / period) + 1) * period;
+    return seconds_to_next_period - seconds_since_midnight;
+}
+
+export function randomIntFromInterval(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}

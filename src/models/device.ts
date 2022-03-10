@@ -115,6 +115,7 @@ export class Device extends StreamModel implements IDevice {
             await value.createState({ type: 'Control' });
         }
 
+        value.created();
         return value;
     }
 
@@ -207,6 +208,16 @@ export class Device extends StreamModel implements IDevice {
         params.xml = xmlValue;
 
         return await this._createValue(params);
+    }
+
+    public parseChildren(json: Record<string, any>): boolean {
+        let res = false;
+        const values = Value.fromArray([json]);
+        if (values.length) {
+            this.value.push(values[0]);
+            res = true;
+        }
+        return res;
     }
 
     public removeChild(child: IModel): void {

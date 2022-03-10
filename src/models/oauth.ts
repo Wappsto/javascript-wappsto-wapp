@@ -43,9 +43,9 @@ export class OAuth extends Model {
                     async (
                         event: Record<string, any>
                     ): Promise<true | undefined> => {
-                        if (event?.data?.name === this.name) {
+                        if (event.data?.name === this.name) {
                             printDebug('Got OAuth token from stream');
-                            resolve(event?.data?.params);
+                            resolve(event.data.params);
                             return true;
                         }
                         return;

@@ -121,6 +121,16 @@ export class Network extends StreamModel implements INetwork {
         return device;
     }
 
+    public parseChildren(json: Record<string, any>): boolean {
+        let res = false;
+        const devices = Device.fromArray([json]);
+        if (devices.length) {
+            this.device.push(devices[0]);
+            res = true;
+        }
+        return res;
+    }
+
     public removeChild(child: IModel): void {
         this.device = this.device.filter((device: Device) => {
             return child !== device;

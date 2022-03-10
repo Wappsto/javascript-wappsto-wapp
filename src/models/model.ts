@@ -51,7 +51,7 @@ export class Model implements IModel {
     public restore(): void {}
 
     protected validate(name: string, params: any): void {
-        Model.validateMethod(this.meta.type || '', name, params);
+        Model.validateMethod(this.meta.type, name, params);
     }
 
     public getUrl(): string {
@@ -152,6 +152,11 @@ export class Model implements IModel {
         return !isEqual(oldModel, newModel);
     }
 
+    /* istanbul ignore next */
+    public parseChildren(json: Record<string, any>): boolean {
+        return false;
+    }
+
     public toJSON(): Record<string, any> {
         const meta = Object.assign(
             {},
@@ -178,7 +183,7 @@ export class Model implements IModel {
             );
 
             if (response?.data) {
-                if (isArray(response?.data)) {
+                if (isArray(response.data)) {
                     res = response.data;
                 } else if (response.data) {
                     res = [response.data];
@@ -207,10 +212,14 @@ export class Model implements IModel {
     }
 
     public static validateMethod(
-        type: string,
+        type: string | undefined,
         name: string,
         params: any
     ): void {
+        /* istanbul ignore next */
+        if (type === undefined) {
+            return;
+        }
         if (_config.validation !== 'none') {
             const c = Object.keys(Model.checker).find(
                 (k) => k.toLowerCase() === `i${type.toLowerCase()}func`

@@ -4,7 +4,11 @@ import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { State } from './state';
-import { checkList } from '../util/helpers';
+import {
+    checkList,
+    getSecondsToNextPeriod,
+    randomIntFromInterval,
+} from '../util/helpers';
 import { printDebug } from '../util/debug';
 import {
     IModel,
@@ -31,6 +35,7 @@ export class Value extends StreamModel implements IValue {
     tmp_permission: ValuePermission = 'r';
     type = '';
     period?: string;
+    last_period = '';
     delta?: string;
     number?: IValueNumber;
     string?: IValueString;
@@ -44,6 +49,9 @@ export class Value extends StreamModel implements IValue {
         Report: [],
     };
     reportIsForced = false;
+    sendReportWithJitter = false;
+    periodTimer?: any;
+    refreshCallbacks: RefreshStreamCallback[] = [];
 
     constructor(name?: string) {
         super('value');
@@ -70,6 +78,14 @@ export class Value extends StreamModel implements IValue {
         ];
     }
 
+    public created(): void {
+        this.onChange((val) => {
+            this.handlePeriodUpdate();
+        });
+
+        this.handlePeriodUpdate();
+    }
+
     public perserve(): void {
         this.tmp_permission = this.permission;
     }
@@ -80,9 +96,9 @@ export class Value extends StreamModel implements IValue {
 
     public setParent(parent: IModel): void {
         super.setParent(parent);
-        this.state.forEach((sta) => {
-            if (typeof sta !== 'string') {
-                sta.parent = this;
+        this.state.forEach((state) => {
+            if (typeof state !== 'string') {
+                state.parent = this;
             }
         });
     }
@@ -130,6 +146,11 @@ export class Value extends StreamModel implements IValue {
         if (state) {
             state.data = data.toString();
             state.timestamp = timestamp || this.getTime();
+            if (this.sendReportWithJitter && type === 'Report') {
+                this.sendReportWithJitter = false;
+                const timeout = randomIntFromInterval(1, 1);
+                await new Promise((r) => setTimeout(r, timeout));
+            }
             await state.update();
         }
     }
@@ -178,6 +199,16 @@ export class Value extends StreamModel implements IValue {
         }
 
         return state;
+    }
+
+    public parseChildren(json: Record<string, any>): boolean {
+        let res = false;
+        const states = State.fromArray([json]);
+        if (states.length) {
+            this.state.push(states[0]);
+            res = true;
+        }
+        return res;
     }
 
     private findStateAndData(type: StateType): string | undefined {
@@ -271,8 +302,10 @@ export class Value extends StreamModel implements IValue {
             }
         }
 
+        this.reportIsForced = false;
         this.findStateAndUpdate('Report', data, timestamp);
     }
+
     public async control(
         data: string | number,
         timestamp: string | undefined = undefined
@@ -294,9 +327,10 @@ export class Value extends StreamModel implements IValue {
     public onRefresh(callback: RefreshStreamCallback): void {
         this.validate('onRefresh', arguments);
 
+        this.refreshCallbacks.push(callback);
         this.onChange(() => {
             if (this.status === 'update') {
-                callback(this);
+                callback(this, 'user');
                 this.status = '';
             }
         });
@@ -406,5 +440,39 @@ export class Value extends StreamModel implements IValue {
 
     private static validate(name: string, params: any): void {
         Model.validateMethod('Value', name, params);
+    }
+
+    private handlePeriodUpdate(): void {
+        if (this.period && this.period !== this.last_period) {
+            this.last_period = this.period;
+            this.startPeriodHandler();
+        }
+    }
+
+    private startPeriodHandler(): void {
+        if (this.periodTimer) {
+            clearTimeout(this.periodTimer);
+        }
+
+        const timeout = parseInt(this.last_period);
+        if (isNaN(timeout) || timeout < 1) {
+            return;
+        }
+
+        this.periodTimer = setTimeout(() => {
+            this.triggerPeriodUpdate();
+        }, getSecondsToNextPeriod(timeout));
+    }
+
+    private triggerPeriodUpdate() {
+        this.refreshCallbacks.forEach((cb) => {
+            this.sendReportWithJitter = true;
+            this.reportIsForced = true;
+            cb(this, 'period');
+        });
+
+        this.periodTimer = setTimeout(() => {
+            this.triggerPeriodUpdate();
+        }, parseInt(this.last_period) * 1000);
     }
 }
