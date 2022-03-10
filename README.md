@@ -20,10 +20,11 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     + [OAuth](#oauth)
     + [Notification](#notification)
     + [Background logging](#background-logging)
-    + [Enable verbose responses from wappsto](#enable-verbose-responses-from-wappsto)
-    + [Validation](#validation)
     + [Raw requests](#raw-requests)
-    + [Stream Reconnect Count](#stream-reconnect-count)
+    + [Config](#config)
+      - [Enable verbose responses from wappsto](#enable-verbose-responses-from-wappsto)
+      - [Validation](#validation)
+      - [Stream Reconnect Count](#stream-reconnect-count)
 
 ## Install
 
@@ -356,7 +357,20 @@ And to turn it off again.
 Wappsto.stopLogging();
 ```
 
-### Enable verbose responses from wappsto
+### Raw requests
+
+It is possible to send your own requests to wappsto by using the 'request' object in wappsto.
+
+```javascript
+let netwoks = await Wappsto.request.get('/network');
+await Wappsto.request.post('/network', {name: 'Network Name'});
+```
+
+### Config
+
+It is possible to change some of the behavior of the library using config.
+
+#### Enable verbose responses from wappsto
 
 To enable verbose mode in wappsto, the verbose mode needs to be set to true.
 
@@ -366,7 +380,7 @@ Wappsto.config({
 });
 ```
 
-### Validation
+#### Validation
 
 It is possible to disable the validation of the input parameters, by changing it in the config. It can be 'none' or 'normal'.
 The default validation is 'normal'.
@@ -377,16 +391,9 @@ Wappsto.config({
 });
 ```
 
-### Raw requests
 
-It is possible to send your own requests to wappsto by using the 'request' object in wappsto.
 
-```javascript
-let netwoks = await Wappsto.request.get('/network');
-await Wappsto.request.post('/network', {name: 'Network Name'});
-```
-
-### Stream Reconnect Count
+#### Stream Reconnect Count
 
 It is possible to change from the default 10 times the stream will try to reconnect in case of connection errors.
 
