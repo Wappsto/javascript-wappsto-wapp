@@ -155,7 +155,7 @@ export class Value extends StreamModel implements IValue {
                     _config.jitterMin,
                     _config.jitterMax
                 );
-                await new Promise((r) => setTimeout(r, timeout*1000));
+                await new Promise((r) => setTimeout(r, timeout * 1000));
 
                 const oldData = state.data;
                 const oldTimestamp = state.timestamp;

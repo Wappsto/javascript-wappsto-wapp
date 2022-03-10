@@ -980,7 +980,7 @@ describe('value', () => {
                 },
                 type: 'Report',
                 data: '100',
-                timestamp: 'timestamp'
+                timestamp: 'timestamp',
             },
             {}
         );
@@ -994,7 +994,7 @@ describe('value', () => {
                 },
                 type: 'Report',
                 data: '10',
-                timestamp: 'timestamp-jitter'
+                timestamp: 'timestamp-jitter',
             },
             {}
         );
