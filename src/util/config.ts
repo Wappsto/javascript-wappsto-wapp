@@ -1,11 +1,11 @@
-import { IConfig } from './interfaces';
+import { IConfig, ValidationType } from './interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { createCheckers } from 'ts-interface-checker';
 
 class Config implements IConfig {
     debug = false;
     verbose = false;
-    validation: 'none' | 'normal' | 'strict' = 'normal';
+    validation: ValidationType = 'normal';
     reconnectCount = 10;
 }
 

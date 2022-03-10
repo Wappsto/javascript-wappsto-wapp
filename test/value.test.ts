@@ -4,7 +4,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
-import { Device, Value, State, config } from '../src/index';
+import { Device, Value, State, config, ValueTemplate } from '../src/index';
 import { openStream } from '../src/stream_helpers';
 
 describe('value', () => {
@@ -506,6 +506,36 @@ describe('value', () => {
         );
     });
 
+    it('can handle a state create', async () => {
+        const f = jest.fn();
+        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        const v = new Value();
+        v.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
+        v.onCreate(f);
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'create',
+            path: '/value/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/state',
+            data: {
+                meta: {
+                    id: '60323236-54bf-499e-a438-608a24619c94',
+                    type: 'state',
+                },
+                type: 'Report',
+            },
+        });
+
+        expect(f).toHaveBeenCalledTimes(1);
+        expect(v.state.length).toBe(1);
+        expect(v.state[0].type).toEqual('Report');
+        expect(v.state[0].toJSON).toBeDefined();
+    });
+
     it('drops message when there is a delta', async () => {
         mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
@@ -618,6 +648,7 @@ describe('value', () => {
             meta_object: {
                 type: 'value',
             },
+            event: 'update',
             path: '/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             data: {
                 delta: '2',
@@ -656,7 +687,7 @@ describe('value', () => {
         );
     });
 
-    it('will not override user delta from code', async () => {
+    it('will not override user delta and period from code', async () => {
         mockedAxios.get.mockResolvedValueOnce({
             data: {
                 meta: {
@@ -672,6 +703,7 @@ describe('value', () => {
                         },
                         permission: '',
                         delta: '2',
+                        period: '10',
                     },
                 ],
             },
@@ -687,6 +719,7 @@ describe('value', () => {
                         },
                         permission: '',
                         delta: '2',
+                        period: '10',
                     },
                 ],
             })
@@ -707,6 +740,7 @@ describe('value', () => {
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
         const oldValue = new Value('Value Name');
         oldValue.delta = '2';
+        oldValue.period = '10';
         oldValue.meta.id = 'f589b816-1f2b-412b-ac36-1ca5a6db0273';
         device.value.push(oldValue);
 
@@ -736,10 +770,10 @@ describe('value', () => {
                     id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                 },
                 name: 'Value Name',
-                delta: '2',
                 permission: 'r',
                 type: 'type',
-                period: 'period',
+                delta: '2',
+                period: '10',
                 number: {
                     min: 0,
                     max: 1,
@@ -747,6 +781,170 @@ describe('value', () => {
                     unit: 'unit',
                 },
             },
+            {}
+        );
+    });
+
+    it('will trigger period events', async () => {
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.0',
+                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                        },
+                    },
+                ],
+            });
+
+        const fun = jest.fn();
+        const device = new Device();
+        device.meta.id = '1714e470-76ef-4310-8c49-dda18ef8b819';
+        const value = await device.createValue(
+            'test',
+            'r',
+            ValueTemplate.TEMPERATURE_CELSIUS
+        );
+
+        value.onRefresh(fun);
+
+        await server.connected;
+        server.send({
+            meta_object: {
+                type: 'value',
+            },
+            event: 'update',
+            path: '/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            data: {
+                period: '2',
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 4000));
+
+        server.send({
+            meta_object: {
+                type: 'value',
+            },
+            event: 'update',
+            path: '/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            data: {
+                period: '0',
+            },
+        });
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(fun).toHaveBeenCalledTimes(2);
+        expect(fun).toHaveBeenCalledWith(value, 'period');
+    });
+
+    it('can send a report with a high delta when it is triggered by period', async () => {
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.0',
+                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                        },
+                    },
+                ],
+            });
+
+        const device = new Device();
+        device.meta.id = '1714e470-76ef-4310-8c49-dda18ef8b819';
+        const value = await device.createNumberValue({
+            name: 'test',
+            type: 'number',
+            permission: 'r',
+            min: 0,
+            max: 100,
+            step: 1,
+            unit: '',
+            delta: '50',
+            period: '2',
+        });
+
+        await value.report(1);
+        await value.report(9);
+
+        value.onRefresh((val, type) => {
+            value.report(10);
+        });
+
+        await server.connected;
+
+        await new Promise((r) => setTimeout(r, 2000));
+
+        server.send({
+            meta_object: {
+                type: 'value',
+            },
+            event: 'update',
+            path: '/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            data: {
+                period: '0',
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 2000));
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
+            expect.objectContaining({
+                meta: {
+                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    type: 'state',
+                    version: '2.0',
+                },
+                type: 'Report',
+                data: '1',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
+            expect.objectContaining({
+                meta: {
+                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    type: 'state',
+                    version: '2.0',
+                },
+                type: 'Report',
+                data: '10',
+            }),
             {}
         );
     });

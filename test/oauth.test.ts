@@ -49,6 +49,7 @@ describe('oauth', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(requestUrl).toBe('https://wappsto.com/oauth');
     });
 
@@ -133,5 +134,35 @@ describe('oauth', () => {
         expect(error).toBe(
             'This installation does not have any oauth external with this name'
         );
+    });
+
+    it('can call requet handler without data', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [],
+        });
+
+        let requestUrl = '';
+        OAuth.getToken('test', (url) => {
+            requestUrl = url;
+        });
+
+        await server.connected;
+
+        server.send({
+            meta: {
+                type: 'eventstream',
+            },
+            path: '/installation/94a9cf64-434e-4cfd-9429-ff6cd245026b/oauth_connect/aa4704c1-caa7-4a95-bb74-9bfb33fc970a',
+            event: 'create',
+            meta_object: {
+                type: 'oauth_connect',
+            },
+            data: {},
+        });
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(requestUrl).toBe(undefined);
     });
 });

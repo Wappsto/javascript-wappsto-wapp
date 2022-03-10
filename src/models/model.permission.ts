@@ -37,11 +37,11 @@ export class PermissionModel extends Model {
                                 const notification = Notification.fromArray([
                                     event.data,
                                 ]);
+                                /* istanbul ignore next */
                                 if (!notification || !notification[0]) {
-                                    /* istanbul ignore next */
                                     return;
                                 }
-                                if (notification[0]?.base?.code === 1100013) {
+                                if (notification[0].base?.code === 1100013) {
                                     try {
                                         printDebug(
                                             'Got permission to create data under users account'
@@ -119,8 +119,8 @@ export class PermissionModel extends Model {
             openStream.subscribeService('/notification', async (event: any) => {
                 if (event.meta_object?.type === 'notification') {
                     const notification = Notification.fromArray([event.data]);
+                    /* istanbul ignore next */
                     if (!notification || !notification[0]) {
-                        /* istanbul ignore next */
                         return;
                     }
 
