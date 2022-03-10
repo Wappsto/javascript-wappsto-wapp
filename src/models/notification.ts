@@ -21,7 +21,7 @@ export class Notification extends Model {
         }
         if (ids.length === 0) {
             if (this.custom?.data?.selected) {
-                ids = this.custom.data.selected.map((m) => m.id());
+                ids = this.custom.data.selected.map((m) => m.meta.id);
             }
         }
         return ids;

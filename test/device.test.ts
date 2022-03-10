@@ -300,17 +300,20 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
-                permission: 'rw',
-                type: 'number',
                 meta: {
                     type: 'value',
                     version: '2.0',
                 },
                 name: 'name',
+                permission: 'rw',
+                type: 'number',
+                delta: '0',
+                period: '0',
                 number: {
                     min: -128,
                     max: 128,
                     step: 0.1,
+                    unit: '',
                 },
             },
             {}
@@ -341,13 +344,14 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
-                permission: 'rw',
-                type: 'string',
                 meta: {
                     type: 'value',
                     version: '2.0',
                 },
                 name: 'name',
+                permission: 'rw',
+                type: 'string',
+                period: '0',
                 string: {
                     max: 64,
                     encoding: 'utf-8',
@@ -376,13 +380,14 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
-                permission: 'rw',
-                type: 'xml',
                 meta: {
                     type: 'value',
                     version: '2.0',
                 },
                 name: 'name',
+                permission: 'rw',
+                type: 'xml',
+                period: '0',
                 xml: {
                     xsd: '',
                     namespace: '',
@@ -415,13 +420,14 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
-                permission: 'rw',
-                type: 'blob',
                 meta: {
                     type: 'value',
                     version: '2.0',
                 },
                 name: 'name',
+                permission: 'rw',
+                type: 'blob',
+                period: '0',
                 blob: {
                     max: 280,
                     encoding: 'base64',

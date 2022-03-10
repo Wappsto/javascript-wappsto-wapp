@@ -26,9 +26,10 @@ export class Value extends StreamModel implements IValue {
     static endpoint = '/2.0/value';
 
     name: string;
+    description?: string;
     permission: ValuePermission = 'r';
     tmp_permission: ValuePermission = 'r';
-    type?: string;
+    type = '';
     period?: string;
     delta?: string;
     number?: IValueNumber;
@@ -42,6 +43,7 @@ export class Value extends StreamModel implements IValue {
         Control: [],
         Report: [],
     };
+    reportIsForced = false;
 
     constructor(name?: string) {
         super('value');
@@ -216,9 +218,61 @@ export class Value extends StreamModel implements IValue {
     ): Promise<void> {
         this.validate('report', arguments);
 
-        this.findStateAndUpdate('Report', data, timestamp);
+        return this.sendReport(data, timestamp, false);
     }
 
+    public async forceReport(
+        data: string | number,
+        timestamp: string | undefined = undefined
+    ): Promise<void> {
+        this.validate('forceReport', arguments);
+
+        return this.sendReport(data, timestamp, true);
+    }
+
+    private async sendReport(
+        data: string | number,
+        timestamp: string | undefined = undefined,
+        force: boolean
+    ): Promise<void> {
+        if (
+            this.delta &&
+            this.delta !== '' &&
+            this.delta !== '0' &&
+            !this.reportIsForced &&
+            !force
+        ) {
+            if (this.delta.toLowerCase() === 'inf') {
+                printDebug(
+                    `Dropping value update for "${this.name}" because delta is Inf`
+                );
+                return;
+            }
+
+            const oldState = this.findState('Report');
+            if (!oldState) {
+                return;
+            }
+            const oldData = parseFloat(oldState.data);
+            let newData: number;
+            if (typeof data === 'string') {
+                newData = parseFloat(data);
+            } else {
+                newData = data;
+            }
+
+            const delta = Math.abs(parseFloat(this.delta));
+            const diff = Math.abs(oldData - newData);
+            if (diff < delta) {
+                printDebug(
+                    `Dropping value update for "${this.name}" because the change is less then ${delta}`
+                );
+                return;
+            }
+        }
+
+        this.findStateAndUpdate('Report', data, timestamp);
+    }
     public async control(
         data: string | number,
         timestamp: string | undefined = undefined

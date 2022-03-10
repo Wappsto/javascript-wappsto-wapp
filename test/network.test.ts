@@ -292,10 +292,21 @@ describe('network', () => {
             },
             path: '/notification/',
             data: {
+                custom: {
+                    data: {
+                        selected: [
+                            {
+                                meta: {
+                                    id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                                },
+                            },
+                        ],
+                    },
+                },
                 base: {
                     code: 1100004,
                     identifier: 'network-1-Find 1 network with name test',
-                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                    ids: [],
                 },
             },
         });
@@ -591,6 +602,26 @@ describe('network', () => {
         await server.connected;
 
         await new Promise((r) => setTimeout(r, 100));
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {},
+        });
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                custom: {
+                    data: {},
+                },
+            },
+        });
 
         server.send({
             meta_object: {
