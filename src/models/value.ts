@@ -149,13 +149,29 @@ export class Value extends StreamModel implements IValue {
             state.timestamp = timestamp || this.getTime();
             if (this.sendReportWithJitter && type === 'Report') {
                 this.sendReportWithJitter = false;
+                const eventTimestamp = state.timestamp;
+
                 const timeout = randomIntFromInterval(
                     _config.jitterMin,
                     _config.jitterMax
                 );
-                await new Promise((r) => setTimeout(r, timeout));
+                await new Promise((r) => setTimeout(r, timeout*1000));
+
+                const oldData = state.data;
+                const oldTimestamp = state.timestamp;
+
+                state.data = data.toString();
+                state.timestamp = eventTimestamp;
+
+                const p = state.update();
+
+                state.data = oldData;
+                state.timestamp = oldTimestamp;
+
+                await p;
+            } else {
+                await state.update();
             }
-            await state.update();
         }
     }
 

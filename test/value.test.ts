@@ -880,8 +880,9 @@ describe('value', () => {
     });
 
     it('can send a report with a high delta when it is triggered by period', async () => {
-        config({ jitterMin: 1, jitterMax: 1 });
+        config({ jitterMin: 2, jitterMax: 2 });
         mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
         mockedAxios.post
@@ -926,12 +927,15 @@ describe('value', () => {
         await value.report(9);
 
         value.onRefresh((val, type) => {
-            value.report(10);
+            value.report(10, 'timestamp-jitter');
+            value.report(100, 'timestamp');
         });
 
         await server.connected;
 
         await new Promise((r) => setTimeout(r, 2000));
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
 
         server.send({
             meta_object: {
@@ -946,9 +950,13 @@ describe('value', () => {
 
         await new Promise((r) => setTimeout(r, 2000));
 
+        await value.report(60);
+
+        expect(value.getReportData()).toEqual('100');
+        expect(value.getReportTimestamp()).toEqual('timestamp');
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             expect.objectContaining({
@@ -964,7 +972,21 @@ describe('value', () => {
         );
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
-            expect.objectContaining({
+            {
+                meta: {
+                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    type: 'state',
+                    version: '2.0',
+                },
+                type: 'Report',
+                data: '100',
+                timestamp: 'timestamp'
+            },
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenLastCalledWith(
+            '/2.0/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
+            {
                 meta: {
                     id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                     type: 'state',
@@ -972,7 +994,8 @@ describe('value', () => {
                 },
                 type: 'Report',
                 data: '10',
-            }),
+                timestamp: 'timestamp-jitter'
+            },
             {}
         );
     });
