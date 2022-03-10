@@ -2,7 +2,32 @@
 
 This is a node/js library for easily creating wapps for [Wappsto](https://wappsto.com)
 
+## Table of Contents 
+  * [Install](#install)
+    + [Node](#node)
+    + [Browser](#browser)
+  * [Usage](#usage)
+    + [Create a new IoT Device](#create-a-new-iot-device)
+    + [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
+    + [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
+    + [Get retrive object by ID](#get-retrive-object-by-id)
+    + [To report a change in the value](#to-report-a-change-in-the-value)
+    + [To change a value on another networks value](#to-change-a-value-on-another-networks-value)
+    + [Listing for changes on values](#listing-for-changes-on-values)
+    + [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
+    + [Web Hook](#web-hook)
+    + [Wapp Storage](#wapp-storage)
+    + [OAuth](#oauth)
+    + [Notification](#notification)
+    + [Background logging](#background-logging)
+    + [Enable verbose responses from wappsto](#enable-verbose-responses-from-wappsto)
+    + [Validation](#validation)
+    + [Raw requests](#raw-requests)
+    + [Stream Reconnect Count](#stream-reconnect-count)
+
 ## Install
+
+### Node
 
 To install the node module in your project, run this command:
 
@@ -10,11 +35,19 @@ To install the node module in your project, run this command:
 npm i --save wappsto-wapp
 ```
 
+Or using `yarn`:
+
+```shell
+yarn add wappsto-wapp
+```
+
 And include it in your project like this:
 
 ```javascript
 let Wappsto = require('wappsto-wapp');
 ```
+
+### Browser
 
 To use it in a webpage, include this script tag:
 
@@ -265,7 +298,7 @@ wappsto.cancelOnWebHook(handler);
 
 It is possible to store configuration parameters and other information in the Wapp Storage.
 This data is persisted on Wappsto and can be read from the foreground and background wapp.
-The data can be reload from the server by calling `refresh` function.
+The data can be reload from the server by calling `reload` function.
 The data can be deleted by calling the `clear` function.
 A callback can also be registered to be notified when the storage is updated.
 
@@ -277,8 +310,8 @@ storage.onChange(() => {
 });
 await storage.set('key', 'item');
 let data = storage.get('key');
-// Refresh the data from the server
-await storage.refresh();
+// Reload the data from the server
+await storage.reload();
 // Delete all the saved data
 await storage.clear();
 ```
