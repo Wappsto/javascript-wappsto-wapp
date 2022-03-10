@@ -41,6 +41,7 @@ export class Model implements IModel {
     }
 
     public setParent(parent: IModel): void {
+        Model.validateMethod('Model', 'setParent', arguments);
         this.parent = parent;
     }
 
@@ -76,7 +77,6 @@ export class Model implements IModel {
                 });
             /* istanbul ignore next */
             if (!valid) {
-                /* istanbul ignore next */
                 throw new Error(
                     "Can't create a child under a parent that do not have an ID"
                 );
@@ -216,24 +216,16 @@ export class Model implements IModel {
         name: string,
         params: any
     ): void {
-        /* istanbul ignore next */
-        if (type === undefined) {
-            return;
-        }
-        if (_config.validation !== 'none') {
+        if (type !== undefined && _config.validation !== 'none') {
             const c = Object.keys(Model.checker).find(
                 (k) => k.toLowerCase() === `i${type.toLowerCase()}func`
             );
-            /* istanbul ignore next */
+
+            /* istanbul ignore else */
             if (c) {
                 const m = Model.checker[c].methodArgs(name);
-                if (_config.validation === 'strict') {
-                    m.strictCheck(Array.from(params));
-                } else {
-                    m.check(Array.from(params));
-                }
+                m.check(Array.from(params));
             } else {
-                /* istanbul ignore next */
                 printError(`Failed to find functions for ${type}`);
             }
         }

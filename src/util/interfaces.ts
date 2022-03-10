@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
-export type ValidationType = 'none' | 'normal' | 'strict';
+export type ValidationType = 'none' | 'normal';
 export interface IConfig {
     verbose?: boolean;
     debug?: boolean;
@@ -26,6 +26,7 @@ export interface IModelFunc {
         params?: Record<string, any>,
         throwError?: boolean
     ): Promise<Record<string, any>[]>;
+    setParent(parent?: IModel): void;
     parse(json: Record<string, any>): boolean;
     parseChildren(json: Record<string, any>): boolean;
     onChange(callback: StreamCallback): void;

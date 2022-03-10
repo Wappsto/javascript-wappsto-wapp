@@ -335,12 +335,12 @@ Wappsto.config({
 
 ### Validation
 
-It is possible to change the validation of the input parameters, by changing it in the config. It can be 'none', 'normal' or 'strict'.
+It is possible to disable the validation of the input parameters, by changing it in the config. It can be 'none' or 'normal'.
 The default validation is 'normal'.
 
 ```javascript
 Wappsto.config({
-  validation: 'strict'
+  validation: 'none'
 });
 ```
 

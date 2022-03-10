@@ -4,7 +4,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { config, Value } from '../src/index';
 import { printDebug, printWarning, printError } from '../src/util/debug';
-import { IConfig } from '../src/util/interfaces';
+import { IModel } from '../src/util/interfaces';
 console.log = jest.fn();
 console.warn = jest.fn();
 console.error = jest.fn();
@@ -24,25 +24,30 @@ describe('config', () => {
     });
 
     it('can change validation mode', () => {
-        config({ validation: 'strict' });
+        const wrong = { wrong: 'test' } as unknown as IModel;
+        let error1 = undefined;
+        let error2 = undefined;
+        const v = new Value();
 
-        const wrong = { wrong: 'test' } as IConfig;
-        let error = undefined;
         try {
-            config(wrong);
+            v.setParent(wrong);
             expect(true).toBe(false);
         } catch (e: any) {
-            error = e.message;
+            error1 = e.message;
         }
 
-        const v = new Value();
-        v.onControl((v, t) => {
-            console.log('control');
-        });
+        config({ validation: 'none' });
 
-        expect(error).toBe(
-            'value.param is not a IConfig; value.param.wrong is extraneous'
+        try {
+            v.setParent(wrong);
+        } catch (e: any) {
+            error2 = e.message;
+        }
+
+        expect(error1).toEqual(
+            `value.parent is not a IModel\n    value.parent.id is missing\n    value.parent.getUrl is missing\n    value.parent.removeChild is missing`
         );
+        expect(error2).toBe(undefined);
     });
 
     it('can print warnings and error', () => {

@@ -13,7 +13,6 @@ export default axios.create({
 export function getErrorResponse(error: any): any {
     /* istanbul ignore next */
     if (axios.isAxiosError(error)) {
-        /* istanbul ignore next */
         return error?.response?.data;
     } else {
         return error;
@@ -23,13 +22,11 @@ export function getErrorResponse(error: any): any {
 function getErrorMessage(error: any): string {
     /* istanbul ignore next */
     if (error.errno && error.errno === -111) {
-        /* istanbul ignore next */
         return `Failed to connect to ${error.address}`;
     }
 
     if (error.response) {
-        /* istanbul ignore next */
-        if (error?.response?.data?.code) {
+        if (error.response.data?.code) {
             switch (error.response.data.code) {
                 case 507000000:
                     return 'Timeout, waiting for response on extsync request';
@@ -38,14 +35,12 @@ function getErrorMessage(error: any): string {
                     return error.response.data.message;
             }
         } else {
-            /* istanbul ignore next */
             return `${error.response.statusText} for ${error.config.url}`;
         }
     }
 
     /* istanbul ignore next */
     if (error instanceof TypeError) {
-        /* istanbul ignore next */
         return error.toString();
     }
 

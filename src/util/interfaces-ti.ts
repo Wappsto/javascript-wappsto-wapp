@@ -4,11 +4,7 @@
 import * as t from 'ts-interface-checker';
 // tslint:disable:object-literal-key-quotes
 
-export const ValidationType = t.union(
-    t.lit('none'),
-    t.lit('normal'),
-    t.lit('strict')
-);
+export const ValidationType = t.union(t.lit('none'), t.lit('normal'));
 
 export const IConfig = t.iface([], {
     verbose: t.opt('boolean'),
@@ -36,6 +32,7 @@ export const IModelFunc = t.iface([], {
         t.param('params', 'any', true),
         t.param('throwError', 'boolean', true)
     ),
+    setParent: t.func('void', t.param('parent', 'IModel', true)),
     parse: t.func('boolean', t.param('json', 'any')),
     parseChildren: t.func('boolean', t.param('json', 'any')),
     onChange: t.func('void', t.param('callback', 'StreamCallback')),

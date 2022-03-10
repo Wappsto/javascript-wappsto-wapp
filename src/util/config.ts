@@ -16,9 +16,7 @@ export { _config };
 
 export function config(param: IConfig): Config {
     const m = _checker.IConfigFunc.methodArgs('config');
-    if (_config.validation === 'strict') {
-        m.strictCheck(Array.from(arguments));
-    } else {
+    if (_config.validation === 'normal') {
         m.check(Array.from(arguments));
     }
 
@@ -34,5 +32,6 @@ export function config(param: IConfig): Config {
     if (param.reconnectCount !== undefined) {
         _config.reconnectCount = param.reconnectCount;
     }
+
     return _config;
 }
