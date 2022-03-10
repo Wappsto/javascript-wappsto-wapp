@@ -321,7 +321,7 @@ describe('network', () => {
                 quantity: 1,
                 message: 'Find 1 network with name test',
                 identifier: 'network-1-Find 1 network with name test',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -582,7 +582,7 @@ describe('network', () => {
                 quantity: 'all',
                 message: 'Find all network with name test',
                 identifier: 'network-all-Find all network with name test',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -646,7 +646,7 @@ describe('network', () => {
                 quantity: 1,
                 message: 'Find 1 network',
                 identifier: 'network-1-Find 1 network',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });

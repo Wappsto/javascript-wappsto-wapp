@@ -175,7 +175,7 @@ describe('device', () => {
                 quantity: 1,
                 message: 'Find 1 device with name test',
                 identifier: 'device-1-Find 1 device with name test',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -187,7 +187,7 @@ describe('device', () => {
                 message: 'Find 1 device with name test',
                 method: ['retrieve', 'update'],
                 quantity: 1,
-                this_name: 'test',
+                this_name: '=test',
             },
         });
         expect(device[0].toJSON).toBeDefined();
@@ -205,7 +205,7 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
             params: {
                 expand: 3,
-                this_product: 'test',
+                this_product: '=test',
                 identifier: 'device-1-Find 1 device with product test',
                 message: 'Find 1 device with product test',
                 quantity: 1,
@@ -920,7 +920,7 @@ describe('device', () => {
                 quantity: 'all',
                 message: 'Find all device with name test',
                 identifier: 'device-all-Find all device with name test',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -947,7 +947,7 @@ describe('device', () => {
                 quantity: 'all',
                 message: 'Find all device with product test',
                 identifier: 'device-all-Find all device with product test',
-                this_product: 'test',
+                this_product: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -974,7 +974,7 @@ describe('device', () => {
                 quantity: 1,
                 message: 'Find 1 device',
                 identifier: 'device-1-Find 1 device',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });

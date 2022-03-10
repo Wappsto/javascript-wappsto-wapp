@@ -199,7 +199,7 @@ describe('value', () => {
                 quantity: 1,
                 message: 'Find 1 value with name test',
                 identifier: 'value-1-Find 1 value with name test',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -220,7 +220,7 @@ describe('value', () => {
                 quantity: 2,
                 message: 'msg',
                 identifier: 'value-2-msg',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -259,7 +259,7 @@ describe('value', () => {
                 quantity: 1,
                 message: 'Find 1 value with type test',
                 identifier: 'value-1-Find 1 value with type test',
-                this_type: 'test',
+                this_type: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -453,7 +453,7 @@ describe('value', () => {
                 quantity: 1,
                 message: 'Find 1 value',
                 identifier: 'value-1-Find 1 value',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -476,7 +476,7 @@ describe('value', () => {
                 quantity: 'all',
                 message: 'Find all value with name test',
                 identifier: 'value-all-Find all value with name test',
-                this_name: 'test',
+                this_name: '=test',
                 method: ['retrieve', 'update'],
             },
         });
@@ -497,7 +497,7 @@ describe('value', () => {
                 quantity: 'all',
                 message: 'Find all value with type test',
                 identifier: 'value-all-Find all value with type test',
-                this_type: 'test',
+                this_type: '=test',
                 method: ['retrieve', 'update'],
             },
         });

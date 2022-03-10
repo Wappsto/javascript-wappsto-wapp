@@ -239,7 +239,7 @@ export class Device extends StreamModel implements IDevice {
             expand: 3,
         };
         for (const key in params) {
-            query[`this_${key}`] = params[key];
+            query[`this_${key}`] = `=${params[key]}`;
         }
 
         const data = await PermissionModel.request(

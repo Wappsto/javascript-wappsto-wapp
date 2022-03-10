@@ -150,7 +150,7 @@ export class Network extends StreamModel implements INetwork {
             expand: 4,
         };
         for (const key in params) {
-            query[`this_${key}`] = params[key];
+            query[`this_${key}`] = `=${params[key]}`;
         }
 
         const data = await PermissionModel.request(
