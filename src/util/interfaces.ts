@@ -382,7 +382,7 @@ export type SignalHandler = (event: string) => void;
 export type ServiceHandler = (
     event: any
 ) => Promise<true | undefined> | boolean;
-export type RequestHandler = (event: any) => Promise<any>;
+export type RequestHandler = (event: any) => Promise<any> | any;
 export type StreamCallback = (model: IStreamModel) => void;
 export type ValueStreamCallback = (
     value: IValue,

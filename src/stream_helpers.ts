@@ -26,17 +26,21 @@ export async function sendToBackground(msg: any): Promise<any> {
 const request_handlers: Record<string, RequestHandler> = {};
 
 async function _handleRequest(event: any) {
+    let data: any = {};
     try {
-        const data = JSON.parse(event);
-        if (request_handlers[data.type]) {
-            return request_handlers[data.type](data.message);
-        }
+        data = JSON.parse(event);
     } catch (e) {
         /* istanbul ignore next */
         printDebug('Failed to parse event - Foreground/Background handler');
+        /* istanbul ignore next */
+        return;
     }
 
-    throw new IgnoreError('Wrong request handler');
+    if (request_handlers[data.type]) {
+        return request_handlers[data.type](data.message);
+    } else {
+        throw new IgnoreError('Wrong request handler');
+    }
 }
 
 function handleRequest(type: string, callback: RequestHandler): void {

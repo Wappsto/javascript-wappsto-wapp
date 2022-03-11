@@ -6,8 +6,13 @@ export function printDebug(message: string): void {
     }
 }
 
-export function printError(message: string): void {
-    console.error(`WAPPSTO ERROR: ${message}`);
+export function printError(message: string | unknown): void {
+    if (typeof message === 'string') {
+        console.error(`WAPPSTO ERROR: ${message}`);
+    } else {
+        const e = message as Error;
+        console.error(`WAPPSTO ERROR: ${e.stack}`);
+    }
 }
 
 export function printWarning(message: string): void {

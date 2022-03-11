@@ -298,9 +298,13 @@ export class Stream extends Model {
         try {
             const response = await wappsto.post('/2.0/extsync/request', msg);
             result = response.data;
-        } catch (e) {
-            /* istanbul ignore next */
-            printHttpError(e);
+        } catch (e: any) {
+            /* 1istanbul ignore next */
+            if (e.response.data?.code) {
+                printHttpError(e);
+            } else {
+                result = e.response.data;
+            }
         }
         return result;
     }
@@ -338,9 +342,10 @@ export class Stream extends Model {
                 let p;
                 try {
                     p = handlers[i](event.body);
-                } catch (err) {
+                } catch (err: any) {
                     if (!(err instanceof IgnoreError)) {
-                        this.sendResponse(event, 400, err);
+                        printError(err);
+                        this.sendResponse(event, 400, { error: err.message });
                     }
                 }
                 if (p) {
@@ -349,7 +354,10 @@ export class Stream extends Model {
                             this.sendResponse(event, 200, res);
                         }).catch((err: any) => {
                             if (!(err instanceof IgnoreError)) {
-                                this.sendResponse(event, 400, err);
+                                printError(err);
+                                this.sendResponse(event, 400, {
+                                    error: err.message,
+                                });
                             }
                         });
                         continue;

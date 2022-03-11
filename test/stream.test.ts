@@ -570,6 +570,70 @@ describe('stream', () => {
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
     });
 
+    it('can handle an error from the background/foreground', async () => {
+        fromBackground(async (msg) => {
+            msg.ferror();
+        });
+        fromForeground((msg) => {
+            msg.berror();
+        });
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                meta: {
+                    id: 'foreground',
+                },
+                request: 'request',
+                uri: 'extsync/',
+                body: '{"type": "foreground","message": {"test": "foreground"}}',
+            },
+        });
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/extsync/response/foreground',
+            {
+                body: {
+                    error: 'msg.berror is not a function',
+                },
+                code: 400,
+            }
+        );
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                meta: {
+                    id: 'background',
+                },
+                request: 'request',
+                uri: 'extsync/',
+                body: '{"type": "background","message": {"test": "background"}}',
+            },
+        });
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/extsync/response/foreground',
+            {
+                body: {
+                    error: 'msg.berror is not a function',
+                },
+                code: 400,
+            }
+        );
+    });
+
     it('can stop stream', async () => {
         const funF = jest.fn();
         const funB = jest.fn();

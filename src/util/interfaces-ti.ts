@@ -511,7 +511,10 @@ export const ServiceHandler = t.func(
     t.param('event', 'any')
 );
 
-export const RequestHandler = t.func('any', t.param('event', 'any'));
+export const RequestHandler = t.func(
+    t.union('any', 'any'),
+    t.param('event', 'any')
+);
 
 export const StreamCallback = t.func('void', t.param('model', 'IStreamModel'));
 
