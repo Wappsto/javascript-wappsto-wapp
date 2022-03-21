@@ -354,7 +354,7 @@ describe('device', () => {
                 period: '0',
                 string: {
                     max: 64,
-                    encoding: 'utf-8',
+                    encoding: '',
                 },
             },
             {}
@@ -364,7 +364,7 @@ describe('device', () => {
         expect(value.permission).toEqual('rw');
         expect(value.type).toEqual('string');
         expect(value.string?.max).toEqual(64);
-        expect(value.string?.encoding).toEqual('utf-8');
+        expect(value.string?.encoding).toEqual('');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 

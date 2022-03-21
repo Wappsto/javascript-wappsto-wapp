@@ -1,15 +1,29 @@
 import { IValueTemplate } from './interfaces';
 
 export class ValueTemplate {
-    static version = '0.0.1';
+    static version = '0.0.2';
 
+    static BOOLEAN_TRUEFALSE: IValueTemplate = {
+        value_type: 'number',
+        type: 'boolean',
+        number: {
+            mapping: { '0': 'false', '1': 'true' },
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: 0,
+            max: 1,
+            step: 1,
+            si_conversion: undefined,
+            unit: '',
+        },
+    };
     static BOOLEAN_ONOFF: IValueTemplate = {
         value_type: 'number',
         type: 'boolean',
         number: {
             mapping: { '0': 'off', '1': 'on' },
             ordered_mapping: undefined,
-            meaningful_zero: true,
+            meaningful_zero: undefined,
             min: 0,
             max: 1,
             step: 1,
@@ -199,7 +213,21 @@ export class ValueTemplate {
             unit: '%',
         },
     };
-    static CO2: IValueTemplate = {
+    static CO2_PPM: IValueTemplate = {
+        value_type: 'number',
+        type: 'co2',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 3000,
+            step: 1,
+            si_conversion: '1000000 * [ppm]',
+            unit: 'ppm',
+        },
+    };
+    static CONCENTRATION_PPM: IValueTemplate = {
         value_type: 'number',
         type: 'concentration',
         number: {
@@ -233,6 +261,20 @@ export class ValueTemplate {
         string: {
             max: 27,
             encoding: 'ISO 8601',
+        },
+    };
+    static DISTANCE_M: IValueTemplate = {
+        value_type: 'number',
+        type: 'distance',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: 0,
+            max: 1000,
+            step: 1,
+            si_conversion: undefined,
+            unit: 'm',
         },
     };
     static LUMINOUSITY_LX: IValueTemplate = {
@@ -315,11 +357,25 @@ export class ValueTemplate {
             unit: '°E',
         },
     };
+    static ALTITUDE_M: IValueTemplate = {
+        value_type: 'number',
+        type: 'altitude',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: -10000,
+            max: 10000,
+            step: 0.01,
+            si_conversion: undefined,
+            unit: 'm',
+        },
+    };
     static STREET: IValueTemplate = {
         value_type: 'string',
         type: 'street',
         string: {
-            max: 100,
+            max: 85,
             encoding: '',
         },
     };
@@ -327,7 +383,7 @@ export class ValueTemplate {
         value_type: 'string',
         type: 'city',
         string: {
-            max: 100,
+            max: 85,
             encoding: '',
         },
     };
@@ -343,7 +399,7 @@ export class ValueTemplate {
         value_type: 'string',
         type: 'country',
         string: {
-            max: 20,
+            max: 56,
             encoding: '',
         },
     };
@@ -353,6 +409,30 @@ export class ValueTemplate {
         string: {
             max: 2,
             encoding: 'ISO 3166-1 Alpha-2',
+        },
+    };
+    static ADDRESS_NAME: IValueTemplate = {
+        value_type: 'string',
+        type: 'address_name',
+        string: {
+            max: 85,
+            encoding: '',
+        },
+    };
+    static ORGANISATION: IValueTemplate = {
+        value_type: 'string',
+        type: 'organisation',
+        string: {
+            max: 85,
+            encoding: '',
+        },
+    };
+    static IDENTIFIER: IValueTemplate = {
+        value_type: 'string',
+        type: 'identifier',
+        string: {
+            max: 50,
+            encoding: '',
         },
     };
     static NUMBER: IValueTemplate = {
@@ -374,7 +454,7 @@ export class ValueTemplate {
         type: 'string',
         string: {
             max: 64,
-            encoding: 'utf-8',
+            encoding: '',
         },
     };
     static BLOB: IValueTemplate = {
