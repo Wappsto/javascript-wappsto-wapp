@@ -224,7 +224,13 @@ export class Model implements IModel {
             /* istanbul ignore else */
             if (c) {
                 const m = Model.checker[c].methodArgs(name);
-                m.check(Array.from(params));
+                try {
+                    m.check(Array.from(params));
+                } catch (e: any) {
+                    const err = e.message.replaceAll('value.', '');
+                    e.message = `${type}.${name}: ${err}`;
+                    throw e;
+                }
             } else {
                 printError(`Failed to find functions for ${type}`);
             }

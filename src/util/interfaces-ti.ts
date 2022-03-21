@@ -27,11 +27,11 @@ export const IModel = t.iface([], {
 });
 
 export const IModelFunc = t.iface([], {
-    create: t.func('void', t.param('params', 'any')),
+    create: t.func('void', t.param('parameters', 'any')),
     fetch: t.func(
         t.array('any'),
         t.param('endpoint', 'string'),
-        t.param('params', 'any', true),
+        t.param('options', 'any', true),
         t.param('throwError', 'boolean', true)
     ),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
@@ -78,7 +78,7 @@ export const INetwork = t.iface([], {
 
 export const INetworkFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string', true)),
-    createNetwork: t.func('INetwork', t.param('params', 'INetwork')),
+    createNetwork: t.func('INetwork', t.param('parameters', 'INetwork')),
     findDeviceByName: t.func(t.array('IDevice'), t.param('name', 'string')),
     findDeviceByProduct: t.func(
         t.array('IDevice'),
@@ -86,10 +86,10 @@ export const INetworkFunc = t.iface([], {
     ),
     findValueByName: t.func(t.array('IValue'), t.param('name', 'string')),
     findValueByType: t.func(t.array('IValue'), t.param('type', 'string')),
-    createDevice: t.func('IDevice', t.param('params', 'IDevice')),
+    createDevice: t.func('IDevice', t.param('parameters', 'IDevice')),
     find: t.func(
         t.array('INetwork'),
-        t.param('params', 'any'),
+        t.param('options', 'any'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string')
     ),
@@ -108,7 +108,7 @@ export const INetworkFunc = t.iface([], {
     fetch: t.func(
         'IDevice',
         t.param('name', 'string'),
-        t.param('params', 'any')
+        t.param('options', 'any')
     ),
 });
 
@@ -135,23 +135,23 @@ export const IDeviceFunc = t.iface([], {
     ),
     createNumberValue: t.func(
         'IValue',
-        t.param('params', t.intersection('IValue', 'IValueNumber'))
+        t.param('parameters', t.intersection('IValue', 'IValueNumber'))
     ),
     createStringValue: t.func(
         'IValue',
-        t.param('params', t.intersection('IValue', 'IValueString'))
+        t.param('parameters', t.intersection('IValue', 'IValueString'))
     ),
     createBlobValue: t.func(
         'IValue',
-        t.param('params', t.intersection('IValue', 'IValueBlob'))
+        t.param('parameters', t.intersection('IValue', 'IValueBlob'))
     ),
     createXmlValue: t.func(
         'IValue',
-        t.param('params', t.intersection('IValue', 'IValueXml'))
+        t.param('parameters', t.intersection('IValue', 'IValueXml'))
     ),
     find: t.func(
         t.array('IDevice'),
-        t.param('params', 'any'),
+        t.param('options', 'any'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string')
     ),
@@ -186,7 +186,7 @@ export const IPermissionModelFunc = t.iface([], {
         t.param('endpoint', 'string'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('message', 'string'),
-        t.param('params', 'any', true)
+        t.param('options', 'any', true)
     ),
 });
 
@@ -254,7 +254,7 @@ export const IValueTemplate = t.iface([], {
 
 export const IValueFunc = t.iface([], {
     constructor: t.func('IState', t.param('name', 'string', true)),
-    createState: t.func('IState', t.param('params', 'IState')),
+    createState: t.func('IState', t.param('parameters', 'IState')),
     report: t.func(
         'void',
         t.param('data', t.union('string', 'number')),
@@ -277,7 +277,7 @@ export const IValueFunc = t.iface([], {
     getControlLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
     find: t.func(
         t.array('IValue'),
-        t.param('params', 'any'),
+        t.param('options', 'any'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string')
     ),

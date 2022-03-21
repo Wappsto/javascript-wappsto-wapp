@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 
+Error.stackTraceLimit = 30;
+
 export { config } from './util/config';
 export { ValueTemplate } from './util/value_template';
 export * from './console';

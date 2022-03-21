@@ -45,7 +45,7 @@ describe('config', () => {
         }
 
         expect(error1).toEqual(
-            `value.parent is not a IModel\n    value.parent.id is missing\n    value.parent.getUrl is missing\n    value.parent.removeChild is missing`
+            `Model.setParent: parent is not a IModel\n    parent.id is missing\n    parent.getUrl is missing\n    parent.removeChild is missing`
         );
         expect(error2).toBe(undefined);
     });

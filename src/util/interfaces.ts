@@ -22,10 +22,10 @@ export interface IModel {
 }
 
 export interface IModelFunc {
-    create(params: Record<string, any>): Promise<void>;
+    create(parameters: Record<string, any>): Promise<void>;
     fetch(
         endpoint: string,
-        params?: Record<string, any>,
+        options?: Record<string, any>,
         throwError?: boolean
     ): Promise<Record<string, any>[]>;
     setParent(parent?: IModel): void;
@@ -73,14 +73,14 @@ export interface INetwork {
 
 export interface INetworkFunc {
     constructor(name?: string): void;
-    createNetwork(params: INetwork): Promise<INetwork>;
+    createNetwork(parameters: INetwork): Promise<INetwork>;
     findDeviceByName(name: string): IDevice[];
     findDeviceByProduct(product: string): IDevice[];
     findValueByName(name: string): IValue[];
     findValueByType(type: string): IValue[];
-    createDevice(params: IDevice): Promise<IDevice>;
+    createDevice(parameters: IDevice): Promise<IDevice>;
     find(
-        params: Record<string, any>,
+        options: Record<string, any>,
         quantity: number | 'all',
         usage: string
     ): Promise<INetwork[]>;
@@ -91,7 +91,7 @@ export interface INetworkFunc {
     ): INetwork[];
     findAllByName(name: string, usage: string): IDevice[];
     findById(id: string): INetwork;
-    fetch(name: string, params: Record<string, any>): IDevice;
+    fetch(name: string, options: Record<string, any>): IDevice;
 }
 
 export interface IDevice {
@@ -114,12 +114,12 @@ export interface IDeviceFunc {
         permission: ValuePermission,
         valueTemplate: IValueTemplate
     ): Promise<IValue>;
-    createNumberValue(params: IValue & IValueNumber): Promise<IValue>;
-    createStringValue(params: IValue & IValueString): Promise<IValue>;
-    createBlobValue(params: IValue & IValueBlob): Promise<IValue>;
-    createXmlValue(params: IValue & IValueXml): Promise<IValue>;
+    createNumberValue(parameters: IValue & IValueNumber): Promise<IValue>;
+    createStringValue(parameters: IValue & IValueString): Promise<IValue>;
+    createBlobValue(parameters: IValue & IValueBlob): Promise<IValue>;
+    createXmlValue(parameters: IValue & IValueXml): Promise<IValue>;
     find(
-        params: Record<string, any>,
+        options: Record<string, any>,
         quantity: number | 'all',
         usage: string
     ): IDevice[];
@@ -143,7 +143,7 @@ export interface IPermissionModelFunc {
         endpoint: string,
         quantity: number | 'all',
         message: string,
-        params?: Record<string, any>
+        options?: Record<string, any>
     ): Promise<Record<string, any>[]>;
 }
 
@@ -201,7 +201,7 @@ export interface IValueTemplate {
 
 export interface IValueFunc {
     constructor(name?: string): IState;
-    createState(params: IState): IState;
+    createState(parameters: IState): IState;
     report(data: string | number, timestamp: string | undefined): void;
     forceReport(data: string | number, timestamp: string | undefined): void;
     control(data: string | number, timestamp: string | undefined): void;
@@ -211,7 +211,7 @@ export interface IValueFunc {
     getReportLog(request: ILogRequest): Promise<ILogResponse>;
     getControlLog(request: ILogRequest): Promise<ILogResponse>;
     find(
-        params: Record<string, any>,
+        options: Record<string, any>,
         quantity: number | 'all',
         usage: string
     ): IValue[];
