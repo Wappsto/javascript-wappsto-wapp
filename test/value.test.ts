@@ -933,7 +933,7 @@ describe('value', () => {
 
         await server.connected;
 
-        await new Promise((r) => setTimeout(r, 2000));
+        await new Promise((r) => setTimeout(r, 1999));
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
 
@@ -948,7 +948,7 @@ describe('value', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 2000));
+        await new Promise((r) => setTimeout(r, 1999));
 
         await value.report(60);
 

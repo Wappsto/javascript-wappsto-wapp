@@ -1,5 +1,6 @@
 import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
+import parseDuration from 'parse-duration';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
@@ -9,6 +10,7 @@ import {
     checkList,
     getSecondsToNextPeriod,
     randomIntFromInterval,
+    isPositiveInteger,
 } from '../util/helpers';
 import { printDebug } from '../util/debug';
 import {
@@ -474,19 +476,31 @@ export class Value extends StreamModel implements IValue {
         }
     }
 
+    private getPeriodTimeout(): number {
+        let timeout = 0;
+        if (isPositiveInteger(this.last_period)) {
+            timeout = parseInt(this.last_period);
+        } else {
+            timeout = parseDuration(this.last_period, 's');
+        }
+        if (timeout) {
+            return getSecondsToNextPeriod(timeout) * 1000;
+        }
+        return 0;
+    }
+
     private startPeriodHandler(): void {
         if (this.periodTimer) {
             clearTimeout(this.periodTimer);
         }
 
-        const timeout = parseInt(this.last_period);
-        if (isNaN(timeout) || timeout < 1) {
+        if (this.getPeriodTimeout() === 0) {
             return;
         }
 
         this.periodTimer = setTimeout(() => {
             this.triggerPeriodUpdate();
-        }, getSecondsToNextPeriod(timeout));
+        }, this.getPeriodTimeout());
     }
 
     private triggerPeriodUpdate() {
@@ -498,6 +512,6 @@ export class Value extends StreamModel implements IValue {
 
         this.periodTimer = setTimeout(() => {
             this.triggerPeriodUpdate();
-        }, parseInt(this.last_period) * 1000);
+        }, this.getPeriodTimeout());
     }
 }

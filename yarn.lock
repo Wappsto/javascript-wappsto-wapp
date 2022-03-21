@@ -5304,6 +5304,11 @@ parse-asn1@^5.0.0, parse-asn1@^5.1.5:
     pbkdf2 "^3.0.3"
     safe-buffer "^5.1.1"
 
+parse-duration@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/parse-duration/-/parse-duration-1.0.2.tgz#b9aa7d3a1363cc7e8845bea8fd3baf8a11df5805"
+  integrity sha512-Dg27N6mfok+ow1a2rj/nRjtCfaKrHUZV2SJpEn/s8GaVUSlf4GGRCRP1c13Hj+wfPKVMrFDqLMLITkYKgKxyyg==
+
 parse-json@^5.0.0, parse-json@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/parse-json/-/parse-json-5.2.0.tgz#c76fc66dee54231c962b22bcc8a72cf2f99753cd"

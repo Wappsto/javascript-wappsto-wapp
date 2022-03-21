@@ -33,3 +33,13 @@ export function getSecondsToNextPeriod(period: number): number {
 export function randomIntFromInterval(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+export function isPositiveInteger(str: string) {
+    const num = Number(str);
+
+    if (Number.isInteger(num) && num > 0) {
+        return true;
+    }
+
+    return false;
+}
