@@ -4420,6 +4420,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     var _this6 = this;
 
     this.validate('onRefresh', arguments);
+    this.status = '';
     this.refreshCallbacks.push(callback);
     this.onChange(function () {
       if (_this6.status === 'update') {
