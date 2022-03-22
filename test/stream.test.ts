@@ -220,6 +220,18 @@ describe('stream', () => {
             },
         });
 
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'update',
+            path: '/network/9a51cbd4-afb3-4628-9c8b-df64a0d729e9/device/c5fe846f-d6d8-413a-abb5-620519dd6b75/value/6c06b63e-39ec-44a5-866a-c081aafb6726',
+            data: {
+                status: 'update',
+            },
+        });
+
+        expect(fun).toBeCalledTimes(2);
         expect(fun).toHaveBeenCalledWith(value, 'user');
     });
 
