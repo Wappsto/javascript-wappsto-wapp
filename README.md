@@ -2,7 +2,7 @@
 
 This is a node/js library for easily creating wapps for [Wappsto](https://wappsto.com).
 
-## Table of Contents 
+## Table of Contents
   * [Install](#install)
     + [Node](#node)
     + [Browser](#browser)
@@ -12,8 +12,9 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     + [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
     + [Get retrive object by ID](#get-retrive-object-by-id)
     + [To report a change in the value](#to-report-a-change-in-the-value)
-    + [To change a value on another networks value](#to-change-a-value-on-another-networks-value)
+    + [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
     + [Listing for changes on values](#listing-for-changes-on-values)
+    + [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
     + [Sending an update event to a device](#sending-an-update-event-to-a-device)
     + [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
     + [Web Hook](#web-hook)
@@ -253,6 +254,16 @@ value.onReport((value, data, timestamp) => {
 
 value.onControl((value, data, timestamp) => {
 	console.log(`Request to change ${value.name} to ${data}`);
+});
+```
+
+### Listing for requests to refresh the value
+
+To receive request to refresh the value, register a callback on `onRefresh`.
+
+```javascript
+value.onRefresh((value) => {
+    value.report(1);
 });
 ```
 
