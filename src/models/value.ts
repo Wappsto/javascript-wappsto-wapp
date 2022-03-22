@@ -351,7 +351,7 @@ export class Value extends StreamModel implements IValue {
 
     public onRefresh(callback: RefreshStreamCallback): void {
         this.validate('onRefresh', arguments);
-
+        this.status = '';
         this.refreshCallbacks.push(callback);
         this.onChange(() => {
             if (this.status === 'update') {

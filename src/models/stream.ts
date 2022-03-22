@@ -471,7 +471,6 @@ export class Stream extends Model {
         } else {
             services.push(`/${type}`);
         }
-
         paths.forEach((path) => {
             this.models[path]?.forEach((model: IStreamModel) => {
                 model.handleStream(event);
