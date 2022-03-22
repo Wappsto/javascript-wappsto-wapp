@@ -122,7 +122,9 @@ export class Device extends StreamModel implements IDevice {
     public async createValue(
         name: string,
         permission: 'r' | 'w' | 'rw' | 'wr',
-        valueTemplate: IValueTemplate
+        valueTemplate: IValueTemplate,
+        period = '0',
+        delta: number | 'inf' = 0
     ): Promise<Value> {
         this.validate('createValue', arguments);
 
@@ -130,10 +132,12 @@ export class Device extends StreamModel implements IDevice {
         value.name = name;
         value.permission = permission;
         value.type = valueTemplate.type;
+        value.period = period;
+
         switch (valueTemplate.value_type) {
             case 'number':
                 value.number = valueTemplate.number;
-                value.delta = '0';
+                value.delta = delta.toString();
                 break;
             case 'string':
                 value.string = valueTemplate.string;

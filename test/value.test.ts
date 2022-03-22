@@ -860,7 +860,14 @@ describe('value', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 4000));
+        let wait = 4000;
+        while (wait) {
+            await new Promise((r) => setTimeout(r, 1));
+            wait -= 1;
+            if (fun.mock.calls.length >= 2) {
+                break;
+            }
+        }
 
         server.send({
             meta_object: {
@@ -872,6 +879,8 @@ describe('value', () => {
                 period: '0',
             },
         });
+
+        value.cancelPeriod();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
@@ -923,9 +932,6 @@ describe('value', () => {
             period: '2',
         });
 
-        await value.report(1);
-        await value.report(9);
-
         value.onRefresh((val, type) => {
             value.report(10, 'timestamp-jitter');
             value.report(100, 'timestamp');
@@ -933,9 +939,18 @@ describe('value', () => {
 
         await server.connected;
 
-        await new Promise((r) => setTimeout(r, 1999));
+        await value.report(1);
+        await value.report(9);
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        let wait = 2000;
+        while (wait !== 0) {
+            if (mockedAxios.patch.mock.calls.length >= 2) {
+                break;
+            }
+            await new Promise((r) => setTimeout(r, 1));
+            wait -= 1;
+        }
+        const firstCallCount = mockedAxios.patch.mock.calls.length;
 
         server.send({
             meta_object: {
@@ -948,10 +963,20 @@ describe('value', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1999));
+        wait = 2500;
+        while (wait !== 0) {
+            await new Promise((r) => setTimeout(r, 1));
+            wait -= 1;
+            if (mockedAxios.patch.mock.calls.length >= 3) {
+                break;
+            }
+        }
 
         await value.report(60);
 
+        value.cancelPeriod();
+
+        expect(firstCallCount).toBe(2);
         expect(value.getReportData()).toEqual('100');
         expect(value.getReportTimestamp()).toEqual('timestamp');
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);

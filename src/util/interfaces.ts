@@ -112,7 +112,9 @@ export interface IDeviceFunc {
     createValue(
         name: string,
         permission: ValuePermission,
-        valueTemplate: IValueTemplate
+        valueTemplate: IValueTemplate,
+        period?: string,
+        delta?: number | 'inf'
     ): Promise<IValue>;
     createNumberValue(parameters: IValue & IValueNumber): Promise<IValue>;
     createStringValue(parameters: IValue & IValueString): Promise<IValue>;

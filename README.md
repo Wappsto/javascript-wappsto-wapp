@@ -99,6 +99,12 @@ The list of avaible value templates can be seen in the [value_template.ts](../ma
 let value = device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS);
 ```
 
+It is also possible to define a period for how often the library should poll your values for updates. In this way regulary reports will be send to the cloud. It is also possible to filter out small changes by setting the delta for number values. With the delta set, reported changes that are not bigger then the delta will be discarded.
+
+```javascript
+let value = device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS, '1h', '2');
+```
+
 There are some helper functions to create custom number, string, blob and xml values.
 To create a custom number value:
 
@@ -221,7 +227,7 @@ let data = value.getReportData();
 let timestamp = value.getReportTimestamp();
 ```
 
-### To change a value on another networks value
+### To change a value on a network created outside your wapp
 
 To send a new data point to another value, just call the `control` function on the value.
 

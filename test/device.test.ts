@@ -292,7 +292,9 @@ describe('device', () => {
         const value = await device.createValue(
             'name',
             'rw',
-            ValueTemplate.NUMBER
+            ValueTemplate.NUMBER,
+            '1h',
+            2
         );
 
         templateHelperDone();
@@ -307,8 +309,8 @@ describe('device', () => {
                 name: 'name',
                 permission: 'rw',
                 type: 'number',
-                delta: '0',
-                period: '0',
+                delta: '2',
+                period: '1h',
                 number: {
                     min: -128,
                     max: 128,

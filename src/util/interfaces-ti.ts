@@ -131,7 +131,9 @@ export const IDeviceFunc = t.iface([], {
         'IValue',
         t.param('name', 'string'),
         t.param('permission', 'ValuePermission'),
-        t.param('valueTemplate', 'IValueTemplate')
+        t.param('valueTemplate', 'IValueTemplate'),
+        t.param('period', 'string', true),
+        t.param('delta', t.union('number', t.lit('inf')), true)
     ),
     createNumberValue: t.func(
         'IValue',

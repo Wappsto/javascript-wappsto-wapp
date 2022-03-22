@@ -55,6 +55,7 @@ export class Value extends StreamModel implements IValue {
     sendReportWithJitter = false;
     periodTimer?: any;
     refreshCallbacks: RefreshStreamCallback[] = [];
+    jitterTimer?: any;
 
     constructor(name?: string) {
         super('value');
@@ -157,7 +158,9 @@ export class Value extends StreamModel implements IValue {
                     _config.jitterMin,
                     _config.jitterMax
                 );
-                await new Promise((r) => setTimeout(r, timeout * 1000));
+                await new Promise((r) => {
+                    this.jitterTimer = setTimeout(r, timeout * 1000);
+                });
 
                 const oldData = state.data;
                 const oldTimestamp = state.timestamp;
@@ -490,9 +493,7 @@ export class Value extends StreamModel implements IValue {
     }
 
     private startPeriodHandler(): void {
-        if (this.periodTimer) {
-            clearTimeout(this.periodTimer);
-        }
+        clearTimeout(this.periodTimer);
 
         if (this.getPeriodTimeout() === 0) {
             return;
@@ -513,5 +514,10 @@ export class Value extends StreamModel implements IValue {
         this.periodTimer = setTimeout(() => {
             this.triggerPeriodUpdate();
         }, this.getPeriodTimeout());
+    }
+
+    public cancelPeriod(): void {
+        clearTimeout(this.periodTimer);
+        clearTimeout(this.jitterTimer);
     }
 }
