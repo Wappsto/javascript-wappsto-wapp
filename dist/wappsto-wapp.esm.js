@@ -4424,8 +4424,9 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     this.refreshCallbacks.push(callback);
     this.onChange(function () {
       if (_this6.status === 'update') {
-        callback(_this6, 'user');
+        _this6.reportIsForced = true;
         _this6.status = '';
+        callback(_this6, 'user');
       }
     });
   };

@@ -927,7 +927,7 @@ describe('value', () => {
             max: 100,
             step: 1,
             unit: '',
-            delta: '50'
+            delta: '50',
         });
 
         value.onRefresh((val, type) => {
@@ -979,7 +979,7 @@ describe('value', () => {
                     version: '2.0',
                 },
                 type: 'Report',
-                data: '10'
+                data: '10',
             }),
             {}
         );
@@ -992,7 +992,7 @@ describe('value', () => {
                     version: '2.0',
                 },
                 type: 'Report',
-                data: '100'
+                data: '100',
             }),
             {}
         );
