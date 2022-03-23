@@ -888,6 +888,116 @@ describe('value', () => {
         expect(fun).toHaveBeenCalledWith(value, 'period');
     });
 
+    it('can send a report with a high delta when it is triggered by user', async () => {
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: '4240a9b6-168e-43a6-b291-afbd960a6cd5',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.0',
+                            id: '05bcdf20-cf39-4b16-adb2-ac711d5678a6',
+                        },
+                    },
+                ],
+            });
+
+        const device = new Device();
+        device.meta.id = '416104e7-a94e-47c0-b504-bc4f9b81575a';
+        const value = await device.createNumberValue({
+            name: 'test',
+            type: 'number',
+            permission: 'r',
+            min: 0,
+            max: 100,
+            step: 1,
+            unit: '',
+            delta: '50'
+        });
+
+        value.onRefresh((val, type) => {
+            value.report(10);
+            value.report(100);
+        });
+
+        await server.connected;
+
+        await value.report(1);
+        await value.report(9);
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+
+        server.send({
+            meta_object: {
+                type: 'value',
+            },
+            event: 'update',
+            path: '/value/4240a9b6-168e-43a6-b291-afbd960a6cd5',
+            data: {
+                status: 'update',
+            },
+        });
+
+        expect(value.getReportData()).toEqual('100');
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
+            expect.objectContaining({
+                meta: {
+                    id: '05bcdf20-cf39-4b16-adb2-ac711d5678a6',
+                    type: 'state',
+                    version: '2.0',
+                },
+                type: 'Report',
+                data: '1',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
+            expect.objectContaining({
+                meta: {
+                    id: '05bcdf20-cf39-4b16-adb2-ac711d5678a6',
+                    type: 'state',
+                    version: '2.0',
+                },
+                type: 'Report',
+                data: '10'
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
+            expect.objectContaining({
+                meta: {
+                    id: '05bcdf20-cf39-4b16-adb2-ac711d5678a6',
+                    type: 'state',
+                    version: '2.0',
+                },
+                type: 'Report',
+                data: '100'
+            }),
+            {}
+        );
+    });
+
     it('can send a report with a high delta when it is triggered by period', async () => {
         config({ jitterMin: 2, jitterMax: 2 });
         mockedAxios.patch

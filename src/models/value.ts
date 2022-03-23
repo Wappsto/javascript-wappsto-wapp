@@ -355,8 +355,9 @@ export class Value extends StreamModel implements IValue {
         this.refreshCallbacks.push(callback);
         this.onChange(() => {
             if (this.status === 'update') {
-                callback(this, 'user');
+                this.reportIsForced = true;
                 this.status = '';
+                callback(this, 'user');
             }
         });
     }
