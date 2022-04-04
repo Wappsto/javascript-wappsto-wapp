@@ -14,6 +14,6 @@ export class EventLog extends Model implements IEventLog {
     }
 
     attributes(): string[] {
-        return ['message', 'level', 'into', 'type'];
+        return ['message', 'level', 'info', 'type'];
     }
 }
