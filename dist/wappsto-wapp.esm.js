@@ -4131,6 +4131,15 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     }
   };
 
+  _proto.findStateAndClear = function findStateAndClear(type) {
+    this.stateCallbacks[type] = [];
+    var state = this.findState(type);
+
+    if (state) {
+      state.clearAllCallbacks();
+    }
+  };
+
   _proto.createState = /*#__PURE__*/function () {
     var _createState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(params) {
       var create,
@@ -4429,6 +4438,19 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         callback(_this6, 'user');
       }
     });
+  };
+
+  _proto.cancelOnReport = function cancelOnReport() {
+    this.findStateAndClear('Report');
+  };
+
+  _proto.cancelOnControl = function cancelOnControl() {
+    this.findStateAndClear('Control');
+  };
+
+  _proto.cancelOnRefresh = function cancelOnRefresh() {
+    this.refreshCallbacks = [];
+    this.clearAllCallbacks();
   };
 
   _proto.refresh = /*#__PURE__*/function () {

@@ -6,6 +6,8 @@ import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { State } from './state';
 import { _config } from '../util/config';
+import wappsto from '../util/http_wrapper';
+import { printHttpError } from '../util/http_wrapper';
 import {
     checkList,
     getSecondsToNextPeriod,
@@ -197,9 +199,7 @@ export class Value extends StreamModel implements IValue {
         }
     }
 
-    private findStateAndClear(
-        type: StateType,
-    ): void {
+    private findStateAndClear(type: StateType): void {
         this.stateCallbacks[type] = [];
         const state = this.findState(type);
         if (state) {
@@ -372,22 +372,44 @@ export class Value extends StreamModel implements IValue {
         });
     }
 
-    public cancelOnReport() : void {
+    public cancelOnReport(): void {
         this.findStateAndClear('Report');
     }
 
-    public cancelOnControl() : void {
+    public cancelOnControl(): void {
         this.findStateAndClear('Control');
     }
 
-    public cancelOnRefresh() : void {
+    public cancelOnRefresh(): void {
         this.refreshCallbacks = [];
         this.clearAllCallbacks();
     }
 
+    private async changeAttribute(key: string, value: string|number): Promise<void> {
+        try {
+            const data: Record<string, string|number> = {};
+            data[key] = value;
+            await wappsto.patch(
+                this.getUrl(),
+                data,
+                Model.generateOptions()
+            );
+        } catch (e) {
+            /* istanbul ignore next */
+            printHttpError(e);
+        }
+    }
+
     public async refresh(): Promise<void> {
-        this.status = 'update';
-        await this.update();
+        return this.changeAttribute('status', 'update');
+    }
+
+    public async setPeriod(period: string): Promise<void> {
+        return this.changeAttribute('period', period);
+    }
+
+    public async setDelta(delta: number): Promise<void> {
+        return this.changeAttribute('delta', delta.toString());
     }
 
     private async findStateAndLog(

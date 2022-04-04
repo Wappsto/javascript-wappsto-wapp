@@ -164,15 +164,45 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             {
-                meta: {
-                    type: 'value',
-                    version: '2.0',
-                    id: '1b969edb-da8b-46ba-9ed3-59edadcc24b1',
-                },
-                name: '',
-                permission: 'r',
                 status: 'update',
-                type: '',
+            },
+            {}
+        );
+    });
+
+    it('can trigger a delta event to the device', async () => {
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+
+        await value.setDelta(2.2);
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
+            {
+                delta: '2.2',
+            },
+            {}
+        );
+    });
+
+    it('can trigger a period event to the device', async () => {
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+
+        await value.setPeriod('1h');
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
+            {
+                period: '1h',
             },
             {}
         );

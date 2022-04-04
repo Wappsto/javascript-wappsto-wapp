@@ -8,13 +8,13 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     + [Browser](#browser)
   * [Usage](#usage)
     + [Create a new IoT Device](#create-a-new-iot-device)
+    + [To report a change in the value](#to-report-a-change-in-the-value)
+    + [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
     + [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
     + [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
     + [Get retrive object by ID](#get-retrive-object-by-id)
-    + [To report a change in the value](#to-report-a-change-in-the-value)
     + [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
     + [Listing for changes on values](#listing-for-changes-on-values)
-    + [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
     + [Sending an update event to a device](#sending-an-update-event-to-a-device)
     + [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
     + [Web Hook](#web-hook)
@@ -95,7 +95,6 @@ To create a new value under an exsisting device, you should call createValue. If
 There will also be created the states nedded based on the permission. The only allowed values for permission is 'r', 'w' and 'rw'.
 The list of avaible value templates can be seen in the [value_template.ts](../main/src/util/value_template.ts) file.
 
-
 ```javascript
 let value = device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS);
 ```
@@ -136,6 +135,36 @@ let value = device.createStringValue({
 });
 ```
 
+### To report a change in the value
+
+To send a new data point to wappsto, just call the `report` function on the value.
+
+```javascript
+await value.report('1');
+```
+
+And to get the last reported data and timestamp.
+
+```javascript
+let data = value.getReportData();
+let timestamp = value.getReportTimestamp();
+```
+
+### Listing for requests to refresh the value
+
+To receive request to refresh the value, register a callback on `onRefresh`.
+
+```javascript
+value.onRefresh((value) => {
+    value.report(1);
+});
+```
+
+And you can cancel this callback by calling `cancelOnRefresh`.
+
+```javascript
+value.cancelOnRefresh();
+```
 
 ### To request access to an exsisting object from the user
 
@@ -148,13 +177,11 @@ To request access to a network with a spefict name, use `findByName`.
 let networks = await Wappsto.Network.findByName('Network name');
 ```
 
-
 To request access to a device with a spefict name, use `findByName`.
 
 ```javascript
 let devices = await Wappsto.Device.findByName('Device name');
 ```
-
 
 To request access to a device with a spefict product, use `findByProduct`.
 
@@ -173,7 +200,6 @@ To request access to a value with a spefict type, use `findByType`.
 ```javascript
 let values = await Wappsto.Value.findByType('Type name');
 ```
-
 
 ### To find a child from an exsisting object
 
@@ -213,20 +239,6 @@ let device = Device.findByID('066c65d7-6612-4826-9e23-e63a579fbe8b');
 let value = Value.findByID('1157b4fa-2745-4940-9201-99eee5929eff');
 ```
 
-### To report a change in the value
-
-To send a new data point to wappsto, just call the `report` function on the value.
-
-```javascript
-await value.report('1');
-```
-
-And to get the last reported data and timestamp.
-
-```javascript
-let data = value.getReportData();
-let timestamp = value.getReportTimestamp();
-```
 
 ### To change a value on a network created outside your wapp
 
@@ -257,14 +269,13 @@ value.onControl((value, data, timestamp) => {
 });
 ```
 
-### Listing for requests to refresh the value
-
-To receive request to refresh the value, register a callback on `onRefresh`.
+And you can cancel these callbacks by calling `cancelOnReport` and
+`cancelOnControl`.
 
 ```javascript
-value.onRefresh((value) => {
-    value.report(1);
-});
+value.cancelOnReport();
+
+value.cancelOnControl();
 ```
 
 ### Sending an update event to a device
@@ -273,6 +284,17 @@ To send an event to a device to get a new report data.
 
 ```javascript
 await value.refresh();
+```
+
+### Changing the period and delta of a value
+
+To change the delta and period of a value you can call `setDelta` or
+`setPeriod`.
+
+```javascript
+value.setPeriod('300');
+
+value.setDelta(2.2);
 ```
 
 ### Sending messages to and from the background
