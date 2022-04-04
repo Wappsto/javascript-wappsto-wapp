@@ -293,7 +293,7 @@ describe('device', () => {
             'name',
             'rw',
             ValueTemplate.NUMBER,
-            '1h',
+            '0',
             2
         );
 
@@ -309,8 +309,8 @@ describe('device', () => {
                 name: 'name',
                 permission: 'rw',
                 type: 'number',
+                period: '0',
                 delta: '2',
-                period: '1h',
                 number: {
                     min: -128,
                     max: 128,
@@ -352,8 +352,8 @@ describe('device', () => {
                 },
                 name: 'name',
                 permission: 'rw',
-                type: 'string',
                 period: '0',
+                type: 'string',
                 string: {
                     max: 64,
                     encoding: '',
@@ -388,8 +388,8 @@ describe('device', () => {
                 },
                 name: 'name',
                 permission: 'rw',
-                type: 'xml',
                 period: '0',
+                type: 'xml',
                 xml: {
                     xsd: '',
                     namespace: '',
@@ -428,8 +428,8 @@ describe('device', () => {
                 },
                 name: 'name',
                 permission: 'rw',
-                type: 'blob',
                 period: '0',
+                type: 'blob',
                 blob: {
                     max: 280,
                     encoding: 'base64',
@@ -489,7 +489,6 @@ describe('device', () => {
             name: 'Value Name',
             permission: 'rw',
             type: 'type',
-            period: 'period',
             delta: 'delta',
             min: 0,
             max: 1,
@@ -501,7 +500,6 @@ describe('device', () => {
         expect(value.name).toEqual('Value Name');
         expect(value.permission).toEqual('rw');
         expect(value.type).toEqual('type');
-        expect(value.period).toEqual('period');
         expect(value.delta).toEqual('delta');
         expect(value.number?.min).toEqual(0);
         expect(value.number?.max).toEqual(1);
@@ -518,7 +516,6 @@ describe('device', () => {
             expect.objectContaining({
                 permission: 'rw',
                 type: 'type',
-                period: 'period',
                 meta: {
                     type: 'value',
                     version: '2.0',
@@ -603,7 +600,6 @@ describe('device', () => {
             name: 'Value Name',
             permission: 'wr',
             type: 'type',
-            period: 'period',
             delta: 'delta',
             max: 10,
             encoding: 'encoding',
@@ -616,7 +612,7 @@ describe('device', () => {
             expect.objectContaining({
                 permission: 'wr',
                 type: 'type',
-                period: 'period',
+                period: '0',
                 meta: {
                     type: 'value',
                     version: '2.0',
@@ -657,7 +653,7 @@ describe('device', () => {
         expect(value.name).toEqual('Value Name');
         expect(value.permission).toEqual('wr');
         expect(value.type).toEqual('type');
-        expect(value.period).toEqual('period');
+        expect(value.period).toEqual('0');
         expect(value.delta).toEqual('delta');
         expect(value.string?.max).toEqual(10);
         expect(value.string?.encoding).toEqual('encoding');
@@ -695,7 +691,6 @@ describe('device', () => {
             name: 'Value Name',
             permission: 'r',
             type: 'type',
-            period: 'period',
             delta: 'delta',
             max: 10,
             encoding: 'encoding',
@@ -708,7 +703,7 @@ describe('device', () => {
             expect.objectContaining({
                 permission: 'r',
                 type: 'type',
-                period: 'period',
+                period: '0',
                 meta: {
                     type: 'value',
                     version: '2.0',
@@ -737,7 +732,7 @@ describe('device', () => {
         expect(value.name).toEqual('Value Name');
         expect(value.permission).toEqual('r');
         expect(value.type).toEqual('type');
-        expect(value.period).toEqual('period');
+        expect(value.period).toEqual('0');
         expect(value.delta).toEqual('delta');
         expect(value.blob?.max).toEqual(10);
         expect(value.blob?.encoding).toEqual('encoding');
@@ -775,7 +770,7 @@ describe('device', () => {
             name: 'Value Name',
             permission: 'w',
             type: 'type',
-            period: 'period',
+            period: '0',
             delta: 'delta',
             xsd: 'xsd',
             namespace: 'namespace',
@@ -788,7 +783,7 @@ describe('device', () => {
             expect.objectContaining({
                 permission: 'w',
                 type: 'type',
-                period: 'period',
+                period: '0',
                 meta: {
                     type: 'value',
                     version: '2.0',
@@ -817,7 +812,7 @@ describe('device', () => {
         expect(value.name).toEqual('Value Name');
         expect(value.permission).toEqual('w');
         expect(value.type).toEqual('type');
-        expect(value.period).toEqual('period');
+        expect(value.period).toEqual('0');
         expect(value.delta).toEqual('delta');
         expect(value.xml?.xsd).toEqual('xsd');
         expect(value.xml?.namespace).toEqual('namespace');
@@ -831,7 +826,7 @@ describe('device', () => {
                     {
                         permission: 'rw',
                         type: 'type',
-                        period: 'period',
+                        period: '0',
                         meta: {
                             type: 'value',
                             version: '2.0',
@@ -861,7 +856,7 @@ describe('device', () => {
             name: 'Value Name',
             permission: 'rw',
             type: 'type',
-            period: 'period',
+            period: '0',
             delta: 'delta',
             min: 0,
             max: 1,
@@ -873,7 +868,7 @@ describe('device', () => {
         expect(value.name).toEqual('Value Name');
         expect(value.permission).toEqual('rw');
         expect(value.type).toEqual('type');
-        expect(value.period).toEqual('period');
+        expect(value.period).toEqual('0');
         expect(value.delta).toEqual('delta');
         expect(value.number?.min).toEqual(0);
         expect(value.number?.max).toEqual(1);
@@ -890,7 +885,7 @@ describe('device', () => {
             expect.objectContaining({
                 permission: 'rw',
                 type: 'type',
-                period: 'period',
+                period: '0',
                 meta: {
                     type: 'value',
                     version: '2.0',
