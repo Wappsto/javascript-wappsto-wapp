@@ -197,6 +197,16 @@ export class Value extends StreamModel implements IValue {
         }
     }
 
+    private findStateAndClear(
+        type: StateType,
+    ): void {
+        this.stateCallbacks[type] = [];
+        const state = this.findState(type);
+        if (state) {
+            state.clearAllCallbacks();
+        }
+    }
+
     public async createState(params: IState) {
         this.validate('createState', arguments);
 
@@ -360,6 +370,19 @@ export class Value extends StreamModel implements IValue {
                 callback(this, 'user');
             }
         });
+    }
+
+    public cancelOnReport() : void {
+        this.findStateAndClear('Report');
+    }
+
+    public cancelOnControl() : void {
+        this.findStateAndClear('Control');
+    }
+
+    public cancelOnRefresh() : void {
+        this.refreshCallbacks = [];
+        this.clearAllCallbacks();
     }
 
     public async refresh(): Promise<void> {
