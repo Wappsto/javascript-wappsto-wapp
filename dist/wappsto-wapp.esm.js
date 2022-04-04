@@ -173,7 +173,8 @@ var IValueFunc = /*#__PURE__*/t.iface([], {
   findByType: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IValue'), /*#__PURE__*/t.param('type', 'string'), /*#__PURE__*/t.param('quantity', /*#__PURE__*/t.union('number', /*#__PURE__*/t.lit('all'))), /*#__PURE__*/t.param('usage', 'string')),
   findAllByName: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IValue'), /*#__PURE__*/t.param('name', 'string'), /*#__PURE__*/t.param('usage', 'string')),
   findAllByType: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IValue'), /*#__PURE__*/t.param('type', 'string'), /*#__PURE__*/t.param('usage', 'string')),
-  findById: /*#__PURE__*/t.func('IValue', /*#__PURE__*/t.param('id', 'string'))
+  findById: /*#__PURE__*/t.func('IValue', /*#__PURE__*/t.param('id', 'string')),
+  addEvent: /*#__PURE__*/t.func('EventLog', /*#__PURE__*/t.param('level', 'EventLogLevel'), /*#__PURE__*/t.param('message', 'string'), /*#__PURE__*/t.param('info', 'any', true))
 });
 var StateType = /*#__PURE__*/t.union( /*#__PURE__*/t.lit('Report'), /*#__PURE__*/t.lit('Control'));
 var StateStatus = /*#__PURE__*/t.union( /*#__PURE__*/t.lit('Send'), /*#__PURE__*/t.lit('Pending'), /*#__PURE__*/t.lit('Failed'));
@@ -185,6 +186,17 @@ var IState = /*#__PURE__*/t.iface([], {
 });
 var IStateFunc = /*#__PURE__*/t.iface([], {
   constructor: /*#__PURE__*/t.func('IState', /*#__PURE__*/t.param('type', 'StateType', true))
+});
+var EventLogLevel = /*#__PURE__*/t.union( /*#__PURE__*/t.lit('important'), /*#__PURE__*/t.lit('error'), /*#__PURE__*/t.lit('success'), /*#__PURE__*/t.lit('warning'), /*#__PURE__*/t.lit('info'), /*#__PURE__*/t.lit('debug'));
+var IEventLog = /*#__PURE__*/t.iface([], {
+  message: 'string',
+  level: 'EventLogLevel',
+  info: /*#__PURE__*/t.opt('any'),
+  type: /*#__PURE__*/t.opt('string'),
+  timestamp: /*#__PURE__*/t.opt('Date')
+});
+var IEventLogFunc = /*#__PURE__*/t.iface([], {
+  constructor: /*#__PURE__*/t.func('IEventLog', /*#__PURE__*/t.param('level', 'EventLogLevel'), /*#__PURE__*/t.param('message', 'string'))
 });
 var INotificationCustomData = /*#__PURE__*/t.iface([], {
   all: 'boolean',
@@ -312,6 +324,9 @@ var exportedTypeSuite = {
   StateStatus: StateStatus,
   IState: IState,
   IStateFunc: IStateFunc,
+  EventLogLevel: EventLogLevel,
+  IEventLog: IEventLog,
+  IEventLogFunc: IEventLogFunc,
   INotificationCustomData: INotificationCustomData,
   INotificationCustom: INotificationCustom,
   INotificationBase: INotificationBase,
@@ -2685,6 +2700,7 @@ var Stream = /*#__PURE__*/function (_Model) {
   var _proto = Stream.prototype;
 
   _proto.getTimeout = function getTimeout() {
+    /* istanbul ignore next */
     if (this.backoff >= _config.reconnectCount) {
       printError("Stream failed to connect after " + this.backoff + " attemps, exit!");
 
@@ -2762,6 +2778,7 @@ var Stream = /*#__PURE__*/function (_Model) {
 
   _proto.removeSubscription = function removeSubscription(subscription) {
     if (!this.subscriptions.includes(subscription)) {
+      /* istanbul ignore next */
       return;
     }
 
@@ -3917,6 +3934,31 @@ State.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.m
   }, _callee);
 }));
 
+var EventLog = /*#__PURE__*/function (_Model) {
+  _inheritsLoose(EventLog, _Model);
+
+  function EventLog() {
+    var _this;
+
+    _this = _Model.call(this, 'eventlog') || this;
+    _this.message = '';
+    _this.level = 'info';
+    _this.info = void 0;
+    _this.type = void 0;
+    _this.timestamp = void 0;
+    return _this;
+  }
+
+  var _proto = EventLog.prototype;
+
+  _proto.attributes = function attributes() {
+    return ['message', 'level', 'into', 'type'];
+  };
+
+  return EventLog;
+}(Model);
+EventLog.endpoint = '/2.0/eventlog';
+
 var Value = /*#__PURE__*/function (_StreamModel) {
   _inheritsLoose(Value, _StreamModel);
 
@@ -3938,6 +3980,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     _this.xml = void 0;
     _this.status = void 0;
     _this.state = [];
+    _this.eventlog = [];
     _this.stateCallbacks = {
       Control: [],
       Report: []
@@ -4140,18 +4183,54 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     }
   };
 
-  _proto.createState = /*#__PURE__*/function () {
-    var _createState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(params) {
-      var create,
-          state,
-          oldJson,
-          newJson,
+  _proto.addEvent = /*#__PURE__*/function () {
+    var _addEvent = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(level, message, info) {
+      var event,
           _args3 = arguments;
       return _regeneratorRuntime.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              this.validate('createState', _args3);
+              this.validate('addEvent', _args3);
+              event = new EventLog();
+              event.level = level;
+              event.message = message;
+              event.info = info;
+              event.parent = this;
+              _context3.next = 8;
+              return event.create();
+
+            case 8:
+              this.eventlog.push(event);
+              return _context3.abrupt("return", event);
+
+            case 10:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3, this);
+    }));
+
+    function addEvent(_x4, _x5, _x6) {
+      return _addEvent.apply(this, arguments);
+    }
+
+    return addEvent;
+  }();
+
+  _proto.createState = /*#__PURE__*/function () {
+    var _createState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(params) {
+      var create,
+          state,
+          oldJson,
+          newJson,
+          _args4 = arguments;
+      return _regeneratorRuntime.wrap(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              this.validate('createState', _args4);
               create = false;
               state = this.findState(params.type);
 
@@ -4168,39 +4247,39 @@ var Value = /*#__PURE__*/function (_StreamModel) {
               state.parent = this;
 
               if (!(create || !isEqual(oldJson, newJson))) {
-                _context3.next = 17;
+                _context4.next = 17;
                 break;
               }
 
               if (!create) {
-                _context3.next = 15;
+                _context4.next = 15;
                 break;
               }
 
-              _context3.next = 12;
+              _context4.next = 12;
               return state.create();
 
             case 12:
               this.state.push(state);
-              _context3.next = 17;
+              _context4.next = 17;
               break;
 
             case 15:
-              _context3.next = 17;
+              _context4.next = 17;
               return state.update();
 
             case 17:
-              return _context3.abrupt("return", state);
+              return _context4.abrupt("return", state);
 
             case 18:
             case "end":
-              return _context3.stop();
+              return _context4.stop();
           }
         }
-      }, _callee3, this);
+      }, _callee4, this);
     }));
 
-    function createState(_x4) {
+    function createState(_x7) {
       return _createState.apply(this, arguments);
     }
 
@@ -4256,36 +4335,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   };
 
   _proto.report = /*#__PURE__*/function () {
-    var _report = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(data, timestamp) {
-      var _args4 = arguments;
-      return _regeneratorRuntime.wrap(function _callee4$(_context4) {
-        while (1) {
-          switch (_context4.prev = _context4.next) {
-            case 0:
-              if (timestamp === void 0) {
-                timestamp = undefined;
-              }
-
-              this.validate('report', _args4);
-              return _context4.abrupt("return", this.sendReport(data, timestamp, false));
-
-            case 3:
-            case "end":
-              return _context4.stop();
-          }
-        }
-      }, _callee4, this);
-    }));
-
-    function report(_x5, _x6) {
-      return _report.apply(this, arguments);
-    }
-
-    return report;
-  }();
-
-  _proto.forceReport = /*#__PURE__*/function () {
-    var _forceReport = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(data, timestamp) {
+    var _report = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(data, timestamp) {
       var _args5 = arguments;
       return _regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
@@ -4295,8 +4345,8 @@ var Value = /*#__PURE__*/function (_StreamModel) {
                 timestamp = undefined;
               }
 
-              this.validate('forceReport', _args5);
-              return _context5.abrupt("return", this.sendReport(data, timestamp, true));
+              this.validate('report', _args5);
+              return _context5.abrupt("return", this.sendReport(data, timestamp, false));
 
             case 3:
             case "end":
@@ -4306,16 +4356,16 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee5, this);
     }));
 
-    function forceReport(_x7, _x8) {
-      return _forceReport.apply(this, arguments);
+    function report(_x8, _x9) {
+      return _report.apply(this, arguments);
     }
 
-    return forceReport;
+    return report;
   }();
 
-  _proto.sendReport = /*#__PURE__*/function () {
-    var _sendReport = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(data, timestamp, force) {
-      var oldState, oldData, newData, delta, diff;
+  _proto.forceReport = /*#__PURE__*/function () {
+    var _forceReport = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(data, timestamp) {
+      var _args6 = arguments;
       return _regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
@@ -4324,28 +4374,57 @@ var Value = /*#__PURE__*/function (_StreamModel) {
                 timestamp = undefined;
               }
 
+              this.validate('forceReport', _args6);
+              return _context6.abrupt("return", this.sendReport(data, timestamp, true));
+
+            case 3:
+            case "end":
+              return _context6.stop();
+          }
+        }
+      }, _callee6, this);
+    }));
+
+    function forceReport(_x10, _x11) {
+      return _forceReport.apply(this, arguments);
+    }
+
+    return forceReport;
+  }();
+
+  _proto.sendReport = /*#__PURE__*/function () {
+    var _sendReport = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee7(data, timestamp, force) {
+      var oldState, oldData, newData, delta, diff;
+      return _regeneratorRuntime.wrap(function _callee7$(_context7) {
+        while (1) {
+          switch (_context7.prev = _context7.next) {
+            case 0:
+              if (timestamp === void 0) {
+                timestamp = undefined;
+              }
+
               if (!(this.delta && this.delta !== '' && this.delta !== '0' && !this.reportIsForced && !force)) {
-                _context6.next = 15;
+                _context7.next = 15;
                 break;
               }
 
               if (!(this.delta.toLowerCase() === 'inf')) {
-                _context6.next = 5;
+                _context7.next = 5;
                 break;
               }
 
               printDebug("Dropping value update for \"" + this.name + "\" because delta is Inf");
-              return _context6.abrupt("return");
+              return _context7.abrupt("return");
 
             case 5:
               oldState = this.findState('Report');
 
               if (oldState) {
-                _context6.next = 8;
+                _context7.next = 8;
                 break;
               }
 
-              return _context6.abrupt("return");
+              return _context7.abrupt("return");
 
             case 8:
               oldData = parseFloat(oldState.data);
@@ -4360,12 +4439,12 @@ var Value = /*#__PURE__*/function (_StreamModel) {
               diff = Math.abs(oldData - newData);
 
               if (!(diff < delta)) {
-                _context6.next = 15;
+                _context7.next = 15;
                 break;
               }
 
               printDebug("Dropping value update for \"" + this.name + "\" because the change is less then " + delta);
-              return _context6.abrupt("return");
+              return _context7.abrupt("return");
 
             case 15:
               this.reportIsForced = false;
@@ -4373,13 +4452,13 @@ var Value = /*#__PURE__*/function (_StreamModel) {
 
             case 17:
             case "end":
-              return _context6.stop();
+              return _context7.stop();
           }
         }
-      }, _callee6, this);
+      }, _callee7, this);
     }));
 
-    function sendReport(_x9, _x10, _x11) {
+    function sendReport(_x12, _x13, _x14) {
       return _sendReport.apply(this, arguments);
     }
 
@@ -4387,28 +4466,28 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   }();
 
   _proto.control = /*#__PURE__*/function () {
-    var _control = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee7(data, timestamp) {
-      var _args7 = arguments;
-      return _regeneratorRuntime.wrap(function _callee7$(_context7) {
+    var _control = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee8(data, timestamp) {
+      var _args8 = arguments;
+      return _regeneratorRuntime.wrap(function _callee8$(_context8) {
         while (1) {
-          switch (_context7.prev = _context7.next) {
+          switch (_context8.prev = _context8.next) {
             case 0:
               if (timestamp === void 0) {
                 timestamp = undefined;
               }
 
-              this.validate('control', _args7);
+              this.validate('control', _args8);
               this.findStateAndUpdate('Control', data, timestamp);
 
             case 3:
             case "end":
-              return _context7.stop();
+              return _context8.stop();
           }
         }
-      }, _callee7, this);
+      }, _callee8, this);
     }));
 
-    function control(_x12, _x13) {
+    function control(_x15, _x16) {
       return _control.apply(this, arguments);
     }
 
@@ -4454,38 +4533,38 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   };
 
   _proto.changeAttribute = /*#__PURE__*/function () {
-    var _changeAttribute = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee8(key, value) {
+    var _changeAttribute = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee9(key, value) {
       var data;
-      return _regeneratorRuntime.wrap(function _callee8$(_context8) {
+      return _regeneratorRuntime.wrap(function _callee9$(_context9) {
         while (1) {
-          switch (_context8.prev = _context8.next) {
+          switch (_context9.prev = _context9.next) {
             case 0:
-              _context8.prev = 0;
+              _context9.prev = 0;
               data = {};
               data[key] = value;
-              _context8.next = 5;
+              _context9.next = 5;
               return wappsto.patch(this.getUrl(), data, Model.generateOptions());
 
             case 5:
-              _context8.next = 10;
+              _context9.next = 10;
               break;
 
             case 7:
-              _context8.prev = 7;
-              _context8.t0 = _context8["catch"](0);
+              _context9.prev = 7;
+              _context9.t0 = _context9["catch"](0);
 
               /* istanbul ignore next */
-              printHttpError(_context8.t0);
+              printHttpError(_context9.t0);
 
             case 10:
             case "end":
-              return _context8.stop();
+              return _context9.stop();
           }
         }
-      }, _callee8, this, [[0, 7]]);
+      }, _callee9, this, [[0, 7]]);
     }));
 
-    function changeAttribute(_x14, _x15) {
+    function changeAttribute(_x17, _x18) {
       return _changeAttribute.apply(this, arguments);
     }
 
@@ -4493,19 +4572,19 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   }();
 
   _proto.refresh = /*#__PURE__*/function () {
-    var _refresh = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee9() {
-      return _regeneratorRuntime.wrap(function _callee9$(_context9) {
+    var _refresh = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee10() {
+      return _regeneratorRuntime.wrap(function _callee10$(_context10) {
         while (1) {
-          switch (_context9.prev = _context9.next) {
+          switch (_context10.prev = _context10.next) {
             case 0:
-              return _context9.abrupt("return", this.changeAttribute('status', 'update'));
+              return _context10.abrupt("return", this.changeAttribute('status', 'update'));
 
             case 1:
             case "end":
-              return _context9.stop();
+              return _context10.stop();
           }
         }
-      }, _callee9, this);
+      }, _callee10, this);
     }));
 
     function refresh() {
@@ -4516,35 +4595,12 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   }();
 
   _proto.setPeriod = /*#__PURE__*/function () {
-    var _setPeriod = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee10(period) {
-      return _regeneratorRuntime.wrap(function _callee10$(_context10) {
-        while (1) {
-          switch (_context10.prev = _context10.next) {
-            case 0:
-              return _context10.abrupt("return", this.changeAttribute('period', period));
-
-            case 1:
-            case "end":
-              return _context10.stop();
-          }
-        }
-      }, _callee10, this);
-    }));
-
-    function setPeriod(_x16) {
-      return _setPeriod.apply(this, arguments);
-    }
-
-    return setPeriod;
-  }();
-
-  _proto.setDelta = /*#__PURE__*/function () {
-    var _setDelta = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee11(delta) {
+    var _setPeriod = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee11(period) {
       return _regeneratorRuntime.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
             case 0:
-              return _context11.abrupt("return", this.changeAttribute('delta', delta.toString()));
+              return _context11.abrupt("return", this.changeAttribute('period', period));
 
             case 1:
             case "end":
@@ -4554,7 +4610,30 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee11, this);
     }));
 
-    function setDelta(_x17) {
+    function setPeriod(_x19) {
+      return _setPeriod.apply(this, arguments);
+    }
+
+    return setPeriod;
+  }();
+
+  _proto.setDelta = /*#__PURE__*/function () {
+    var _setDelta = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee12(delta) {
+      return _regeneratorRuntime.wrap(function _callee12$(_context12) {
+        while (1) {
+          switch (_context12.prev = _context12.next) {
+            case 0:
+              return _context12.abrupt("return", this.changeAttribute('delta', delta.toString()));
+
+            case 1:
+            case "end":
+              return _context12.stop();
+          }
+        }
+      }, _callee12, this);
+    }));
+
+    function setDelta(_x20) {
       return _setDelta.apply(this, arguments);
     }
 
@@ -4562,28 +4641,28 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   }();
 
   _proto.findStateAndLog = /*#__PURE__*/function () {
-    var _findStateAndLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee12(type, request) {
+    var _findStateAndLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee13(type, request) {
       var state, response;
-      return _regeneratorRuntime.wrap(function _callee12$(_context12) {
+      return _regeneratorRuntime.wrap(function _callee13$(_context13) {
         while (1) {
-          switch (_context12.prev = _context12.next) {
+          switch (_context13.prev = _context13.next) {
             case 0:
               state = this.findState(type);
 
               if (!state) {
-                _context12.next = 6;
+                _context13.next = 6;
                 break;
               }
 
-              _context12.next = 4;
+              _context13.next = 4;
               return Model.fetch("/2.1/log/" + state.id() + "/state", request);
 
             case 4:
-              response = _context12.sent;
-              return _context12.abrupt("return", response[0]);
+              response = _context13.sent;
+              return _context13.abrupt("return", response[0]);
 
             case 6:
-              return _context12.abrupt("return", {
+              return _context13.abrupt("return", {
                 meta: {
                   id: '',
                   type: 'log',
@@ -4596,13 +4675,13 @@ var Value = /*#__PURE__*/function (_StreamModel) {
 
             case 7:
             case "end":
-              return _context12.stop();
+              return _context13.stop();
           }
         }
-      }, _callee12, this);
+      }, _callee13, this);
     }));
 
-    function findStateAndLog(_x18, _x19) {
+    function findStateAndLog(_x21, _x22) {
       return _findStateAndLog.apply(this, arguments);
     }
 
@@ -4610,39 +4689,14 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   }();
 
   _proto.getReportLog = /*#__PURE__*/function () {
-    var _getReportLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee13(request) {
-      var _args13 = arguments;
-      return _regeneratorRuntime.wrap(function _callee13$(_context13) {
-        while (1) {
-          switch (_context13.prev = _context13.next) {
-            case 0:
-              this.validate('getReportLog', _args13);
-              return _context13.abrupt("return", this.findStateAndLog('Report', request));
-
-            case 2:
-            case "end":
-              return _context13.stop();
-          }
-        }
-      }, _callee13, this);
-    }));
-
-    function getReportLog(_x20) {
-      return _getReportLog.apply(this, arguments);
-    }
-
-    return getReportLog;
-  }();
-
-  _proto.getControlLog = /*#__PURE__*/function () {
-    var _getControlLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee14(request) {
+    var _getReportLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee14(request) {
       var _args14 = arguments;
       return _regeneratorRuntime.wrap(function _callee14$(_context14) {
         while (1) {
           switch (_context14.prev = _context14.next) {
             case 0:
-              this.validate('getControlLog', _args14);
-              return _context14.abrupt("return", this.findStateAndLog('Control', request));
+              this.validate('getReportLog', _args14);
+              return _context14.abrupt("return", this.findStateAndLog('Report', request));
 
             case 2:
             case "end":
@@ -4652,7 +4706,32 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee14, this);
     }));
 
-    function getControlLog(_x21) {
+    function getReportLog(_x23) {
+      return _getReportLog.apply(this, arguments);
+    }
+
+    return getReportLog;
+  }();
+
+  _proto.getControlLog = /*#__PURE__*/function () {
+    var _getControlLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee15(request) {
+      var _args15 = arguments;
+      return _regeneratorRuntime.wrap(function _callee15$(_context15) {
+        while (1) {
+          switch (_context15.prev = _context15.next) {
+            case 0:
+              this.validate('getControlLog', _args15);
+              return _context15.abrupt("return", this.findStateAndLog('Control', request));
+
+            case 2:
+            case "end":
+              return _context15.stop();
+          }
+        }
+      }, _callee15, this);
+    }));
+
+    function getControlLog(_x24) {
       return _getControlLog.apply(this, arguments);
     }
 
@@ -4728,37 +4807,37 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   return Value;
 }(StreamModel);
 Value.endpoint = '/2.0/value';
-Value.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee15() {
+Value.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee16() {
   var params, url, data;
-  return _regeneratorRuntime.wrap(function _callee15$(_context15) {
+  return _regeneratorRuntime.wrap(function _callee16$(_context16) {
     while (1) {
-      switch (_context15.prev = _context15.next) {
+      switch (_context16.prev = _context16.next) {
         case 0:
           params = {
             expand: 2
           };
           url = Value.endpoint;
-          _context15.next = 4;
+          _context16.next = 4;
           return Model.fetch(url, params);
 
         case 4:
-          data = _context15.sent;
-          return _context15.abrupt("return", Value.fromArray(data));
+          data = _context16.sent;
+          return _context16.abrupt("return", Value.fromArray(data));
 
         case 6:
         case "end":
-          return _context15.stop();
+          return _context16.stop();
       }
     }
-  }, _callee15);
+  }, _callee16);
 }));
 
 Value.find = /*#__PURE__*/function () {
-  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee16(params, quantity, usage) {
+  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee17(params, quantity, usage) {
     var query, key, data;
-    return _regeneratorRuntime.wrap(function _callee16$(_context16) {
+    return _regeneratorRuntime.wrap(function _callee17$(_context17) {
       while (1) {
-        switch (_context16.prev = _context16.next) {
+        switch (_context17.prev = _context17.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -4782,31 +4861,31 @@ Value.find = /*#__PURE__*/function () {
               query["this_" + key] = "=" + params[key];
             }
 
-            _context16.next = 8;
+            _context17.next = 8;
             return PermissionModel.request(Value.endpoint, quantity, usage, query);
 
           case 8:
-            data = _context16.sent;
-            return _context16.abrupt("return", Value.fromArray(data));
+            data = _context17.sent;
+            return _context17.abrupt("return", Value.fromArray(data));
 
           case 10:
           case "end":
-            return _context16.stop();
+            return _context17.stop();
         }
       }
-    }, _callee16);
+    }, _callee17);
   }));
 
-  return function (_x22, _x23, _x24) {
+  return function (_x25, _x26, _x27) {
     return _ref2.apply(this, arguments);
   };
 }();
 
 Value.findByName = /*#__PURE__*/function () {
-  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee17(name, quantity, usage) {
-    return _regeneratorRuntime.wrap(function _callee17$(_context17) {
+  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee18(name, quantity, usage) {
+    return _regeneratorRuntime.wrap(function _callee18$(_context18) {
       while (1) {
-        switch (_context17.prev = _context17.next) {
+        switch (_context18.prev = _context18.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -4822,28 +4901,28 @@ Value.findByName = /*#__PURE__*/function () {
               usage = "Find " + quantity + " value with name " + name;
             }
 
-            return _context17.abrupt("return", Value.find({
+            return _context18.abrupt("return", Value.find({
               name: name
             }, quantity, usage));
 
           case 5:
           case "end":
-            return _context17.stop();
+            return _context18.stop();
         }
       }
-    }, _callee17);
+    }, _callee18);
   }));
 
-  return function (_x25, _x26, _x27) {
+  return function (_x28, _x29, _x30) {
     return _ref3.apply(this, arguments);
   };
 }();
 
 Value.findByType = /*#__PURE__*/function () {
-  var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee18(type, quantity, usage) {
-    return _regeneratorRuntime.wrap(function _callee18$(_context18) {
+  var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee19(type, quantity, usage) {
+    return _regeneratorRuntime.wrap(function _callee19$(_context19) {
       while (1) {
-        switch (_context18.prev = _context18.next) {
+        switch (_context19.prev = _context19.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -4859,37 +4938,11 @@ Value.findByType = /*#__PURE__*/function () {
               usage = "Find " + quantity + " value with type " + type;
             }
 
-            return _context18.abrupt("return", Value.find({
+            return _context19.abrupt("return", Value.find({
               type: type
             }, quantity, usage));
 
           case 5:
-          case "end":
-            return _context18.stop();
-        }
-      }
-    }, _callee18);
-  }));
-
-  return function (_x28, _x29, _x30) {
-    return _ref4.apply(this, arguments);
-  };
-}();
-
-Value.findAllByName = /*#__PURE__*/function () {
-  var _ref5 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee19(name, usage) {
-    return _regeneratorRuntime.wrap(function _callee19$(_context19) {
-      while (1) {
-        switch (_context19.prev = _context19.next) {
-          case 0:
-            if (usage === void 0) {
-              usage = '';
-            }
-
-            Value.validate('findAllByName', [name, usage]);
-            return _context19.abrupt("return", Value.findByName(name, 'all', usage));
-
-          case 3:
           case "end":
             return _context19.stop();
         }
@@ -4897,13 +4950,13 @@ Value.findAllByName = /*#__PURE__*/function () {
     }, _callee19);
   }));
 
-  return function (_x31, _x32) {
-    return _ref5.apply(this, arguments);
+  return function (_x31, _x32, _x33) {
+    return _ref4.apply(this, arguments);
   };
 }();
 
-Value.findAllByType = /*#__PURE__*/function () {
-  var _ref6 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee20(type, usage) {
+Value.findAllByName = /*#__PURE__*/function () {
+  var _ref5 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee20(name, usage) {
     return _regeneratorRuntime.wrap(function _callee20$(_context20) {
       while (1) {
         switch (_context20.prev = _context20.next) {
@@ -4912,8 +4965,8 @@ Value.findAllByType = /*#__PURE__*/function () {
               usage = '';
             }
 
-            Value.validate('findAllByType', [type, usage]);
-            return _context20.abrupt("return", Value.findByType(type, 'all', usage));
+            Value.validate('findAllByName', [name, usage]);
+            return _context20.abrupt("return", Value.findByName(name, 'all', usage));
 
           case 3:
           case "end":
@@ -4923,29 +4976,25 @@ Value.findAllByType = /*#__PURE__*/function () {
     }, _callee20);
   }));
 
-  return function (_x33, _x34) {
-    return _ref6.apply(this, arguments);
+  return function (_x34, _x35) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
-Value.findById = /*#__PURE__*/function () {
-  var _ref7 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee21(id) {
-    var res;
+Value.findAllByType = /*#__PURE__*/function () {
+  var _ref6 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee21(type, usage) {
     return _regeneratorRuntime.wrap(function _callee21$(_context21) {
       while (1) {
         switch (_context21.prev = _context21.next) {
           case 0:
-            Value.validate('findById', [id]);
-            _context21.next = 3;
-            return Model.fetch(Value.endpoint + "/" + id, {
-              expand: 2
-            });
+            if (usage === void 0) {
+              usage = '';
+            }
+
+            Value.validate('findAllByType', [type, usage]);
+            return _context21.abrupt("return", Value.findByType(type, 'all', usage));
 
           case 3:
-            res = _context21.sent;
-            return _context21.abrupt("return", Value.fromArray(res)[0]);
-
-          case 5:
           case "end":
             return _context21.stop();
         }
@@ -4953,7 +5002,37 @@ Value.findById = /*#__PURE__*/function () {
     }, _callee21);
   }));
 
-  return function (_x35) {
+  return function (_x36, _x37) {
+    return _ref6.apply(this, arguments);
+  };
+}();
+
+Value.findById = /*#__PURE__*/function () {
+  var _ref7 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee22(id) {
+    var res;
+    return _regeneratorRuntime.wrap(function _callee22$(_context22) {
+      while (1) {
+        switch (_context22.prev = _context22.next) {
+          case 0:
+            Value.validate('findById', [id]);
+            _context22.next = 3;
+            return Model.fetch(Value.endpoint + "/" + id, {
+              expand: 2
+            });
+
+          case 3:
+            res = _context22.sent;
+            return _context22.abrupt("return", Value.fromArray(res)[0]);
+
+          case 5:
+          case "end":
+            return _context22.stop();
+        }
+      }
+    }, _callee22);
+  }));
+
+  return function (_x38) {
     return _ref7.apply(this, arguments);
   };
 }();
@@ -4961,6 +5040,10 @@ Value.findById = /*#__PURE__*/function () {
 __decorate([Type(function () {
   return State;
 })], Value.prototype, "state", void 0);
+
+__decorate([Type(function () {
+  return EventLog;
+})], Value.prototype, "eventlog", void 0);
 
 var Device = /*#__PURE__*/function (_StreamModel) {
   _inheritsLoose(Device, _StreamModel);

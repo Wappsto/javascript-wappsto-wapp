@@ -37,6 +37,16 @@ describe('network', () => {
                             type: 'value',
                         },
                         name: 'Value Name',
+                        eventlog: [
+                            {
+                                meta: {
+                                    type: 'eventlog',
+                                    id: '8e24c08f-2a99-4cae-9992-2da76326de8c',
+                                },
+                                message: 'test',
+                                level: 'error',
+                            },
+                        ],
                         state: [
                             {
                                 meta: {
@@ -260,6 +270,9 @@ describe('network', () => {
         expect(value?.state[0]?.type).toEqual('Control');
         expect(value?.toJSON).toBeDefined();
         expect(value?.state[0]?.toJSON).toBeDefined();
+
+        expect(value?.eventlog[0]?.message).toEqual('test');
+        expect(value?.eventlog[0]?.toJSON).toBeDefined();
     });
 
     it('can create a new network from wappsto with verbose', async () => {

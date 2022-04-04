@@ -222,6 +222,11 @@ export interface IValueFunc {
     findAllByName(name: string, usage: string): IValue[];
     findAllByType(type: string, usage: string): IValue[];
     findById(id: string): IValue;
+    addEvent(
+        level: EventLogLevel,
+        message: string,
+        info?: Record<string, any>
+    ): Promise<IEventLog>;
 }
 
 export type StateType = 'Report' | 'Control';
@@ -236,6 +241,26 @@ export interface IState {
 
 export interface IStateFunc {
     constructor(type?: StateType): IState;
+}
+
+export type EventLogLevel =
+    | 'important'
+    | 'error'
+    | 'success'
+    | 'warning'
+    | 'info'
+    | 'debug';
+
+export interface IEventLog {
+    message: string;
+    level: EventLogLevel;
+    info?: Record<string, any>;
+    type?: string;
+    timestamp?: Date;
+}
+
+export interface IEventLogFunc {
+    constructor(level: EventLogLevel, message: string): IEventLog;
 }
 
 export interface INotificationCustomData {

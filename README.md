@@ -10,6 +10,7 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     + [Create a new IoT Device](#create-a-new-iot-device)
     + [To report a change in the value](#to-report-a-change-in-the-value)
     + [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
+    + [Reporting events for value](#reporting-events-for-value)
     + [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
     + [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
     + [Get retrive object by ID](#get-retrive-object-by-id)
@@ -164,6 +165,22 @@ And you can cancel this callback by calling `cancelOnRefresh`.
 
 ```javascript
 value.cancelOnRefresh();
+```
+
+### Reporting events for value
+
+It is possible to save events in an event log for each value. Call
+`addEvent` on a value to create an event entry.
+The possible values for level is:
+    * important
+    * error
+    ' success
+    * warning
+    * info
+    * debug
+
+```javascript
+await value.addEvent('error', 'somthing wnt wrong');
 ```
 
 ### To request access to an exsisting object from the user

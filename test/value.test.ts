@@ -1164,4 +1164,27 @@ describe('value', () => {
             {}
         );
     });
+
+    it('can add an event', async () => {
+        mockedAxios.post.mockResolvedValueOnce({});
+        const value = new Value('test');
+        value.meta.id = '23dba0b8-79df-425b-b443-3aaa385d8636';
+
+        const event = await value.addEvent('error', 'test', { info: 'test' });
+
+        expect(event.message).toEqual('test');
+        expect(event.level).toEqual('error');
+        expect(event.info).toEqual({ info: 'test' });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/value/23dba0b8-79df-425b-b443-3aaa385d8636/eventlog',
+            {
+                level: 'error',
+                message: 'test',
+                meta: { type: 'eventlog', version: '2.0' },
+            },
+            {}
+        );
+    });
 });

@@ -75,6 +75,7 @@ export class Stream extends Model {
     }
 
     private getTimeout(): number {
+        /* istanbul ignore next */
         if (this.backoff >= _config.reconnectCount) {
             printError(
                 `Stream failed to connect after ${this.backoff} attemps, exit!`
@@ -155,6 +156,7 @@ export class Stream extends Model {
 
     private removeSubscription(subscription: string): void {
         if (!this.subscriptions.includes(subscription)) {
+            /* istanbul ignore next */
             return;
         }
 

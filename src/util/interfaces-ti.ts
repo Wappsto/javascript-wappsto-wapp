@@ -306,6 +306,12 @@ export const IValueFunc = t.iface([], {
         t.param('usage', 'string')
     ),
     findById: t.func('IValue', t.param('id', 'string')),
+    addEvent: t.func(
+        'EventLog',
+        t.param('level', 'EventLogLevel'),
+        t.param('message', 'string'),
+        t.param('info', 'any', true)
+    ),
 });
 
 export const StateType = t.union(t.lit('Report'), t.lit('Control'));
@@ -325,6 +331,31 @@ export const IState = t.iface([], {
 
 export const IStateFunc = t.iface([], {
     constructor: t.func('IState', t.param('type', 'StateType', true)),
+});
+
+export const EventLogLevel = t.union(
+    t.lit('important'),
+    t.lit('error'),
+    t.lit('success'),
+    t.lit('warning'),
+    t.lit('info'),
+    t.lit('debug')
+);
+
+export const IEventLog = t.iface([], {
+    message: 'string',
+    level: 'EventLogLevel',
+    info: t.opt('any'),
+    type: t.opt('string'),
+    timestamp: t.opt('Date'),
+});
+
+export const IEventLogFunc = t.iface([], {
+    constructor: t.func(
+        'IEventLog',
+        t.param('level', 'EventLogLevel'),
+        t.param('message', 'string')
+    ),
 });
 
 export const INotificationCustomData = t.iface([], {
@@ -559,6 +590,9 @@ const exportedTypeSuite: t.ITypeSuite = {
     StateStatus,
     IState,
     IStateFunc,
+    EventLogLevel,
+    IEventLog,
+    IEventLogFunc,
     INotificationCustomData,
     INotificationCustom,
     INotificationBase,

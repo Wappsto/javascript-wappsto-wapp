@@ -5,6 +5,7 @@ import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { State } from './state';
+import { EventLog } from './eventlog';
 import { _config } from '../util/config';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
@@ -23,6 +24,7 @@ import {
     IValueBlob,
     IValueXml,
     ValuePermission,
+    EventLogLevel,
     IState,
     StateType,
     ILogRequest,
@@ -49,6 +51,8 @@ export class Value extends StreamModel implements IValue {
     status?: string;
     @Type(() => State)
     state: State[] = [];
+    @Type(() => EventLog)
+    eventlog: EventLog[] = [];
     stateCallbacks: Record<string, ValueStreamCallback[]> = {
         Control: [],
         Report: [],
@@ -205,6 +209,22 @@ export class Value extends StreamModel implements IValue {
         if (state) {
             state.clearAllCallbacks();
         }
+    }
+
+    public async addEvent(
+        level: EventLogLevel,
+        message: string,
+        info?: Record<string, any>
+    ): Promise<EventLog> {
+        this.validate('addEvent', arguments);
+        const event = new EventLog();
+        event.level = level;
+        event.message = message;
+        event.info = info;
+        event.parent = this;
+        await event.create();
+        this.eventlog.push(event);
+        return event;
     }
 
     public async createState(params: IState) {
