@@ -4453,22 +4453,59 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     this.clearAllCallbacks();
   };
 
-  _proto.refresh = /*#__PURE__*/function () {
-    var _refresh = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee8() {
+  _proto.changeAttribute = /*#__PURE__*/function () {
+    var _changeAttribute = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee8(key, value) {
+      var data;
       return _regeneratorRuntime.wrap(function _callee8$(_context8) {
         while (1) {
           switch (_context8.prev = _context8.next) {
             case 0:
-              this.status = 'update';
-              _context8.next = 3;
-              return this.update();
+              _context8.prev = 0;
+              data = {};
+              data[key] = value;
+              _context8.next = 5;
+              return wappsto.patch(this.getUrl(), data, Model.generateOptions());
 
-            case 3:
+            case 5:
+              _context8.next = 10;
+              break;
+
+            case 7:
+              _context8.prev = 7;
+              _context8.t0 = _context8["catch"](0);
+
+              /* istanbul ignore next */
+              printHttpError(_context8.t0);
+
+            case 10:
             case "end":
               return _context8.stop();
           }
         }
-      }, _callee8, this);
+      }, _callee8, this, [[0, 7]]);
+    }));
+
+    function changeAttribute(_x14, _x15) {
+      return _changeAttribute.apply(this, arguments);
+    }
+
+    return changeAttribute;
+  }();
+
+  _proto.refresh = /*#__PURE__*/function () {
+    var _refresh = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee9() {
+      return _regeneratorRuntime.wrap(function _callee9$(_context9) {
+        while (1) {
+          switch (_context9.prev = _context9.next) {
+            case 0:
+              return _context9.abrupt("return", this.changeAttribute('status', 'update'));
+
+            case 1:
+            case "end":
+              return _context9.stop();
+          }
+        }
+      }, _callee9, this);
     }));
 
     function refresh() {
@@ -4478,29 +4515,75 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     return refresh;
   }();
 
-  _proto.findStateAndLog = /*#__PURE__*/function () {
-    var _findStateAndLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee9(type, request) {
-      var state, response;
-      return _regeneratorRuntime.wrap(function _callee9$(_context9) {
+  _proto.setPeriod = /*#__PURE__*/function () {
+    var _setPeriod = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee10(period) {
+      return _regeneratorRuntime.wrap(function _callee10$(_context10) {
         while (1) {
-          switch (_context9.prev = _context9.next) {
+          switch (_context10.prev = _context10.next) {
+            case 0:
+              return _context10.abrupt("return", this.changeAttribute('period', period));
+
+            case 1:
+            case "end":
+              return _context10.stop();
+          }
+        }
+      }, _callee10, this);
+    }));
+
+    function setPeriod(_x16) {
+      return _setPeriod.apply(this, arguments);
+    }
+
+    return setPeriod;
+  }();
+
+  _proto.setDelta = /*#__PURE__*/function () {
+    var _setDelta = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee11(delta) {
+      return _regeneratorRuntime.wrap(function _callee11$(_context11) {
+        while (1) {
+          switch (_context11.prev = _context11.next) {
+            case 0:
+              return _context11.abrupt("return", this.changeAttribute('delta', delta.toString()));
+
+            case 1:
+            case "end":
+              return _context11.stop();
+          }
+        }
+      }, _callee11, this);
+    }));
+
+    function setDelta(_x17) {
+      return _setDelta.apply(this, arguments);
+    }
+
+    return setDelta;
+  }();
+
+  _proto.findStateAndLog = /*#__PURE__*/function () {
+    var _findStateAndLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee12(type, request) {
+      var state, response;
+      return _regeneratorRuntime.wrap(function _callee12$(_context12) {
+        while (1) {
+          switch (_context12.prev = _context12.next) {
             case 0:
               state = this.findState(type);
 
               if (!state) {
-                _context9.next = 6;
+                _context12.next = 6;
                 break;
               }
 
-              _context9.next = 4;
+              _context12.next = 4;
               return Model.fetch("/2.1/log/" + state.id() + "/state", request);
 
             case 4:
-              response = _context9.sent;
-              return _context9.abrupt("return", response[0]);
+              response = _context12.sent;
+              return _context12.abrupt("return", response[0]);
 
             case 6:
-              return _context9.abrupt("return", {
+              return _context12.abrupt("return", {
                 meta: {
                   id: '',
                   type: 'log',
@@ -4513,13 +4596,13 @@ var Value = /*#__PURE__*/function (_StreamModel) {
 
             case 7:
             case "end":
-              return _context9.stop();
+              return _context12.stop();
           }
         }
-      }, _callee9, this);
+      }, _callee12, this);
     }));
 
-    function findStateAndLog(_x14, _x15) {
+    function findStateAndLog(_x18, _x19) {
       return _findStateAndLog.apply(this, arguments);
     }
 
@@ -4527,24 +4610,24 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   }();
 
   _proto.getReportLog = /*#__PURE__*/function () {
-    var _getReportLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee10(request) {
-      var _args10 = arguments;
-      return _regeneratorRuntime.wrap(function _callee10$(_context10) {
+    var _getReportLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee13(request) {
+      var _args13 = arguments;
+      return _regeneratorRuntime.wrap(function _callee13$(_context13) {
         while (1) {
-          switch (_context10.prev = _context10.next) {
+          switch (_context13.prev = _context13.next) {
             case 0:
-              this.validate('getReportLog', _args10);
-              return _context10.abrupt("return", this.findStateAndLog('Report', request));
+              this.validate('getReportLog', _args13);
+              return _context13.abrupt("return", this.findStateAndLog('Report', request));
 
             case 2:
             case "end":
-              return _context10.stop();
+              return _context13.stop();
           }
         }
-      }, _callee10, this);
+      }, _callee13, this);
     }));
 
-    function getReportLog(_x16) {
+    function getReportLog(_x20) {
       return _getReportLog.apply(this, arguments);
     }
 
@@ -4552,24 +4635,24 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   }();
 
   _proto.getControlLog = /*#__PURE__*/function () {
-    var _getControlLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee11(request) {
-      var _args11 = arguments;
-      return _regeneratorRuntime.wrap(function _callee11$(_context11) {
+    var _getControlLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee14(request) {
+      var _args14 = arguments;
+      return _regeneratorRuntime.wrap(function _callee14$(_context14) {
         while (1) {
-          switch (_context11.prev = _context11.next) {
+          switch (_context14.prev = _context14.next) {
             case 0:
-              this.validate('getControlLog', _args11);
-              return _context11.abrupt("return", this.findStateAndLog('Control', request));
+              this.validate('getControlLog', _args14);
+              return _context14.abrupt("return", this.findStateAndLog('Control', request));
 
             case 2:
             case "end":
-              return _context11.stop();
+              return _context14.stop();
           }
         }
-      }, _callee11, this);
+      }, _callee14, this);
     }));
 
-    function getControlLog(_x17) {
+    function getControlLog(_x21) {
       return _getControlLog.apply(this, arguments);
     }
 
@@ -4645,37 +4728,37 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   return Value;
 }(StreamModel);
 Value.endpoint = '/2.0/value';
-Value.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee12() {
+Value.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee15() {
   var params, url, data;
-  return _regeneratorRuntime.wrap(function _callee12$(_context12) {
+  return _regeneratorRuntime.wrap(function _callee15$(_context15) {
     while (1) {
-      switch (_context12.prev = _context12.next) {
+      switch (_context15.prev = _context15.next) {
         case 0:
           params = {
             expand: 2
           };
           url = Value.endpoint;
-          _context12.next = 4;
+          _context15.next = 4;
           return Model.fetch(url, params);
 
         case 4:
-          data = _context12.sent;
-          return _context12.abrupt("return", Value.fromArray(data));
+          data = _context15.sent;
+          return _context15.abrupt("return", Value.fromArray(data));
 
         case 6:
         case "end":
-          return _context12.stop();
+          return _context15.stop();
       }
     }
-  }, _callee12);
+  }, _callee15);
 }));
 
 Value.find = /*#__PURE__*/function () {
-  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee13(params, quantity, usage) {
+  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee16(params, quantity, usage) {
     var query, key, data;
-    return _regeneratorRuntime.wrap(function _callee13$(_context13) {
+    return _regeneratorRuntime.wrap(function _callee16$(_context16) {
       while (1) {
-        switch (_context13.prev = _context13.next) {
+        switch (_context16.prev = _context16.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -4699,31 +4782,31 @@ Value.find = /*#__PURE__*/function () {
               query["this_" + key] = "=" + params[key];
             }
 
-            _context13.next = 8;
+            _context16.next = 8;
             return PermissionModel.request(Value.endpoint, quantity, usage, query);
 
           case 8:
-            data = _context13.sent;
-            return _context13.abrupt("return", Value.fromArray(data));
+            data = _context16.sent;
+            return _context16.abrupt("return", Value.fromArray(data));
 
           case 10:
           case "end":
-            return _context13.stop();
+            return _context16.stop();
         }
       }
-    }, _callee13);
+    }, _callee16);
   }));
 
-  return function (_x18, _x19, _x20) {
+  return function (_x22, _x23, _x24) {
     return _ref2.apply(this, arguments);
   };
 }();
 
 Value.findByName = /*#__PURE__*/function () {
-  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee14(name, quantity, usage) {
-    return _regeneratorRuntime.wrap(function _callee14$(_context14) {
+  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee17(name, quantity, usage) {
+    return _regeneratorRuntime.wrap(function _callee17$(_context17) {
       while (1) {
-        switch (_context14.prev = _context14.next) {
+        switch (_context17.prev = _context17.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -4739,28 +4822,28 @@ Value.findByName = /*#__PURE__*/function () {
               usage = "Find " + quantity + " value with name " + name;
             }
 
-            return _context14.abrupt("return", Value.find({
+            return _context17.abrupt("return", Value.find({
               name: name
             }, quantity, usage));
 
           case 5:
           case "end":
-            return _context14.stop();
+            return _context17.stop();
         }
       }
-    }, _callee14);
+    }, _callee17);
   }));
 
-  return function (_x21, _x22, _x23) {
+  return function (_x25, _x26, _x27) {
     return _ref3.apply(this, arguments);
   };
 }();
 
 Value.findByType = /*#__PURE__*/function () {
-  var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee15(type, quantity, usage) {
-    return _regeneratorRuntime.wrap(function _callee15$(_context15) {
+  var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee18(type, quantity, usage) {
+    return _regeneratorRuntime.wrap(function _callee18$(_context18) {
       while (1) {
-        switch (_context15.prev = _context15.next) {
+        switch (_context18.prev = _context18.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -4776,91 +4859,9 @@ Value.findByType = /*#__PURE__*/function () {
               usage = "Find " + quantity + " value with type " + type;
             }
 
-            return _context15.abrupt("return", Value.find({
+            return _context18.abrupt("return", Value.find({
               type: type
             }, quantity, usage));
-
-          case 5:
-          case "end":
-            return _context15.stop();
-        }
-      }
-    }, _callee15);
-  }));
-
-  return function (_x24, _x25, _x26) {
-    return _ref4.apply(this, arguments);
-  };
-}();
-
-Value.findAllByName = /*#__PURE__*/function () {
-  var _ref5 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee16(name, usage) {
-    return _regeneratorRuntime.wrap(function _callee16$(_context16) {
-      while (1) {
-        switch (_context16.prev = _context16.next) {
-          case 0:
-            if (usage === void 0) {
-              usage = '';
-            }
-
-            Value.validate('findAllByName', [name, usage]);
-            return _context16.abrupt("return", Value.findByName(name, 'all', usage));
-
-          case 3:
-          case "end":
-            return _context16.stop();
-        }
-      }
-    }, _callee16);
-  }));
-
-  return function (_x27, _x28) {
-    return _ref5.apply(this, arguments);
-  };
-}();
-
-Value.findAllByType = /*#__PURE__*/function () {
-  var _ref6 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee17(type, usage) {
-    return _regeneratorRuntime.wrap(function _callee17$(_context17) {
-      while (1) {
-        switch (_context17.prev = _context17.next) {
-          case 0:
-            if (usage === void 0) {
-              usage = '';
-            }
-
-            Value.validate('findAllByType', [type, usage]);
-            return _context17.abrupt("return", Value.findByType(type, 'all', usage));
-
-          case 3:
-          case "end":
-            return _context17.stop();
-        }
-      }
-    }, _callee17);
-  }));
-
-  return function (_x29, _x30) {
-    return _ref6.apply(this, arguments);
-  };
-}();
-
-Value.findById = /*#__PURE__*/function () {
-  var _ref7 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee18(id) {
-    var res;
-    return _regeneratorRuntime.wrap(function _callee18$(_context18) {
-      while (1) {
-        switch (_context18.prev = _context18.next) {
-          case 0:
-            Value.validate('findById', [id]);
-            _context18.next = 3;
-            return Model.fetch(Value.endpoint + "/" + id, {
-              expand: 2
-            });
-
-          case 3:
-            res = _context18.sent;
-            return _context18.abrupt("return", Value.fromArray(res)[0]);
 
           case 5:
           case "end":
@@ -4870,7 +4871,89 @@ Value.findById = /*#__PURE__*/function () {
     }, _callee18);
   }));
 
-  return function (_x31) {
+  return function (_x28, _x29, _x30) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+Value.findAllByName = /*#__PURE__*/function () {
+  var _ref5 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee19(name, usage) {
+    return _regeneratorRuntime.wrap(function _callee19$(_context19) {
+      while (1) {
+        switch (_context19.prev = _context19.next) {
+          case 0:
+            if (usage === void 0) {
+              usage = '';
+            }
+
+            Value.validate('findAllByName', [name, usage]);
+            return _context19.abrupt("return", Value.findByName(name, 'all', usage));
+
+          case 3:
+          case "end":
+            return _context19.stop();
+        }
+      }
+    }, _callee19);
+  }));
+
+  return function (_x31, _x32) {
+    return _ref5.apply(this, arguments);
+  };
+}();
+
+Value.findAllByType = /*#__PURE__*/function () {
+  var _ref6 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee20(type, usage) {
+    return _regeneratorRuntime.wrap(function _callee20$(_context20) {
+      while (1) {
+        switch (_context20.prev = _context20.next) {
+          case 0:
+            if (usage === void 0) {
+              usage = '';
+            }
+
+            Value.validate('findAllByType', [type, usage]);
+            return _context20.abrupt("return", Value.findByType(type, 'all', usage));
+
+          case 3:
+          case "end":
+            return _context20.stop();
+        }
+      }
+    }, _callee20);
+  }));
+
+  return function (_x33, _x34) {
+    return _ref6.apply(this, arguments);
+  };
+}();
+
+Value.findById = /*#__PURE__*/function () {
+  var _ref7 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee21(id) {
+    var res;
+    return _regeneratorRuntime.wrap(function _callee21$(_context21) {
+      while (1) {
+        switch (_context21.prev = _context21.next) {
+          case 0:
+            Value.validate('findById', [id]);
+            _context21.next = 3;
+            return Model.fetch(Value.endpoint + "/" + id, {
+              expand: 2
+            });
+
+          case 3:
+            res = _context21.sent;
+            return _context21.abrupt("return", Value.fromArray(res)[0]);
+
+          case 5:
+          case "end":
+            return _context21.stop();
+        }
+      }
+    }, _callee21);
+  }));
+
+  return function (_x35) {
     return _ref7.apply(this, arguments);
   };
 }();

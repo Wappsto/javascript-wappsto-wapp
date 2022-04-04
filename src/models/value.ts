@@ -385,15 +385,14 @@ export class Value extends StreamModel implements IValue {
         this.clearAllCallbacks();
     }
 
-    private async changeAttribute(key: string, value: string|number): Promise<void> {
+    private async changeAttribute(
+        key: string,
+        value: string | number
+    ): Promise<void> {
         try {
-            const data: Record<string, string|number> = {};
+            const data: Record<string, string | number> = {};
             data[key] = value;
-            await wappsto.patch(
-                this.getUrl(),
-                data,
-                Model.generateOptions()
-            );
+            await wappsto.patch(this.getUrl(), data, Model.generateOptions());
         } catch (e) {
             /* istanbul ignore next */
             printHttpError(e);
