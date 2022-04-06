@@ -3952,7 +3952,7 @@ var EventLog = /*#__PURE__*/function (_Model) {
   var _proto = EventLog.prototype;
 
   _proto.attributes = function attributes() {
-    return ['message', 'level', 'into', 'type'];
+    return ['message', 'level', 'info', 'type'];
   };
 
   return EventLog;

@@ -358,7 +358,7 @@ export class Value extends StreamModel implements IValue {
         }
 
         this.reportIsForced = false;
-        this.findStateAndUpdate('Report', data, timestamp);
+        await this.findStateAndUpdate('Report', data, timestamp);
     }
 
     public async control(

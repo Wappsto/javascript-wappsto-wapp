@@ -1182,7 +1182,7 @@ describe('value', () => {
             {
                 level: 'error',
                 message: 'test',
-                info: {info: 'test'},
+                info: { info: 'test' },
                 meta: { type: 'eventlog', version: '2.0' },
             },
             {}
