@@ -433,6 +433,23 @@ ValueTemplate.BOOLEAN_ONOFF = {
     unit: ''
   }
 };
+ValueTemplate.CONNECTION_STATUS = {
+  value_type: 'number',
+  type: 'connection',
+  number: {
+    mapping: {
+      '0': 'offline',
+      '1': 'online'
+    },
+    ordered_mapping: undefined,
+    meaningful_zero: undefined,
+    min: 0,
+    max: 1,
+    step: 1,
+    si_conversion: undefined,
+    unit: ''
+  }
+};
 ValueTemplate.VOLTAGE_V = {
   value_type: 'number',
   type: 'voltage',
@@ -442,7 +459,7 @@ ValueTemplate.VOLTAGE_V = {
     meaningful_zero: undefined,
     min: 0,
     max: 250,
-    step: 1,
+    step: 0.1,
     si_conversion: undefined,
     unit: 'V'
   }
@@ -456,7 +473,7 @@ ValueTemplate.POWER_WATT = {
     meaningful_zero: undefined,
     min: 0,
     max: 2500,
-    step: 1,
+    step: 0.1,
     si_conversion: undefined,
     unit: 'W'
   }
@@ -470,7 +487,7 @@ ValueTemplate.POWER_KW = {
     meaningful_zero: undefined,
     min: 0,
     max: 1000000,
-    step: 1,
+    step: 0.1,
     si_conversion: '[W] = 1000 * [kW]',
     unit: 'kW'
   }
@@ -484,7 +501,7 @@ ValueTemplate.ENERGY_WH = {
     meaningful_zero: undefined,
     min: 0,
     max: 100000,
-    step: 1,
+    step: 0.1,
     si_conversion: undefined,
     unit: 'Wh'
   }
@@ -498,7 +515,7 @@ ValueTemplate.ENERGY_KWH = {
     meaningful_zero: undefined,
     min: 0,
     max: 1000000,
-    step: 1,
+    step: 0.1,
     si_conversion: '[J] = 3600000 * [kWh]  ',
     unit: 'kWh'
   }
@@ -4448,9 +4465,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
 
             case 15:
               this.reportIsForced = false;
-              this.findStateAndUpdate('Report', data, timestamp);
+              _context7.next = 18;
+              return this.findStateAndUpdate('Report', data, timestamp);
 
-            case 17:
+            case 18:
             case "end":
               return _context7.stop();
           }
