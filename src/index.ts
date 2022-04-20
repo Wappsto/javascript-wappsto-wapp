@@ -19,3 +19,4 @@ export {
     onWebHook,
     cancelOnWebHook,
 } from './stream_helpers';
+export * from './util/interfaces';
