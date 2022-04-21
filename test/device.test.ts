@@ -490,11 +490,13 @@ describe('device', () => {
             permission: 'rw',
             type: 'type',
             delta: 'delta',
-            min: 0,
-            max: 1,
-            step: 1,
-            unit: 'unit',
-            si_conversion: 'si_conversion',
+            number: {
+                min: 0,
+                max: 1,
+                step: 1,
+                unit: 'unit',
+                si_conversion: 'si_conversion',
+            },
         });
 
         expect(value.name).toEqual('Value Name');
@@ -601,8 +603,10 @@ describe('device', () => {
             permission: 'wr',
             type: 'type',
             delta: 'delta',
-            max: 10,
-            encoding: 'encoding',
+            string: {
+                max: 10,
+                encoding: 'encoding',
+            },
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -692,8 +696,10 @@ describe('device', () => {
             permission: 'r',
             type: 'type',
             delta: 'delta',
-            max: 10,
-            encoding: 'encoding',
+            blob: {
+                max: 10,
+                encoding: 'encoding',
+            },
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -772,8 +778,10 @@ describe('device', () => {
             type: 'type',
             period: '0',
             delta: 'delta',
-            xsd: 'xsd',
-            namespace: 'namespace',
+            xml: {
+                xsd: 'xsd',
+                namespace: 'namespace',
+            },
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -858,11 +866,13 @@ describe('device', () => {
             type: 'type',
             period: '0',
             delta: 'delta',
-            min: 0,
-            max: 1,
-            step: 1,
-            unit: 'unit',
-            si_conversion: 'si_conversion',
+            number: {
+                min: 0,
+                max: 1,
+                step: 1,
+                unit: 'unit',
+                si_conversion: 'si_conversion',
+            },
         });
 
         expect(value.name).toEqual('Value Name');

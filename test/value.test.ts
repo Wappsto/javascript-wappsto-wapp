@@ -807,10 +807,12 @@ describe('value', () => {
             type: 'type',
             period: 'period',
             delta: 'delta',
-            min: 0,
-            max: 1,
-            step: 1,
-            unit: 'unit',
+            number: {
+                min: 0,
+                max: 1,
+                step: 1,
+                unit: 'unit',
+            },
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -953,11 +955,13 @@ describe('value', () => {
             name: 'test',
             type: 'number',
             permission: 'r',
-            min: 0,
-            max: 100,
-            step: 1,
-            unit: '',
             delta: '50',
+            number: {
+                min: 0,
+                max: 100,
+                step: 1,
+                unit: '',
+            },
         });
 
         value.onRefresh((val, type) => {
@@ -1064,10 +1068,12 @@ describe('value', () => {
             name: 'test',
             type: 'number',
             permission: 'r',
-            min: 0,
-            max: 100,
-            step: 1,
-            unit: '',
+            number: {
+                min: 0,
+                max: 100,
+                step: 1,
+                unit: '',
+            },
             delta: '50',
             period: '2',
         });
@@ -1182,7 +1188,7 @@ describe('value', () => {
             {
                 level: 'error',
                 message: 'test',
-                info: {info: 'test'},
+                info: { info: 'test' },
                 meta: { type: 'eventlog', version: '2.0' },
             },
             {}

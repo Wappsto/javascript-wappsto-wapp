@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
+import { ValueTemplate } from './value_template';
+
 export type ValidationType = 'none' | 'normal';
 export interface IConfig {
     verbose?: boolean;
@@ -112,14 +114,14 @@ export interface IDeviceFunc {
     createValue(
         name: string,
         permission: ValuePermission,
-        valueTemplate: IValueTemplate,
+        valueTemplate: IValue,
         period?: string,
         delta?: number | 'inf'
     ): Promise<IValue>;
-    createNumberValue(parameters: IValue & IValueNumber): Promise<IValue>;
-    createStringValue(parameters: IValue & IValueString): Promise<IValue>;
-    createBlobValue(parameters: IValue & IValueBlob): Promise<IValue>;
-    createXmlValue(parameters: IValue & IValueXml): Promise<IValue>;
+    createNumberValue(parameters: IValueNumber): Promise<IValueNumber>;
+    createStringValue(parameters: IValueString): Promise<IValueString>;
+    createBlobValue(parameters: IValueBlob): Promise<IValueBlob>;
+    createXmlValue(parameters: IValueXml): Promise<IValueXml>;
     find(
         options: Record<string, any>,
         quantity: number | 'all',
@@ -151,20 +153,18 @@ export interface IPermissionModelFunc {
 
 export type ValuePermission = 'r' | 'w' | 'rw' | 'wr';
 
-export interface IValue {
+export type IValue = IValueXml | IValueBlob | IValueNumber | IValueString;
+
+export interface IValueBase {
     name: string;
     permission: ValuePermission;
     type: string;
     description?: string;
     period?: string;
     delta?: string;
-    number?: IValueNumber;
-    string?: IValueString;
-    blob?: IValueBlob;
-    xml?: IValueXml;
 }
 
-export interface IValueNumber {
+export interface IValueNumberBase {
     min: number;
     max: number;
     step: number;
@@ -175,30 +175,30 @@ export interface IValueNumber {
     meaningful_zero?: boolean;
 }
 
-export interface IValueString {
+export interface IValueStringBlobBase {
     max: number;
     encoding?: string;
 }
 
-export interface IValueBlob {
-    max: number;
-    encoding?: string;
-}
-
-export interface IValueXml {
+export interface IValueXmlBase {
     xsd?: string;
     namespace?: string;
 }
 
-type ValueTemplateType = 'number' | 'string' | 'blob' | 'xml';
+export interface IValueNumber extends IValueBase {
+    number: IValueNumberBase;
+}
 
-export interface IValueTemplate {
-    type: string;
-    value_type: ValueTemplateType;
-    number?: IValueNumber;
-    string?: IValueString;
-    blob?: IValueBlob;
-    xml?: IValueXml;
+export interface IValueString extends IValueBase {
+    string: IValueStringBlobBase;
+}
+
+export interface IValueBlob extends IValueBase {
+    blob: IValueStringBlobBase;
+}
+
+export interface IValueXml extends IValueBase {
+    xml: IValueXmlBase;
 }
 
 export interface IValueFunc {
@@ -412,11 +412,11 @@ export type ServiceHandler = (
 export type RequestHandler = (event: any) => Promise<any> | any;
 export type StreamCallback = (model: IStreamModel) => void;
 export type ValueStreamCallback = (
-    value: IValue,
+    value: IValueBase,
     data: string,
     timestamp: string
 ) => void;
 export type RefreshStreamCallback = (
-    value: IValue,
+    value: IValueBase,
     origin: 'user' | 'period'
 ) => void;

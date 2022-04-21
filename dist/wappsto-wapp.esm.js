@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import * as t from 'ts-interface-checker';
 import { createCheckers } from 'ts-interface-checker';
 import axios from 'axios';
-import { __decorate } from 'tslib';
 import { isArray, pick, isEqual, omit } from 'lodash-es';
 import { plainToClass, Type } from 'class-transformer';
 import parseDuration from 'parse-duration';
@@ -98,11 +97,11 @@ var IDeviceFunc = /*#__PURE__*/t.iface([], {
   constructor: /*#__PURE__*/t.func('void', /*#__PURE__*/t.param('name', 'string', true)),
   findValueByName: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IValue'), /*#__PURE__*/t.param('name', 'string')),
   findValueByType: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IValue'), /*#__PURE__*/t.param('type', 'string')),
-  createValue: /*#__PURE__*/t.func('IValue', /*#__PURE__*/t.param('name', 'string'), /*#__PURE__*/t.param('permission', 'ValuePermission'), /*#__PURE__*/t.param('valueTemplate', 'IValueTemplate'), /*#__PURE__*/t.param('period', 'string', true), /*#__PURE__*/t.param('delta', /*#__PURE__*/t.union('number', /*#__PURE__*/t.lit('inf')), true)),
-  createNumberValue: /*#__PURE__*/t.func('IValue', /*#__PURE__*/t.param('parameters', /*#__PURE__*/t.intersection('IValue', 'IValueNumber'))),
-  createStringValue: /*#__PURE__*/t.func('IValue', /*#__PURE__*/t.param('parameters', /*#__PURE__*/t.intersection('IValue', 'IValueString'))),
-  createBlobValue: /*#__PURE__*/t.func('IValue', /*#__PURE__*/t.param('parameters', /*#__PURE__*/t.intersection('IValue', 'IValueBlob'))),
-  createXmlValue: /*#__PURE__*/t.func('IValue', /*#__PURE__*/t.param('parameters', /*#__PURE__*/t.intersection('IValue', 'IValueXml'))),
+  createValue: /*#__PURE__*/t.func('IValue', /*#__PURE__*/t.param('name', 'string'), /*#__PURE__*/t.param('permission', 'ValuePermission'), /*#__PURE__*/t.param('valueTemplate', 'IValue'), /*#__PURE__*/t.param('period', 'string', true), /*#__PURE__*/t.param('delta', /*#__PURE__*/t.union('number', /*#__PURE__*/t.lit('inf')), true)),
+  createNumberValue: /*#__PURE__*/t.func('IValueNumber', /*#__PURE__*/t.param('parameters', 'IValueNumber')),
+  createStringValue: /*#__PURE__*/t.func('IValueString', /*#__PURE__*/t.param('parameters', 'IValueString')),
+  createBlobValue: /*#__PURE__*/t.func('IValueBlob', /*#__PURE__*/t.param('parameters', 'IValueBlob')),
+  createXmlValue: /*#__PURE__*/t.func('IValueXml', /*#__PURE__*/t.param('parameters', 'IValueXml')),
   find: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IDevice'), /*#__PURE__*/t.param('options', 'any'), /*#__PURE__*/t.param('quantity', /*#__PURE__*/t.union('number', /*#__PURE__*/t.lit('all'))), /*#__PURE__*/t.param('usage', 'string')),
   findByName: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IDevice'), /*#__PURE__*/t.param('name', 'string'), /*#__PURE__*/t.param('quantity', /*#__PURE__*/t.union('number', /*#__PURE__*/t.lit('all'))), /*#__PURE__*/t.param('usage', 'string')),
   findAllByName: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IDevice'), /*#__PURE__*/t.param('name', 'string'), /*#__PURE__*/t.param('usage', 'string')),
@@ -114,19 +113,16 @@ var IPermissionModelFunc = /*#__PURE__*/t.iface([], {
   request: /*#__PURE__*/t.func( /*#__PURE__*/t.array('any'), /*#__PURE__*/t.param('endpoint', 'string'), /*#__PURE__*/t.param('quantity', /*#__PURE__*/t.union('number', /*#__PURE__*/t.lit('all'))), /*#__PURE__*/t.param('message', 'string'), /*#__PURE__*/t.param('options', 'any', true))
 });
 var ValuePermission = /*#__PURE__*/t.union( /*#__PURE__*/t.lit('r'), /*#__PURE__*/t.lit('w'), /*#__PURE__*/t.lit('rw'), /*#__PURE__*/t.lit('wr'));
-var IValue = /*#__PURE__*/t.iface([], {
+var IValue = /*#__PURE__*/t.union('IValueXml', 'IValueBlob', 'IValueNumber', 'IValueString');
+var IValueBase = /*#__PURE__*/t.iface([], {
   name: 'string',
   permission: 'ValuePermission',
   type: 'string',
   description: /*#__PURE__*/t.opt('string'),
   period: /*#__PURE__*/t.opt('string'),
-  delta: /*#__PURE__*/t.opt('string'),
-  number: /*#__PURE__*/t.opt('IValueNumber'),
-  string: /*#__PURE__*/t.opt('IValueString'),
-  blob: /*#__PURE__*/t.opt('IValueBlob'),
-  xml: /*#__PURE__*/t.opt('IValueXml')
+  delta: /*#__PURE__*/t.opt('string')
 });
-var IValueNumber = /*#__PURE__*/t.iface([], {
+var IValueNumberBase = /*#__PURE__*/t.iface([], {
   min: 'number',
   max: 'number',
   step: 'number',
@@ -136,26 +132,25 @@ var IValueNumber = /*#__PURE__*/t.iface([], {
   ordered_mapping: /*#__PURE__*/t.opt('boolean'),
   meaningful_zero: /*#__PURE__*/t.opt('boolean')
 });
-var IValueString = /*#__PURE__*/t.iface([], {
+var IValueStringBlobBase = /*#__PURE__*/t.iface([], {
   max: 'number',
   encoding: /*#__PURE__*/t.opt('string')
 });
-var IValueBlob = /*#__PURE__*/t.iface([], {
-  max: 'number',
-  encoding: /*#__PURE__*/t.opt('string')
-});
-var IValueXml = /*#__PURE__*/t.iface([], {
+var IValueXmlBase = /*#__PURE__*/t.iface([], {
   xsd: /*#__PURE__*/t.opt('string'),
   namespace: /*#__PURE__*/t.opt('string')
 });
-var ValueTemplateType = /*#__PURE__*/t.union( /*#__PURE__*/t.lit('number'), /*#__PURE__*/t.lit('string'), /*#__PURE__*/t.lit('blob'), /*#__PURE__*/t.lit('xml'));
-var IValueTemplate = /*#__PURE__*/t.iface([], {
-  type: 'string',
-  value_type: 'ValueTemplateType',
-  number: /*#__PURE__*/t.opt('IValueNumber'),
-  string: /*#__PURE__*/t.opt('IValueString'),
-  blob: /*#__PURE__*/t.opt('IValueBlob'),
-  xml: /*#__PURE__*/t.opt('IValueXml')
+var IValueNumber = /*#__PURE__*/t.iface(['IValueBase'], {
+  number: 'IValueNumberBase'
+});
+var IValueString = /*#__PURE__*/t.iface(['IValueBase'], {
+  string: 'IValueStringBlobBase'
+});
+var IValueBlob = /*#__PURE__*/t.iface(['IValueBase'], {
+  blob: 'IValueStringBlobBase'
+});
+var IValueXml = /*#__PURE__*/t.iface(['IValueBase'], {
+  xml: 'IValueXmlBase'
 });
 var IValueFunc = /*#__PURE__*/t.iface([], {
   constructor: /*#__PURE__*/t.func('IState', /*#__PURE__*/t.param('name', 'string', true)),
@@ -174,7 +169,7 @@ var IValueFunc = /*#__PURE__*/t.iface([], {
   findAllByName: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IValue'), /*#__PURE__*/t.param('name', 'string'), /*#__PURE__*/t.param('usage', 'string')),
   findAllByType: /*#__PURE__*/t.func( /*#__PURE__*/t.array('IValue'), /*#__PURE__*/t.param('type', 'string'), /*#__PURE__*/t.param('usage', 'string')),
   findById: /*#__PURE__*/t.func('IValue', /*#__PURE__*/t.param('id', 'string')),
-  addEvent: /*#__PURE__*/t.func('EventLog', /*#__PURE__*/t.param('level', 'EventLogLevel'), /*#__PURE__*/t.param('message', 'string'), /*#__PURE__*/t.param('info', 'any', true))
+  addEvent: /*#__PURE__*/t.func('IEventLog', /*#__PURE__*/t.param('level', 'EventLogLevel'), /*#__PURE__*/t.param('message', 'string'), /*#__PURE__*/t.param('info', 'any', true))
 });
 var StateType = /*#__PURE__*/t.union( /*#__PURE__*/t.lit('Report'), /*#__PURE__*/t.lit('Control'));
 var StateStatus = /*#__PURE__*/t.union( /*#__PURE__*/t.lit('Send'), /*#__PURE__*/t.lit('Pending'), /*#__PURE__*/t.lit('Failed'));
@@ -296,8 +291,8 @@ var SignalHandler = /*#__PURE__*/t.func('void', /*#__PURE__*/t.param('event', 's
 var ServiceHandler = /*#__PURE__*/t.func( /*#__PURE__*/t.union( /*#__PURE__*/t.union( /*#__PURE__*/t.lit(true), 'undefined'), 'boolean'), /*#__PURE__*/t.param('event', 'any'));
 var RequestHandler = /*#__PURE__*/t.func( /*#__PURE__*/t.union('any', 'any'), /*#__PURE__*/t.param('event', 'any'));
 var StreamCallback = /*#__PURE__*/t.func('void', /*#__PURE__*/t.param('model', 'IStreamModel'));
-var ValueStreamCallback = /*#__PURE__*/t.func('void', /*#__PURE__*/t.param('value', 'IValue'), /*#__PURE__*/t.param('data', 'string'), /*#__PURE__*/t.param('timestamp', 'string'));
-var RefreshStreamCallback = /*#__PURE__*/t.func('void', /*#__PURE__*/t.param('value', 'IValue'), /*#__PURE__*/t.param('origin', /*#__PURE__*/t.union( /*#__PURE__*/t.lit('user'), /*#__PURE__*/t.lit('period'))));
+var ValueStreamCallback = /*#__PURE__*/t.func('void', /*#__PURE__*/t.param('value', 'IValueBase'), /*#__PURE__*/t.param('data', 'string'), /*#__PURE__*/t.param('timestamp', 'string'));
+var RefreshStreamCallback = /*#__PURE__*/t.func('void', /*#__PURE__*/t.param('value', 'IValueBase'), /*#__PURE__*/t.param('origin', /*#__PURE__*/t.union( /*#__PURE__*/t.lit('user'), /*#__PURE__*/t.lit('period'))));
 var exportedTypeSuite = {
   ValidationType: ValidationType,
   IConfig: IConfig,
@@ -313,12 +308,14 @@ var exportedTypeSuite = {
   IPermissionModelFunc: IPermissionModelFunc,
   ValuePermission: ValuePermission,
   IValue: IValue,
+  IValueBase: IValueBase,
+  IValueNumberBase: IValueNumberBase,
+  IValueStringBlobBase: IValueStringBlobBase,
+  IValueXmlBase: IValueXmlBase,
   IValueNumber: IValueNumber,
   IValueString: IValueString,
   IValueBlob: IValueBlob,
   IValueXml: IValueXml,
-  ValueTemplateType: ValueTemplateType,
-  IValueTemplate: IValueTemplate,
   IValueFunc: IValueFunc,
   StateType: StateType,
   StateStatus: StateStatus,
@@ -398,10 +395,11 @@ function config(param) {
 }
 
 var ValueTemplate = function ValueTemplate() {};
-ValueTemplate.version = '0.0.2';
+ValueTemplate.version = '0.0.3';
 ValueTemplate.BOOLEAN_TRUEFALSE = {
-  value_type: 'number',
   type: 'boolean',
+  name: '',
+  permission: 'r',
   number: {
     mapping: {
       '0': 'false',
@@ -417,8 +415,9 @@ ValueTemplate.BOOLEAN_TRUEFALSE = {
   }
 };
 ValueTemplate.BOOLEAN_ONOFF = {
-  value_type: 'number',
   type: 'boolean',
+  name: '',
+  permission: 'r',
   number: {
     mapping: {
       '0': 'off',
@@ -434,8 +433,9 @@ ValueTemplate.BOOLEAN_ONOFF = {
   }
 };
 ValueTemplate.VOLTAGE_V = {
-  value_type: 'number',
   type: 'voltage',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -448,8 +448,9 @@ ValueTemplate.VOLTAGE_V = {
   }
 };
 ValueTemplate.POWER_WATT = {
-  value_type: 'number',
   type: 'power',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -462,8 +463,9 @@ ValueTemplate.POWER_WATT = {
   }
 };
 ValueTemplate.POWER_KW = {
-  value_type: 'number',
   type: 'power',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -476,8 +478,9 @@ ValueTemplate.POWER_KW = {
   }
 };
 ValueTemplate.ENERGY_WH = {
-  value_type: 'number',
   type: 'energy',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -490,8 +493,9 @@ ValueTemplate.ENERGY_WH = {
   }
 };
 ValueTemplate.ENERGY_KWH = {
-  value_type: 'number',
   type: 'energy',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -504,8 +508,9 @@ ValueTemplate.ENERGY_KWH = {
   }
 };
 ValueTemplate.TEMPERATURE_CELSIUS = {
-  value_type: 'number',
   type: 'temperature',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -518,8 +523,9 @@ ValueTemplate.TEMPERATURE_CELSIUS = {
   }
 };
 ValueTemplate.TEMPERATURE_FAHRENHEIT = {
-  value_type: 'number',
   type: 'temperature',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -532,8 +538,9 @@ ValueTemplate.TEMPERATURE_FAHRENHEIT = {
   }
 };
 ValueTemplate.TEMPERATURE_KELVIN = {
-  value_type: 'number',
   type: 'temperature',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -546,8 +553,9 @@ ValueTemplate.TEMPERATURE_KELVIN = {
   }
 };
 ValueTemplate.ANGLE = {
-  value_type: 'number',
   type: 'angle',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -560,8 +568,9 @@ ValueTemplate.ANGLE = {
   }
 };
 ValueTemplate.PERCENTAGE = {
-  value_type: 'number',
   type: 'percentage',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -574,8 +583,9 @@ ValueTemplate.PERCENTAGE = {
   }
 };
 ValueTemplate.SPEED_MS = {
-  value_type: 'number',
   type: 'speed',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -588,8 +598,9 @@ ValueTemplate.SPEED_MS = {
   }
 };
 ValueTemplate.PRECIPITATION_MM = {
-  value_type: 'number',
   type: 'precipitation',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -602,8 +613,9 @@ ValueTemplate.PRECIPITATION_MM = {
   }
 };
 ValueTemplate.HUMIDITY = {
-  value_type: 'number',
   type: 'relative_humidity',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -616,8 +628,9 @@ ValueTemplate.HUMIDITY = {
   }
 };
 ValueTemplate.CO2_PPM = {
-  value_type: 'number',
   type: 'co2',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -630,8 +643,9 @@ ValueTemplate.CO2_PPM = {
   }
 };
 ValueTemplate.CONCENTRATION_PPM = {
-  value_type: 'number',
   type: 'concentration',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -644,7 +658,8 @@ ValueTemplate.CONCENTRATION_PPM = {
   }
 };
 ValueTemplate.PRESSURE_HPA = {
-  value_type: 'number',
+  name: '',
+  permission: 'r',
   type: 'pressure',
   number: {
     mapping: undefined,
@@ -658,16 +673,18 @@ ValueTemplate.PRESSURE_HPA = {
   }
 };
 ValueTemplate.TIMESTAMP = {
-  value_type: 'string',
   type: 'timestamp',
+  name: '',
+  permission: 'r',
   string: {
     max: 27,
     encoding: 'ISO 8601'
   }
 };
 ValueTemplate.DISTANCE_M = {
-  value_type: 'number',
   type: 'distance',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -680,8 +697,9 @@ ValueTemplate.DISTANCE_M = {
   }
 };
 ValueTemplate.LUMINOUSITY_LX = {
-  value_type: 'number',
   type: 'luminousity',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -694,24 +712,27 @@ ValueTemplate.LUMINOUSITY_LX = {
   }
 };
 ValueTemplate.COLOR_HEX = {
-  value_type: 'blob',
   type: 'color',
+  name: '',
+  permission: 'r',
   blob: {
     max: 6,
     encoding: 'hex'
   }
 };
 ValueTemplate.COLOR_INT = {
-  value_type: 'blob',
   type: 'color',
+  name: '',
+  permission: 'r',
   blob: {
     max: 8,
     encoding: 'integer'
   }
 };
 ValueTemplate.COLOR_TEMPERATURE = {
-  value_type: 'number',
   type: 'color_temperature',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -724,16 +745,18 @@ ValueTemplate.COLOR_TEMPERATURE = {
   }
 };
 ValueTemplate.IMAGE_JPG = {
-  value_type: 'blob',
   type: 'image',
+  name: '',
+  permission: 'r',
   blob: {
     max: 255,
     encoding: 'base64'
   }
 };
 ValueTemplate.LATITUDE = {
-  value_type: 'number',
   type: 'latitude',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -746,8 +769,9 @@ ValueTemplate.LATITUDE = {
   }
 };
 ValueTemplate.LONGITUDE = {
-  value_type: 'number',
   type: 'longitude',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -760,8 +784,9 @@ ValueTemplate.LONGITUDE = {
   }
 };
 ValueTemplate.ALTITUDE_M = {
-  value_type: 'number',
   type: 'altitude',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -774,31 +799,35 @@ ValueTemplate.ALTITUDE_M = {
   }
 };
 ValueTemplate.STREET = {
-  value_type: 'string',
   type: 'street',
+  name: '',
+  permission: 'r',
   string: {
     max: 85,
     encoding: ''
   }
 };
 ValueTemplate.CITY = {
-  value_type: 'string',
   type: 'city',
+  name: '',
+  permission: 'r',
   string: {
     max: 85,
     encoding: ''
   }
 };
 ValueTemplate.POSTCODE = {
-  value_type: 'string',
   type: 'postcode',
+  name: '',
+  permission: 'r',
   string: {
     max: 10,
     encoding: ''
   }
 };
 ValueTemplate.COUNTRY = {
-  value_type: 'string',
+  name: '',
+  permission: 'r',
   type: 'country',
   string: {
     max: 56,
@@ -806,40 +835,45 @@ ValueTemplate.COUNTRY = {
   }
 };
 ValueTemplate.COUNTRY_CODE = {
-  value_type: 'string',
   type: 'country_code',
+  name: '',
+  permission: 'r',
   string: {
     max: 2,
     encoding: 'ISO 3166-1 Alpha-2'
   }
 };
 ValueTemplate.ADDRESS_NAME = {
-  value_type: 'string',
   type: 'address_name',
+  name: '',
+  permission: 'r',
   string: {
     max: 85,
     encoding: ''
   }
 };
 ValueTemplate.ORGANISATION = {
-  value_type: 'string',
   type: 'organisation',
+  name: '',
+  permission: 'r',
   string: {
     max: 85,
     encoding: ''
   }
 };
 ValueTemplate.IDENTIFIER = {
-  value_type: 'string',
   type: 'identifier',
+  name: '',
+  permission: 'r',
   string: {
     max: 50,
     encoding: ''
   }
 };
 ValueTemplate.NUMBER = {
-  value_type: 'number',
   type: 'number',
+  name: '',
+  permission: 'r',
   number: {
     mapping: undefined,
     ordered_mapping: undefined,
@@ -852,24 +886,27 @@ ValueTemplate.NUMBER = {
   }
 };
 ValueTemplate.STRING = {
-  value_type: 'string',
   type: 'string',
+  name: '',
+  permission: 'r',
   string: {
     max: 64,
     encoding: ''
   }
 };
 ValueTemplate.BLOB = {
-  value_type: 'blob',
   type: 'blob',
+  name: '',
+  permission: 'r',
   blob: {
     max: 280,
     encoding: 'base64'
   }
 };
 ValueTemplate.XML = {
-  value_type: 'xml',
   type: 'xml',
+  name: '',
+  permission: 'r',
   xml: {
     xsd: '',
     namespace: ''
@@ -992,26 +1029,28 @@ var wappsto = /*#__PURE__*/axios.create({
   }
 });
 function getErrorResponse(error) {
+  var _a;
   /* istanbul ignore next */
-  if (axios.isAxiosError(error)) {
-    var _error$response;
 
-    return error == null ? void 0 : (_error$response = error.response) == null ? void 0 : _error$response.data;
+
+  if (axios.isAxiosError(error)) {
+    return (_a = error === null || error === void 0 ? void 0 : error.response) === null || _a === void 0 ? void 0 : _a.data;
   } else {
     return error;
   }
 }
 
 function getErrorMessage(error) {
+  var _a;
   /* istanbul ignore next */
+
+
   if (error.errno && error.errno === -111) {
     return "Failed to connect to " + error.address;
   }
 
   if (error.response) {
-    var _error$response$data;
-
-    if ((_error$response$data = error.response.data) != null && _error$response$data.code) {
+    if ((_a = error.response.data) === null || _a === void 0 ? void 0 : _a.code) {
       switch (error.response.data.code) {
         case 507000000:
           return 'Timeout, waiting for response on extsync request';
@@ -1087,42 +1126,6 @@ function startLogging() {
 }
 function stopLogging() {
   Object.assign(console, defaultConsole);
-}
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
-  try {
-    var info = gen[key](arg);
-    var value = info.value;
-  } catch (error) {
-    reject(error);
-    return;
-  }
-
-  if (info.done) {
-    resolve(value);
-  } else {
-    Promise.resolve(value).then(_next, _throw);
-  }
-}
-
-function _asyncToGenerator(fn) {
-  return function () {
-    var self = this,
-        args = arguments;
-    return new Promise(function (resolve, reject) {
-      var gen = fn.apply(self, args);
-
-      function _next(value) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
-      }
-
-      function _throw(err) {
-        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
-      }
-
-      _next(undefined);
-    });
-  };
 }
 
 function _defineProperties(target, props) {
@@ -2058,6 +2061,37 @@ function trace(parent) {
   _trace(parent, 'pending');
 }
 
+var __awaiter$c = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var Model = /*#__PURE__*/function () {
   function Model(type, version) {
     if (version === void 0) {
@@ -2065,7 +2099,6 @@ var Model = /*#__PURE__*/function () {
     }
 
     this.meta = {};
-    this.parent = void 0;
     this.meta.type = type;
     this.meta.version = version;
   }
@@ -2121,8 +2154,12 @@ var Model = /*#__PURE__*/function () {
     return this.url();
   };
 
-  _proto._create = /*#__PURE__*/function () {
-    var _create2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(params) {
+  _proto._create = function _create(params) {
+    if (params === void 0) {
+      params = {};
+    }
+
+    return __awaiter$c(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
       var valid,
           response,
           _args = arguments;
@@ -2130,14 +2167,10 @@ var Model = /*#__PURE__*/function () {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (params === void 0) {
-                params = {};
-              }
-
               Model.validateMethod('Model', 'create', _args);
 
               if (!this.parent) {
-                _context.next = 7;
+                _context.next = 6;
                 break;
               }
 
@@ -2150,81 +2183,69 @@ var Model = /*#__PURE__*/function () {
               /* istanbul ignore next */
 
               if (valid) {
-                _context.next = 7;
+                _context.next = 6;
                 break;
               }
 
               throw new Error("Can't create a child under a parent that do not have an ID");
 
-            case 7:
-              _context.next = 9;
+            case 6:
+              _context.next = 8;
               return wappsto.post(this.getUrl(), this.toJSON(), Model.generateOptions(params));
 
-            case 9:
+            case 8:
               response = _context.sent;
               this.perserve();
               this.parse(response.data);
               this.restore();
 
-            case 13:
+            case 12:
             case "end":
               return _context.stop();
           }
         }
       }, _callee, this);
     }));
+  };
 
-    function _create(_x) {
-      return _create2.apply(this, arguments);
+  _proto.create = function create(params) {
+    if (params === void 0) {
+      params = {};
     }
 
-    return _create;
-  }();
-
-  _proto.create = /*#__PURE__*/function () {
-    var _create3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(params) {
+    return __awaiter$c(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
       var _args2 = arguments;
       return _regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              if (params === void 0) {
-                params = {};
-              }
-
               Model.validateMethod('Model', 'create', _args2);
-              _context2.prev = 2;
-              _context2.next = 5;
+              _context2.prev = 1;
+              _context2.next = 4;
               return this._create(params);
 
-            case 5:
-              _context2.next = 10;
+            case 4:
+              _context2.next = 9;
               break;
 
-            case 7:
-              _context2.prev = 7;
-              _context2.t0 = _context2["catch"](2);
+            case 6:
+              _context2.prev = 6;
+              _context2.t0 = _context2["catch"](1);
 
               /* istanbul ignore next */
               printHttpError(_context2.t0);
 
-            case 10:
+            case 9:
             case "end":
               return _context2.stop();
           }
         }
-      }, _callee2, this, [[2, 7]]);
+      }, _callee2, this, [[1, 6]]);
     }));
+  };
 
-    function create(_x2) {
-      return _create3.apply(this, arguments);
-    }
-
-    return create;
-  }();
-
-  _proto.update = /*#__PURE__*/function () {
-    var _update = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
+  _proto.update = function update() {
+    return __awaiter$c(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
       var response;
       return _regeneratorRuntime.wrap(function _callee3$(_context3) {
         while (1) {
@@ -2254,16 +2275,10 @@ var Model = /*#__PURE__*/function () {
         }
       }, _callee3, this, [[0, 7]]);
     }));
+  };
 
-    function update() {
-      return _update.apply(this, arguments);
-    }
-
-    return update;
-  }();
-
-  _proto.reload = /*#__PURE__*/function () {
-    var _reload = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
+  _proto.reload = function reload() {
+    return __awaiter$c(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
       var response;
       return _regeneratorRuntime.wrap(function _callee4$(_context4) {
         while (1) {
@@ -2293,18 +2308,12 @@ var Model = /*#__PURE__*/function () {
         }
       }, _callee4, this, [[0, 7]]);
     }));
+  };
 
-    function reload() {
-      return _reload.apply(this, arguments);
-    }
+  _proto["delete"] = function _delete() {
+    var _a;
 
-    return reload;
-  }();
-
-  _proto["delete"] = /*#__PURE__*/function () {
-    var _delete2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
-      var _this$parent;
-
+    return __awaiter$c(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
       return _regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
@@ -2314,7 +2323,7 @@ var Model = /*#__PURE__*/function () {
               return wappsto["delete"](this.getUrl(), Model.generateOptions());
 
             case 3:
-              (_this$parent = this.parent) == null ? void 0 : _this$parent.removeChild(this);
+              (_a = this.parent) === null || _a === void 0 ? void 0 : _a.removeChild(this);
               this.meta.id = undefined;
               _context5.next = 10;
               break;
@@ -2333,13 +2342,7 @@ var Model = /*#__PURE__*/function () {
         }
       }, _callee5, this, [[0, 7]]);
     }));
-
-    function _delete() {
-      return _delete2.apply(this, arguments);
-    }
-
-    return _delete;
-  }();
+  };
 
   _proto.parse = function parse(json) {
     Model.validateMethod('Model', 'parse', arguments);
@@ -2446,8 +2449,8 @@ var Model = /*#__PURE__*/function () {
 }();
 Model.checker = /*#__PURE__*/createCheckers(exportedTypeSuite);
 
-Model.fetch = /*#__PURE__*/function () {
-  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(endpoint, params, throwError) {
+Model.fetch = function (endpoint, params, throwError) {
+  return __awaiter$c(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee6() {
     var res, response, msg;
     return _regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
@@ -2462,7 +2465,7 @@ Model.fetch = /*#__PURE__*/function () {
           case 5:
             response = _context6.sent;
 
-            if (response != null && response.data) {
+            if (response === null || response === void 0 ? void 0 : response.data) {
               if (isArray(response.data)) {
                 res = response.data;
               } else if (response.data) {
@@ -2495,43 +2498,28 @@ Model.fetch = /*#__PURE__*/function () {
       }
     }, _callee6, null, [[2, 9]]);
   }));
-
-  return function (_x3, _x4, _x5) {
-    return _ref.apply(this, arguments);
-  };
-}();
+};
 
 var Notification = /*#__PURE__*/function (_Model) {
   _inheritsLoose(Notification, _Model);
 
   function Notification() {
-    var _this;
-
-    _this = _Model.call(this, 'notification', '2.1') || this;
-    _this.read = void 0;
-    _this.base = void 0;
-    _this.custom = void 0;
-    _this.times = void 0;
-    _this.timestamp = void 0;
-    _this.identifier = void 0;
-    return _this;
+    return _Model.call(this, 'notification', '2.1') || this;
   }
 
   var _proto = Notification.prototype;
 
   _proto.getIds = function getIds() {
-    var _this$base;
+    var _a, _b, _c;
 
     var ids = [];
 
-    if ((_this$base = this.base) != null && _this$base.ids) {
+    if ((_a = this.base) === null || _a === void 0 ? void 0 : _a.ids) {
       ids = this.base.ids;
     }
 
     if (ids.length === 0) {
-      var _this$custom, _this$custom$data;
-
-      if ((_this$custom = this.custom) != null && (_this$custom$data = _this$custom.data) != null && _this$custom$data.selected) {
+      if ((_c = (_b = this.custom) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.selected) {
         ids = this.custom.data.selected.map(function (m) {
           return m.meta.id;
         });
@@ -2545,6 +2533,37 @@ var Notification = /*#__PURE__*/function (_Model) {
 }(Model);
 Notification.endpoint = '/2.1/notification';
 
+var __awaiter$b = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 var WebSocket = /*#__PURE__*/require('universal-websocket-client');
@@ -2570,7 +2589,6 @@ var Stream = /*#__PURE__*/function (_Model) {
     var _this2;
 
     _this2 = _Model.call(this, 'stream', '2.1') || this;
-    _this2.socket = void 0;
     _this2.websocketUrl = '';
     _this2.ignoreReconnect = false;
     _this2.models = {};
@@ -2585,15 +2603,17 @@ var Stream = /*#__PURE__*/function (_Model) {
       1: []
     };
 
-    _this2.onRequestHandler = /*#__PURE__*/function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(event) {
+    _this2.onRequestHandler = function (event) {
+      return __awaiter$b(_assertThisInitialized(_this2), void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+        var _this3 = this;
+
         var res, handlers, i, p;
         return _regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.prev = 0;
-                handlers = _this2.onRequestHandlers[Number(event.uri === 'extsync/')];
+                handlers = this.onRequestHandlers[Number(event.uri === 'extsync/')];
                 i = 0;
 
               case 3:
@@ -2609,8 +2629,7 @@ var Stream = /*#__PURE__*/function (_Model) {
                 } catch (err) {
                   if (!(err instanceof IgnoreError)) {
                     printError(err);
-
-                    _this2.sendResponse(event, 400, {
+                    this.sendResponse(event, 400, {
                       error: err.message
                     });
                   }
@@ -2627,12 +2646,12 @@ var Stream = /*#__PURE__*/function (_Model) {
                 }
 
                 p.then(function (res) {
-                  _this2.sendResponse(event, 200, res);
+                  _this3.sendResponse(event, 200, res);
                 })["catch"](function (err) {
                   if (!(err instanceof IgnoreError)) {
                     printError(err);
 
-                    _this2.sendResponse(event, 400, {
+                    _this3.sendResponse(event, 400, {
                       error: err.message
                     });
                   }
@@ -2643,7 +2662,7 @@ var Stream = /*#__PURE__*/function (_Model) {
                 res = p;
 
               case 13:
-                _this2.sendResponse(event, 200, res);
+                this.sendResponse(event, 200, res);
 
               case 14:
                 i++;
@@ -2657,9 +2676,7 @@ var Stream = /*#__PURE__*/function (_Model) {
               case 19:
                 _context.prev = 19;
                 _context.t0 = _context["catch"](0);
-
-                _this2.sendResponse(event, 501, _context.t0);
-
+                this.sendResponse(event, 501, _context.t0);
                 printError('An error happend when calling request handler');
                 printError(JSON.stringify(_context.t0));
 
@@ -2671,13 +2688,9 @@ var Stream = /*#__PURE__*/function (_Model) {
                 return _context.stop();
             }
           }
-        }, _callee, null, [[0, 19]]);
+        }, _callee, this, [[0, 19]]);
       }));
-
-      return function (_x) {
-        return _ref.apply(this, arguments);
-      };
-    }();
+    };
 
     _this2.websocketUrl = "" + baseUrl;
 
@@ -2715,43 +2728,43 @@ var Stream = /*#__PURE__*/function (_Model) {
   };
 
   _proto.open = function open() {
-    var _this3 = this;
+    var _this4 = this;
 
     return new Promise(function (resolve) {
-      if (_this3.socket) {
+      if (_this4.socket) {
         resolve();
         return;
       } else {
-        if (_this3.opened) {
-          _this3.waiting.push(resolve);
+        if (_this4.opened) {
+          _this4.waiting.push(resolve);
 
           return;
         }
       }
 
-      _this3.opened = true;
-      printDebug("Open WebSocket on " + _this3.websocketUrl);
-      _this3.ignoreReconnect = false;
+      _this4.opened = true;
+      printDebug("Open WebSocket on " + _this4.websocketUrl);
+      _this4.ignoreReconnect = false;
       var openTimeout = setTimeout(function () {
         /* istanbul ignore next */
-        _this3.reconnect();
-      }, 1000 + _this3.getTimeout());
-      var socket = new WebSocket(_this3.websocketUrl);
+        _this4.reconnect();
+      }, 1000 + _this4.getTimeout());
+      var socket = new WebSocket(_this4.websocketUrl);
 
       if (socket) {
         socket.onopen = function () {
-          _this3.socket = socket;
+          _this4.socket = socket;
           clearTimeout(openTimeout);
 
-          _this3.addListeners();
+          _this4.addListeners();
 
           resolve();
 
-          _this3.waiting.forEach(function (r) {
+          _this4.waiting.forEach(function (r) {
             r();
           });
 
-          _this3.waiting = [];
+          _this4.waiting = [];
         };
       }
     });
@@ -2792,7 +2805,7 @@ var Stream = /*#__PURE__*/function (_Model) {
   };
 
   _proto.subscribe = function subscribe(model) {
-    var _this4 = this;
+    var _this5 = this;
 
     this.validate('subscribe', arguments);
 
@@ -2805,7 +2818,7 @@ var Stream = /*#__PURE__*/function (_Model) {
       this.open().then(function () {
         printDebug("Add subscription: " + model.path());
 
-        _this4.addSubscription(model.path());
+        _this5.addSubscription(model.path());
       });
       return true;
     }
@@ -2827,8 +2840,8 @@ var Stream = /*#__PURE__*/function (_Model) {
     }
   };
 
-  _proto.sendInternal = /*#__PURE__*/function () {
-    var _sendInternal = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(type) {
+  _proto.sendInternal = function sendInternal(type) {
+    return __awaiter$b(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
       var _args2 = arguments;
       return _regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
@@ -2848,13 +2861,7 @@ var Stream = /*#__PURE__*/function (_Model) {
         }
       }, _callee2, this);
     }));
-
-    function sendInternal(_x2) {
-      return _sendInternal.apply(this, arguments);
-    }
-
-    return sendInternal;
-  }();
+  };
 
   _proto.subscribeInternal = function subscribeInternal(type, handler) {
     this.validate('subscribeInternal', arguments);
@@ -2877,7 +2884,7 @@ var Stream = /*#__PURE__*/function (_Model) {
   };
 
   _proto.subscribeService = function subscribeService(service, handler) {
-    var _this5 = this;
+    var _this6 = this;
 
     this.validate('subscribeService', arguments);
     this.open().then(function () {
@@ -2885,15 +2892,15 @@ var Stream = /*#__PURE__*/function (_Model) {
         service = '/' + service;
       }
 
-      if (!_this5.services[service]) {
-        _this5.services[service] = [];
+      if (!_this6.services[service]) {
+        _this6.services[service] = [];
       }
 
-      _this5.services[service].push(handler);
+      _this6.services[service].push(handler);
 
       printDebug("Add service subscription: " + service);
 
-      _this5.addSubscription(service);
+      _this6.addSubscription(service);
     });
   };
 
@@ -2918,22 +2925,22 @@ var Stream = /*#__PURE__*/function (_Model) {
   };
 
   _proto.addSignalHandler = function addSignalHandler(type, handler) {
-    var _this6 = this;
+    var _this7 = this;
 
     this.validate('addSignalHandler', arguments);
     this.open().then(function () {
       printDebug("Add Signal Handler: " + type);
 
-      if (!_this6.handlers[type]) {
-        _this6.handlers[type] = [];
+      if (!_this7.handlers[type]) {
+        _this7.handlers[type] = [];
       }
 
-      _this6.handlers[type].push(handler);
+      _this7.handlers[type].push(handler);
     });
   };
 
-  _proto.sendEvent = /*#__PURE__*/function () {
-    var _sendEvent = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(type, msg) {
+  _proto.sendEvent = function sendEvent(type, msg) {
+    return __awaiter$b(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
       var result,
           data,
           response,
@@ -2975,21 +2982,15 @@ var Stream = /*#__PURE__*/function (_Model) {
         }
       }, _callee3, this, [[2, 10]]);
     }));
+  };
 
-    function sendEvent(_x3, _x4) {
-      return _sendEvent.apply(this, arguments);
-    }
+  _proto.sendRequest = function sendRequest(msg) {
+    var _a;
 
-    return sendEvent;
-  }();
-
-  _proto.sendRequest = /*#__PURE__*/function () {
-    var _sendRequest = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(msg) {
+    return __awaiter$b(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
       var result,
           response,
-          _e$response$data,
           _args4 = arguments;
-
       return _regeneratorRuntime.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
@@ -3011,7 +3012,7 @@ var Stream = /*#__PURE__*/function (_Model) {
               _context4.t0 = _context4["catch"](2);
 
               /* 1istanbul ignore next */
-              if ((_e$response$data = _context4.t0.response.data) != null && _e$response$data.code) {
+              if ((_a = _context4.t0.response.data) === null || _a === void 0 ? void 0 : _a.code) {
                 printHttpError(_context4.t0);
               } else {
                 result = _context4.t0.response.data;
@@ -3027,20 +3028,14 @@ var Stream = /*#__PURE__*/function (_Model) {
         }
       }, _callee4, this, [[2, 9]]);
     }));
+  };
 
-    function sendRequest(_x5) {
-      return _sendRequest.apply(this, arguments);
-    }
+  _proto.sendResponse = function sendResponse(event, code, msg) {
+    var _a;
 
-    return sendRequest;
-  }();
-
-  _proto.sendResponse = /*#__PURE__*/function () {
-    var _sendResponse = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(event, code, msg) {
-      var _event$meta,
-          data,
+    return __awaiter$b(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
+      var data,
           _args5 = arguments;
-
       return _regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
@@ -3052,7 +3047,7 @@ var Stream = /*#__PURE__*/function (_Model) {
                 body: msg
               };
               _context5.next = 5;
-              return wappsto.patch("/2.0/extsync/response/" + (event == null ? void 0 : (_event$meta = event.meta) == null ? void 0 : _event$meta.id), data);
+              return wappsto.patch("/2.0/extsync/response/" + ((_a = event === null || event === void 0 ? void 0 : event.meta) === null || _a === void 0 ? void 0 : _a.id), data);
 
             case 5:
               _context5.next = 10;
@@ -3072,13 +3067,7 @@ var Stream = /*#__PURE__*/function (_Model) {
         }
       }, _callee5, this, [[1, 7]]);
     }));
-
-    function sendResponse(_x6, _x7, _x8) {
-      return _sendResponse.apply(this, arguments);
-    }
-
-    return sendResponse;
-  }();
+  };
 
   _proto.onRequest = function onRequest(handler, internal) {
     this.validate('onRequest', arguments);
@@ -3104,23 +3093,23 @@ var Stream = /*#__PURE__*/function (_Model) {
   };
 
   _proto.reconnect = function reconnect() {
-    var _this7 = this;
+    var _this8 = this;
 
     this.backoff++;
     printDebug("Stream Reconnecting for the " + this.backoff + " times");
     this.close();
     this.open().then(function () {
-      _this7.sendMessage('PATCH', '/services/2.1/websocket/open', {
-        subscription: _this7.subscriptions
+      _this8.sendMessage('PATCH', '/services/2.1/websocket/open', {
+        subscription: _this8.subscriptions
       });
     });
   };
 
   _proto.handleEvent = function handleEvent(type, event) {
-    var _this$handlers$type;
+    var _a;
 
     printDebug("Handle Event: " + type);
-    (_this$handlers$type = this.handlers[type]) == null ? void 0 : _this$handlers$type.forEach(function (handler) {
+    (_a = this.handlers[type]) === null || _a === void 0 ? void 0 : _a.forEach(function (handler) {
       handler(event);
     });
   };
@@ -3134,7 +3123,7 @@ var Stream = /*#__PURE__*/function (_Model) {
   };
 
   _proto.handleMessage = function handleMessage(type, event) {
-    var _this8 = this;
+    var _this9 = this;
 
     var paths = [];
     var services = [];
@@ -3171,23 +3160,23 @@ var Stream = /*#__PURE__*/function (_Model) {
     }
 
     paths.forEach(function (path) {
-      var _this8$models$path;
+      var _a;
 
-      (_this8$models$path = _this8.models[path]) == null ? void 0 : _this8$models$path.forEach(function (model) {
+      (_a = _this9.models[path]) === null || _a === void 0 ? void 0 : _a.forEach(function (model) {
         model.handleStream(event);
       });
     });
     services.forEach(function (path) {
-      var tmpList = _this8.services[path];
-      tmpList == null ? void 0 : tmpList.forEach(function (callback) {
+      var tmpList = _this9.services[path];
+      tmpList === null || tmpList === void 0 ? void 0 : tmpList.forEach(function (callback) {
         var p = callback(event);
 
         if (p) {
           if (p === true) {
-            _this8.filterCallback(callback, path, p);
+            _this9.filterCallback(callback, path, p);
           } else {
             p.then(function (res) {
-              _this8.filterCallback(callback, path, res);
+              _this9.filterCallback(callback, path, res);
             });
           }
         }
@@ -3196,11 +3185,11 @@ var Stream = /*#__PURE__*/function (_Model) {
   };
 
   _proto.sendMessage = function sendMessage(method, url, body) {
-    var _this$socket;
-
     if (body === void 0) {
       body = undefined;
     }
+
+    var _a;
 
     var hash = {
       jsonrpc: '2.0',
@@ -3217,11 +3206,11 @@ var Stream = /*#__PURE__*/function (_Model) {
     }
 
     printDebug("Sending a " + method + " message to " + url + ": " + JSON.stringify(hash));
-    (_this$socket = this.socket) == null ? void 0 : _this$socket.send(JSON.stringify(hash));
+    (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(JSON.stringify(hash));
   };
 
   _proto.addListeners = function addListeners() {
-    var _this9 = this;
+    var _this10 = this;
 
     if (!this.socket) {
       /* istanbul ignore next */
@@ -3230,8 +3219,8 @@ var Stream = /*#__PURE__*/function (_Model) {
 
     var reconnect = function reconnect() {
       setTimeout(function () {
-        _this9.reconnect();
-      }, _this9.getTimeout());
+        _this10.reconnect();
+      }, _this10.getTimeout());
     };
 
     this.socket.onmessage = function (ev) {
@@ -3255,7 +3244,7 @@ var Stream = /*#__PURE__*/function (_Model) {
       if (message.jsonrpc) {
         if (message.result) {
           if (message.result.value !== true) {
-            _this9.backoff = 1;
+            _this10.backoff = 1;
           }
 
           printDebug("Stream rpc " + message.id + " result: " + JSON.stringify(message.result.value));
@@ -3275,25 +3264,25 @@ var Stream = /*#__PURE__*/function (_Model) {
       }
 
       messages.forEach(function (msg) {
-        var _msg$meta_object;
+        var _a;
 
         printDebug("Stream message: " + JSON.stringify(msg));
 
-        if (((_msg$meta_object = msg.meta_object) == null ? void 0 : _msg$meta_object.type) === 'extsync') {
+        if (((_a = msg.meta_object) === null || _a === void 0 ? void 0 : _a.type) === 'extsync') {
           var newData = msg.extsync || msg.data;
 
           if (newData.request) {
-            _this9.handleMessage('extsync/request', newData);
+            _this10.handleMessage('extsync/request', newData);
           } else if (newData.uri !== 'extsync/wappsto/editor/console') {
-            _this9.handleMessage('extsync', newData);
+            _this10.handleMessage('extsync', newData);
           }
 
           return;
         }
 
-        _this9.checkAndSendTrace(msg);
+        _this10.checkAndSendTrace(msg);
 
-        _this9.handleMessage('message', msg);
+        _this10.handleMessage('message', msg);
 
         clearTrace('ok');
       });
@@ -3301,16 +3290,16 @@ var Stream = /*#__PURE__*/function (_Model) {
 
     this.socket.onerror = function (event) {
       try {
-        _this9.handleEvent('error', event);
+        _this10.handleEvent('error', event);
       } catch (e) {
         /* istanbul ignore next */
-        printError('Stream error: ' + _this9.websocketUrl);
+        printError('Stream error: ' + _this10.websocketUrl);
       }
     };
 
     this.socket.onclose = function (event) {
-      if (_this9.ignoreReconnect) {
-        _this9.handleEvent('close', event);
+      if (_this10.ignoreReconnect) {
+        _this10.handleEvent('close', event);
       } else {
         reconnect();
       }
@@ -3318,9 +3307,9 @@ var Stream = /*#__PURE__*/function (_Model) {
   };
 
   _proto.checkAndSendTrace = function checkAndSendTrace(event) {
-    var _event$meta2;
+    var _a;
 
-    if (event != null && (_event$meta2 = event.meta) != null && _event$meta2.trace) {
+    if ((_a = event === null || event === void 0 ? void 0 : event.meta) === null || _a === void 0 ? void 0 : _a.trace) {
       trace(event.meta.trace);
     }
   };
@@ -3329,14 +3318,41 @@ var Stream = /*#__PURE__*/function (_Model) {
 }(Model);
 Stream.endpoint = '/2.1/stream';
 
+var __awaiter$a = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var openStream = /*#__PURE__*/new Stream();
 
-function sendRequest(_x, _x2) {
-  return _sendRequest.apply(this, arguments);
-}
-
-function _sendRequest() {
-  _sendRequest = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(type, msg) {
+function sendRequest(type, msg) {
+  return __awaiter$a(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
     var data;
     return _regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -3359,15 +3375,10 @@ function _sendRequest() {
       }
     }, _callee);
   }));
-  return _sendRequest.apply(this, arguments);
 }
 
-function sendToForeground(_x3) {
-  return _sendToForeground.apply(this, arguments);
-}
-
-function _sendToForeground() {
-  _sendToForeground = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(msg) {
+function sendToForeground(msg) {
+  return __awaiter$a(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
     return _regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -3381,15 +3392,9 @@ function _sendToForeground() {
       }
     }, _callee2);
   }));
-  return _sendToForeground.apply(this, arguments);
 }
-
-function sendToBackground(_x4) {
-  return _sendToBackground.apply(this, arguments);
-}
-
-function _sendToBackground() {
-  _sendToBackground = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(msg) {
+function sendToBackground(msg) {
+  return __awaiter$a(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
     return _regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -3403,17 +3408,11 @@ function _sendToBackground() {
       }
     }, _callee3);
   }));
-  return _sendToBackground.apply(this, arguments);
 }
-
 var request_handlers = {};
 
-function _handleRequest(_x5) {
-  return _handleRequest2.apply(this, arguments);
-}
-
-function _handleRequest2() {
-  _handleRequest2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(event) {
+function _handleRequest(event) {
+  return __awaiter$a(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
     var data;
     return _regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
@@ -3453,7 +3452,6 @@ function _handleRequest2() {
       }
     }, _callee4, null, [[1, 5]]);
   }));
-  return _handleRequest2.apply(this, arguments);
 }
 
 function handleRequest(type, callback) {
@@ -3498,6 +3496,37 @@ function cancelFromForeground() {
   cancelFrom('foreground');
 }
 
+var __awaiter$9 = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var PermissionModel = /*#__PURE__*/function (_Model) {
   _inheritsLoose(PermissionModel, _Model);
 
@@ -3511,16 +3540,18 @@ var PermissionModel = /*#__PURE__*/function (_Model) {
 
   var _proto = PermissionModel.prototype;
 
-  _proto.create = /*#__PURE__*/function () {
-    var _create = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
+  _proto.create = function create() {
+    return __awaiter$9(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
       var _this = this;
 
       return _regeneratorRuntime.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              return _context3.abrupt("return", new Promise( /*#__PURE__*/function () {
-                var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(resolve, reject) {
+              return _context3.abrupt("return", new Promise(function (resolve, reject) {
+                return __awaiter$9(_this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
+                  var _this2 = this;
+
                   var data;
                   return _regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
@@ -3528,7 +3559,7 @@ var PermissionModel = /*#__PURE__*/function (_Model) {
                         case 0:
                           _context2.prev = 0;
                           _context2.next = 3;
-                          return _this._create();
+                          return this._create();
 
                         case 3:
                           resolve();
@@ -3553,17 +3584,15 @@ var PermissionModel = /*#__PURE__*/function (_Model) {
                         case 13:
                           if (data.code === 400008 || data.code === 400013) {
                             printDebug('Requesting permission to add data to user');
-                            openStream.subscribeService('/notification', /*#__PURE__*/function () {
-                              var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(event) {
-                                var _event$meta_object;
-
-                                var _notification$0$base, notification;
+                            openStream.subscribeService('/notification', function (event) {
+                              return __awaiter$9(_this2, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+                                var _a, _b, notification;
 
                                 return _regeneratorRuntime.wrap(function _callee$(_context) {
                                   while (1) {
                                     switch (_context.prev = _context.next) {
                                       case 0:
-                                        if (!(((_event$meta_object = event.meta_object) == null ? void 0 : _event$meta_object.type) === 'notification')) {
+                                        if (!(((_a = event.meta_object) === null || _a === void 0 ? void 0 : _a.type) === 'notification')) {
                                           _context.next = 17;
                                           break;
                                         }
@@ -3579,7 +3608,7 @@ var PermissionModel = /*#__PURE__*/function (_Model) {
                                         return _context.abrupt("return");
 
                                       case 4:
-                                        if (!(((_notification$0$base = notification[0].base) == null ? void 0 : _notification$0$base.code) === 1100013)) {
+                                        if (!(((_b = notification[0].base) === null || _b === void 0 ? void 0 : _b.code) === 1100013)) {
                                           _context.next = 17;
                                           break;
                                         }
@@ -3587,7 +3616,7 @@ var PermissionModel = /*#__PURE__*/function (_Model) {
                                         _context.prev = 5;
                                         printDebug('Got permission to create data under users account');
                                         _context.next = 9;
-                                        return _this._create({
+                                        return this._create({
                                           identifier: 'request access to save data under users account'
                                         });
 
@@ -3614,13 +3643,9 @@ var PermissionModel = /*#__PURE__*/function (_Model) {
                                         return _context.stop();
                                     }
                                   }
-                                }, _callee, null, [[5, 13]]);
+                                }, _callee, this, [[5, 13]]);
                               }));
-
-                              return function (_x3) {
-                                return _ref2.apply(this, arguments);
-                              };
-                            }());
+                            });
                           } else {
                             /* istanbul ignore next */
                             printHttpError(_context2.t0);
@@ -3635,13 +3660,9 @@ var PermissionModel = /*#__PURE__*/function (_Model) {
                           return _context2.stop();
                       }
                     }
-                  }, _callee2, null, [[0, 6]]);
+                  }, _callee2, this, [[0, 6]]);
                 }));
-
-                return function (_x, _x2) {
-                  return _ref.apply(this, arguments);
-                };
-              }()));
+              }));
 
             case 1:
             case "end":
@@ -3650,26 +3671,20 @@ var PermissionModel = /*#__PURE__*/function (_Model) {
         }
       }, _callee3);
     }));
-
-    function create() {
-      return _create.apply(this, arguments);
-    }
-
-    return create;
-  }();
+  };
 
   return PermissionModel;
 }(Model);
 
-PermissionModel.request = /*#__PURE__*/function () {
-  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(endpoint, quantity, message, params) {
+PermissionModel.request = function (endpoint, quantity, message, params) {
+  return __awaiter$9(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee6() {
     return _regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
             Model.validateMethod('PermissionModel', 'request', [endpoint, quantity, message, params]);
-            return _context6.abrupt("return", new Promise( /*#__PURE__*/function () {
-              var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(resolve) {
+            return _context6.abrupt("return", new Promise(function (resolve) {
+              return __awaiter$9(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
                 var id, result;
                 return _regeneratorRuntime.wrap(function _callee5$(_context5) {
                   while (1) {
@@ -3696,17 +3711,15 @@ PermissionModel.request = /*#__PURE__*/function () {
                         }
 
                         printDebug("Waiting for permission to access users data: " + message);
-                        openStream.subscribeService('/notification', /*#__PURE__*/function () {
-                          var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(event) {
-                            var _event$meta_object2;
-
-                            var _notification$0$base2, _notification$0$base3, notification, ids, _result;
+                        openStream.subscribeService('/notification', function (event) {
+                          return __awaiter$9(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
+                            var _a, _b, _c, notification, ids, _result;
 
                             return _regeneratorRuntime.wrap(function _callee4$(_context4) {
                               while (1) {
                                 switch (_context4.prev = _context4.next) {
                                   case 0:
-                                    if (!(((_event$meta_object2 = event.meta_object) == null ? void 0 : _event$meta_object2.type) === 'notification')) {
+                                    if (!(((_a = event.meta_object) === null || _a === void 0 ? void 0 : _a.type) === 'notification')) {
                                       _context4.next = 13;
                                       break;
                                     }
@@ -3724,7 +3737,7 @@ PermissionModel.request = /*#__PURE__*/function () {
                                   case 4:
                                     ids = notification[0].getIds();
 
-                                    if (!((((_notification$0$base2 = notification[0].base) == null ? void 0 : _notification$0$base2.code) === 1100004 || ((_notification$0$base3 = notification[0].base) == null ? void 0 : _notification$0$base3.code) === 1100013) && ( //notification[0].base?.identifier === id &&
+                                    if (!((((_b = notification[0].base) === null || _b === void 0 ? void 0 : _b.code) === 1100004 || ((_c = notification[0].base) === null || _c === void 0 ? void 0 : _c.code) === 1100013) && ( //notification[0].base?.identifier === id &&
                                     quantity === 'all' || ids.length >= quantity))) {
                                       _context4.next = 13;
                                       break;
@@ -3740,7 +3753,7 @@ PermissionModel.request = /*#__PURE__*/function () {
                                       });
                                     }
 
-                                    printDebug("Got permission to " + JSON.stringify(params == null ? void 0 : params.id));
+                                    printDebug("Got permission to " + JSON.stringify(params === null || params === void 0 ? void 0 : params.id));
                                     _context4.next = 10;
                                     return Model.fetch(endpoint, params);
 
@@ -3759,11 +3772,7 @@ PermissionModel.request = /*#__PURE__*/function () {
                               }
                             }, _callee4);
                           }));
-
-                          return function (_x9) {
-                            return _ref5.apply(this, arguments);
-                          };
-                        }());
+                        });
 
                       case 8:
                       case "end":
@@ -3772,11 +3781,7 @@ PermissionModel.request = /*#__PURE__*/function () {
                   }
                 }, _callee5);
               }));
-
-              return function (_x8) {
-                return _ref4.apply(this, arguments);
-              };
-            }()));
+            }));
 
           case 2:
           case "end":
@@ -3785,11 +3790,7 @@ PermissionModel.request = /*#__PURE__*/function () {
       }
     }, _callee6);
   }));
-
-  return function (_x4, _x5, _x6, _x7) {
-    return _ref3.apply(this, arguments);
-  };
-}();
+};
 
 var StreamModel = /*#__PURE__*/function (_PermissionModel) {
   _inheritsLoose(StreamModel, _PermissionModel);
@@ -3797,11 +3798,7 @@ var StreamModel = /*#__PURE__*/function (_PermissionModel) {
   function StreamModel() {
     var _this;
 
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _PermissionModel.call.apply(_PermissionModel, [this].concat(args)) || this;
+    _this = _PermissionModel.apply(this, arguments) || this;
     _this.streamCallback = {
       change: [],
       "delete": [],
@@ -3883,6 +3880,37 @@ var StreamModel = /*#__PURE__*/function (_PermissionModel) {
   return StreamModel;
 }(PermissionModel);
 
+var __awaiter$8 = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var State = /*#__PURE__*/function (_StreamModel) {
   _inheritsLoose(State, _StreamModel);
 
@@ -3891,10 +3919,8 @@ var State = /*#__PURE__*/function (_StreamModel) {
 
     _this = _StreamModel.call(this, 'state') || this;
     _this.data = '';
-    _this.status = void 0;
     _this.type = 'Report';
     _this.timestamp = new Date().toISOString();
-    _this.status_payment = void 0;
     Model.validateMethod('State', 'constructor', arguments);
     _this.type = type || 'Report';
     return _this;
@@ -3909,30 +3935,33 @@ var State = /*#__PURE__*/function (_StreamModel) {
   return State;
 }(StreamModel);
 State.endpoint = '/2.0/state';
-State.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
-  var params, url, data;
-  return _regeneratorRuntime.wrap(function _callee$(_context) {
-    while (1) {
-      switch (_context.prev = _context.next) {
-        case 0:
-          params = {
-            expand: 1
-          };
-          url = State.endpoint;
-          _context.next = 4;
-          return Model.fetch(url, params);
 
-        case 4:
-          data = _context.sent;
-          return _context.abrupt("return", State.fromArray(data));
+State.fetch = function () {
+  return __awaiter$8(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+    var params, url, data;
+    return _regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            params = {
+              expand: 1
+            };
+            url = State.endpoint;
+            _context.next = 4;
+            return Model.fetch(url, params);
 
-        case 6:
-        case "end":
-          return _context.stop();
+          case 4:
+            data = _context.sent;
+            return _context.abrupt("return", State.fromArray(data));
+
+          case 6:
+          case "end":
+            return _context.stop();
+        }
       }
-    }
-  }, _callee);
-}));
+    }, _callee);
+  }));
+};
 
 var EventLog = /*#__PURE__*/function (_Model) {
   _inheritsLoose(EventLog, _Model);
@@ -3943,22 +3972,60 @@ var EventLog = /*#__PURE__*/function (_Model) {
     _this = _Model.call(this, 'eventlog') || this;
     _this.message = '';
     _this.level = 'info';
-    _this.info = void 0;
-    _this.type = void 0;
-    _this.timestamp = void 0;
     return _this;
   }
 
   var _proto = EventLog.prototype;
 
   _proto.attributes = function attributes() {
-    return ['message', 'level', 'into', 'type'];
+    return ['message', 'level', 'info', 'type'];
   };
 
   return EventLog;
 }(Model);
 EventLog.endpoint = '/2.0/eventlog';
 
+var __decorate$2 = undefined && undefined.__decorate || function (decorators, target, key, desc) {
+  var c = arguments.length,
+      r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+      d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);else for (var i = decorators.length - 1; i >= 0; i--) {
+    if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  }
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+var __awaiter$7 = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var Value = /*#__PURE__*/function (_StreamModel) {
   _inheritsLoose(Value, _StreamModel);
 
@@ -3966,19 +4033,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     var _this;
 
     _this = _StreamModel.call(this, 'value') || this;
-    _this.name = void 0;
-    _this.description = void 0;
     _this.permission = 'r';
     _this.tmp_permission = 'r';
     _this.type = '';
-    _this.period = void 0;
     _this.last_period = '';
-    _this.delta = void 0;
-    _this.number = void 0;
-    _this.string = void 0;
-    _this.blob = void 0;
-    _this.xml = void 0;
-    _this.status = void 0;
     _this.state = [];
     _this.eventlog = [];
     _this.stateCallbacks = {
@@ -3987,9 +4045,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     };
     _this.reportIsForced = false;
     _this.sendReportWithJitter = false;
-    _this.periodTimer = void 0;
     _this.refreshCallbacks = [];
-    _this.jitterTimer = void 0;
     Model.validateMethod('Value', 'constructor', arguments);
     _this.name = name || '';
     return _this;
@@ -4030,8 +4086,8 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     });
   };
 
-  _proto.loadAllChildren = /*#__PURE__*/function () {
-    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+  _proto.loadAllChildren = function loadAllChildren() {
+    return __awaiter$7(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
       var i, id;
       return _regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
@@ -4069,13 +4125,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee, this);
     }));
-
-    function loadAllChildren() {
-      return _loadAllChildren.apply(this, arguments);
-    }
-
-    return loadAllChildren;
-  }();
+  };
 
   _proto.findState = function findState(type) {
     var res = undefined;
@@ -4091,8 +4141,8 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     return new Date().toISOString();
   };
 
-  _proto.findStateAndUpdate = /*#__PURE__*/function () {
-    var _findStateAndUpdate = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(type, data, timestamp) {
+  _proto.findStateAndUpdate = function findStateAndUpdate(type, data, timestamp) {
+    return __awaiter$7(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
       var _this4 = this;
 
       var state, eventTimestamp, timeout, oldData, oldTimestamp, p;
@@ -4149,13 +4199,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee2, this);
     }));
-
-    function findStateAndUpdate(_x, _x2, _x3) {
-      return _findStateAndUpdate.apply(this, arguments);
-    }
-
-    return findStateAndUpdate;
-  }();
+  };
 
   _proto.findStateAndCallback = function findStateAndCallback(type, callback) {
     var _this5 = this;
@@ -4183,8 +4227,8 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     }
   };
 
-  _proto.addEvent = /*#__PURE__*/function () {
-    var _addEvent = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(level, message, info) {
+  _proto.addEvent = function addEvent(level, message, info) {
+    return __awaiter$7(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
       var event,
           _args3 = arguments;
       return _regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -4211,16 +4255,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee3, this);
     }));
+  };
 
-    function addEvent(_x4, _x5, _x6) {
-      return _addEvent.apply(this, arguments);
-    }
-
-    return addEvent;
-  }();
-
-  _proto.createState = /*#__PURE__*/function () {
-    var _createState = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(params) {
+  _proto.createState = function createState(params) {
+    return __awaiter$7(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
       var create,
           state,
           oldJson,
@@ -4278,13 +4316,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee4, this);
     }));
-
-    function createState(_x7) {
-      return _createState.apply(this, arguments);
-    }
-
-    return createState;
-  }();
+  };
 
   _proto.parseChildren = function parseChildren(json) {
     var res = false;
@@ -4334,99 +4366,87 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     return this.findStateAndTimestamp('Report');
   };
 
-  _proto.report = /*#__PURE__*/function () {
-    var _report = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(data, timestamp) {
+  _proto.report = function report(data, timestamp) {
+    if (timestamp === void 0) {
+      timestamp = undefined;
+    }
+
+    return __awaiter$7(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
       var _args5 = arguments;
       return _regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
-              if (timestamp === void 0) {
-                timestamp = undefined;
-              }
-
               this.validate('report', _args5);
               return _context5.abrupt("return", this.sendReport(data, timestamp, false));
 
-            case 3:
+            case 2:
             case "end":
               return _context5.stop();
           }
         }
       }, _callee5, this);
     }));
+  };
 
-    function report(_x8, _x9) {
-      return _report.apply(this, arguments);
+  _proto.forceReport = function forceReport(data, timestamp) {
+    if (timestamp === void 0) {
+      timestamp = undefined;
     }
 
-    return report;
-  }();
-
-  _proto.forceReport = /*#__PURE__*/function () {
-    var _forceReport = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(data, timestamp) {
+    return __awaiter$7(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee6() {
       var _args6 = arguments;
       return _regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              if (timestamp === void 0) {
-                timestamp = undefined;
-              }
-
               this.validate('forceReport', _args6);
               return _context6.abrupt("return", this.sendReport(data, timestamp, true));
 
-            case 3:
+            case 2:
             case "end":
               return _context6.stop();
           }
         }
       }, _callee6, this);
     }));
+  };
 
-    function forceReport(_x10, _x11) {
-      return _forceReport.apply(this, arguments);
+  _proto.sendReport = function sendReport(data, timestamp, force) {
+    if (timestamp === void 0) {
+      timestamp = undefined;
     }
 
-    return forceReport;
-  }();
-
-  _proto.sendReport = /*#__PURE__*/function () {
-    var _sendReport = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee7(data, timestamp, force) {
+    return __awaiter$7(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee7() {
       var oldState, oldData, newData, delta, diff;
       return _regeneratorRuntime.wrap(function _callee7$(_context7) {
         while (1) {
           switch (_context7.prev = _context7.next) {
             case 0:
-              if (timestamp === void 0) {
-                timestamp = undefined;
-              }
-
               if (!(this.delta && this.delta !== '' && this.delta !== '0' && !this.reportIsForced && !force)) {
-                _context7.next = 15;
+                _context7.next = 14;
                 break;
               }
 
               if (!(this.delta.toLowerCase() === 'inf')) {
-                _context7.next = 5;
+                _context7.next = 4;
                 break;
               }
 
               printDebug("Dropping value update for \"" + this.name + "\" because delta is Inf");
               return _context7.abrupt("return");
 
-            case 5:
+            case 4:
               oldState = this.findState('Report');
 
               if (oldState) {
-                _context7.next = 8;
+                _context7.next = 7;
                 break;
               }
 
               return _context7.abrupt("return");
 
-            case 8:
+            case 7:
               oldData = parseFloat(oldState.data);
 
               if (typeof data === 'string') {
@@ -4439,60 +4459,48 @@ var Value = /*#__PURE__*/function (_StreamModel) {
               diff = Math.abs(oldData - newData);
 
               if (!(diff < delta)) {
-                _context7.next = 15;
+                _context7.next = 14;
                 break;
               }
 
               printDebug("Dropping value update for \"" + this.name + "\" because the change is less then " + delta);
               return _context7.abrupt("return");
 
-            case 15:
+            case 14:
               this.reportIsForced = false;
               this.findStateAndUpdate('Report', data, timestamp);
 
-            case 17:
+            case 16:
             case "end":
               return _context7.stop();
           }
         }
       }, _callee7, this);
     }));
+  };
 
-    function sendReport(_x12, _x13, _x14) {
-      return _sendReport.apply(this, arguments);
+  _proto.control = function control(data, timestamp) {
+    if (timestamp === void 0) {
+      timestamp = undefined;
     }
 
-    return sendReport;
-  }();
-
-  _proto.control = /*#__PURE__*/function () {
-    var _control = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee8(data, timestamp) {
+    return __awaiter$7(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee8() {
       var _args8 = arguments;
       return _regeneratorRuntime.wrap(function _callee8$(_context8) {
         while (1) {
           switch (_context8.prev = _context8.next) {
             case 0:
-              if (timestamp === void 0) {
-                timestamp = undefined;
-              }
-
               this.validate('control', _args8);
               this.findStateAndUpdate('Control', data, timestamp);
 
-            case 3:
+            case 2:
             case "end":
               return _context8.stop();
           }
         }
       }, _callee8, this);
     }));
-
-    function control(_x15, _x16) {
-      return _control.apply(this, arguments);
-    }
-
-    return control;
-  }();
+  };
 
   _proto.onControl = function onControl(callback) {
     this.validate('onControl', arguments);
@@ -4532,8 +4540,8 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     this.clearAllCallbacks();
   };
 
-  _proto.changeAttribute = /*#__PURE__*/function () {
-    var _changeAttribute = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee9(key, value) {
+  _proto.changeAttribute = function changeAttribute(key, value) {
+    return __awaiter$7(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee9() {
       var data;
       return _regeneratorRuntime.wrap(function _callee9$(_context9) {
         while (1) {
@@ -4563,16 +4571,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee9, this, [[0, 7]]);
     }));
+  };
 
-    function changeAttribute(_x17, _x18) {
-      return _changeAttribute.apply(this, arguments);
-    }
-
-    return changeAttribute;
-  }();
-
-  _proto.refresh = /*#__PURE__*/function () {
-    var _refresh = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee10() {
+  _proto.refresh = function refresh() {
+    return __awaiter$7(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee10() {
       return _regeneratorRuntime.wrap(function _callee10$(_context10) {
         while (1) {
           switch (_context10.prev = _context10.next) {
@@ -4586,16 +4588,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee10, this);
     }));
+  };
 
-    function refresh() {
-      return _refresh.apply(this, arguments);
-    }
-
-    return refresh;
-  }();
-
-  _proto.setPeriod = /*#__PURE__*/function () {
-    var _setPeriod = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee11(period) {
+  _proto.setPeriod = function setPeriod(period) {
+    return __awaiter$7(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee11() {
       return _regeneratorRuntime.wrap(function _callee11$(_context11) {
         while (1) {
           switch (_context11.prev = _context11.next) {
@@ -4609,16 +4605,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee11, this);
     }));
+  };
 
-    function setPeriod(_x19) {
-      return _setPeriod.apply(this, arguments);
-    }
-
-    return setPeriod;
-  }();
-
-  _proto.setDelta = /*#__PURE__*/function () {
-    var _setDelta = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee12(delta) {
+  _proto.setDelta = function setDelta(delta) {
+    return __awaiter$7(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee12() {
       return _regeneratorRuntime.wrap(function _callee12$(_context12) {
         while (1) {
           switch (_context12.prev = _context12.next) {
@@ -4632,16 +4622,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee12, this);
     }));
+  };
 
-    function setDelta(_x20) {
-      return _setDelta.apply(this, arguments);
-    }
-
-    return setDelta;
-  }();
-
-  _proto.findStateAndLog = /*#__PURE__*/function () {
-    var _findStateAndLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee13(type, request) {
+  _proto.findStateAndLog = function findStateAndLog(type, request) {
+    return __awaiter$7(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee13() {
       var state, response;
       return _regeneratorRuntime.wrap(function _callee13$(_context13) {
         while (1) {
@@ -4680,16 +4664,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee13, this);
     }));
+  };
 
-    function findStateAndLog(_x21, _x22) {
-      return _findStateAndLog.apply(this, arguments);
-    }
-
-    return findStateAndLog;
-  }();
-
-  _proto.getReportLog = /*#__PURE__*/function () {
-    var _getReportLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee14(request) {
+  _proto.getReportLog = function getReportLog(request) {
+    return __awaiter$7(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee14() {
       var _args14 = arguments;
       return _regeneratorRuntime.wrap(function _callee14$(_context14) {
         while (1) {
@@ -4705,16 +4683,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee14, this);
     }));
+  };
 
-    function getReportLog(_x23) {
-      return _getReportLog.apply(this, arguments);
-    }
-
-    return getReportLog;
-  }();
-
-  _proto.getControlLog = /*#__PURE__*/function () {
-    var _getControlLog = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee15(request) {
+  _proto.getControlLog = function getControlLog(request) {
+    return __awaiter$7(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee15() {
       var _args15 = arguments;
       return _regeneratorRuntime.wrap(function _callee15$(_context15) {
         while (1) {
@@ -4730,13 +4702,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee15, this);
     }));
-
-    function getControlLog(_x24) {
-      return _getControlLog.apply(this, arguments);
-    }
-
-    return getControlLog;
-  }();
+  };
 
   Value.validate = function validate(name, params) {
     Model.validateMethod('Value', name, params);
@@ -4807,46 +4773,49 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   return Value;
 }(StreamModel);
 Value.endpoint = '/2.0/value';
-Value.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee16() {
-  var params, url, data;
-  return _regeneratorRuntime.wrap(function _callee16$(_context16) {
-    while (1) {
-      switch (_context16.prev = _context16.next) {
-        case 0:
-          params = {
-            expand: 2
-          };
-          url = Value.endpoint;
-          _context16.next = 4;
-          return Model.fetch(url, params);
 
-        case 4:
-          data = _context16.sent;
-          return _context16.abrupt("return", Value.fromArray(data));
+Value.fetch = function () {
+  return __awaiter$7(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee16() {
+    var params, url, data;
+    return _regeneratorRuntime.wrap(function _callee16$(_context16) {
+      while (1) {
+        switch (_context16.prev = _context16.next) {
+          case 0:
+            params = {
+              expand: 2
+            };
+            url = Value.endpoint;
+            _context16.next = 4;
+            return Model.fetch(url, params);
 
-        case 6:
-        case "end":
-          return _context16.stop();
+          case 4:
+            data = _context16.sent;
+            return _context16.abrupt("return", Value.fromArray(data));
+
+          case 6:
+          case "end":
+            return _context16.stop();
+        }
       }
-    }
-  }, _callee16);
-}));
+    }, _callee16);
+  }));
+};
 
-Value.find = /*#__PURE__*/function () {
-  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee17(params, quantity, usage) {
+Value.find = function (params, quantity, usage) {
+  if (quantity === void 0) {
+    quantity = 1;
+  }
+
+  if (usage === void 0) {
+    usage = '';
+  }
+
+  return __awaiter$7(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee17() {
     var query, key, data;
     return _regeneratorRuntime.wrap(function _callee17$(_context17) {
       while (1) {
         switch (_context17.prev = _context17.next) {
           case 0:
-            if (quantity === void 0) {
-              quantity = 1;
-            }
-
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Value.validate('find', [params, quantity, usage]);
 
             if (usage === '') {
@@ -4861,40 +4830,36 @@ Value.find = /*#__PURE__*/function () {
               query["this_" + key] = "=" + params[key];
             }
 
-            _context17.next = 8;
+            _context17.next = 6;
             return PermissionModel.request(Value.endpoint, quantity, usage, query);
 
-          case 8:
+          case 6:
             data = _context17.sent;
             return _context17.abrupt("return", Value.fromArray(data));
 
-          case 10:
+          case 8:
           case "end":
             return _context17.stop();
         }
       }
     }, _callee17);
   }));
+};
 
-  return function (_x25, _x26, _x27) {
-    return _ref2.apply(this, arguments);
-  };
-}();
+Value.findByName = function (name, quantity, usage) {
+  if (quantity === void 0) {
+    quantity = 1;
+  }
 
-Value.findByName = /*#__PURE__*/function () {
-  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee18(name, quantity, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
+
+  return __awaiter$7(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee18() {
     return _regeneratorRuntime.wrap(function _callee18$(_context18) {
       while (1) {
         switch (_context18.prev = _context18.next) {
           case 0:
-            if (quantity === void 0) {
-              quantity = 1;
-            }
-
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Value.validate('findByName', [name, quantity, usage]);
 
             if (usage === '') {
@@ -4905,33 +4870,29 @@ Value.findByName = /*#__PURE__*/function () {
               name: name
             }, quantity, usage));
 
-          case 5:
+          case 3:
           case "end":
             return _context18.stop();
         }
       }
     }, _callee18);
   }));
+};
 
-  return function (_x28, _x29, _x30) {
-    return _ref3.apply(this, arguments);
-  };
-}();
+Value.findByType = function (type, quantity, usage) {
+  if (quantity === void 0) {
+    quantity = 1;
+  }
 
-Value.findByType = /*#__PURE__*/function () {
-  var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee19(type, quantity, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
+
+  return __awaiter$7(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee19() {
     return _regeneratorRuntime.wrap(function _callee19$(_context19) {
       while (1) {
         switch (_context19.prev = _context19.next) {
           case 0:
-            if (quantity === void 0) {
-              quantity = 1;
-            }
-
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Value.validate('findByType', [type, quantity, usage]);
 
             if (usage === '') {
@@ -4942,73 +4903,61 @@ Value.findByType = /*#__PURE__*/function () {
               type: type
             }, quantity, usage));
 
-          case 5:
+          case 3:
           case "end":
             return _context19.stop();
         }
       }
     }, _callee19);
   }));
+};
 
-  return function (_x31, _x32, _x33) {
-    return _ref4.apply(this, arguments);
-  };
-}();
+Value.findAllByName = function (name, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
 
-Value.findAllByName = /*#__PURE__*/function () {
-  var _ref5 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee20(name, usage) {
+  return __awaiter$7(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee20() {
     return _regeneratorRuntime.wrap(function _callee20$(_context20) {
       while (1) {
         switch (_context20.prev = _context20.next) {
           case 0:
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Value.validate('findAllByName', [name, usage]);
             return _context20.abrupt("return", Value.findByName(name, 'all', usage));
 
-          case 3:
+          case 2:
           case "end":
             return _context20.stop();
         }
       }
     }, _callee20);
   }));
+};
 
-  return function (_x34, _x35) {
-    return _ref5.apply(this, arguments);
-  };
-}();
+Value.findAllByType = function (type, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
 
-Value.findAllByType = /*#__PURE__*/function () {
-  var _ref6 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee21(type, usage) {
+  return __awaiter$7(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee21() {
     return _regeneratorRuntime.wrap(function _callee21$(_context21) {
       while (1) {
         switch (_context21.prev = _context21.next) {
           case 0:
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Value.validate('findAllByType', [type, usage]);
             return _context21.abrupt("return", Value.findByType(type, 'all', usage));
 
-          case 3:
+          case 2:
           case "end":
             return _context21.stop();
         }
       }
     }, _callee21);
   }));
+};
 
-  return function (_x36, _x37) {
-    return _ref6.apply(this, arguments);
-  };
-}();
-
-Value.findById = /*#__PURE__*/function () {
-  var _ref7 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee22(id) {
+Value.findById = function (id) {
+  return __awaiter$7(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee22() {
     var res;
     return _regeneratorRuntime.wrap(function _callee22$(_context22) {
       while (1) {
@@ -5031,20 +4980,57 @@ Value.findById = /*#__PURE__*/function () {
       }
     }, _callee22);
   }));
+};
 
-  return function (_x38) {
-    return _ref7.apply(this, arguments);
-  };
-}();
-
-__decorate([Type(function () {
+__decorate$2([Type(function () {
   return State;
 })], Value.prototype, "state", void 0);
 
-__decorate([Type(function () {
+__decorate$2([Type(function () {
   return EventLog;
 })], Value.prototype, "eventlog", void 0);
 
+var __decorate$1 = undefined && undefined.__decorate || function (decorators, target, key, desc) {
+  var c = arguments.length,
+      r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+      d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);else for (var i = decorators.length - 1; i >= 0; i--) {
+    if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  }
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+var __awaiter$6 = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var Device = /*#__PURE__*/function (_StreamModel) {
   _inheritsLoose(Device, _StreamModel);
 
@@ -5052,14 +5038,6 @@ var Device = /*#__PURE__*/function (_StreamModel) {
     var _this;
 
     _this = _StreamModel.call(this, 'device') || this;
-    _this.name = void 0;
-    _this.product = void 0;
-    _this.serial = void 0;
-    _this.description = void 0;
-    _this.protocol = void 0;
-    _this.communication = void 0;
-    _this.version = void 0;
-    _this.manufacturer = void 0;
     _this.value = [];
     Model.validateMethod('Device', 'constructor', arguments);
     _this.name = name || '';
@@ -5086,8 +5064,8 @@ var Device = /*#__PURE__*/function (_StreamModel) {
     });
   };
 
-  _proto.loadAllChildren = /*#__PURE__*/function () {
-    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+  _proto.loadAllChildren = function loadAllChildren() {
+    return __awaiter$6(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
       var i, id;
       return _regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
@@ -5130,16 +5108,10 @@ var Device = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee, this);
     }));
+  };
 
-    function loadAllChildren() {
-      return _loadAllChildren.apply(this, arguments);
-    }
-
-    return loadAllChildren;
-  }();
-
-  _proto._createValue = /*#__PURE__*/function () {
-    var _createValue2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(params) {
+  _proto._createValue = function _createValue(params) {
+    return __awaiter$6(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
       var oldDelta, oldPeriod, value, values, oldJson, newJson;
       return _regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
@@ -5222,194 +5194,124 @@ var Device = /*#__PURE__*/function (_StreamModel) {
         }
       }, _callee2, this);
     }));
+  };
 
-    function _createValue(_x) {
-      return _createValue2.apply(this, arguments);
+  _proto.createValue = function createValue(name, permission, valueTemplate, period, delta) {
+    if (period === void 0) {
+      period = '0';
     }
 
-    return _createValue;
-  }();
+    if (delta === void 0) {
+      delta = 0;
+    }
 
-  _proto.createValue = /*#__PURE__*/function () {
-    var _createValue3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(name, permission, valueTemplate, period, delta) {
-      var value,
-          _args3 = arguments;
+    return __awaiter$6(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
+      var _args3 = arguments;
       return _regeneratorRuntime.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              if (period === void 0) {
-                period = '0';
-              }
-
-              if (delta === void 0) {
-                delta = 0;
-              }
-
               this.validate('createValue', _args3);
-              value = {};
-              value.name = name;
-              value.permission = permission;
-              value.type = valueTemplate.type;
-              value.period = period;
-              _context3.t0 = valueTemplate.value_type;
-              _context3.next = _context3.t0 === 'number' ? 11 : _context3.t0 === 'string' ? 14 : _context3.t0 === 'blob' ? 16 : _context3.t0 === 'xml' ? 18 : 20;
-              break;
+              valueTemplate.name = name;
+              valueTemplate.permission = permission;
+              valueTemplate.period = period;
+              valueTemplate.delta = delta.toString();
+              _context3.next = 7;
+              return this._createValue(valueTemplate);
 
-            case 11:
-              value.number = valueTemplate.number;
-              value.delta = delta.toString();
-              return _context3.abrupt("break", 20);
-
-            case 14:
-              value.string = valueTemplate.string;
-              return _context3.abrupt("break", 20);
-
-            case 16:
-              value.blob = valueTemplate.blob;
-              return _context3.abrupt("break", 20);
-
-            case 18:
-              value.xml = valueTemplate.xml;
-              return _context3.abrupt("break", 20);
-
-            case 20:
-              _context3.next = 22;
-              return this._createValue(value);
-
-            case 22:
+            case 7:
               return _context3.abrupt("return", _context3.sent);
 
-            case 23:
+            case 8:
             case "end":
               return _context3.stop();
           }
         }
       }, _callee3, this);
     }));
+  };
 
-    function createValue(_x2, _x3, _x4, _x5, _x6) {
-      return _createValue3.apply(this, arguments);
-    }
+  _proto.createNumberValue = function createNumberValue(params) {
+    var _a;
 
-    return createValue;
-  }();
-
-  _proto.createNumberValue = /*#__PURE__*/function () {
-    var _createNumberValue = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(params) {
-      var numberValue,
+    return __awaiter$6(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
+      var value,
           _args4 = arguments;
       return _regeneratorRuntime.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
               this.validate('createNumberValue', _args4);
-              numberValue = {};
-              numberValue.min = params.min;
-              numberValue.max = params.max;
-              numberValue.step = params.step;
-              numberValue.unit = params.unit;
-              numberValue.si_conversion = params.si_conversion;
-              numberValue.mapping = params.mapping;
-              numberValue.ordered_mapping = params.ordered_mapping;
-              numberValue.meaningful_zero = params.meaningful_zero;
-              params.number = numberValue;
+              value = params;
+              value.delta = (_a = value.delta) !== null && _a !== void 0 ? _a : '0';
+              _context4.next = 5;
+              return this._createValue(value);
 
-              if (params.delta === undefined) {
-                params.delta = '0';
-              }
-
-              _context4.next = 14;
-              return this._createValue(params);
-
-            case 14:
+            case 5:
               return _context4.abrupt("return", _context4.sent);
 
-            case 15:
+            case 6:
             case "end":
               return _context4.stop();
           }
         }
       }, _callee4, this);
     }));
+  };
 
-    function createNumberValue(_x7) {
-      return _createNumberValue.apply(this, arguments);
-    }
-
-    return createNumberValue;
-  }();
-
-  _proto.createStringValue = /*#__PURE__*/function () {
-    var _createStringValue = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(params) {
-      var stringValue,
+  _proto.createStringValue = function createStringValue(params) {
+    return __awaiter$6(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
+      var value,
           _args5 = arguments;
       return _regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
               this.validate('createStringValue', _args5);
-              stringValue = {};
-              stringValue.max = params.max;
-              stringValue.encoding = params.encoding;
-              params.string = stringValue;
-              _context5.next = 7;
-              return this._createValue(params);
+              value = params; // ?? not used variable
 
-            case 7:
+              _context5.next = 4;
+              return this._createValue(value);
+
+            case 4:
               return _context5.abrupt("return", _context5.sent);
 
-            case 8:
+            case 5:
             case "end":
               return _context5.stop();
           }
         }
       }, _callee5, this);
     }));
+  };
 
-    function createStringValue(_x8) {
-      return _createStringValue.apply(this, arguments);
-    }
-
-    return createStringValue;
-  }();
-
-  _proto.createBlobValue = /*#__PURE__*/function () {
-    var _createBlobValue = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(params) {
-      var blobValue,
+  _proto.createBlobValue = function createBlobValue(params) {
+    return __awaiter$6(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee6() {
+      var value,
           _args6 = arguments;
       return _regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
               this.validate('createBlobValue', _args6);
-              blobValue = {};
-              blobValue.max = params.max;
-              blobValue.encoding = params.encoding;
-              params.blob = blobValue;
-              _context6.next = 7;
-              return this._createValue(params);
+              value = params;
+              _context6.next = 4;
+              return this._createValue(value);
 
-            case 7:
+            case 4:
               return _context6.abrupt("return", _context6.sent);
 
-            case 8:
+            case 5:
             case "end":
               return _context6.stop();
           }
         }
       }, _callee6, this);
     }));
+  };
 
-    function createBlobValue(_x9) {
-      return _createBlobValue.apply(this, arguments);
-    }
-
-    return createBlobValue;
-  }();
-
-  _proto.createXmlValue = /*#__PURE__*/function () {
-    var _createXmlValue = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee7(params) {
+  _proto.createXmlValue = function createXmlValue(params) {
+    return __awaiter$6(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee7() {
       var xmlValue,
           _args7 = arguments;
       return _regeneratorRuntime.wrap(function _callee7$(_context7) {
@@ -5417,30 +5319,22 @@ var Device = /*#__PURE__*/function (_StreamModel) {
           switch (_context7.prev = _context7.next) {
             case 0:
               this.validate('createXmlValue', _args7);
-              xmlValue = {};
-              xmlValue.xsd = params.xsd;
-              xmlValue.namespace = params.namespace;
-              params.xml = xmlValue;
-              _context7.next = 7;
-              return this._createValue(params);
+              xmlValue = params; //
 
-            case 7:
+              _context7.next = 4;
+              return this._createValue(xmlValue);
+
+            case 4:
               return _context7.abrupt("return", _context7.sent);
 
-            case 8:
+            case 5:
             case "end":
               return _context7.stop();
           }
         }
       }, _callee7, this);
     }));
-
-    function createXmlValue(_x10) {
-      return _createXmlValue.apply(this, arguments);
-    }
-
-    return createXmlValue;
-  }();
+  };
 
   _proto.parseChildren = function parseChildren(json) {
     var res = false;
@@ -5487,21 +5381,21 @@ var Device = /*#__PURE__*/function (_StreamModel) {
 }(StreamModel);
 Device.endpoint = '/2.0/device';
 
-Device.find = /*#__PURE__*/function () {
-  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee8(params, quantity, usage) {
+Device.find = function (params, quantity, usage) {
+  if (quantity === void 0) {
+    quantity = 1;
+  }
+
+  if (usage === void 0) {
+    usage = '';
+  }
+
+  return __awaiter$6(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee8() {
     var query, key, data;
     return _regeneratorRuntime.wrap(function _callee8$(_context8) {
       while (1) {
         switch (_context8.prev = _context8.next) {
           case 0:
-            if (quantity === void 0) {
-              quantity = 1;
-            }
-
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Device.validate('find', [params, quantity, usage]);
 
             if (usage === '') {
@@ -5516,40 +5410,36 @@ Device.find = /*#__PURE__*/function () {
               query["this_" + key] = "=" + params[key];
             }
 
-            _context8.next = 8;
+            _context8.next = 6;
             return PermissionModel.request(Device.endpoint, quantity, usage, query);
 
-          case 8:
+          case 6:
             data = _context8.sent;
             return _context8.abrupt("return", Device.fromArray(data));
 
-          case 10:
+          case 8:
           case "end":
             return _context8.stop();
         }
       }
     }, _callee8);
   }));
+};
 
-  return function (_x11, _x12, _x13) {
-    return _ref.apply(this, arguments);
-  };
-}();
+Device.findByName = function (name, quantity, usage) {
+  if (quantity === void 0) {
+    quantity = 1;
+  }
 
-Device.findByName = /*#__PURE__*/function () {
-  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee9(name, quantity, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
+
+  return __awaiter$6(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee9() {
     return _regeneratorRuntime.wrap(function _callee9$(_context9) {
       while (1) {
         switch (_context9.prev = _context9.next) {
           case 0:
-            if (quantity === void 0) {
-              quantity = 1;
-            }
-
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Device.validate('findByName', [name, quantity, usage]);
 
             if (usage === '') {
@@ -5560,59 +5450,51 @@ Device.findByName = /*#__PURE__*/function () {
               name: name
             }, quantity, usage));
 
-          case 5:
+          case 3:
           case "end":
             return _context9.stop();
         }
       }
     }, _callee9);
   }));
+};
 
-  return function (_x14, _x15, _x16) {
-    return _ref2.apply(this, arguments);
-  };
-}();
+Device.findAllByName = function (name, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
 
-Device.findAllByName = /*#__PURE__*/function () {
-  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee10(name, usage) {
+  return __awaiter$6(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee10() {
     return _regeneratorRuntime.wrap(function _callee10$(_context10) {
       while (1) {
         switch (_context10.prev = _context10.next) {
           case 0:
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Device.validate('findAllByName', [name, usage]);
             return _context10.abrupt("return", Device.findByName(name, 'all', usage));
 
-          case 3:
+          case 2:
           case "end":
             return _context10.stop();
         }
       }
     }, _callee10);
   }));
+};
 
-  return function (_x17, _x18) {
-    return _ref3.apply(this, arguments);
-  };
-}();
+Device.findByProduct = function (product, quantity, usage) {
+  if (quantity === void 0) {
+    quantity = 1;
+  }
 
-Device.findByProduct = /*#__PURE__*/function () {
-  var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee11(product, quantity, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
+
+  return __awaiter$6(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee11() {
     return _regeneratorRuntime.wrap(function _callee11$(_context11) {
       while (1) {
         switch (_context11.prev = _context11.next) {
           case 0:
-            if (quantity === void 0) {
-              quantity = 1;
-            }
-
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Device.validate('findByProduct', [product, quantity, usage]);
 
             if (usage === '') {
@@ -5623,47 +5505,39 @@ Device.findByProduct = /*#__PURE__*/function () {
               product: product
             }, quantity, usage));
 
-          case 5:
+          case 3:
           case "end":
             return _context11.stop();
         }
       }
     }, _callee11);
   }));
+};
 
-  return function (_x19, _x20, _x21) {
-    return _ref4.apply(this, arguments);
-  };
-}();
+Device.findAllByProduct = function (product, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
 
-Device.findAllByProduct = /*#__PURE__*/function () {
-  var _ref5 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee12(product, usage) {
+  return __awaiter$6(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee12() {
     return _regeneratorRuntime.wrap(function _callee12$(_context12) {
       while (1) {
         switch (_context12.prev = _context12.next) {
           case 0:
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Device.validate('findAllByProduct', [product, usage]);
             return _context12.abrupt("return", Device.findByProduct(product, 'all', usage));
 
-          case 3:
+          case 2:
           case "end":
             return _context12.stop();
         }
       }
     }, _callee12);
   }));
+};
 
-  return function (_x22, _x23) {
-    return _ref5.apply(this, arguments);
-  };
-}();
-
-Device.findById = /*#__PURE__*/function () {
-  var _ref6 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee13(id) {
+Device.findById = function (id) {
+  return __awaiter$6(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee13() {
     var res;
     return _regeneratorRuntime.wrap(function _callee13$(_context13) {
       while (1) {
@@ -5686,107 +5560,140 @@ Device.findById = /*#__PURE__*/function () {
       }
     }, _callee13);
   }));
+};
 
-  return function (_x24) {
-    return _ref6.apply(this, arguments);
-  };
-}();
+Device.fetch = function () {
+  return __awaiter$6(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee14() {
+    var params, url, data, res, i;
+    return _regeneratorRuntime.wrap(function _callee14$(_context14) {
+      while (1) {
+        switch (_context14.prev = _context14.next) {
+          case 0:
+            params = {
+              expand: 3
+            };
+            url = Device.endpoint;
+            _context14.next = 4;
+            return Model.fetch(url, params);
 
-Device.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee14() {
-  var params, url, data, res, i;
-  return _regeneratorRuntime.wrap(function _callee14$(_context14) {
-    while (1) {
-      switch (_context14.prev = _context14.next) {
-        case 0:
-          params = {
-            expand: 3
-          };
-          url = Device.endpoint;
-          _context14.next = 4;
-          return Model.fetch(url, params);
+          case 4:
+            data = _context14.sent;
+            res = Device.fromArray(data);
+            i = 0;
 
-        case 4:
-          data = _context14.sent;
-          res = Device.fromArray(data);
-          i = 0;
+          case 7:
+            if (!(i < res.length)) {
+              _context14.next = 13;
+              break;
+            }
 
-        case 7:
-          if (!(i < res.length)) {
-            _context14.next = 13;
+            _context14.next = 10;
+            return res[i].loadAllChildren();
+
+          case 10:
+            i++;
+            _context14.next = 7;
             break;
-          }
 
-          _context14.next = 10;
-          return res[i].loadAllChildren();
+          case 13:
+            return _context14.abrupt("return", res);
 
-        case 10:
-          i++;
-          _context14.next = 7;
-          break;
-
-        case 13:
-          return _context14.abrupt("return", res);
-
-        case 14:
-        case "end":
-          return _context14.stop();
+          case 14:
+          case "end":
+            return _context14.stop();
+        }
       }
-    }
-  }, _callee14);
-}));
+    }, _callee14);
+  }));
+};
 
-__decorate([Type(function () {
+__decorate$1([Type(function () {
   return Value;
 })], Device.prototype, "value", void 0);
 
-function createNetwork(_x) {
-  return _createNetwork.apply(this, arguments);
-}
+var __decorate = undefined && undefined.__decorate || function (decorators, target, key, desc) {
+  var c = arguments.length,
+      r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+      d;
+  if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);else for (var i = decorators.length - 1; i >= 0; i--) {
+    if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+  }
+  return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 
-function _createNetwork() {
-  _createNetwork = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(params) {
+var __awaiter$5 = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+function createNetwork(params) {
+  return __awaiter$5(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
     var networks,
         network,
-        _args3 = arguments;
-    return _regeneratorRuntime.wrap(function _callee3$(_context3) {
+        _args = arguments;
+    return _regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context.prev = _context.next) {
           case 0:
-            Model.validateMethod('Network', 'createNetwork', _args3);
-            _context3.next = 3;
+            Model.validateMethod('Network', 'createNetwork', _args);
+            _context.next = 3;
             return Network.fetch(params.name);
 
           case 3:
-            networks = _context3.sent;
+            networks = _context.sent;
 
             if (!(networks.length !== 0)) {
-              _context3.next = 7;
+              _context.next = 7;
               break;
             }
 
             printDebug("Using existing network with id " + networks[0].id());
-            return _context3.abrupt("return", networks[0]);
+            return _context.abrupt("return", networks[0]);
 
           case 7:
             network = new Network();
             network.name = params.name;
             network.description = params.description;
-            _context3.next = 12;
+            _context.next = 12;
             return network.create();
 
           case 12:
-            return _context3.abrupt("return", network);
+            return _context.abrupt("return", network);
 
           case 13:
           case "end":
-            return _context3.stop();
+            return _context.stop();
         }
       }
-    }, _callee3);
+    }, _callee);
   }));
-  return _createNetwork.apply(this, arguments);
 }
-
 var Network = /*#__PURE__*/function (_StreamModel) {
   _inheritsLoose(Network, _StreamModel);
 
@@ -5794,8 +5701,6 @@ var Network = /*#__PURE__*/function (_StreamModel) {
     var _this;
 
     _this = _StreamModel.call(this, 'network') || this;
-    _this.name = void 0;
-    _this.description = void 0;
     _this.device = [];
     Model.validateMethod('Network', 'constructor', arguments);
     _this.name = name || '';
@@ -5840,99 +5745,93 @@ var Network = /*#__PURE__*/function (_StreamModel) {
     return values;
   };
 
-  _proto.loadAllChildren = /*#__PURE__*/function () {
-    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+  _proto.loadAllChildren = function loadAllChildren() {
+    return __awaiter$5(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
       var i, id;
-      return _regeneratorRuntime.wrap(function _callee$(_context) {
+      return _regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
-          switch (_context.prev = _context.next) {
+          switch (_context2.prev = _context2.next) {
             case 0:
               i = 0;
 
             case 1:
               if (!(i < this.device.length)) {
-                _context.next = 20;
+                _context2.next = 20;
                 break;
               }
 
               if (!(typeof this.device[i] === 'string')) {
-                _context.next = 9;
+                _context2.next = 9;
                 break;
               }
 
               id = this.device[i];
-              _context.next = 6;
+              _context2.next = 6;
               return Device.findById(id);
 
             case 6:
-              this.device[i] = _context.sent;
-              _context.next = 13;
+              this.device[i] = _context2.sent;
+              _context2.next = 13;
               break;
 
             case 9:
               if (!(i >= 3)) {
-                _context.next = 13;
+                _context2.next = 13;
                 break;
               }
 
-              _context.next = 12;
+              _context2.next = 12;
               return Device.findById(
               /* istanbul ignore next */
               this.device[i].meta.id || '');
 
             case 12:
-              this.device[i] = _context.sent;
+              this.device[i] = _context2.sent;
 
             case 13:
               if (!this.device[i]) {
-                _context.next = 17;
+                _context2.next = 17;
                 break;
               }
 
               this.device[i].parent = this;
-              _context.next = 17;
+              _context2.next = 17;
               return this.device[i].loadAllChildren();
 
             case 17:
               i++;
-              _context.next = 1;
+              _context2.next = 1;
               break;
 
             case 20:
             case "end":
-              return _context.stop();
+              return _context2.stop();
           }
         }
-      }, _callee, this);
+      }, _callee2, this);
     }));
+  };
 
-    function loadAllChildren() {
-      return _loadAllChildren.apply(this, arguments);
-    }
+  _proto.createDevice = function createDevice(params) {
+    var _a;
 
-    return loadAllChildren;
-  }();
-
-  _proto.createDevice = /*#__PURE__*/function () {
-    var _createDevice = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(params) {
+    return __awaiter$5(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
       var device,
           devices,
-          _devices$,
           oldJson,
           newJson,
-          _args2 = arguments;
-
-      return _regeneratorRuntime.wrap(function _callee2$(_context2) {
+          _args3 = arguments;
+      return _regeneratorRuntime.wrap(function _callee3$(_context3) {
         while (1) {
-          switch (_context2.prev = _context2.next) {
+          switch (_context3.prev = _context3.next) {
             case 0:
-              this.validate('createDevice', _args2);
+              this.validate('createDevice', _args3);
               device = new Device();
               devices = this.findDeviceByName(params.name);
 
               if (devices.length !== 0) {
                 /* istanbul ignore next */
-                printDebug("Using existing device with id " + ((_devices$ = devices[0]) == null ? void 0 : _devices$.id()));
+                printDebug("Using existing device with id " + ((_a = devices[0]) === null || _a === void 0 ? void 0 : _a.id()));
                 device = devices[0];
               }
 
@@ -5942,46 +5841,40 @@ var Network = /*#__PURE__*/function (_StreamModel) {
               device.parent = this;
 
               if (isEqual(oldJson, newJson)) {
-                _context2.next = 17;
+                _context3.next = 17;
                 break;
               }
 
               if (!(devices.length !== 0)) {
-                _context2.next = 14;
+                _context3.next = 14;
                 break;
               }
 
-              _context2.next = 12;
+              _context3.next = 12;
               return device.update();
 
             case 12:
-              _context2.next = 17;
+              _context3.next = 17;
               break;
 
             case 14:
-              _context2.next = 16;
+              _context3.next = 16;
               return device.create();
 
             case 16:
               this.device.push(device);
 
             case 17:
-              return _context2.abrupt("return", device);
+              return _context3.abrupt("return", device);
 
             case 18:
             case "end":
-              return _context2.stop();
+              return _context3.stop();
           }
         }
-      }, _callee2, this);
+      }, _callee3, this);
     }));
-
-    function createDevice(_x2) {
-      return _createDevice.apply(this, arguments);
-    }
-
-    return createDevice;
-  }();
+  };
 
   _proto.parseChildren = function parseChildren(json) {
     var res = false;
@@ -6027,21 +5920,21 @@ var Network = /*#__PURE__*/function (_StreamModel) {
 }(StreamModel);
 Network.endpoint = '/2.0/network';
 
-Network.find = /*#__PURE__*/function () {
-  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(params, quantity, usage) {
+Network.find = function (params, quantity, usage) {
+  if (quantity === void 0) {
+    quantity = 1;
+  }
+
+  if (usage === void 0) {
+    usage = '';
+  }
+
+  return __awaiter$5(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
     var query, key, data;
     return _regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            if (quantity === void 0) {
-              quantity = 1;
-            }
-
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Network.validate('find', [params, quantity, usage]);
 
             if (usage === '') {
@@ -6056,40 +5949,36 @@ Network.find = /*#__PURE__*/function () {
               query["this_" + key] = "=" + params[key];
             }
 
-            _context4.next = 8;
+            _context4.next = 6;
             return PermissionModel.request(Network.endpoint, quantity, usage, query);
 
-          case 8:
+          case 6:
             data = _context4.sent;
             return _context4.abrupt("return", Network.fromArray(data));
 
-          case 10:
+          case 8:
           case "end":
             return _context4.stop();
         }
       }
     }, _callee4);
   }));
+};
 
-  return function (_x3, _x4, _x5) {
-    return _ref.apply(this, arguments);
-  };
-}();
+Network.findByName = function (name, quantity, usage) {
+  if (quantity === void 0) {
+    quantity = 1;
+  }
 
-Network.findByName = /*#__PURE__*/function () {
-  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(name, quantity, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
+
+  return __awaiter$5(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
     return _regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
-            if (quantity === void 0) {
-              quantity = 1;
-            }
-
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Network.validate('findByName', [name, quantity, usage]);
 
             if (usage === '') {
@@ -6100,47 +5989,39 @@ Network.findByName = /*#__PURE__*/function () {
               name: name
             }, quantity, usage));
 
-          case 5:
+          case 3:
           case "end":
             return _context5.stop();
         }
       }
     }, _callee5);
   }));
+};
 
-  return function (_x6, _x7, _x8) {
-    return _ref2.apply(this, arguments);
-  };
-}();
+Network.findAllByName = function (name, usage) {
+  if (usage === void 0) {
+    usage = '';
+  }
 
-Network.findAllByName = /*#__PURE__*/function () {
-  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(name, usage) {
+  return __awaiter$5(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee6() {
     return _regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            if (usage === void 0) {
-              usage = '';
-            }
-
             Network.validate('findAllByName', [name, usage]);
             return _context6.abrupt("return", Network.findByName(name, 'all', usage));
 
-          case 3:
+          case 2:
           case "end":
             return _context6.stop();
         }
       }
     }, _callee6);
   }));
+};
 
-  return function (_x9, _x10) {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
-Network.findById = /*#__PURE__*/function () {
-  var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee7(id) {
+Network.findById = function (id) {
+  return __awaiter$5(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee7() {
     var res;
     return _regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
@@ -6163,27 +6044,23 @@ Network.findById = /*#__PURE__*/function () {
       }
     }, _callee7);
   }));
+};
 
-  return function (_x11) {
-    return _ref4.apply(this, arguments);
-  };
-}();
+Network.fetch = function (name, params) {
+  if (name === void 0) {
+    name = '';
+  }
 
-Network.fetch = /*#__PURE__*/function () {
-  var _ref5 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee8(name, params) {
+  if (params === void 0) {
+    params = {};
+  }
+
+  return __awaiter$5(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee8() {
     var data, res, i;
     return _regeneratorRuntime.wrap(function _callee8$(_context8) {
       while (1) {
         switch (_context8.prev = _context8.next) {
           case 0:
-            if (name === void 0) {
-              name = '';
-            }
-
-            if (params === void 0) {
-              params = {};
-            }
-
             Network.validate('fetch', [name, params]);
             Object.assign(params, {
               expand: 4
@@ -6195,74 +6072,86 @@ Network.fetch = /*#__PURE__*/function () {
               });
             }
 
-            _context8.next = 7;
+            _context8.next = 5;
             return Model.fetch(Network.endpoint, params);
 
-          case 7:
+          case 5:
             data = _context8.sent;
             res = Network.fromArray(data);
             i = 0;
 
-          case 10:
+          case 8:
             if (!(i < res.length)) {
-              _context8.next = 16;
+              _context8.next = 14;
               break;
             }
 
-            _context8.next = 13;
+            _context8.next = 11;
             return res[i].loadAllChildren();
 
-          case 13:
+          case 11:
             i++;
-            _context8.next = 10;
+            _context8.next = 8;
             break;
 
-          case 16:
+          case 14:
             return _context8.abrupt("return", res);
 
-          case 17:
+          case 15:
           case "end":
             return _context8.stop();
         }
       }
     }, _callee8);
   }));
-
-  return function (_x12, _x13) {
-    return _ref5.apply(this, arguments);
-  };
-}();
+};
 
 __decorate([Type(function () {
   return Device;
 })], Network.prototype, "device", void 0);
 
+var __awaiter$4 = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var User = /*#__PURE__*/function (_Model) {
   _inheritsLoose(User, _Model);
 
   function User() {
-    var _this;
-
-    _this = _Model.call(this, 'user', '2.1') || this;
-    _this.first_name = void 0;
-    _this.last_name = void 0;
-    _this.email = void 0;
-    _this.phone = void 0;
-    _this.name = void 0;
-    _this.nickname = void 0;
-    _this.language = void 0;
-    _this.friend = void 0;
-    _this.blocked = void 0;
-    _this.provider = void 0;
-    _this["public"] = void 0;
-    _this.verified_email = void 0;
-    return _this;
+    return _Model.call(this, 'user', '2.1') || this;
   }
 
   var _proto = User.prototype;
 
-  _proto.create = /*#__PURE__*/function () {
-    var _create = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+  _proto.create = function create() {
+    return __awaiter$4(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
       return _regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -6276,16 +6165,10 @@ var User = /*#__PURE__*/function (_Model) {
         }
       }, _callee);
     }));
+  };
 
-    function create() {
-      return _create.apply(this, arguments);
-    }
-
-    return create;
-  }();
-
-  _proto.update = /*#__PURE__*/function () {
-    var _update = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
+  _proto.update = function update() {
+    return __awaiter$4(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
       return _regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
@@ -6299,60 +6182,91 @@ var User = /*#__PURE__*/function (_Model) {
         }
       }, _callee2);
     }));
-
-    function update() {
-      return _update.apply(this, arguments);
-    }
-
-    return update;
-  }();
+  };
 
   return User;
 }(Model);
 User.endpoint = '/2.1/user';
-User.me = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
-  var users;
-  return _regeneratorRuntime.wrap(function _callee3$(_context3) {
-    while (1) {
-      switch (_context3.prev = _context3.next) {
-        case 0:
-          _context3.next = 2;
-          return User.fetch();
 
-        case 2:
-          users = _context3.sent;
-          return _context3.abrupt("return", users[0]);
+User.me = function () {
+  return __awaiter$4(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
+    var users;
+    return _regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.next = 2;
+            return User.fetch();
 
-        case 4:
-        case "end":
-          return _context3.stop();
+          case 2:
+            users = _context3.sent;
+            return _context3.abrupt("return", users[0]);
+
+          case 4:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+};
+
+User.fetch = function () {
+  return __awaiter$4(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
+    var data;
+    return _regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.next = 2;
+            return Model.fetch(User.endpoint + '/me', {
+              expand: 1
+            });
+
+          case 2:
+            data = _context4.sent;
+            return _context4.abrupt("return", User.fromArray(data));
+
+          case 4:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+};
+
+var __awaiter$3 = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
       }
     }
-  }, _callee3);
-}));
-User.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
-  var data;
-  return _regeneratorRuntime.wrap(function _callee4$(_context4) {
-    while (1) {
-      switch (_context4.prev = _context4.next) {
-        case 0:
-          _context4.next = 2;
-          return Model.fetch(User.endpoint + '/me', {
-            expand: 1
-          });
 
-        case 2:
-          data = _context4.sent;
-          return _context4.abrupt("return", User.fromArray(data));
-
-        case 4:
-        case "end":
-          return _context4.stop();
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
       }
     }
-  }, _callee4);
-}));
 
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var Data = /*#__PURE__*/function (_Model) {
   _inheritsLoose(Data, _Model);
 
@@ -6409,8 +6323,8 @@ var Data = /*#__PURE__*/function (_Model) {
 }(Model);
 Data.endpoint = '/2.0/data';
 
-Data.findByDataId = /*#__PURE__*/function () {
-  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(id) {
+Data.findByDataId = function (id) {
+  return __awaiter$3(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
     var json, res;
     return _regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -6439,18 +6353,41 @@ Data.findByDataId = /*#__PURE__*/function () {
       }
     }, _callee);
   }));
+};
 
-  return function (_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
+var __awaiter$2 = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
 
-function notify(_x) {
-  return _notify.apply(this, arguments);
-}
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
 
-function _notify() {
-  _notify = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(message) {
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+function notify(message) {
+  return __awaiter$2(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
     var noti,
         _args = arguments;
     return _regeneratorRuntime.wrap(function _callee$(_context) {
@@ -6469,9 +6406,7 @@ function _notify() {
       }
     }, _callee);
   }));
-  return _notify.apply(this, arguments);
 }
-
 var SendNotification = /*#__PURE__*/function (_PermissionModel) {
   _inheritsLoose(SendNotification, _PermissionModel);
 
@@ -6496,6 +6431,37 @@ var SendNotification = /*#__PURE__*/function (_PermissionModel) {
 }(PermissionModel);
 SendNotification.endpoint = '/2.1/notification';
 
+var __awaiter$1 = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var OAuth = /*#__PURE__*/function (_Model) {
   _inheritsLoose(OAuth, _Model);
 
@@ -6503,12 +6469,6 @@ var OAuth = /*#__PURE__*/function (_Model) {
     var _this;
 
     _this = _Model.call(this, '2.0', 'oauth') || this;
-    _this.name = void 0;
-    _this.api = void 0;
-    _this.installation = void 0;
-    _this.token = void 0;
-    _this.secret_token = void 0;
-    _this.params = void 0;
     Model.validateMethod('OAuth', 'constructor', arguments);
     _this.name = name;
     return _this;
@@ -6516,8 +6476,8 @@ var OAuth = /*#__PURE__*/function (_Model) {
 
   var _proto = OAuth.prototype;
 
-  _proto.getToken = /*#__PURE__*/function () {
-    var _getToken = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(handler) {
+  _proto.getToken = function getToken(handler) {
+    return __awaiter$1(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
       var _this2 = this;
 
       var _args3 = arguments;
@@ -6526,9 +6486,11 @@ var OAuth = /*#__PURE__*/function (_Model) {
           switch (_context3.prev = _context3.next) {
             case 0:
               OAuth.validate('getToken', _args3);
-              return _context3.abrupt("return", new Promise( /*#__PURE__*/function () {
-                var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(resolve, reject) {
-                  var _oauth$params, data, oauth, _oauth$data;
+              return _context3.abrupt("return", new Promise(function (resolve, reject) {
+                return __awaiter$1(_this2, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
+                  var _this3 = this;
+
+                  var _a, _b, data, oauth;
 
                   return _regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
@@ -6536,13 +6498,13 @@ var OAuth = /*#__PURE__*/function (_Model) {
                         case 0:
                           _context2.prev = 0;
                           _context2.next = 3;
-                          return Model.fetch("/2.0/oauth_connect/" + _this2.name, {}, true);
+                          return Model.fetch("/2.0/oauth_connect/" + this.name, {}, true);
 
                         case 3:
                           data = _context2.sent;
                           oauth = data[0];
 
-                          if (!(oauth != null && (_oauth$params = oauth.params) != null && _oauth$params.oauth_token)) {
+                          if (!((_a = oauth === null || oauth === void 0 ? void 0 : oauth.params) === null || _a === void 0 ? void 0 : _a.oauth_token)) {
                             _context2.next = 8;
                             break;
                           }
@@ -6552,15 +6514,15 @@ var OAuth = /*#__PURE__*/function (_Model) {
 
                         case 8:
                           printDebug('OAuth token is not valid, waiting for token on stream');
-                          openStream.subscribeService('/oauth_connect', /*#__PURE__*/function () {
-                            var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(event) {
-                              var _event$data;
+                          openStream.subscribeService('/oauth_connect', function (event) {
+                            return __awaiter$1(_this3, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+                              var _c;
 
                               return _regeneratorRuntime.wrap(function _callee$(_context) {
                                 while (1) {
                                   switch (_context.prev = _context.next) {
                                     case 0:
-                                      if (!(((_event$data = event.data) == null ? void 0 : _event$data.name) === _this2.name)) {
+                                      if (!(((_c = event.data) === null || _c === void 0 ? void 0 : _c.name) === this.name)) {
                                         _context.next = 4;
                                         break;
                                       }
@@ -6577,16 +6539,12 @@ var OAuth = /*#__PURE__*/function (_Model) {
                                       return _context.stop();
                                   }
                                 }
-                              }, _callee);
+                              }, _callee, this);
                             }));
-
-                            return function (_x4) {
-                              return _ref2.apply(this, arguments);
-                            };
-                          }());
+                          });
 
                           if (handler) {
-                            handler(oauth == null ? void 0 : (_oauth$data = oauth.data) == null ? void 0 : _oauth$data.request);
+                            handler((_b = oauth === null || oauth === void 0 ? void 0 : oauth.data) === null || _b === void 0 ? void 0 : _b.request);
                           }
 
                           _context2.next = 16;
@@ -6602,13 +6560,9 @@ var OAuth = /*#__PURE__*/function (_Model) {
                           return _context2.stop();
                       }
                     }
-                  }, _callee2, null, [[0, 13]]);
+                  }, _callee2, this, [[0, 13]]);
                 }));
-
-                return function (_x2, _x3) {
-                  return _ref.apply(this, arguments);
-                };
-              }()));
+              }));
 
             case 2:
             case "end":
@@ -6617,13 +6571,7 @@ var OAuth = /*#__PURE__*/function (_Model) {
         }
       }, _callee3);
     }));
-
-    function getToken(_x) {
-      return _getToken.apply(this, arguments);
-    }
-
-    return getToken;
-  }();
+  };
 
   OAuth.validate = function validate(name, params) {
     Model.validateMethod('OAuth', name, params);
@@ -6633,8 +6581,8 @@ var OAuth = /*#__PURE__*/function (_Model) {
 }(Model);
 OAuth.endpoint = '/2.0/oauth_connect';
 
-OAuth.getToken = /*#__PURE__*/function () {
-  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(name, handler) {
+OAuth.getToken = function (name, handler) {
+  return __awaiter$1(void 0, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
     var oauth;
     return _regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
@@ -6655,61 +6603,81 @@ OAuth.getToken = /*#__PURE__*/function () {
       }
     }, _callee4);
   }));
+};
 
-  return function (_x5, _x6) {
-    return _ref3.apply(this, arguments);
-  };
-}();
+var __awaiter = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
 
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
 var storages = {};
-function wappStorage(_x) {
-  return _wappStorage.apply(this, arguments);
-}
-
-function _wappStorage() {
-  _wappStorage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(name) {
+function wappStorage(name) {
+  return __awaiter(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
     var storage,
-        _args5 = arguments;
-    return _regeneratorRuntime.wrap(function _callee5$(_context5) {
+        _args = arguments;
+    return _regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context.prev = _context.next) {
           case 0:
-            Model.validateMethod('WappStorage', 'wappStorage', _args5);
+            Model.validateMethod('WappStorage', 'wappStorage', _args);
 
             if (name === undefined) {
               name = 'default';
             }
 
             if (!(storages[name] === undefined)) {
-              _context5.next = 7;
+              _context.next = 7;
               break;
             }
 
             storage = new WappStorage(name);
-            _context5.next = 6;
+            _context.next = 6;
             return storage.init();
 
           case 6:
             storages[name] = storage;
 
           case 7:
-            return _context5.abrupt("return", storages[name]);
+            return _context.abrupt("return", storages[name]);
 
           case 8:
           case "end":
-            return _context5.stop();
+            return _context.stop();
         }
       }
-    }, _callee5);
+    }, _callee);
   }));
-  return _wappStorage.apply(this, arguments);
 }
-
 var WappStorage = /*#__PURE__*/function () {
   function WappStorage(name) {
     this.name = '';
     this.id = '';
-    this.data = void 0;
     WappStorage.validate('constructor', arguments);
     this.name = name;
     this.id = "wapp_storage_" + this.name;
@@ -6718,57 +6686,51 @@ var WappStorage = /*#__PURE__*/function () {
 
   var _proto = WappStorage.prototype;
 
-  _proto.init = /*#__PURE__*/function () {
-    var _init = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+  _proto.init = function init() {
+    return __awaiter(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee2() {
       var data;
-      return _regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              _context.next = 2;
-              return Data.findByDataId(this.id);
-
-            case 2:
-              data = _context.sent;
-
-              if (!(data.length > 0)) {
-                _context.next = 7;
-                break;
-              }
-
-              this.data = data[0];
-              _context.next = 9;
-              break;
-
-            case 7:
-              _context.next = 9;
-              return this.data.create();
-
-            case 9:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee, this);
-    }));
-
-    function init() {
-      return _init.apply(this, arguments);
-    }
-
-    return init;
-  }();
-
-  _proto.set = /*#__PURE__*/function () {
-    var _set = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(name, item) {
-      var _args2 = arguments;
       return _regeneratorRuntime.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              WappStorage.validate('set', _args2);
+              _context2.next = 2;
+              return Data.findByDataId(this.id);
+
+            case 2:
+              data = _context2.sent;
+
+              if (!(data.length > 0)) {
+                _context2.next = 7;
+                break;
+              }
+
+              this.data = data[0];
+              _context2.next = 9;
+              break;
+
+            case 7:
+              _context2.next = 9;
+              return this.data.create();
+
+            case 9:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2, this);
+    }));
+  };
+
+  _proto.set = function set(name, item) {
+    return __awaiter(this, arguments, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee3() {
+      var _args3 = arguments;
+      return _regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              WappStorage.validate('set', _args3);
               this.data.set(name, item);
-              _context2.next = 4;
+              _context3.next = 4;
               return this.data.update();
 
             case 4:
@@ -6776,18 +6738,12 @@ var WappStorage = /*#__PURE__*/function () {
 
             case 5:
             case "end":
-              return _context2.stop();
+              return _context3.stop();
           }
         }
-      }, _callee2, this);
+      }, _callee3, this);
     }));
-
-    function set(_x2, _x3) {
-      return _set.apply(this, arguments);
-    }
-
-    return set;
-  }();
+  };
 
   _proto.get = function get(name) {
     WappStorage.validate('get', arguments);
@@ -6799,59 +6755,47 @@ var WappStorage = /*#__PURE__*/function () {
 
     WappStorage.validate('onChange', arguments);
     openStream.subscribeInternal("storage_" + this.name + "_updated",
-    /*#__PURE__*/
-
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(_) {
-        return _regeneratorRuntime.wrap(function _callee3$(_context3) {
+    function (_) {
+      return __awaiter(_this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
+        return _regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
-                _context3.next = 2;
-                return _this.data.reload();
+                _context4.next = 2;
+                return this.data.reload();
 
               case 2:
                 cb();
-                return _context3.abrupt("return", undefined);
+                return _context4.abrupt("return", undefined);
 
               case 4:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3);
+        }, _callee4, this);
       }));
-
-      return function (_x4) {
-        return _ref.apply(this, arguments);
-      };
-    }());
+    });
   };
 
-  _proto.reload = /*#__PURE__*/function () {
-    var _reload = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
-      return _regeneratorRuntime.wrap(function _callee4$(_context4) {
+  _proto.reload = function reload() {
+    return __awaiter(this, void 0, void 0, /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
+      return _regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
-              _context4.next = 2;
+              _context5.next = 2;
               return this.data.reload();
 
             case 2:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
         }
-      }, _callee4, this);
+      }, _callee5, this);
     }));
-
-    function reload() {
-      return _reload.apply(this, arguments);
-    }
-
-    return reload;
-  }();
+  };
 
   _proto.reset = function reset() {
     this.data["delete"]();

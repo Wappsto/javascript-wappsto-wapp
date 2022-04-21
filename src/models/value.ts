@@ -18,11 +18,10 @@ import {
 import { printDebug } from '../util/debug';
 import {
     IModel,
-    IValue,
-    IValueNumber,
-    IValueString,
-    IValueBlob,
-    IValueXml,
+    IValueBase,
+    IValueNumberBase,
+    IValueStringBlobBase,
+    IValueXmlBase,
     ValuePermission,
     EventLogLevel,
     IState,
@@ -33,7 +32,7 @@ import {
     ValueStreamCallback,
 } from '../util/interfaces';
 
-export class Value extends StreamModel implements IValue {
+export class Value extends StreamModel implements IValueBase {
     static endpoint = '/2.0/value';
 
     name: string;
@@ -44,10 +43,12 @@ export class Value extends StreamModel implements IValue {
     period?: string;
     last_period = '';
     delta?: string;
-    number?: IValueNumber;
-    string?: IValueString;
-    blob?: IValueBlob;
-    xml?: IValueXml;
+
+    number?: IValueNumberBase;
+    string?: IValueStringBlobBase;
+    blob?: IValueStringBlobBase;
+    xml?: IValueXmlBase;
+
     status?: string;
     @Type(() => State)
     state: State[] = [];

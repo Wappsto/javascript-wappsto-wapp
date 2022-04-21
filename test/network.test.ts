@@ -237,10 +237,12 @@ describe('network', () => {
             name: 'Value Name',
             permission: 'rw',
             type: 'temperature',
-            min: 0,
-            max: 100,
-            step: 1,
-            unit: 'c',
+            number: {
+                min: 0,
+                max: 100,
+                step: 1,
+                unit: 'c',
+            },
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
