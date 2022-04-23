@@ -75,7 +75,7 @@
         "parse-duration": "^1.0.2",
         "reflect-metadata": "^0.1.13",
         "ts-interface-checker": "^1.0.2",
-        "tslib": "^2.3.1",
+        "tslib": "^2.4.0",
         "universal-websocket-client": "^1.0.2"
     },
     "devDependencies": {
