@@ -353,6 +353,7 @@ describe('device', () => {
                 name: 'name',
                 permission: 'rw',
                 period: '0',
+                delta: '0',
                 type: 'string',
                 string: {
                     max: 64,
@@ -389,6 +390,7 @@ describe('device', () => {
                 name: 'name',
                 permission: 'rw',
                 period: '0',
+                delta: '0',
                 type: 'xml',
                 xml: {
                     xsd: '',
@@ -429,6 +431,7 @@ describe('device', () => {
                 name: 'name',
                 permission: 'rw',
                 period: '0',
+                delta: '0',
                 type: 'blob',
                 blob: {
                     max: 280,
@@ -490,13 +493,11 @@ describe('device', () => {
             permission: 'rw',
             type: 'type',
             delta: 'delta',
-            number: {
-                min: 0,
-                max: 1,
-                step: 1,
-                unit: 'unit',
-                si_conversion: 'si_conversion',
-            },
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'unit',
+            si_conversion: 'si_conversion',
         });
 
         expect(value.name).toEqual('Value Name');
@@ -603,10 +604,8 @@ describe('device', () => {
             permission: 'wr',
             type: 'type',
             delta: 'delta',
-            string: {
-                max: 10,
-                encoding: 'encoding',
-            },
+            max: 10,
+            encoding: 'encoding',
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -626,7 +625,7 @@ describe('device', () => {
                 string: {
                     max: 10,
                     encoding: 'encoding',
-                },
+                }
             }),
             {}
         );
@@ -696,10 +695,8 @@ describe('device', () => {
             permission: 'r',
             type: 'type',
             delta: 'delta',
-            blob: {
-                max: 10,
-                encoding: 'encoding',
-            },
+            max: 10,
+            encoding: 'encoding',
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -778,10 +775,8 @@ describe('device', () => {
             type: 'type',
             period: '0',
             delta: 'delta',
-            xml: {
-                xsd: 'xsd',
-                namespace: 'namespace',
-            },
+            xsd: 'xsd',
+            namespace: 'namespace',
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -866,13 +861,11 @@ describe('device', () => {
             type: 'type',
             period: '0',
             delta: 'delta',
-            number: {
-                min: 0,
-                max: 1,
-                step: 1,
-                unit: 'unit',
-                si_conversion: 'si_conversion',
-            },
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'unit',
+            si_conversion: 'si_conversion',
         });
 
         expect(value.name).toEqual('Value Name');

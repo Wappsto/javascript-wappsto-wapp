@@ -807,12 +807,10 @@ describe('value', () => {
             type: 'type',
             period: 'period',
             delta: 'delta',
-            number: {
-                min: 0,
-                max: 1,
-                step: 1,
-                unit: 'unit',
-            },
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'unit',
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -956,12 +954,10 @@ describe('value', () => {
             type: 'number',
             permission: 'r',
             delta: '50',
-            number: {
-                min: 0,
-                max: 100,
-                step: 1,
-                unit: '',
-            },
+            min: 0,
+            max: 100,
+            step: 1,
+            unit: '',
         });
 
         value.onRefresh((val, type) => {
@@ -1068,12 +1064,10 @@ describe('value', () => {
             name: 'test',
             type: 'number',
             permission: 'r',
-            number: {
-                min: 0,
-                max: 100,
-                step: 1,
-                unit: '',
-            },
+            min: 0,
+            max: 100,
+            step: 1,
+            unit: '',
             delta: '50',
             period: '2',
         });

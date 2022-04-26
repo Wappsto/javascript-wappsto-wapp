@@ -10,6 +10,7 @@ import {
     IModel,
     IDevice,
     IValue,
+    IValueBase,
     IValueNumber,
     IValueString,
     IValueBlob,
@@ -136,33 +137,72 @@ export class Device extends StreamModel implements IDevice {
         return await this._createValue(valueTemplate);
     }
 
+    private getValueBase(
+        params: IValueNumber | IValueString | IValueBlob | IValueXml
+    ): IValueBase {
+        return {
+            name: params.name,
+            permission: params.permission,
+            type: params.type,
+            description: params.description,
+            period: params.period,
+            delta: params.delta,
+        };
+    }
+
     public async createNumberValue(params: IValueNumber): Promise<Value> {
         this.validate('createNumberValue', arguments);
-
-        const value: IValueNumber = params;
-        value.delta = value.delta ?? '0';
-        return await this._createValue(value);
+        const base = this.getValueBase(params);
+        base.delta = params.delta ?? '0';
+        return await this._createValue({
+            ...base,
+            number: {
+                min: params.min,
+                max: params.max,
+                step: params.step,
+                unit: params.unit,
+                si_conversion: params.si_conversion,
+                mapping: params.mapping,
+                ordered_mapping: params.ordered_mapping,
+                meaningful_zero: params.meaningful_zero,
+            },
+        });
     }
 
     public async createStringValue(params: IValueString): Promise<Value> {
         this.validate('createStringValue', arguments);
-
-        const value: IValueString = params; // ?? not used variable
-        return await this._createValue(value);
+        const base = this.getValueBase(params);
+        return await this._createValue({
+            ...base,
+            string: {
+                max: params.max,
+                encoding: params.encoding,
+            },
+        });
     }
 
     public async createBlobValue(params: IValueBlob): Promise<Value> {
         this.validate('createBlobValue', arguments);
-
-        const value: IValueBlob = params;
-        return await this._createValue(value);
+        const base = this.getValueBase(params);
+        return await this._createValue({
+            ...base,
+            blob: {
+                max: params.max,
+                encoding: params.encoding,
+            },
+        });
     }
 
     public async createXmlValue(params: IValueXml): Promise<Value> {
         this.validate('createXmlValue', arguments);
-
-        const xmlValue: IValueXml = params; //
-        return await this._createValue(xmlValue);
+        const base = this.getValueBase(params);
+        return await this._createValue({
+            ...base,
+            xml: {
+                xsd: params.xsd,
+                namespace: params.namespace,
+            },
+        });
     }
 
     public parseChildren(json: Record<string, any>): boolean {

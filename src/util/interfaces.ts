@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
-import { ValueTemplate } from './value_template';
-
 export type ValidationType = 'none' | 'normal';
 export interface IConfig {
     verbose?: boolean;
@@ -153,7 +151,11 @@ export interface IPermissionModelFunc {
 
 export type ValuePermission = 'r' | 'w' | 'rw' | 'wr';
 
-export type IValue = IValueXml | IValueBlob | IValueNumber | IValueString;
+export type IValue =
+    | (IValueBase & { number: IValueNumberBase })
+    | (IValueBase & { string: IValueStringBlobBase })
+    | (IValueBase & { blob: IValueStringBlobBase })
+    | (IValueBase & { xml: IValueXmlBase });
 
 export interface IValueBase {
     name: string;
@@ -185,21 +187,13 @@ export interface IValueXmlBase {
     namespace?: string;
 }
 
-export interface IValueNumber extends IValueBase {
-    number: IValueNumberBase;
-}
+export interface IValueNumber extends IValueBase, IValueNumberBase {}
 
-export interface IValueString extends IValueBase {
-    string: IValueStringBlobBase;
-}
+export interface IValueString extends IValueBase, IValueStringBlobBase {}
 
-export interface IValueBlob extends IValueBase {
-    blob: IValueStringBlobBase;
-}
+export interface IValueBlob extends IValueBase, IValueStringBlobBase {}
 
-export interface IValueXml extends IValueBase {
-    xml: IValueXmlBase;
-}
+export interface IValueXml extends IValueBase, IValueXmlBase {}
 
 export interface IValueFunc {
     constructor(name?: string): IState;

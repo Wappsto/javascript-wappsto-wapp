@@ -194,10 +194,30 @@ export const ValuePermission = t.union(
 );
 
 export const IValue = t.union(
-    'IValueXml',
-    'IValueBlob',
-    'IValueNumber',
-    'IValueString'
+    t.intersection(
+        'IValueBase',
+        t.iface([], {
+            number: 'IValueNumberBase',
+        })
+    ),
+    t.intersection(
+        'IValueBase',
+        t.iface([], {
+            string: 'IValueStringBlobBase',
+        })
+    ),
+    t.intersection(
+        'IValueBase',
+        t.iface([], {
+            blob: 'IValueStringBlobBase',
+        })
+    ),
+    t.intersection(
+        'IValueBase',
+        t.iface([], {
+            xml: 'IValueXmlBase',
+        })
+    )
 );
 
 export const IValueBase = t.iface([], {
@@ -230,21 +250,13 @@ export const IValueXmlBase = t.iface([], {
     namespace: t.opt('string'),
 });
 
-export const IValueNumber = t.iface(['IValueBase'], {
-    number: 'IValueNumberBase',
-});
+export const IValueNumber = t.iface(['IValueBase', 'IValueNumberBase'], {});
 
-export const IValueString = t.iface(['IValueBase'], {
-    string: 'IValueStringBlobBase',
-});
+export const IValueString = t.iface(['IValueBase', 'IValueStringBlobBase'], {});
 
-export const IValueBlob = t.iface(['IValueBase'], {
-    blob: 'IValueStringBlobBase',
-});
+export const IValueBlob = t.iface(['IValueBase', 'IValueStringBlobBase'], {});
 
-export const IValueXml = t.iface(['IValueBase'], {
-    xml: 'IValueXmlBase',
-});
+export const IValueXml = t.iface(['IValueBase', 'IValueXmlBase'], {});
 
 export const IValueFunc = t.iface([], {
     constructor: t.func('IState', t.param('name', 'string', true)),
