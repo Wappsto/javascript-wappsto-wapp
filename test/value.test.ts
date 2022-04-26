@@ -953,11 +953,11 @@ describe('value', () => {
             name: 'test',
             type: 'number',
             permission: 'r',
+            delta: '50',
             min: 0,
             max: 100,
             step: 1,
             unit: '',
-            delta: '50',
         });
 
         value.onRefresh((val, type) => {
