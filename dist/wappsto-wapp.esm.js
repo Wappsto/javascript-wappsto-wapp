@@ -114,7 +114,15 @@ var IPermissionModelFunc = /*#__PURE__*/t.iface([], {
   request: /*#__PURE__*/t.func( /*#__PURE__*/t.array('any'), /*#__PURE__*/t.param('endpoint', 'string'), /*#__PURE__*/t.param('quantity', /*#__PURE__*/t.union('number', /*#__PURE__*/t.lit('all'))), /*#__PURE__*/t.param('message', 'string'), /*#__PURE__*/t.param('options', 'any', true))
 });
 var ValuePermission = /*#__PURE__*/t.union( /*#__PURE__*/t.lit('r'), /*#__PURE__*/t.lit('w'), /*#__PURE__*/t.lit('rw'), /*#__PURE__*/t.lit('wr'));
-var IValue = /*#__PURE__*/t.union('IValueXml', 'IValueBlob', 'IValueNumber', 'IValueString');
+var IValue = /*#__PURE__*/t.union( /*#__PURE__*/t.intersection('IValueBase', /*#__PURE__*/t.iface([], {
+  number: 'IValueNumberBase'
+})), /*#__PURE__*/t.intersection('IValueBase', /*#__PURE__*/t.iface([], {
+  string: 'IValueStringBlobBase'
+})), /*#__PURE__*/t.intersection('IValueBase', /*#__PURE__*/t.iface([], {
+  blob: 'IValueStringBlobBase'
+})), /*#__PURE__*/t.intersection('IValueBase', /*#__PURE__*/t.iface([], {
+  xml: 'IValueXmlBase'
+})));
 var IValueBase = /*#__PURE__*/t.iface([], {
   name: 'string',
   permission: 'ValuePermission',
@@ -141,18 +149,10 @@ var IValueXmlBase = /*#__PURE__*/t.iface([], {
   xsd: /*#__PURE__*/t.opt('string'),
   namespace: /*#__PURE__*/t.opt('string')
 });
-var IValueNumber = /*#__PURE__*/t.iface(['IValueBase'], {
-  number: 'IValueNumberBase'
-});
-var IValueString = /*#__PURE__*/t.iface(['IValueBase'], {
-  string: 'IValueStringBlobBase'
-});
-var IValueBlob = /*#__PURE__*/t.iface(['IValueBase'], {
-  blob: 'IValueStringBlobBase'
-});
-var IValueXml = /*#__PURE__*/t.iface(['IValueBase'], {
-  xml: 'IValueXmlBase'
-});
+var IValueNumber = /*#__PURE__*/t.iface(['IValueBase', 'IValueNumberBase'], {});
+var IValueString = /*#__PURE__*/t.iface(['IValueBase', 'IValueStringBlobBase'], {});
+var IValueBlob = /*#__PURE__*/t.iface(['IValueBase', 'IValueStringBlobBase'], {});
+var IValueXml = /*#__PURE__*/t.iface(['IValueBase', 'IValueXmlBase'], {});
 var IValueFunc = /*#__PURE__*/t.iface([], {
   constructor: /*#__PURE__*/t.func('IState', /*#__PURE__*/t.param('name', 'string', true)),
   createState: /*#__PURE__*/t.func('IState', /*#__PURE__*/t.param('parameters', 'IState')),

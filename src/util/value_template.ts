@@ -1,9 +1,9 @@
-import { IValue } from './interfaces';
+import { ValueType } from './interfaces';
 
 export class ValueTemplate {
     static version = '0.0.3';
 
-    static BOOLEAN_TRUEFALSE: IValue = {
+    static BOOLEAN_TRUEFALSE: ValueType = {
         type: 'boolean',
         name: '',
         permission: 'r',
@@ -18,7 +18,7 @@ export class ValueTemplate {
             unit: '',
         },
     };
-    static BOOLEAN_ONOFF: IValue = {
+    static BOOLEAN_ONOFF: ValueType = {
         type: 'boolean',
         name: '',
         permission: 'r',
@@ -33,7 +33,7 @@ export class ValueTemplate {
             unit: '',
         },
     };
-    static VOLTAGE_V: IValue = {
+    static VOLTAGE_V: ValueType = {
         type: 'voltage',
         name: '',
         permission: 'r',
@@ -48,7 +48,7 @@ export class ValueTemplate {
             unit: 'V',
         },
     };
-    static POWER_WATT: IValue = {
+    static POWER_WATT: ValueType = {
         type: 'power',
         name: '',
         permission: 'r',
@@ -63,7 +63,7 @@ export class ValueTemplate {
             unit: 'W',
         },
     };
-    static POWER_KW: IValue = {
+    static POWER_KW: ValueType = {
         type: 'power',
         name: '',
         permission: 'r',
@@ -78,7 +78,7 @@ export class ValueTemplate {
             unit: 'kW',
         },
     };
-    static ENERGY_WH: IValue = {
+    static ENERGY_WH: ValueType = {
         type: 'energy',
         name: '',
         permission: 'r',
@@ -93,7 +93,7 @@ export class ValueTemplate {
             unit: 'Wh',
         },
     };
-    static ENERGY_KWH: IValue = {
+    static ENERGY_KWH: ValueType = {
         type: 'energy',
         name: '',
         permission: 'r',
@@ -108,7 +108,7 @@ export class ValueTemplate {
             unit: 'kWh',
         },
     };
-    static TEMPERATURE_CELSIUS: IValue = {
+    static TEMPERATURE_CELSIUS: ValueType = {
         type: 'temperature',
         name: '',
         permission: 'r',
@@ -123,7 +123,7 @@ export class ValueTemplate {
             unit: '°C',
         },
     };
-    static TEMPERATURE_FAHRENHEIT: IValue = {
+    static TEMPERATURE_FAHRENHEIT: ValueType = {
         type: 'temperature',
         name: '',
         permission: 'r',
@@ -138,7 +138,7 @@ export class ValueTemplate {
             unit: '°F',
         },
     };
-    static TEMPERATURE_KELVIN: IValue = {
+    static TEMPERATURE_KELVIN: ValueType = {
         type: 'temperature',
         name: '',
         permission: 'r',
@@ -153,7 +153,7 @@ export class ValueTemplate {
             unit: 'K',
         },
     };
-    static ANGLE: IValue = {
+    static ANGLE: ValueType = {
         type: 'angle',
         name: '',
         permission: 'r',
@@ -168,7 +168,7 @@ export class ValueTemplate {
             unit: '°',
         },
     };
-    static PERCENTAGE: IValue = {
+    static PERCENTAGE: ValueType = {
         type: 'percentage',
         name: '',
         permission: 'r',
@@ -183,7 +183,7 @@ export class ValueTemplate {
             unit: '%',
         },
     };
-    static SPEED_MS: IValue = {
+    static SPEED_MS: ValueType = {
         type: 'speed',
         name: '',
         permission: 'r',
@@ -198,7 +198,7 @@ export class ValueTemplate {
             unit: 'm/s',
         },
     };
-    static PRECIPITATION_MM: IValue = {
+    static PRECIPITATION_MM: ValueType = {
         type: 'precipitation',
         name: '',
         permission: 'r',
@@ -213,7 +213,7 @@ export class ValueTemplate {
             unit: 'mm',
         },
     };
-    static HUMIDITY: IValue = {
+    static HUMIDITY: ValueType = {
         type: 'relative_humidity',
         name: '',
         permission: 'r',
@@ -228,7 +228,7 @@ export class ValueTemplate {
             unit: '%',
         },
     };
-    static CO2_PPM: IValue = {
+    static CO2_PPM: ValueType = {
         type: 'co2',
         name: '',
         permission: 'r',
@@ -243,7 +243,7 @@ export class ValueTemplate {
             unit: 'ppm',
         },
     };
-    static CONCENTRATION_PPM: IValue = {
+    static CONCENTRATION_PPM: ValueType = {
         type: 'concentration',
         name: '',
         permission: 'r',
@@ -258,7 +258,7 @@ export class ValueTemplate {
             unit: 'ppm',
         },
     };
-    static PRESSURE_HPA: IValue = {
+    static PRESSURE_HPA: ValueType = {
         name: '',
         permission: 'r',
         type: 'pressure',
@@ -273,7 +273,7 @@ export class ValueTemplate {
             unit: 'hPa',
         },
     };
-    static TIMESTAMP: IValue = {
+    static TIMESTAMP: ValueType = {
         type: 'timestamp',
         name: '',
         permission: 'r',
@@ -282,7 +282,7 @@ export class ValueTemplate {
             encoding: 'ISO 8601',
         },
     };
-    static DISTANCE_M: IValue = {
+    static DISTANCE_M: ValueType = {
         type: 'distance',
         name: '',
         permission: 'r',
@@ -297,7 +297,7 @@ export class ValueTemplate {
             unit: 'm',
         },
     };
-    static LUMINOUSITY_LX: IValue = {
+    static LUMINOUSITY_LX: ValueType = {
         type: 'luminousity',
         name: '',
         permission: 'r',
@@ -312,7 +312,7 @@ export class ValueTemplate {
             unit: 'lx',
         },
     };
-    static COLOR_HEX: IValue = {
+    static COLOR_HEX: ValueType = {
         type: 'color',
         name: '',
         permission: 'r',
@@ -321,7 +321,7 @@ export class ValueTemplate {
             encoding: 'hex',
         },
     };
-    static COLOR_INT: IValue = {
+    static COLOR_INT: ValueType = {
         type: 'color',
         name: '',
         permission: 'r',
@@ -330,7 +330,7 @@ export class ValueTemplate {
             encoding: 'integer',
         },
     };
-    static COLOR_TEMPERATURE: IValue = {
+    static COLOR_TEMPERATURE: ValueType = {
         type: 'color_temperature',
         name: '',
         permission: 'r',
@@ -345,7 +345,7 @@ export class ValueTemplate {
             unit: 'K',
         },
     };
-    static IMAGE_JPG: IValue = {
+    static IMAGE_JPG: ValueType = {
         type: 'image',
         name: '',
         permission: 'r',
@@ -354,7 +354,7 @@ export class ValueTemplate {
             encoding: 'base64',
         },
     };
-    static LATITUDE: IValue = {
+    static LATITUDE: ValueType = {
         type: 'latitude',
         name: '',
         permission: 'r',
@@ -369,7 +369,7 @@ export class ValueTemplate {
             unit: '°N',
         },
     };
-    static LONGITUDE: IValue = {
+    static LONGITUDE: ValueType = {
         type: 'longitude',
         name: '',
         permission: 'r',
@@ -384,7 +384,7 @@ export class ValueTemplate {
             unit: '°E',
         },
     };
-    static ALTITUDE_M: IValue = {
+    static ALTITUDE_M: ValueType = {
         type: 'altitude',
         name: '',
         permission: 'r',
@@ -399,7 +399,7 @@ export class ValueTemplate {
             unit: 'm',
         },
     };
-    static STREET: IValue = {
+    static STREET: ValueType = {
         type: 'street',
         name: '',
         permission: 'r',
@@ -408,7 +408,7 @@ export class ValueTemplate {
             encoding: '',
         },
     };
-    static CITY: IValue = {
+    static CITY: ValueType = {
         type: 'city',
         name: '',
         permission: 'r',
@@ -417,7 +417,7 @@ export class ValueTemplate {
             encoding: '',
         },
     };
-    static POSTCODE: IValue = {
+    static POSTCODE: ValueType = {
         type: 'postcode',
         name: '',
         permission: 'r',
@@ -426,7 +426,7 @@ export class ValueTemplate {
             encoding: '',
         },
     };
-    static COUNTRY: IValue = {
+    static COUNTRY: ValueType = {
         name: '',
         permission: 'r',
         type: 'country',
@@ -435,7 +435,7 @@ export class ValueTemplate {
             encoding: '',
         },
     };
-    static COUNTRY_CODE: IValue = {
+    static COUNTRY_CODE: ValueType = {
         type: 'country_code',
         name: '',
         permission: 'r',
@@ -444,7 +444,7 @@ export class ValueTemplate {
             encoding: 'ISO 3166-1 Alpha-2',
         },
     };
-    static ADDRESS_NAME: IValue = {
+    static ADDRESS_NAME: ValueType = {
         type: 'address_name',
         name: '',
         permission: 'r',
@@ -453,7 +453,7 @@ export class ValueTemplate {
             encoding: '',
         },
     };
-    static ORGANISATION: IValue = {
+    static ORGANISATION: ValueType = {
         type: 'organisation',
         name: '',
         permission: 'r',
@@ -462,7 +462,7 @@ export class ValueTemplate {
             encoding: '',
         },
     };
-    static IDENTIFIER: IValue = {
+    static IDENTIFIER: ValueType = {
         type: 'identifier',
         name: '',
         permission: 'r',
@@ -471,7 +471,7 @@ export class ValueTemplate {
             encoding: '',
         },
     };
-    static NUMBER: IValue = {
+    static NUMBER: ValueType = {
         type: 'number',
         name: '',
         permission: 'r',
@@ -486,7 +486,7 @@ export class ValueTemplate {
             unit: '',
         },
     };
-    static STRING: IValue = {
+    static STRING: ValueType = {
         type: 'string',
         name: '',
         permission: 'r',
@@ -495,7 +495,7 @@ export class ValueTemplate {
             encoding: '',
         },
     };
-    static BLOB: IValue = {
+    static BLOB: ValueType = {
         type: 'blob',
         name: '',
         permission: 'r',
@@ -504,7 +504,7 @@ export class ValueTemplate {
             encoding: 'base64',
         },
     };
-    static XML: IValue = {
+    static XML: ValueType = {
         type: 'xml',
         name: '',
         permission: 'r',

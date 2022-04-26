@@ -625,7 +625,7 @@ describe('device', () => {
                 string: {
                     max: 10,
                     encoding: 'encoding',
-                }
+                },
             }),
             {}
         );

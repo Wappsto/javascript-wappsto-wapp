@@ -4,17 +4,17 @@ import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { Value } from './value';
-import { ValuePermission } from '../util/interfaces';
 import { printDebug } from '../util/debug';
 import {
     IModel,
     IDevice,
-    IValue,
     IValueBase,
     IValueNumber,
     IValueString,
     IValueBlob,
     IValueXml,
+    ValueType,
+    ValuePermission
 } from '../util/interfaces';
 
 export class Device extends StreamModel implements IDevice {
@@ -74,7 +74,7 @@ export class Device extends StreamModel implements IDevice {
         }
     }
 
-    public async _createValue(params: IValue): Promise<Value> {
+    private async _createValue(params: ValueType): Promise<Value> {
         let oldDelta;
         let oldPeriod = '0';
         let value = new Value();
@@ -123,7 +123,7 @@ export class Device extends StreamModel implements IDevice {
     public async createValue(
         name: string,
         permission: ValuePermission,
-        valueTemplate: IValue,
+        valueTemplate: ValueType,
         period = '0',
         delta: number | 'inf' = 0
     ): Promise<Value> {

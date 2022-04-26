@@ -76,8 +76,8 @@ export interface INetworkFunc {
     createNetwork(parameters: INetwork): Promise<INetwork>;
     findDeviceByName(name: string): IDevice[];
     findDeviceByProduct(product: string): IDevice[];
-    findValueByName(name: string): IValue[];
-    findValueByType(type: string): IValue[];
+    findValueByName(name: string): ValueType[];
+    findValueByType(type: string): ValueType[];
     createDevice(parameters: IDevice): Promise<IDevice>;
     find(
         options: Record<string, any>,
@@ -107,15 +107,15 @@ export interface IDevice {
 
 export interface IDeviceFunc {
     constructor(name?: string): void;
-    findValueByName(name: string): IValue[];
-    findValueByType(type: string): IValue[];
+    findValueByName(name: string): ValueType[];
+    findValueByType(type: string): ValueType[];
     createValue(
         name: string,
         permission: ValuePermission,
-        valueTemplate: IValue,
+        valueTemplate: ValueType,
         period?: string,
         delta?: number | 'inf'
-    ): Promise<IValue>;
+    ): Promise<ValueType>;
     createNumberValue(parameters: IValueNumber): Promise<IValueNumber>;
     createStringValue(parameters: IValueString): Promise<IValueString>;
     createBlobValue(parameters: IValueBlob): Promise<IValueBlob>;
@@ -151,7 +151,7 @@ export interface IPermissionModelFunc {
 
 export type ValuePermission = 'r' | 'w' | 'rw' | 'wr';
 
-export type IValue =
+export type ValueType =
     | (IValueBase & { number: IValueNumberBase })
     | (IValueBase & { string: IValueStringBlobBase })
     | (IValueBase & { blob: IValueStringBlobBase })
@@ -210,12 +210,12 @@ export interface IValueFunc {
         options: Record<string, any>,
         quantity: number | 'all',
         usage: string
-    ): IValue[];
-    findByName(name: string, quantity: number | 'all', usage: string): IValue[];
-    findByType(type: string, quantity: number | 'all', usage: string): IValue[];
-    findAllByName(name: string, usage: string): IValue[];
-    findAllByType(type: string, usage: string): IValue[];
-    findById(id: string): IValue;
+    ): ValueType[];
+    findByName(name: string, quantity: number | 'all', usage: string): ValueType[];
+    findByType(type: string, quantity: number | 'all', usage: string): ValueType[];
+    findAllByName(name: string, usage: string): ValueType[];
+    findAllByType(type: string, usage: string): ValueType[];
+    findById(id: string): ValueType;
     addEvent(
         level: EventLogLevel,
         message: string,
