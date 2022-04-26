@@ -211,8 +211,16 @@ export interface IValueFunc {
         quantity: number | 'all',
         usage: string
     ): ValueType[];
-    findByName(name: string, quantity: number | 'all', usage: string): ValueType[];
-    findByType(type: string, quantity: number | 'all', usage: string): ValueType[];
+    findByName(
+        name: string,
+        quantity: number | 'all',
+        usage: string
+    ): ValueType[];
+    findByType(
+        type: string,
+        quantity: number | 'all',
+        usage: string
+    ): ValueType[];
     findAllByName(name: string, usage: string): ValueType[];
     findAllByType(type: string, usage: string): ValueType[];
     findById(id: string): ValueType;

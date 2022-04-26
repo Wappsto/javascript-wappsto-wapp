@@ -14,7 +14,7 @@ import {
     IValueBlob,
     IValueXml,
     ValueType,
-    ValuePermission
+    ValuePermission,
 } from '../util/interfaces';
 
 export class Device extends StreamModel implements IDevice {
