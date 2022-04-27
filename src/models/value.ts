@@ -1,6 +1,5 @@
 import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
-import parseDuration from 'parse-duration';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
@@ -424,8 +423,8 @@ export class Value extends StreamModel implements IValueBase {
         return this.changeAttribute('status', 'update');
     }
 
-    public async setPeriod(period: string): Promise<void> {
-        return this.changeAttribute('period', period);
+    public async setPeriod(period: number): Promise<void> {
+        return this.changeAttribute('period', period.toString());
     }
 
     public async setDelta(delta: number): Promise<void> {
@@ -547,15 +546,12 @@ export class Value extends StreamModel implements IValueBase {
 
     private getPeriodTimeout(): number {
         let timeout = 0;
-        if (isPositiveInteger(this.last_period)) {
-            timeout = parseInt(this.last_period);
-        } else {
-            timeout = parseDuration(this.last_period, 's');
-        }
-        if (timeout) {
+        timeout = parseInt(this.last_period);
+        if (timeout && isPositiveInteger(this.last_period)) {
             return getSecondsToNextPeriod(timeout) * 1000;
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     private startPeriodHandler(): void {

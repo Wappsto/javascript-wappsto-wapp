@@ -195,14 +195,14 @@ describe('value', () => {
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
 
-        await value.setPeriod('1h');
+        await value.setPeriod(3600); // 1 hour
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             {
-                period: '1h',
+                period: '3600',
             },
             {}
         );
