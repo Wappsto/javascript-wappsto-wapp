@@ -6884,7 +6884,7 @@ var WappStorage = /*#__PURE__*/function () {
   return WappStorage;
 }();
 
-Error.stackTraceLimit = 30;
+Error.stackTraceLimit = Infinity;
 
 export { Data, Device, Network, Notification, OAuth, State, Stream, User, Value, ValueTemplate, cancelFromBackground, cancelFromForeground, cancelOnWebHook, config, createNetwork, extSyncToken, fromBackground, fromForeground, notify, onWebHook, wappsto as request, sendToBackground, sendToForeground, startLogging, stopLogging, wappStorage };
 //# sourceMappingURL=wappsto-wapp.esm.js.map
