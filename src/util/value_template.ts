@@ -1,11 +1,12 @@
-import { IValueTemplate } from './interfaces';
+import { ValueType } from './interfaces';
 
 export class ValueTemplate {
-    static version = '0.0.2';
+    static version = '0.0.3';
 
-    static BOOLEAN_TRUEFALSE: IValueTemplate = {
-        value_type: 'number',
+    static BOOLEAN_TRUEFALSE: ValueType = {
         type: 'boolean',
+        name: '',
+        permission: 'r',
         number: {
             mapping: { '0': 'false', '1': 'true' },
             ordered_mapping: undefined,
@@ -17,9 +18,10 @@ export class ValueTemplate {
             unit: '',
         },
     };
-    static BOOLEAN_ONOFF: IValueTemplate = {
-        value_type: 'number',
+    static BOOLEAN_ONOFF: ValueType = {
         type: 'boolean',
+        name: '',
+        permission: 'r',
         number: {
             mapping: { '0': 'off', '1': 'on' },
             ordered_mapping: undefined,
@@ -31,9 +33,10 @@ export class ValueTemplate {
             unit: '',
         },
     };
-    static CONNECTION_STATUS: IValueTemplate = {
-        value_type: 'number',
+    static CONNECTION_STATUS: ValueType = {
         type: 'connection',
+        name: '',
+        permission: 'r',
         number: {
             mapping: { '0': 'offline', '1': 'online' },
             ordered_mapping: undefined,
@@ -45,9 +48,10 @@ export class ValueTemplate {
             unit: '',
         },
     };
-    static VOLTAGE_V: IValueTemplate = {
-        value_type: 'number',
+    static VOLTAGE_V: ValueType = {
         type: 'voltage',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -59,9 +63,10 @@ export class ValueTemplate {
             unit: 'V',
         },
     };
-    static POWER_WATT: IValueTemplate = {
-        value_type: 'number',
+    static POWER_WATT: ValueType = {
         type: 'power',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -73,9 +78,10 @@ export class ValueTemplate {
             unit: 'W',
         },
     };
-    static POWER_KW: IValueTemplate = {
-        value_type: 'number',
+    static POWER_KW: ValueType = {
         type: 'power',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -87,9 +93,10 @@ export class ValueTemplate {
             unit: 'kW',
         },
     };
-    static ENERGY_WH: IValueTemplate = {
-        value_type: 'number',
+    static ENERGY_WH: ValueType = {
         type: 'energy',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -101,9 +108,10 @@ export class ValueTemplate {
             unit: 'Wh',
         },
     };
-    static ENERGY_KWH: IValueTemplate = {
-        value_type: 'number',
+    static ENERGY_KWH: ValueType = {
         type: 'energy',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -115,9 +123,10 @@ export class ValueTemplate {
             unit: 'kWh',
         },
     };
-    static TEMPERATURE_CELSIUS: IValueTemplate = {
-        value_type: 'number',
+    static TEMPERATURE_CELSIUS: ValueType = {
         type: 'temperature',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -129,9 +138,10 @@ export class ValueTemplate {
             unit: '°C',
         },
     };
-    static TEMPERATURE_FAHRENHEIT: IValueTemplate = {
-        value_type: 'number',
+    static TEMPERATURE_FAHRENHEIT: ValueType = {
         type: 'temperature',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -143,9 +153,10 @@ export class ValueTemplate {
             unit: '°F',
         },
     };
-    static TEMPERATURE_KELVIN: IValueTemplate = {
-        value_type: 'number',
+    static TEMPERATURE_KELVIN: ValueType = {
         type: 'temperature',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -157,9 +168,10 @@ export class ValueTemplate {
             unit: 'K',
         },
     };
-    static ANGLE: IValueTemplate = {
-        value_type: 'number',
+    static ANGLE: ValueType = {
         type: 'angle',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -171,9 +183,10 @@ export class ValueTemplate {
             unit: '°',
         },
     };
-    static PERCENTAGE: IValueTemplate = {
-        value_type: 'number',
+    static PERCENTAGE: ValueType = {
         type: 'percentage',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -185,9 +198,10 @@ export class ValueTemplate {
             unit: '%',
         },
     };
-    static SPEED_MS: IValueTemplate = {
-        value_type: 'number',
+    static SPEED_MS: ValueType = {
         type: 'speed',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -199,9 +213,10 @@ export class ValueTemplate {
             unit: 'm/s',
         },
     };
-    static PRECIPITATION_MM: IValueTemplate = {
-        value_type: 'number',
+    static PRECIPITATION_MM: ValueType = {
         type: 'precipitation',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -213,9 +228,10 @@ export class ValueTemplate {
             unit: 'mm',
         },
     };
-    static HUMIDITY: IValueTemplate = {
-        value_type: 'number',
+    static HUMIDITY: ValueType = {
         type: 'relative_humidity',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -227,9 +243,10 @@ export class ValueTemplate {
             unit: '%',
         },
     };
-    static CO2_PPM: IValueTemplate = {
-        value_type: 'number',
+    static CO2_PPM: ValueType = {
         type: 'co2',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -241,9 +258,10 @@ export class ValueTemplate {
             unit: 'ppm',
         },
     };
-    static CONCENTRATION_PPM: IValueTemplate = {
-        value_type: 'number',
+    static CONCENTRATION_PPM: ValueType = {
         type: 'concentration',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -255,8 +273,9 @@ export class ValueTemplate {
             unit: 'ppm',
         },
     };
-    static PRESSURE_HPA: IValueTemplate = {
-        value_type: 'number',
+    static PRESSURE_HPA: ValueType = {
+        name: '',
+        permission: 'r',
         type: 'pressure',
         number: {
             mapping: undefined,
@@ -269,17 +288,19 @@ export class ValueTemplate {
             unit: 'hPa',
         },
     };
-    static TIMESTAMP: IValueTemplate = {
-        value_type: 'string',
+    static TIMESTAMP: ValueType = {
         type: 'timestamp',
+        name: '',
+        permission: 'r',
         string: {
             max: 27,
             encoding: 'ISO 8601',
         },
     };
-    static DISTANCE_M: IValueTemplate = {
-        value_type: 'number',
+    static DISTANCE_M: ValueType = {
         type: 'distance',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -291,9 +312,10 @@ export class ValueTemplate {
             unit: 'm',
         },
     };
-    static LUMINOUSITY_LX: IValueTemplate = {
-        value_type: 'number',
+    static LUMINOUSITY_LX: ValueType = {
         type: 'luminousity',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -305,25 +327,28 @@ export class ValueTemplate {
             unit: 'lx',
         },
     };
-    static COLOR_HEX: IValueTemplate = {
-        value_type: 'blob',
+    static COLOR_HEX: ValueType = {
         type: 'color',
+        name: '',
+        permission: 'r',
         blob: {
             max: 6,
             encoding: 'hex',
         },
     };
-    static COLOR_INT: IValueTemplate = {
-        value_type: 'blob',
+    static COLOR_INT: ValueType = {
         type: 'color',
+        name: '',
+        permission: 'r',
         blob: {
             max: 8,
             encoding: 'integer',
         },
     };
-    static COLOR_TEMPERATURE: IValueTemplate = {
-        value_type: 'number',
+    static COLOR_TEMPERATURE: ValueType = {
         type: 'color_temperature',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -335,17 +360,19 @@ export class ValueTemplate {
             unit: 'K',
         },
     };
-    static IMAGE_JPG: IValueTemplate = {
-        value_type: 'blob',
+    static IMAGE_JPG: ValueType = {
         type: 'image',
+        name: '',
+        permission: 'r',
         blob: {
             max: 255,
             encoding: 'base64',
         },
     };
-    static LATITUDE: IValueTemplate = {
-        value_type: 'number',
+    static LATITUDE: ValueType = {
         type: 'latitude',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -357,9 +384,10 @@ export class ValueTemplate {
             unit: '°N',
         },
     };
-    static LONGITUDE: IValueTemplate = {
-        value_type: 'number',
+    static LONGITUDE: ValueType = {
         type: 'longitude',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -371,9 +399,10 @@ export class ValueTemplate {
             unit: '°E',
         },
     };
-    static ALTITUDE_M: IValueTemplate = {
-        value_type: 'number',
+    static ALTITUDE_M: ValueType = {
         type: 'altitude',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -385,73 +414,82 @@ export class ValueTemplate {
             unit: 'm',
         },
     };
-    static STREET: IValueTemplate = {
-        value_type: 'string',
+    static STREET: ValueType = {
         type: 'street',
+        name: '',
+        permission: 'r',
         string: {
             max: 85,
             encoding: '',
         },
     };
-    static CITY: IValueTemplate = {
-        value_type: 'string',
+    static CITY: ValueType = {
         type: 'city',
+        name: '',
+        permission: 'r',
         string: {
             max: 85,
             encoding: '',
         },
     };
-    static POSTCODE: IValueTemplate = {
-        value_type: 'string',
+    static POSTCODE: ValueType = {
         type: 'postcode',
+        name: '',
+        permission: 'r',
         string: {
             max: 10,
             encoding: '',
         },
     };
-    static COUNTRY: IValueTemplate = {
-        value_type: 'string',
+    static COUNTRY: ValueType = {
+        name: '',
+        permission: 'r',
         type: 'country',
         string: {
             max: 56,
             encoding: '',
         },
     };
-    static COUNTRY_CODE: IValueTemplate = {
-        value_type: 'string',
+    static COUNTRY_CODE: ValueType = {
         type: 'country_code',
+        name: '',
+        permission: 'r',
         string: {
             max: 2,
             encoding: 'ISO 3166-1 Alpha-2',
         },
     };
-    static ADDRESS_NAME: IValueTemplate = {
-        value_type: 'string',
+    static ADDRESS_NAME: ValueType = {
         type: 'address_name',
+        name: '',
+        permission: 'r',
         string: {
             max: 85,
             encoding: '',
         },
     };
-    static ORGANISATION: IValueTemplate = {
-        value_type: 'string',
+    static ORGANISATION: ValueType = {
         type: 'organisation',
+        name: '',
+        permission: 'r',
         string: {
             max: 85,
             encoding: '',
         },
     };
-    static IDENTIFIER: IValueTemplate = {
-        value_type: 'string',
+    static IDENTIFIER: ValueType = {
         type: 'identifier',
+        name: '',
+        permission: 'r',
         string: {
             max: 50,
             encoding: '',
         },
     };
-    static NUMBER: IValueTemplate = {
-        value_type: 'number',
+    static NUMBER: ValueType = {
         type: 'number',
+        name: '',
+        permission: 'r',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -463,25 +501,28 @@ export class ValueTemplate {
             unit: '',
         },
     };
-    static STRING: IValueTemplate = {
-        value_type: 'string',
+    static STRING: ValueType = {
         type: 'string',
+        name: '',
+        permission: 'r',
         string: {
             max: 64,
             encoding: '',
         },
     };
-    static BLOB: IValueTemplate = {
-        value_type: 'blob',
+    static BLOB: ValueType = {
         type: 'blob',
+        name: '',
+        permission: 'r',
         blob: {
             max: 280,
             encoding: 'base64',
         },
     };
-    static XML: IValueTemplate = {
-        value_type: 'xml',
+    static XML: ValueType = {
         type: 'xml',
+        name: '',
+        permission: 'r',
         xml: {
             xsd: '',
             namespace: '',

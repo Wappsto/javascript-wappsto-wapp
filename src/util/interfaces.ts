@@ -76,8 +76,8 @@ export interface INetworkFunc {
     createNetwork(parameters: INetwork): Promise<INetwork>;
     findDeviceByName(name: string): IDevice[];
     findDeviceByProduct(product: string): IDevice[];
-    findValueByName(name: string): IValue[];
-    findValueByType(type: string): IValue[];
+    findValueByName(name: string): ValueType[];
+    findValueByType(type: string): ValueType[];
     createDevice(parameters: IDevice): Promise<IDevice>;
     find(
         options: Record<string, any>,
@@ -107,19 +107,19 @@ export interface IDevice {
 
 export interface IDeviceFunc {
     constructor(name?: string): void;
-    findValueByName(name: string): IValue[];
-    findValueByType(type: string): IValue[];
+    findValueByName(name: string): ValueType[];
+    findValueByType(type: string): ValueType[];
     createValue(
         name: string,
         permission: ValuePermission,
-        valueTemplate: IValueTemplate,
+        valueTemplate: ValueType,
         period?: string,
         delta?: number | 'inf'
-    ): Promise<IValue>;
-    createNumberValue(parameters: IValue & IValueNumber): Promise<IValue>;
-    createStringValue(parameters: IValue & IValueString): Promise<IValue>;
-    createBlobValue(parameters: IValue & IValueBlob): Promise<IValue>;
-    createXmlValue(parameters: IValue & IValueXml): Promise<IValue>;
+    ): Promise<ValueType>;
+    createNumberValue(parameters: IValueNumber): Promise<IValueNumber>;
+    createStringValue(parameters: IValueString): Promise<IValueString>;
+    createBlobValue(parameters: IValueBlob): Promise<IValueBlob>;
+    createXmlValue(parameters: IValueXml): Promise<IValueXml>;
     find(
         options: Record<string, any>,
         quantity: number | 'all',
@@ -151,20 +151,22 @@ export interface IPermissionModelFunc {
 
 export type ValuePermission = 'r' | 'w' | 'rw' | 'wr';
 
-export interface IValue {
+export type ValueType =
+    | (IValueBase & { number: IValueNumberBase })
+    | (IValueBase & { string: IValueStringBlobBase })
+    | (IValueBase & { blob: IValueStringBlobBase })
+    | (IValueBase & { xml: IValueXmlBase });
+
+export interface IValueBase {
     name: string;
     permission: ValuePermission;
     type: string;
     description?: string;
     period?: string;
     delta?: string;
-    number?: IValueNumber;
-    string?: IValueString;
-    blob?: IValueBlob;
-    xml?: IValueXml;
 }
 
-export interface IValueNumber {
+export interface IValueNumberBase {
     min: number;
     max: number;
     step: number;
@@ -175,31 +177,23 @@ export interface IValueNumber {
     meaningful_zero?: boolean;
 }
 
-export interface IValueString {
+export interface IValueStringBlobBase {
     max: number;
     encoding?: string;
 }
 
-export interface IValueBlob {
-    max: number;
-    encoding?: string;
-}
-
-export interface IValueXml {
+export interface IValueXmlBase {
     xsd?: string;
     namespace?: string;
 }
 
-type ValueTemplateType = 'number' | 'string' | 'blob' | 'xml';
+export interface IValueNumber extends IValueBase, IValueNumberBase {}
 
-export interface IValueTemplate {
-    type: string;
-    value_type: ValueTemplateType;
-    number?: IValueNumber;
-    string?: IValueString;
-    blob?: IValueBlob;
-    xml?: IValueXml;
-}
+export interface IValueString extends IValueBase, IValueStringBlobBase {}
+
+export interface IValueBlob extends IValueBase, IValueStringBlobBase {}
+
+export interface IValueXml extends IValueBase, IValueXmlBase {}
 
 export interface IValueFunc {
     constructor(name?: string): IState;
@@ -216,12 +210,20 @@ export interface IValueFunc {
         options: Record<string, any>,
         quantity: number | 'all',
         usage: string
-    ): IValue[];
-    findByName(name: string, quantity: number | 'all', usage: string): IValue[];
-    findByType(type: string, quantity: number | 'all', usage: string): IValue[];
-    findAllByName(name: string, usage: string): IValue[];
-    findAllByType(type: string, usage: string): IValue[];
-    findById(id: string): IValue;
+    ): ValueType[];
+    findByName(
+        name: string,
+        quantity: number | 'all',
+        usage: string
+    ): ValueType[];
+    findByType(
+        type: string,
+        quantity: number | 'all',
+        usage: string
+    ): ValueType[];
+    findAllByName(name: string, usage: string): ValueType[];
+    findAllByType(type: string, usage: string): ValueType[];
+    findById(id: string): ValueType;
     addEvent(
         level: EventLogLevel,
         message: string,
@@ -412,11 +414,11 @@ export type ServiceHandler = (
 export type RequestHandler = (event: any) => Promise<any> | any;
 export type StreamCallback = (model: IStreamModel) => void;
 export type ValueStreamCallback = (
-    value: IValue,
+    value: IValueBase,
     data: string,
     timestamp: string
 ) => void;
 export type RefreshStreamCallback = (
-    value: IValue,
+    value: IValueBase,
     origin: 'user' | 'period'
 ) => void;

@@ -131,26 +131,20 @@ export const IDeviceFunc = t.iface([], {
         'IValue',
         t.param('name', 'string'),
         t.param('permission', 'ValuePermission'),
-        t.param('valueTemplate', 'IValueTemplate'),
+        t.param('valueTemplate', 'IValue'),
         t.param('period', 'string', true),
         t.param('delta', t.union('number', t.lit('inf')), true)
     ),
     createNumberValue: t.func(
-        'IValue',
-        t.param('parameters', t.intersection('IValue', 'IValueNumber'))
+        'IValueNumber',
+        t.param('parameters', 'IValueNumber')
     ),
     createStringValue: t.func(
-        'IValue',
-        t.param('parameters', t.intersection('IValue', 'IValueString'))
+        'IValueString',
+        t.param('parameters', 'IValueString')
     ),
-    createBlobValue: t.func(
-        'IValue',
-        t.param('parameters', t.intersection('IValue', 'IValueBlob'))
-    ),
-    createXmlValue: t.func(
-        'IValue',
-        t.param('parameters', t.intersection('IValue', 'IValueXml'))
-    ),
+    createBlobValue: t.func('IValueBlob', t.param('parameters', 'IValueBlob')),
+    createXmlValue: t.func('IValueXml', t.param('parameters', 'IValueXml')),
     find: t.func(
         t.array('IDevice'),
         t.param('options', 'any'),
@@ -199,20 +193,43 @@ export const ValuePermission = t.union(
     t.lit('wr')
 );
 
-export const IValue = t.iface([], {
+export const IValue = t.union(
+    t.intersection(
+        'IValueBase',
+        t.iface([], {
+            number: 'IValueNumberBase',
+        })
+    ),
+    t.intersection(
+        'IValueBase',
+        t.iface([], {
+            string: 'IValueStringBlobBase',
+        })
+    ),
+    t.intersection(
+        'IValueBase',
+        t.iface([], {
+            blob: 'IValueStringBlobBase',
+        })
+    ),
+    t.intersection(
+        'IValueBase',
+        t.iface([], {
+            xml: 'IValueXmlBase',
+        })
+    )
+);
+
+export const IValueBase = t.iface([], {
     name: 'string',
     permission: 'ValuePermission',
     type: 'string',
     description: t.opt('string'),
     period: t.opt('string'),
     delta: t.opt('string'),
-    number: t.opt('IValueNumber'),
-    string: t.opt('IValueString'),
-    blob: t.opt('IValueBlob'),
-    xml: t.opt('IValueXml'),
 });
 
-export const IValueNumber = t.iface([], {
+export const IValueNumberBase = t.iface([], {
     min: 'number',
     max: 'number',
     step: 'number',
@@ -223,36 +240,23 @@ export const IValueNumber = t.iface([], {
     meaningful_zero: t.opt('boolean'),
 });
 
-export const IValueString = t.iface([], {
+export const IValueStringBlobBase = t.iface([], {
     max: 'number',
     encoding: t.opt('string'),
 });
 
-export const IValueBlob = t.iface([], {
-    max: 'number',
-    encoding: t.opt('string'),
-});
-
-export const IValueXml = t.iface([], {
+export const IValueXmlBase = t.iface([], {
     xsd: t.opt('string'),
     namespace: t.opt('string'),
 });
 
-export const ValueTemplateType = t.union(
-    t.lit('number'),
-    t.lit('string'),
-    t.lit('blob'),
-    t.lit('xml')
-);
+export const IValueNumber = t.iface(['IValueBase', 'IValueNumberBase'], {});
 
-export const IValueTemplate = t.iface([], {
-    type: 'string',
-    value_type: 'ValueTemplateType',
-    number: t.opt('IValueNumber'),
-    string: t.opt('IValueString'),
-    blob: t.opt('IValueBlob'),
-    xml: t.opt('IValueXml'),
-});
+export const IValueString = t.iface(['IValueBase', 'IValueStringBlobBase'], {});
+
+export const IValueBlob = t.iface(['IValueBase', 'IValueStringBlobBase'], {});
+
+export const IValueXml = t.iface(['IValueBase', 'IValueXmlBase'], {});
 
 export const IValueFunc = t.iface([], {
     constructor: t.func('IState', t.param('name', 'string', true)),
@@ -307,7 +311,7 @@ export const IValueFunc = t.iface([], {
     ),
     findById: t.func('IValue', t.param('id', 'string')),
     addEvent: t.func(
-        'EventLog',
+        'IEventLog',
         t.param('level', 'EventLogLevel'),
         t.param('message', 'string'),
         t.param('info', 'any', true)
@@ -553,14 +557,14 @@ export const StreamCallback = t.func('void', t.param('model', 'IStreamModel'));
 
 export const ValueStreamCallback = t.func(
     'void',
-    t.param('value', 'IValue'),
+    t.param('value', 'IValueBase'),
     t.param('data', 'string'),
     t.param('timestamp', 'string')
 );
 
 export const RefreshStreamCallback = t.func(
     'void',
-    t.param('value', 'IValue'),
+    t.param('value', 'IValueBase'),
     t.param('origin', t.union(t.lit('user'), t.lit('period')))
 );
 
@@ -579,12 +583,14 @@ const exportedTypeSuite: t.ITypeSuite = {
     IPermissionModelFunc,
     ValuePermission,
     IValue,
+    IValueBase,
+    IValueNumberBase,
+    IValueStringBlobBase,
+    IValueXmlBase,
     IValueNumber,
     IValueString,
     IValueBlob,
     IValueXml,
-    ValueTemplateType,
-    IValueTemplate,
     IValueFunc,
     StateType,
     StateStatus,

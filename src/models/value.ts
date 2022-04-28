@@ -1,6 +1,5 @@
 import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
-import parseDuration from 'parse-duration';
 import { PermissionModel } from './model.permission';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
@@ -18,11 +17,10 @@ import {
 import { printDebug } from '../util/debug';
 import {
     IModel,
-    IValue,
-    IValueNumber,
-    IValueString,
-    IValueBlob,
-    IValueXml,
+    IValueBase,
+    IValueNumberBase,
+    IValueStringBlobBase,
+    IValueXmlBase,
     ValuePermission,
     EventLogLevel,
     IState,
@@ -33,7 +31,7 @@ import {
     ValueStreamCallback,
 } from '../util/interfaces';
 
-export class Value extends StreamModel implements IValue {
+export class Value extends StreamModel implements IValueBase {
     static endpoint = '/2.0/value';
 
     name: string;
@@ -44,10 +42,12 @@ export class Value extends StreamModel implements IValue {
     period?: string;
     last_period = '';
     delta?: string;
-    number?: IValueNumber;
-    string?: IValueString;
-    blob?: IValueBlob;
-    xml?: IValueXml;
+
+    number?: IValueNumberBase;
+    string?: IValueStringBlobBase;
+    blob?: IValueStringBlobBase;
+    xml?: IValueXmlBase;
+
     status?: string;
     @Type(() => State)
     state: State[] = [];
@@ -423,8 +423,8 @@ export class Value extends StreamModel implements IValue {
         return this.changeAttribute('status', 'update');
     }
 
-    public async setPeriod(period: string): Promise<void> {
-        return this.changeAttribute('period', period);
+    public async setPeriod(period: number): Promise<void> {
+        return this.changeAttribute('period', period.toString());
     }
 
     public async setDelta(delta: number): Promise<void> {
@@ -546,15 +546,12 @@ export class Value extends StreamModel implements IValue {
 
     private getPeriodTimeout(): number {
         let timeout = 0;
-        if (isPositiveInteger(this.last_period)) {
-            timeout = parseInt(this.last_period);
-        } else {
-            timeout = parseDuration(this.last_period, 's');
-        }
-        if (timeout) {
+        timeout = parseInt(this.last_period);
+        if (timeout && isPositiveInteger(this.last_period)) {
             return getSecondsToNextPeriod(timeout) * 1000;
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     private startPeriodHandler(): void {

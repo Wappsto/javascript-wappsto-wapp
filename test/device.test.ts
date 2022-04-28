@@ -353,6 +353,7 @@ describe('device', () => {
                 name: 'name',
                 permission: 'rw',
                 period: '0',
+                delta: '0',
                 type: 'string',
                 string: {
                     max: 64,
@@ -389,6 +390,7 @@ describe('device', () => {
                 name: 'name',
                 permission: 'rw',
                 period: '0',
+                delta: '0',
                 type: 'xml',
                 xml: {
                     xsd: '',
@@ -429,6 +431,7 @@ describe('device', () => {
                 name: 'name',
                 permission: 'rw',
                 period: '0',
+                delta: '0',
                 type: 'blob',
                 blob: {
                     max: 280,

@@ -8,12 +8,13 @@ import { printDebug } from '../util/debug';
 import {
     IModel,
     IDevice,
-    IValue,
+    IValueBase,
     IValueNumber,
     IValueString,
     IValueBlob,
     IValueXml,
-    IValueTemplate,
+    ValueType,
+    ValuePermission,
 } from '../util/interfaces';
 
 export class Device extends StreamModel implements IDevice {
@@ -73,7 +74,7 @@ export class Device extends StreamModel implements IDevice {
         }
     }
 
-    private async _createValue(params: IValue): Promise<Value> {
+    private async _createValue(params: ValueType): Promise<Value> {
         let oldDelta;
         let oldPeriod = '0';
         let value = new Value();
@@ -121,97 +122,87 @@ export class Device extends StreamModel implements IDevice {
 
     public async createValue(
         name: string,
-        permission: 'r' | 'w' | 'rw' | 'wr',
-        valueTemplate: IValueTemplate,
+        permission: ValuePermission,
+        valueTemplate: ValueType,
         period = '0',
         delta: number | 'inf' = 0
     ): Promise<Value> {
         this.validate('createValue', arguments);
 
-        const value = {} as IValue;
-        value.name = name;
-        value.permission = permission;
-        value.type = valueTemplate.type;
-        value.period = period;
+        valueTemplate.name = name;
+        valueTemplate.permission = permission;
+        valueTemplate.period = period;
+        valueTemplate.delta = delta.toString();
 
-        switch (valueTemplate.value_type) {
-            case 'number':
-                value.number = valueTemplate.number;
-                value.delta = delta.toString();
-                break;
-            case 'string':
-                value.string = valueTemplate.string;
-                break;
-            case 'blob':
-                value.blob = valueTemplate.blob;
-                break;
-            case 'xml':
-                value.xml = valueTemplate.xml;
-                break;
-        }
-
-        return await this._createValue(value);
+        return await this._createValue(valueTemplate);
     }
 
-    public async createNumberValue(
-        params: IValue & IValueNumber
-    ): Promise<Value> {
+    private getValueBase(
+        params: IValueNumber | IValueString | IValueBlob | IValueXml
+    ): IValueBase {
+        return {
+            name: params.name,
+            permission: params.permission,
+            type: params.type,
+            description: params.description,
+            period: params.period,
+            delta: params.delta,
+        };
+    }
+
+    public async createNumberValue(params: IValueNumber): Promise<Value> {
         this.validate('createNumberValue', arguments);
-
-        const numberValue = {} as IValueNumber;
-        numberValue.min = params.min;
-        numberValue.max = params.max;
-        numberValue.step = params.step;
-        numberValue.unit = params.unit;
-        numberValue.si_conversion = params.si_conversion;
-        numberValue.mapping = params.mapping;
-        numberValue.ordered_mapping = params.ordered_mapping;
-        numberValue.meaningful_zero = params.meaningful_zero;
-
-        params.number = numberValue;
-
-        if (params.delta === undefined) {
-            params.delta = '0';
-        }
-        return await this._createValue(params);
+        const base = this.getValueBase(params);
+        base.delta = params.delta ?? '0';
+        return await this._createValue({
+            ...base,
+            number: {
+                min: params.min,
+                max: params.max,
+                step: params.step,
+                unit: params.unit,
+                si_conversion: params.si_conversion,
+                mapping: params.mapping,
+                ordered_mapping: params.ordered_mapping,
+                meaningful_zero: params.meaningful_zero,
+            },
+        });
     }
 
-    public async createStringValue(
-        params: IValue & IValueString
-    ): Promise<Value> {
+    public async createStringValue(params: IValueString): Promise<Value> {
         this.validate('createStringValue', arguments);
-
-        const stringValue = {} as IValueString;
-        stringValue.max = params.max;
-        stringValue.encoding = params.encoding;
-
-        params.string = stringValue;
-
-        return await this._createValue(params);
+        const base = this.getValueBase(params);
+        return await this._createValue({
+            ...base,
+            string: {
+                max: params.max,
+                encoding: params.encoding,
+            },
+        });
     }
 
-    public async createBlobValue(params: IValue & IValueBlob): Promise<Value> {
+    public async createBlobValue(params: IValueBlob): Promise<Value> {
         this.validate('createBlobValue', arguments);
-
-        const blobValue = {} as IValueBlob;
-        blobValue.max = params.max;
-        blobValue.encoding = params.encoding;
-
-        params.blob = blobValue;
-
-        return await this._createValue(params);
+        const base = this.getValueBase(params);
+        return await this._createValue({
+            ...base,
+            blob: {
+                max: params.max,
+                encoding: params.encoding,
+            },
+        });
     }
 
-    public async createXmlValue(params: IValue & IValueXml): Promise<Value> {
+    public async createXmlValue(params: IValueXml): Promise<Value> {
         this.validate('createXmlValue', arguments);
-
-        const xmlValue = {} as IValueXml;
-        xmlValue.xsd = params.xsd;
-        xmlValue.namespace = params.namespace;
-
-        params.xml = xmlValue;
-
-        return await this._createValue(params);
+        const base = this.getValueBase(params);
+        return await this._createValue({
+            ...base,
+            xml: {
+                xsd: params.xsd,
+                namespace: params.namespace,
+            },
+        });
     }
 
     public parseChildren(json: Record<string, any>): boolean {
