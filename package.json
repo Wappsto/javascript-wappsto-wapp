@@ -1,6 +1,6 @@
 {
     "name": "wappsto-wapp",
-    "version": "0.9.8",
+    "version": "0.9.9",
     "license": "MIT",
     "author": "Seluxit A/S",
     "main": "dist/wappsto-wapp.cjs.production.min.js",
@@ -67,7 +67,7 @@
         }
     ],
     "dependencies": {
-        "axios": "^0.26.1",
+        "axios": "^0.27.2",
         "class-transformer": "^0.5.1",
         "isomorphic-ws": "^4.0.1",
         "lodash": "^4.17.21",
@@ -75,13 +75,13 @@
         "parse-duration": "^1.0.2",
         "reflect-metadata": "^0.1.13",
         "ts-interface-checker": "^1.0.2",
-        "tslib": "^2.3.1",
+        "tslib": "^2.4.0",
         "universal-websocket-client": "^1.0.2"
     },
     "devDependencies": {
         "@size-limit/preset-small-lib": "^7.0.8",
         "@tsconfig/recommended": "^1.0.1",
-        "@types/lodash": "^4.14.181",
+        "@types/lodash": "^4.14.182",
         "@types/ws": "^8.5.3",
         "browserify": "^17.0.0",
         "dts-cli": "^1.5.1",
