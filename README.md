@@ -101,9 +101,10 @@ let value = device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERA
 ```
 
 It is also possible to define a period for how often the library should poll your values for updates. In this way regulary reports will be send to the cloud. It is also possible to filter out small changes by setting the delta for number values. With the delta set, reported changes that are not bigger then the delta will be discarded.
+In the example below, period is set to 3600 [sec.], i.e. 1 hour interval and delta to 2 [deg.]. So changes in value data will only apply if after one hour new temperature value is bigger than 2 [deg.] of previous temperature value.
 
 ```javascript
-let value = device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS, '1h', '2');
+let value = device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS, 3600, '2');
 ```
 
 There are some helper functions to create custom number, string, blob and xml values.
