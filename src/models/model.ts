@@ -1,6 +1,6 @@
 import { isArray, isEqual, pick, omit } from 'lodash';
 import { plainToClass } from 'class-transformer';
-import { isUUID } from '../util/helpers';
+import { isUUID, replaceAll } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import { printError } from '../util/debug';
@@ -227,7 +227,7 @@ export class Model implements IModel {
                 try {
                     m.check(Array.from(params));
                 } catch (e: any) {
-                    const err = e.message.replaceAll('value.', '');
+                    const err = replaceAll(e.message, 'value.', '');
                     e.message = `${type}.${name}: ${err}`;
                     throw e;
                 }
