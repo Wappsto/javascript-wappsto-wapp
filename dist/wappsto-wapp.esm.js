@@ -2238,17 +2238,16 @@ var Model = /*#__PURE__*/function () {
               throw new Error("Can't create a child under a parent that do not have an ID");
 
             case 7:
-              console.log('POST', this.getUrl(), this.toJSON(), Model.generateOptions(params));
-              _context.next = 10;
+              _context.next = 9;
               return wappsto.post(this.getUrl(), this.toJSON(), Model.generateOptions(params));
 
-            case 10:
+            case 9:
               response = _context.sent;
               this.perserve();
               this.parse(response.data);
               this.restore();
 
-            case 14:
+            case 13:
             case "end":
               return _context.stop();
           }
@@ -5259,7 +5258,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
                 break;
               }
 
-              if (!value.meta.id) {
+              if (!(values.length !== 0)) {
                 _context2.next = 16;
                 break;
               }
@@ -5268,7 +5267,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
               return value.update();
 
             case 14:
-              _context2.next = 18;
+              _context2.next = 19;
               break;
 
             case 16:
@@ -5276,9 +5275,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
               return value.create();
 
             case 18:
-              if (values.length === 0) {
-                this.value.push(value);
-              }
+              this.value.push(value);
 
             case 19:
               if (!['r', 'rw', 'wr'].includes(params.permission)) {
