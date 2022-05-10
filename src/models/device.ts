@@ -102,9 +102,12 @@ export class Device extends StreamModel implements IDevice {
         }
 
         value.parent = this;
+
         if (!isEqual(oldJson, newJson)) {
-            await value.create();
-            if (values.length === 0) {
+            if (values.length !== 0) {
+                await value.update();
+            } else {
+                await value.create();
                 this.value.push(value);
             }
         }

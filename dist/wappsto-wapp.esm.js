@@ -2238,16 +2238,17 @@ var Model = /*#__PURE__*/function () {
               throw new Error("Can't create a child under a parent that do not have an ID");
 
             case 7:
-              _context.next = 9;
+              console.log('POST', this.getUrl(), this.toJSON(), Model.generateOptions(params));
+              _context.next = 10;
               return wappsto.post(this.getUrl(), this.toJSON(), Model.generateOptions(params));
 
-            case 9:
+            case 10:
               response = _context.sent;
               this.perserve();
               this.parse(response.data);
               this.restore();
 
-            case 13:
+            case 14:
             case "end":
               return _context.stop();
           }
@@ -5254,45 +5255,58 @@ var Device = /*#__PURE__*/function (_StreamModel) {
               value.parent = this;
 
               if (isEqual(oldJson, newJson)) {
-                _context2.next = 14;
+                _context2.next = 19;
                 break;
               }
 
-              _context2.next = 13;
+              if (!value.meta.id) {
+                _context2.next = 16;
+                break;
+              }
+
+              _context2.next = 14;
+              return value.update();
+
+            case 14:
+              _context2.next = 18;
+              break;
+
+            case 16:
+              _context2.next = 18;
               return value.create();
 
-            case 13:
+            case 18:
               if (values.length === 0) {
                 this.value.push(value);
               }
 
-            case 14:
+            case 19:
               if (!['r', 'rw', 'wr'].includes(params.permission)) {
-                _context2.next = 17;
+                _context2.next = 22;
                 break;
               }
 
-              _context2.next = 17;
+              _context2.next = 22;
               return value.createState({
                 type: 'Report'
               });
 
-            case 17:
+            case 22:
               if (!['w', 'rw', 'wr'].includes(params.permission)) {
-                _context2.next = 20;
+                _context2.next = 25;
                 break;
               }
 
-              _context2.next = 20;
+              _context2.next = 25;
               return value.createState({
                 type: 'Control'
               });
 
-            case 20:
+            case 25:
               value.created();
               return _context2.abrupt("return", value);
 
-            case 22:
+            case 27:
             case "end":
               return _context2.stop();
           }

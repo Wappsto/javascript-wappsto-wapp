@@ -823,30 +823,30 @@ describe('device', () => {
     });
 
     it('can return value as a child', async () => {
-        mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        permission: 'rw',
-                        type: 'type',
-                        period: '0',
-                        meta: {
-                            type: 'value',
-                            version: '2.0',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        },
-                        name: 'Value Name',
-                        delta: 'delta',
-                        number: {
-                            min: 0,
-                            max: 1,
-                            step: 1,
-                            unit: 'unit',
-                            si_conversion: 'si_conversion',
-                        },
+        mockedAxios.patch.mockResolvedValueOnce({
+            data: [
+                {
+                    permission: 'rw',
+                    type: 'type',
+                    period: '0',
+                    meta: {
+                        type: 'value',
+                        version: '2.0',
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     },
-                ],
-            })
+                    name: 'Value Name',
+                    delta: 'delta',
+                    number: {
+                        min: 0,
+                        max: 1,
+                        step: 1,
+                        unit: 'unit',
+                        si_conversion: 'si_conversion',
+                    },
+                },
+            ],
+        });
+        mockedAxios.post
             .mockResolvedValueOnce({ data: {} })
             .mockResolvedValueOnce({ data: {} });
 
@@ -854,6 +854,7 @@ describe('device', () => {
         device.meta.id = '61e94999-c6c4-4051-8b5d-97ba73bbb312';
         const val = new Value();
         val.name = 'Value Name';
+        val.meta.id = 'f589b816-1f2b-412b-ac36-1ca5a6db0273';
         device.value.push(val);
         const value = await device.createNumberValue({
             name: 'Value Name',
@@ -881,15 +882,16 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/61e94999-c6c4-4051-8b5d-97ba73bbb312/value',
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             expect.objectContaining({
                 permission: 'rw',
                 type: 'type',
                 period: '0',
                 meta: {
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     type: 'value',
                     version: '2.0',
                 },
@@ -900,6 +902,105 @@ describe('device', () => {
                     max: 1,
                     step: 1,
                     unit: 'unit',
+                    si_conversion: 'si_conversion',
+                },
+            }),
+            {}
+        );
+    });
+
+    it('can update a value when the parameters are changed', async () => {
+        mockedAxios.patch.mockResolvedValueOnce({
+            data: [
+                {
+                    permission: 'rw',
+                    type: 'type',
+                    period: '0',
+                    meta: {
+                        type: 'value',
+                        version: '2.0',
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                    },
+                    name: 'Value Name',
+                    delta: 'delta',
+                    number: {
+                        min: 0,
+                        max: 1,
+                        step: 1,
+                        unit: 'new unit',
+                        si_conversion: 'si_conversion',
+                    },
+                },
+            ],
+        });
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: {} })
+            .mockResolvedValueOnce({ data: {} });
+
+        const device = new Device();
+        device.meta.id = '61e94999-c6c4-4051-8b5d-97ba73bbb312';
+        const val = new Value();
+        val.meta.id = 'f589b816-1f2b-412b-ac36-1ca5a6db0273';
+        val.name = 'Value Name';
+        val.permission = 'rw';
+        val.type = 'type';
+        val.period = '0';
+        val.delta = 'delta';
+        val.number = {
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'unit',
+            si_conversion: 'si_conversion',
+        };
+        device.value.push(val);
+        const value = await device.createNumberValue({
+            name: 'Value Name',
+            permission: 'rw',
+            type: 'type',
+            period: '0',
+            delta: 'delta',
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'new unit',
+            si_conversion: 'si_conversion',
+        });
+
+        expect(value.name).toEqual('Value Name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('type');
+        expect(value.period).toEqual('0');
+        expect(value.delta).toEqual('delta');
+        expect(value.number?.min).toEqual(0);
+        expect(value.number?.max).toEqual(1);
+        expect(value.number?.step).toEqual(1);
+        expect(value.number?.unit).toEqual('new unit');
+        expect(value.number?.si_conversion).toEqual('si_conversion');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            expect.objectContaining({
+                permission: 'rw',
+                type: 'type',
+                period: '0',
+                meta: {
+                    type: 'value',
+                    version: '2.0',
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                },
+                name: 'Value Name',
+                delta: 'delta',
+                number: {
+                    min: 0,
+                    max: 1,
+                    step: 1,
+                    unit: 'new unit',
                     si_conversion: 'si_conversion',
                 },
             }),

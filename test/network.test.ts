@@ -26,6 +26,7 @@ describe('network', () => {
             {
                 meta: {
                     id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                    version: '2.0',
                     type: 'device',
                 },
                 name: 'Device Name',
@@ -34,13 +35,18 @@ describe('network', () => {
                     {
                         meta: {
                             id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                            version: '2.0',
                             type: 'value',
                         },
                         name: 'Value Name',
+                        permission: 'w',
+                        type: 'temperature',
+                        number: { min: 0, max: 100, step: 1, unit: 'c' },
                         eventlog: [
                             {
                                 meta: {
                                     type: 'eventlog',
+                                    version: '2.0',
                                     id: '8e24c08f-2a99-4cae-9992-2da76326de8c',
                                 },
                                 message: 'test',
@@ -51,6 +57,7 @@ describe('network', () => {
                             {
                                 meta: {
                                     id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                    version: '2.0',
                                     type: 'state',
                                 },
                                 type: 'Control',
@@ -226,10 +233,8 @@ describe('network', () => {
 
     it('can create a new network from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
-        mockedAxios.post
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
-        //mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const network = await createNetwork({ name: 'Wapp Network' });
         const device = await network.createDevice({ name: 'Device Name' });
@@ -244,12 +249,39 @@ describe('network', () => {
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: { expand: 4, 'this_name=': 'Wapp Network' },
         });
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/value/c5a73d64-b398-434e-a236-df15342339d5',
+            {
+                delta: '0',
+                meta: {
+                    id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                    type: 'value',
+                    version: '2.0',
+                },
+                name: 'Value Name',
+                number: { max: 100, min: 0, step: 1, unit: 'c' },
+                period: '0',
+                permission: 'rw',
+                type: 'temperature',
+            },
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/value/c5a73d64-b398-434e-a236-df15342339d5/state',
+            expect.objectContaining({
+                data: '',
+                meta: { type: 'state', version: '2.0' },
+                type: 'Report',
+            }),
+            {}
+        );
+
         expect(network?.name).toEqual('Network Name');
         expect(network?.device[0]?.name).toEqual('Device Name');
         expect(network?.device[0]?.value[0]?.name).toEqual('Value Name');

@@ -765,33 +765,32 @@ describe('value', () => {
                 ],
             },
         });
-        mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        meta: {
-                            type: 'value',
-                            version: '2.0',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        },
-                        permission: '',
-                        delta: '2',
-                        period: '10',
+        mockedAxios.patch.mockResolvedValueOnce({
+            data: [
+                {
+                    meta: {
+                        type: 'value',
+                        version: '2.0',
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.0',
-                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                        },
-                        type: 'Report',
+                    permission: '',
+                    delta: '2',
+                    period: '10',
+                },
+            ],
+        });
+        mockedAxios.post.mockResolvedValueOnce({
+            data: [
+                {
+                    meta: {
+                        type: 'state',
+                        version: '2.0',
+                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                     },
-                ],
-            });
+                    type: 'Report',
+                },
+            ],
+        });
 
         const device = new Device();
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
@@ -805,7 +804,7 @@ describe('value', () => {
             name: 'Value Name',
             permission: 'r',
             type: 'type',
-            period: 'period',
+            period: '0',
             delta: 'delta',
             min: 0,
             max: 1,
@@ -814,11 +813,11 @@ describe('value', () => {
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
 
         expect(value.delta).toBe('2');
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             {
                 meta: {
