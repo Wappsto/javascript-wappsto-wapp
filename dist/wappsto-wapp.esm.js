@@ -967,6 +967,14 @@ function isPositiveInteger(str) {
   return false;
 }
 
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+function replaceAll(str, find, replace) {
+  return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
 /**
  * Reads a cookie with the giving name.
  *
@@ -2462,7 +2470,7 @@ var Model = /*#__PURE__*/function () {
         try {
           m.check(Array.from(params));
         } catch (e) {
-          var err = e.message.replaceAll('value.', '');
+          var err = replaceAll(e.message, 'value.', '');
           e.message = type + "." + name + ": " + err;
           throw e;
         }
