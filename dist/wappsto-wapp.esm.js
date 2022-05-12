@@ -5538,7 +5538,6 @@ var Device = /*#__PURE__*/function (_StreamModel) {
     if (values.length) {
       this.value.push(values[0]);
       res = true;
-      values[0].created();
     }
 
     return res;
