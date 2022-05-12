@@ -66,10 +66,12 @@ export class Device extends StreamModel implements IDevice {
     public async loadAllChildren(): Promise<void> {
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'string') {
+                // This is needed to convert a value type into string
                 const id: string = this.value[i] as unknown as string;
                 this.value[i] = await Value.findById(id);
                 this.value[i].parent = this;
             }
+            this.value[i].created();
             await this.value[i].loadAllChildren();
         }
     }

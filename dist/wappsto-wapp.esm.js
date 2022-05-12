@@ -4088,7 +4088,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     this.onChange(function (val) {
       _this2.handlePeriodUpdate();
     });
-    this.handlePeriodUpdate();
+
+    if (this.handlePeriodUpdate()) {
+      printDebug("Starting period for " + this.name);
+    }
   };
 
   _proto.perserve = function perserve() {
@@ -4828,7 +4831,10 @@ var Value = /*#__PURE__*/function (_StreamModel) {
     if (this.period && this.period !== this.last_period) {
       this.last_period = this.period;
       this.startPeriodHandler();
+      return true;
     }
+
+    return false;
   };
 
   _proto.getPeriodTimeout = function getPeriodTimeout() {
@@ -5174,7 +5180,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
 
             case 1:
               if (!(i < this.value.length)) {
-                _context.next = 13;
+                _context.next = 14;
                 break;
               }
 
@@ -5183,6 +5189,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
                 break;
               }
 
+              // This is needed to convert a value type into string
               id = this.value[i];
               _context.next = 6;
               return Value.findById(id);
@@ -5192,15 +5199,16 @@ var Device = /*#__PURE__*/function (_StreamModel) {
               this.value[i].parent = this;
 
             case 8:
-              _context.next = 10;
+              this.value[i].created();
+              _context.next = 11;
               return this.value[i].loadAllChildren();
 
-            case 10:
+            case 11:
               i++;
               _context.next = 1;
               break;
 
-            case 13:
+            case 14:
             case "end":
               return _context.stop();
           }
@@ -5530,6 +5538,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
     if (values.length) {
       this.value.push(values[0]);
       res = true;
+      values[0].created();
     }
 
     return res;

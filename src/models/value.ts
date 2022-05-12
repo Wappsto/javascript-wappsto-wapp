@@ -93,7 +93,9 @@ export class Value extends StreamModel implements IValueBase {
             this.handlePeriodUpdate();
         });
 
-        this.handlePeriodUpdate();
+        if (this.handlePeriodUpdate()) {
+            printDebug(`Starting period for ${this.name}`);
+        }
     }
 
     public perserve(): void {
@@ -537,11 +539,13 @@ export class Value extends StreamModel implements IValueBase {
         Model.validateMethod('Value', name, params);
     }
 
-    private handlePeriodUpdate(): void {
+    private handlePeriodUpdate(): boolean {
         if (this.period && this.period !== this.last_period) {
             this.last_period = this.period;
             this.startPeriodHandler();
+            return true;
         }
+        return false;
     }
 
     private getPeriodTimeout(): number {
