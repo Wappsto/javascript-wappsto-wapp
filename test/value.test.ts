@@ -876,6 +876,8 @@ describe('value', () => {
         );
 
         value.onRefresh(fun);
+        value.onRefresh(fun);
+        value.onRefresh(fun);
 
         await server.connected;
         server.send({

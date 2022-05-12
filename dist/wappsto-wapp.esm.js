@@ -4594,14 +4594,17 @@ var Value = /*#__PURE__*/function (_StreamModel) {
 
     this.validate('onRefresh', arguments);
     this.status = '';
-    this.refreshCallbacks.push(callback);
-    this.onChange(function () {
-      if (_this6.status === 'update') {
-        _this6.reportIsForced = true;
-        _this6.status = '';
-        callback(_this6, 'user');
-      }
-    });
+
+    if (!checkList(this.refreshCallbacks, callback)) {
+      this.refreshCallbacks.push(callback);
+      this.onChange(function () {
+        if (_this6.status === 'update') {
+          _this6.reportIsForced = true;
+          _this6.status = '';
+          callback(_this6, 'user');
+        }
+      });
+    }
   };
 
   _proto.cancelOnReport = function cancelOnReport() {
