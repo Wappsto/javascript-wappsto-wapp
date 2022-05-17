@@ -2343,36 +2343,62 @@ var Model = /*#__PURE__*/function () {
     return update;
   }();
 
-  _proto.reload = /*#__PURE__*/function () {
-    var _reload = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4() {
-      var response;
+  _proto.loadAllChildren = /*#__PURE__*/function () {
+    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(json
+    /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+    ) {
       return _regeneratorRuntime.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
-              _context4.prev = 0;
-              _context4.next = 3;
-              return wappsto.get(this.getUrl(), Model.generateOptions());
-
-            case 3:
-              response = _context4.sent;
-              this.parse(response.data);
-              _context4.next = 10;
-              break;
-
-            case 7:
-              _context4.prev = 7;
-              _context4.t0 = _context4["catch"](0);
-
-              /* istanbul ignore next */
-              printHttpError(_context4.t0);
-
-            case 10:
             case "end":
               return _context4.stop();
           }
         }
-      }, _callee4, this, [[0, 7]]);
+      }, _callee4);
+    }));
+
+    function loadAllChildren(_x3) {
+      return _loadAllChildren.apply(this, arguments);
+    }
+
+    return loadAllChildren;
+  }();
+
+  _proto.reload = /*#__PURE__*/function () {
+    var _reload = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
+      var response;
+      return _regeneratorRuntime.wrap(function _callee5$(_context5) {
+        while (1) {
+          switch (_context5.prev = _context5.next) {
+            case 0:
+              _context5.prev = 0;
+              _context5.next = 3;
+              return wappsto.get(this.getUrl(), Model.generateOptions());
+
+            case 3:
+              response = _context5.sent;
+              this.parse(response.data);
+              _context5.next = 7;
+              return this.loadAllChildren(response.data);
+
+            case 7:
+              _context5.next = 12;
+              break;
+
+            case 9:
+              _context5.prev = 9;
+              _context5.t0 = _context5["catch"](0);
+
+              /* istanbul ignore next */
+              printHttpError(_context5.t0);
+
+            case 12:
+            case "end":
+              return _context5.stop();
+          }
+        }
+      }, _callee5, this, [[0, 9]]);
     }));
 
     function reload() {
@@ -2383,36 +2409,36 @@ var Model = /*#__PURE__*/function () {
   }();
 
   _proto["delete"] = /*#__PURE__*/function () {
-    var _delete2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5() {
+    var _delete2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6() {
       var _this$parent;
 
-      return _regeneratorRuntime.wrap(function _callee5$(_context5) {
+      return _regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
-          switch (_context5.prev = _context5.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
-              _context5.prev = 0;
-              _context5.next = 3;
+              _context6.prev = 0;
+              _context6.next = 3;
               return wappsto["delete"](this.getUrl(), Model.generateOptions());
 
             case 3:
               (_this$parent = this.parent) == null ? void 0 : _this$parent.removeChild(this);
               this.meta.id = undefined;
-              _context5.next = 10;
+              _context6.next = 10;
               break;
 
             case 7:
-              _context5.prev = 7;
-              _context5.t0 = _context5["catch"](0);
+              _context6.prev = 7;
+              _context6.t0 = _context6["catch"](0);
 
               /* istanbul ignore next */
-              printHttpError(_context5.t0);
+              printHttpError(_context6.t0);
 
             case 10:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
         }
-      }, _callee5, this, [[0, 7]]);
+      }, _callee6, this, [[0, 7]]);
     }));
 
     function _delete() {
@@ -2528,22 +2554,22 @@ var Model = /*#__PURE__*/function () {
 Model.checker = /*#__PURE__*/createCheckers(exportedTypeSuite);
 
 Model.fetch = /*#__PURE__*/function () {
-  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(endpoint, params, throwError) {
+  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee7(endpoint, params, throwError) {
     var res, response, msg;
-    return _regeneratorRuntime.wrap(function _callee6$(_context6) {
+    return _regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
             Model.validateMethod('Model', 'fetch', [endpoint, params, throwError]);
             res = [];
-            _context6.prev = 2;
-            _context6.next = 5;
+            _context7.prev = 2;
+            _context7.next = 5;
             return wappsto.get(endpoint, Model.generateOptions(params));
 
           case 5:
-            response = _context6.sent;
+            response = _context7.sent;
 
-            if (response != null && response.data) {
+            if (response.data) {
               if (isArray(response.data)) {
                 res = response.data;
               } else if (response.data) {
@@ -2551,33 +2577,33 @@ Model.fetch = /*#__PURE__*/function () {
               }
             }
 
-            _context6.next = 14;
+            _context7.next = 14;
             break;
 
           case 9:
-            _context6.prev = 9;
-            _context6.t0 = _context6["catch"](2);
-            msg = printHttpError(_context6.t0);
+            _context7.prev = 9;
+            _context7.t0 = _context7["catch"](2);
+            msg = printHttpError(_context7.t0);
 
             if (!throwError) {
-              _context6.next = 14;
+              _context7.next = 14;
               break;
             }
 
             throw msg;
 
           case 14:
-            return _context6.abrupt("return", res);
+            return _context7.abrupt("return", res);
 
           case 15:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
-    }, _callee6, null, [[2, 9]]);
+    }, _callee7, null, [[2, 9]]);
   }));
 
-  return function (_x3, _x4, _x5) {
+  return function (_x4, _x5, _x6) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -4115,7 +4141,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
   };
 
   _proto.loadAllChildren = /*#__PURE__*/function () {
-    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(json) {
       var i, id;
       return _regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
@@ -4154,7 +4180,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee, this);
     }));
 
-    function loadAllChildren() {
+    function loadAllChildren(_x) {
       return _loadAllChildren.apply(this, arguments);
     }
 
@@ -4234,7 +4260,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee2, this);
     }));
 
-    function findStateAndUpdate(_x, _x2, _x3) {
+    function findStateAndUpdate(_x2, _x3, _x4) {
       return _findStateAndUpdate.apply(this, arguments);
     }
 
@@ -4296,7 +4322,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee3, this);
     }));
 
-    function addEvent(_x4, _x5, _x6) {
+    function addEvent(_x5, _x6, _x7) {
       return _addEvent.apply(this, arguments);
     }
 
@@ -4363,7 +4389,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee4, this);
     }));
 
-    function createState(_x7) {
+    function createState(_x8) {
       return _createState.apply(this, arguments);
     }
 
@@ -4440,7 +4466,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee5, this);
     }));
 
-    function report(_x8, _x9) {
+    function report(_x9, _x10) {
       return _report.apply(this, arguments);
     }
 
@@ -4469,7 +4495,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee6, this);
     }));
 
-    function forceReport(_x10, _x11) {
+    function forceReport(_x11, _x12) {
       return _forceReport.apply(this, arguments);
     }
 
@@ -4543,7 +4569,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee7, this);
     }));
 
-    function sendReport(_x12, _x13, _x14) {
+    function sendReport(_x13, _x14, _x15) {
       return _sendReport.apply(this, arguments);
     }
 
@@ -4572,7 +4598,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee8, this);
     }));
 
-    function control(_x15, _x16) {
+    function control(_x16, _x17) {
       return _control.apply(this, arguments);
     }
 
@@ -4652,7 +4678,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee9, this, [[0, 7]]);
     }));
 
-    function changeAttribute(_x17, _x18) {
+    function changeAttribute(_x18, _x19) {
       return _changeAttribute.apply(this, arguments);
     }
 
@@ -4698,7 +4724,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee11, this);
     }));
 
-    function setPeriod(_x19) {
+    function setPeriod(_x20) {
       return _setPeriod.apply(this, arguments);
     }
 
@@ -4721,7 +4747,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee12, this);
     }));
 
-    function setDelta(_x20) {
+    function setDelta(_x21) {
       return _setDelta.apply(this, arguments);
     }
 
@@ -4769,7 +4795,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee13, this);
     }));
 
-    function findStateAndLog(_x21, _x22) {
+    function findStateAndLog(_x22, _x23) {
       return _findStateAndLog.apply(this, arguments);
     }
 
@@ -4794,7 +4820,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee14, this);
     }));
 
-    function getReportLog(_x23) {
+    function getReportLog(_x24) {
       return _getReportLog.apply(this, arguments);
     }
 
@@ -4819,7 +4845,7 @@ var Value = /*#__PURE__*/function (_StreamModel) {
       }, _callee15, this);
     }));
 
-    function getControlLog(_x24) {
+    function getControlLog(_x25) {
       return _getControlLog.apply(this, arguments);
     }
 
@@ -4962,7 +4988,7 @@ Value.find = /*#__PURE__*/function () {
     }, _callee17);
   }));
 
-  return function (_x25, _x26, _x27) {
+  return function (_x26, _x27, _x28) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -4999,7 +5025,7 @@ Value.findByName = /*#__PURE__*/function () {
     }, _callee18);
   }));
 
-  return function (_x28, _x29, _x30) {
+  return function (_x29, _x30, _x31) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -5036,7 +5062,7 @@ Value.findByType = /*#__PURE__*/function () {
     }, _callee19);
   }));
 
-  return function (_x31, _x32, _x33) {
+  return function (_x32, _x33, _x34) {
     return _ref4.apply(this, arguments);
   };
 }();
@@ -5062,7 +5088,7 @@ Value.findAllByName = /*#__PURE__*/function () {
     }, _callee20);
   }));
 
-  return function (_x34, _x35) {
+  return function (_x35, _x36) {
     return _ref5.apply(this, arguments);
   };
 }();
@@ -5088,7 +5114,7 @@ Value.findAllByType = /*#__PURE__*/function () {
     }, _callee21);
   }));
 
-  return function (_x36, _x37) {
+  return function (_x37, _x38) {
     return _ref6.apply(this, arguments);
   };
 }();
@@ -5118,7 +5144,7 @@ Value.findById = /*#__PURE__*/function () {
     }, _callee22);
   }));
 
-  return function (_x38) {
+  return function (_x39) {
     return _ref7.apply(this, arguments);
   };
 }();
@@ -5173,45 +5199,49 @@ var Device = /*#__PURE__*/function (_StreamModel) {
   };
 
   _proto.loadAllChildren = /*#__PURE__*/function () {
-    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(json) {
       var i, id;
       return _regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
+              if (json != null && json.value) {
+                this.value = json.value;
+              }
+
               i = 0;
 
-            case 1:
+            case 2:
               if (!(i < this.value.length)) {
-                _context.next = 14;
+                _context.next = 15;
                 break;
               }
 
               if (!(typeof this.value[i] === 'string')) {
-                _context.next = 8;
+                _context.next = 9;
                 break;
               }
 
               // This is needed to convert a value type into string
               id = this.value[i];
-              _context.next = 6;
+              _context.next = 7;
               return Value.findById(id);
 
-            case 6:
+            case 7:
               this.value[i] = _context.sent;
               this.value[i].parent = this;
 
-            case 8:
+            case 9:
               this.value[i].created();
-              _context.next = 11;
-              return this.value[i].loadAllChildren();
+              _context.next = 12;
+              return this.value[i].loadAllChildren(null);
 
-            case 11:
+            case 12:
               i++;
-              _context.next = 1;
+              _context.next = 2;
               break;
 
-            case 14:
+            case 15:
             case "end":
               return _context.stop();
           }
@@ -5219,7 +5249,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
       }, _callee, this);
     }));
 
-    function loadAllChildren() {
+    function loadAllChildren(_x) {
       return _loadAllChildren.apply(this, arguments);
     }
 
@@ -5322,7 +5352,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
       }, _callee2, this);
     }));
 
-    function _createValue(_x) {
+    function _createValue(_x2) {
       return _createValue2.apply(this, arguments);
     }
 
@@ -5363,7 +5393,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
       }, _callee3, this);
     }));
 
-    function createValue(_x2, _x3, _x4, _x5, _x6) {
+    function createValue(_x3, _x4, _x5, _x6, _x7) {
       return _createValue3.apply(this, arguments);
     }
 
@@ -5419,7 +5449,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
       }, _callee4, this);
     }));
 
-    function createNumberValue(_x7) {
+    function createNumberValue(_x8) {
       return _createNumberValue.apply(this, arguments);
     }
 
@@ -5455,7 +5485,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
       }, _callee5, this);
     }));
 
-    function createStringValue(_x8) {
+    function createStringValue(_x9) {
       return _createStringValue.apply(this, arguments);
     }
 
@@ -5491,7 +5521,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
       }, _callee6, this);
     }));
 
-    function createBlobValue(_x9) {
+    function createBlobValue(_x10) {
       return _createBlobValue.apply(this, arguments);
     }
 
@@ -5527,7 +5557,7 @@ var Device = /*#__PURE__*/function (_StreamModel) {
       }, _callee7, this);
     }));
 
-    function createXmlValue(_x10) {
+    function createXmlValue(_x11) {
       return _createXmlValue.apply(this, arguments);
     }
 
@@ -5623,7 +5653,7 @@ Device.find = /*#__PURE__*/function () {
     }, _callee8);
   }));
 
-  return function (_x11, _x12, _x13) {
+  return function (_x12, _x13, _x14) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -5660,7 +5690,7 @@ Device.findByName = /*#__PURE__*/function () {
     }, _callee9);
   }));
 
-  return function (_x14, _x15, _x16) {
+  return function (_x15, _x16, _x17) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -5686,7 +5716,7 @@ Device.findAllByName = /*#__PURE__*/function () {
     }, _callee10);
   }));
 
-  return function (_x17, _x18) {
+  return function (_x18, _x19) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -5723,7 +5753,7 @@ Device.findByProduct = /*#__PURE__*/function () {
     }, _callee11);
   }));
 
-  return function (_x19, _x20, _x21) {
+  return function (_x20, _x21, _x22) {
     return _ref4.apply(this, arguments);
   };
 }();
@@ -5749,7 +5779,7 @@ Device.findAllByProduct = /*#__PURE__*/function () {
     }, _callee12);
   }));
 
-  return function (_x22, _x23) {
+  return function (_x23, _x24) {
     return _ref5.apply(this, arguments);
   };
 }();
@@ -5779,7 +5809,7 @@ Device.findById = /*#__PURE__*/function () {
     }, _callee13);
   }));
 
-  return function (_x24) {
+  return function (_x25) {
     return _ref6.apply(this, arguments);
   };
 }();
@@ -5809,7 +5839,7 @@ Device.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.
           }
 
           _context14.next = 10;
-          return res[i].loadAllChildren();
+          return res[i].loadAllChildren(null);
 
         case 10:
           i++;
@@ -5933,64 +5963,68 @@ var Network = /*#__PURE__*/function (_StreamModel) {
   };
 
   _proto.loadAllChildren = /*#__PURE__*/function () {
-    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+    var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(json) {
       var i, id;
       return _regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
+              if (json != null && json.device) {
+                this.device = json.device;
+              }
+
               i = 0;
 
-            case 1:
+            case 2:
               if (!(i < this.device.length)) {
-                _context.next = 20;
+                _context.next = 21;
                 break;
               }
 
               if (!(typeof this.device[i] === 'string')) {
-                _context.next = 9;
+                _context.next = 10;
                 break;
               }
 
               id = this.device[i];
-              _context.next = 6;
+              _context.next = 7;
               return Device.findById(id);
 
-            case 6:
+            case 7:
               this.device[i] = _context.sent;
-              _context.next = 13;
+              _context.next = 14;
               break;
 
-            case 9:
+            case 10:
               if (!(i >= 3)) {
-                _context.next = 13;
+                _context.next = 14;
                 break;
               }
 
-              _context.next = 12;
+              _context.next = 13;
               return Device.findById(
               /* istanbul ignore next */
               this.device[i].meta.id || '');
 
-            case 12:
+            case 13:
               this.device[i] = _context.sent;
 
-            case 13:
+            case 14:
               if (!this.device[i]) {
-                _context.next = 17;
+                _context.next = 18;
                 break;
               }
 
               this.device[i].parent = this;
-              _context.next = 17;
-              return this.device[i].loadAllChildren();
+              _context.next = 18;
+              return this.device[i].loadAllChildren(null);
 
-            case 17:
+            case 18:
               i++;
-              _context.next = 1;
+              _context.next = 2;
               break;
 
-            case 20:
+            case 21:
             case "end":
               return _context.stop();
           }
@@ -5998,7 +6032,7 @@ var Network = /*#__PURE__*/function (_StreamModel) {
       }, _callee, this);
     }));
 
-    function loadAllChildren() {
+    function loadAllChildren(_x2) {
       return _loadAllChildren.apply(this, arguments);
     }
 
@@ -6068,7 +6102,7 @@ var Network = /*#__PURE__*/function (_StreamModel) {
       }, _callee2, this);
     }));
 
-    function createDevice(_x2) {
+    function createDevice(_x3) {
       return _createDevice.apply(this, arguments);
     }
 
@@ -6163,7 +6197,7 @@ Network.find = /*#__PURE__*/function () {
     }, _callee4);
   }));
 
-  return function (_x3, _x4, _x5) {
+  return function (_x4, _x5, _x6) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -6200,7 +6234,7 @@ Network.findByName = /*#__PURE__*/function () {
     }, _callee5);
   }));
 
-  return function (_x6, _x7, _x8) {
+  return function (_x7, _x8, _x9) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -6226,7 +6260,7 @@ Network.findAllByName = /*#__PURE__*/function () {
     }, _callee6);
   }));
 
-  return function (_x9, _x10) {
+  return function (_x10, _x11) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -6256,7 +6290,7 @@ Network.findById = /*#__PURE__*/function () {
     }, _callee7);
   }));
 
-  return function (_x11) {
+  return function (_x12) {
     return _ref4.apply(this, arguments);
   };
 }();
@@ -6302,7 +6336,7 @@ Network.fetch = /*#__PURE__*/function () {
             }
 
             _context8.next = 13;
-            return res[i].loadAllChildren();
+            return res[i].loadAllChildren(null);
 
           case 13:
             i++;
@@ -6320,7 +6354,7 @@ Network.fetch = /*#__PURE__*/function () {
     }, _callee8);
   }));
 
-  return function (_x12, _x13) {
+  return function (_x13, _x14) {
     return _ref5.apply(this, arguments);
   };
 }();

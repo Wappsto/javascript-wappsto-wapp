@@ -123,7 +123,9 @@ export class Value extends StreamModel implements IValueBase {
         return Value.fromArray(data);
     };
 
-    public async loadAllChildren(): Promise<void> {
+    public async loadAllChildren(
+        json: Record<string, any> | null
+    ): Promise<void> {
         for (let i = 0; i < this.state.length; i++) {
             if (typeof this.state[i] === 'string') {
                 const id: string = this.state[i] as unknown as string;

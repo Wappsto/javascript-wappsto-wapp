@@ -437,6 +437,33 @@ describe('network', () => {
         );
     });
 
+    it('can reload and get new devices', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: {
+                    meta: { id: '0a4de380-1c16-4b5c-a081-912b931ff891' },
+                    name: 'network',
+                    device: ['f589b816-1f2b-412b-ac36-1ca5a6db0273'],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' },
+                    name: 'device',
+                },
+            });
+
+        const network = new Network();
+        network.meta.id = '0a4de380-1c16-4b5c-a081-912b931ff891';
+        await network.reload();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+
+        expect(network.name).toEqual('network');
+        expect(network.device.length).toEqual(1);
+        expect(network.device[0].name).toEqual('device');
+    });
+
     it('can create a new device as a child', async () => {
         mockedAxios.post.mockResolvedValueOnce({
             data: [{ meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],

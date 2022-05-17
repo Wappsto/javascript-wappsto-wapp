@@ -63,7 +63,12 @@ export class Device extends StreamModel implements IDevice {
         return this.value.filter((val) => val.type === type);
     }
 
-    public async loadAllChildren(): Promise<void> {
+    public async loadAllChildren(
+        json: Record<string, any> | null
+    ): Promise<void> {
+        if (json?.value) {
+            this.value = json.value;
+        }
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'string') {
                 // This is needed to convert a value type into string
@@ -72,7 +77,7 @@ export class Device extends StreamModel implements IDevice {
                 this.value[i].parent = this;
             }
             this.value[i].created();
-            await this.value[i].loadAllChildren();
+            await this.value[i].loadAllChildren(null);
         }
     }
 
@@ -314,7 +319,7 @@ export class Device extends StreamModel implements IDevice {
         const data = await Model.fetch(url, params);
         const res = Device.fromArray(data);
         for (let i = 0; i < res.length; i++) {
-            await res[i].loadAllChildren();
+            await res[i].loadAllChildren(null);
         }
         return res;
     };

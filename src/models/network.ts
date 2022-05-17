@@ -74,7 +74,12 @@ export class Network extends StreamModel implements INetwork {
         return values;
     }
 
-    public async loadAllChildren(): Promise<void> {
+    public async loadAllChildren(
+        json: Record<string, any> | null
+    ): Promise<void> {
+        if (json?.device) {
+            this.device = json.device;
+        }
         for (let i = 0; i < this.device.length; i++) {
             if (typeof this.device[i] === 'string') {
                 const id: string = this.device[i] as unknown as string;
@@ -87,7 +92,7 @@ export class Network extends StreamModel implements INetwork {
             }
             if (this.device[i]) {
                 this.device[i].parent = this;
-                await this.device[i].loadAllChildren();
+                await this.device[i].loadAllChildren(null);
             }
         }
     }
@@ -208,7 +213,7 @@ export class Network extends StreamModel implements INetwork {
         const data = await Model.fetch(Network.endpoint, params);
         const res = Network.fromArray(data);
         for (let i = 0; i < res.length; i++) {
-            await res[i].loadAllChildren();
+            await res[i].loadAllChildren(null);
         }
         return res;
     };

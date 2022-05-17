@@ -117,6 +117,11 @@ export class Model implements IModel {
         }
     }
 
+    public async loadAllChildren(
+        json: Record<string, any> | null
+        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+    ): Promise<void> {}
+
     public async reload(): Promise<void> {
         try {
             const response = await wappsto.get(
@@ -124,6 +129,7 @@ export class Model implements IModel {
                 Model.generateOptions()
             );
             this.parse(response.data);
+            await this.loadAllChildren(response.data);
         } catch (e) {
             /* istanbul ignore next */
             printHttpError(e);
@@ -182,7 +188,7 @@ export class Model implements IModel {
                 Model.generateOptions(params)
             );
 
-            if (response?.data) {
+            if (response.data) {
                 if (isArray(response.data)) {
                     res = response.data;
                 } else if (response.data) {

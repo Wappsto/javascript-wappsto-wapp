@@ -217,6 +217,33 @@ describe('device', () => {
         );
     });
 
+    it('can reload and get new values', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: {
+                    meta: { id: '0a4de380-1c16-4b5c-a081-912b931ff891' },
+                    name: 'device',
+                    value: ['f589b816-1f2b-412b-ac36-1ca5a6db0273'],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' },
+                    name: 'value',
+                },
+            });
+
+        const device = new Device();
+        device.meta.id = '0a4de380-1c16-4b5c-a081-912b931ff891';
+        await device.reload();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+
+        expect(device.name).toEqual('device');
+        expect(device.value.length).toEqual(1);
+        expect(device.value[0].name).toEqual('value');
+    });
+
     const templateHelperStart = () => {
         mockedAxios.post
             .mockResolvedValueOnce({
