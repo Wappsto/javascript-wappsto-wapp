@@ -78,7 +78,39 @@ export class Network extends StreamModel implements INetwork {
         json: Record<string, any> | null
     ): Promise<void> {
         if (json?.device) {
-            this.device = json.device;
+            for (let i = 0; i < json.device.length; i++) {
+                let id: string;
+                let data: Record<string, any> | undefined = undefined;
+                let newDevice: Device | undefined = undefined;
+
+                if (typeof json.device[i] === 'string') {
+                    id = json.device[i] as string;
+                } else {
+                    id = json.device[i].meta.id;
+                    data = json.device[i];
+                }
+
+                const dev = this.device.find((dev) => dev.meta.id === id);
+                if (dev) {
+                    if (data) {
+                        dev.parse(data);
+                    }
+                } else {
+                    if (data) {
+                        newDevice = new Device();
+                    } else {
+                        newDevice = await Device.findById(id);
+                    }
+                }
+
+                if (newDevice) {
+                    if (data) {
+                        newDevice.parse(data);
+                    }
+                    newDevice.parent = this;
+                    this.device.push(newDevice);
+                }
+            }
         }
         for (let i = 0; i < this.device.length; i++) {
             if (typeof this.device[i] === 'string') {

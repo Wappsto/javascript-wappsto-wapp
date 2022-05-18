@@ -443,25 +443,63 @@ describe('network', () => {
                 data: {
                     meta: { id: '0a4de380-1c16-4b5c-a081-912b931ff891' },
                     name: 'network',
-                    device: ['f589b816-1f2b-412b-ac36-1ca5a6db0273'],
+                    device: [
+                        {
+                            meta: {
+                                id: '048d2bb4-f0dc-48da-9bb8-f83f48f8bcc4',
+                            },
+                            name: 'device 1',
+                        },
+                        'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        {
+                            meta: {
+                                id: 'b3fb2261-e6d9-48c4-97a2-71bf299736b8',
+                            },
+                            name: 'device 3',
+                        },
+                        {
+                            meta: {
+                                id: '0af35945-f38b-4528-a7c7-3a7d42a2a132',
+                            },
+                            name: 'device 4',
+                        },
+                    ],
                 },
             })
             .mockResolvedValueOnce({
                 data: {
                     meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' },
-                    name: 'device',
+                    name: 'device 2',
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: 'b3fb2261-e6d9-48c4-97a2-71bf299736b8',
+                    },
+                    name: 'device 3',
                 },
             });
 
+        const device = new Device();
+        device.meta.id = '0af35945-f38b-4528-a7c7-3a7d42a2a132';
+        device.name = 'device';
+
         const network = new Network();
         network.meta.id = '0a4de380-1c16-4b5c-a081-912b931ff891';
+        network.device.push(device);
+
         await network.reload();
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        //expect(mockedAxios.get).toHaveBeenCalledWith('');
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
 
         expect(network.name).toEqual('network');
-        expect(network.device.length).toEqual(1);
-        expect(network.device[0].name).toEqual('device');
+        expect(network.device.length).toEqual(4);
+        expect(network.device[0].name).toEqual('device 4');
+        expect(network.device[1].name).toEqual('device 1');
+        expect(network.device[2].name).toEqual('device 2');
+        expect(network.device[3].name).toEqual('device 3');
     });
 
     it('can create a new device as a child', async () => {

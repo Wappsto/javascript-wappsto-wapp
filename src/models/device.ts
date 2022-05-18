@@ -67,7 +67,39 @@ export class Device extends StreamModel implements IDevice {
         json: Record<string, any> | null
     ): Promise<void> {
         if (json?.value) {
-            this.value = json.value;
+            for (let i = 0; i < json.value.length; i++) {
+                let id: string;
+                let data: Record<string, any> | undefined = undefined;
+                let newValue: Value | undefined = undefined;
+
+                if (typeof json.value[i] === 'string') {
+                    id = json.value[i] as string;
+                } else {
+                    id = json.value[i].meta.id;
+                    data = json.value[i];
+                }
+
+                const val = this.value.find((val) => val.meta.id === id);
+                if (val) {
+                    if (data) {
+                        val.parse(data);
+                    }
+                } else {
+                    if (data) {
+                        newValue = new Value();
+                    } else {
+                        newValue = await Value.findById(id);
+                    }
+                }
+
+                if (newValue) {
+                    if (data) {
+                        newValue.parse(data);
+                    }
+                    newValue.parent = this;
+                    this.value.push(newValue);
+                }
+            }
         }
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'string') {

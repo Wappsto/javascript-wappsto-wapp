@@ -223,25 +223,54 @@ describe('device', () => {
                 data: {
                     meta: { id: '0a4de380-1c16-4b5c-a081-912b931ff891' },
                     name: 'device',
-                    value: ['f589b816-1f2b-412b-ac36-1ca5a6db0273'],
+                    value: [
+                        {
+                            meta: {
+                                id: '048d2bb4-f0dc-48da-9bb8-f83f48f8bcc4',
+                            },
+                            name: 'value 1',
+                        },
+                        'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        {
+                            meta: {
+                                id: 'b3fb2261-e6d9-48c4-97a2-71bf299736b8',
+                            },
+                            name: 'value 3',
+                        },
+                        {
+                            meta: {
+                                id: '0af35945-f38b-4528-a7c7-3a7d42a2a132',
+                            },
+                            name: 'value 4',
+                        },
+                    ],
                 },
             })
             .mockResolvedValueOnce({
                 data: {
                     meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' },
-                    name: 'value',
+                    name: 'value 2',
                 },
             });
 
+        const value = new Value();
+        value.meta.id = '0af35945-f38b-4528-a7c7-3a7d42a2a132';
+        value.name = 'value';
+
         const device = new Device();
         device.meta.id = '0a4de380-1c16-4b5c-a081-912b931ff891';
+        device.value.push(value);
+
         await device.reload();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
 
         expect(device.name).toEqual('device');
-        expect(device.value.length).toEqual(1);
-        expect(device.value[0].name).toEqual('value');
+        expect(device.value.length).toEqual(4);
+        expect(device.value[0].name).toEqual('value 4');
+        expect(device.value[1].name).toEqual('value 1');
+        expect(device.value[2].name).toEqual('value 2');
+        expect(device.value[3].name).toEqual('value 3');
     });
 
     const templateHelperStart = () => {

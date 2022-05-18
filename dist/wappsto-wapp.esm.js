@@ -5200,50 +5200,139 @@ var Device = /*#__PURE__*/function (_StreamModel) {
 
   _proto.loadAllChildren = /*#__PURE__*/function () {
     var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(json) {
-      var i, id;
-      return _regeneratorRuntime.wrap(function _callee$(_context) {
+      var _this2 = this;
+
+      var _loop, i, _i, id;
+
+      return _regeneratorRuntime.wrap(function _callee$(_context2) {
         while (1) {
-          switch (_context.prev = _context.next) {
+          switch (_context2.prev = _context2.next) {
             case 0:
-              if (json != null && json.value) {
-                this.value = json.value;
-              }
-
-              i = 0;
-
-            case 2:
-              if (!(i < this.value.length)) {
-                _context.next = 15;
+              if (!(json != null && json.value)) {
+                _context2.next = 8;
                 break;
               }
 
-              if (!(typeof this.value[i] === 'string')) {
-                _context.next = 9;
+              _loop = /*#__PURE__*/_regeneratorRuntime.mark(function _loop(i) {
+                var id, data, newValue, val;
+                return _regeneratorRuntime.wrap(function _loop$(_context) {
+                  while (1) {
+                    switch (_context.prev = _context.next) {
+                      case 0:
+                        id = void 0;
+                        data = undefined;
+                        newValue = undefined;
+
+                        if (typeof json.value[i] === 'string') {
+                          id = json.value[i];
+                        } else {
+                          id = json.value[i].meta.id;
+                          data = json.value[i];
+                        }
+
+                        val = _this2.value.find(function (val) {
+                          return val.meta.id === id;
+                        });
+
+                        if (!val) {
+                          _context.next = 9;
+                          break;
+                        }
+
+                        if (data) {
+                          val.parse(data);
+                        }
+
+                        _context.next = 16;
+                        break;
+
+                      case 9:
+                        if (!data) {
+                          _context.next = 13;
+                          break;
+                        }
+
+                        newValue = new Value();
+                        _context.next = 16;
+                        break;
+
+                      case 13:
+                        _context.next = 15;
+                        return Value.findById(id);
+
+                      case 15:
+                        newValue = _context.sent;
+
+                      case 16:
+                        if (newValue) {
+                          if (data) {
+                            newValue.parse(data);
+                          }
+
+                          newValue.parent = _this2;
+
+                          _this2.value.push(newValue);
+                        }
+
+                      case 17:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }
+                }, _loop);
+              });
+              i = 0;
+
+            case 3:
+              if (!(i < json.value.length)) {
+                _context2.next = 8;
+                break;
+              }
+
+              return _context2.delegateYield(_loop(i), "t0", 5);
+
+            case 5:
+              i++;
+              _context2.next = 3;
+              break;
+
+            case 8:
+              _i = 0;
+
+            case 9:
+              if (!(_i < this.value.length)) {
+                _context2.next = 22;
+                break;
+              }
+
+              if (!(typeof this.value[_i] === 'string')) {
+                _context2.next = 16;
                 break;
               }
 
               // This is needed to convert a value type into string
-              id = this.value[i];
-              _context.next = 7;
+              id = this.value[_i];
+              _context2.next = 14;
               return Value.findById(id);
 
-            case 7:
-              this.value[i] = _context.sent;
-              this.value[i].parent = this;
+            case 14:
+              this.value[_i] = _context2.sent;
+              this.value[_i].parent = this;
 
-            case 9:
-              this.value[i].created();
-              _context.next = 12;
-              return this.value[i].loadAllChildren(null);
+            case 16:
+              this.value[_i].created();
 
-            case 12:
-              i++;
-              _context.next = 2;
+              _context2.next = 19;
+              return this.value[_i].loadAllChildren(null);
+
+            case 19:
+              _i++;
+              _context2.next = 9;
               break;
 
-            case 15:
+            case 22:
             case "end":
-              return _context.stop();
+              return _context2.stop();
           }
         }
       }, _callee, this);
@@ -5259,9 +5348,9 @@ var Device = /*#__PURE__*/function (_StreamModel) {
   _proto._createValue = /*#__PURE__*/function () {
     var _createValue2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(params) {
       var oldDelta, oldPeriod, value, values, oldJson, newJson;
-      return _regeneratorRuntime.wrap(function _callee2$(_context2) {
+      return _regeneratorRuntime.wrap(function _callee2$(_context3) {
         while (1) {
-          switch (_context2.prev = _context2.next) {
+          switch (_context3.prev = _context3.next) {
             case 0:
               oldPeriod = '0';
               value = new Value();
@@ -5295,24 +5384,24 @@ var Device = /*#__PURE__*/function (_StreamModel) {
               value.parent = this;
 
               if (isEqual(oldJson, newJson)) {
-                _context2.next = 19;
+                _context3.next = 19;
                 break;
               }
 
               if (!(values.length !== 0)) {
-                _context2.next = 16;
+                _context3.next = 16;
                 break;
               }
 
-              _context2.next = 14;
+              _context3.next = 14;
               return value.update();
 
             case 14:
-              _context2.next = 19;
+              _context3.next = 19;
               break;
 
             case 16:
-              _context2.next = 18;
+              _context3.next = 18;
               return value.create();
 
             case 18:
@@ -5320,33 +5409,33 @@ var Device = /*#__PURE__*/function (_StreamModel) {
 
             case 19:
               if (!['r', 'rw', 'wr'].includes(params.permission)) {
-                _context2.next = 22;
+                _context3.next = 22;
                 break;
               }
 
-              _context2.next = 22;
+              _context3.next = 22;
               return value.createState({
                 type: 'Report'
               });
 
             case 22:
               if (!['w', 'rw', 'wr'].includes(params.permission)) {
-                _context2.next = 25;
+                _context3.next = 25;
                 break;
               }
 
-              _context2.next = 25;
+              _context3.next = 25;
               return value.createState({
                 type: 'Control'
               });
 
             case 25:
               value.created();
-              return _context2.abrupt("return", value);
+              return _context3.abrupt("return", value);
 
             case 27:
             case "end":
-              return _context2.stop();
+              return _context3.stop();
           }
         }
       }, _callee2, this);
@@ -5361,10 +5450,10 @@ var Device = /*#__PURE__*/function (_StreamModel) {
 
   _proto.createValue = /*#__PURE__*/function () {
     var _createValue3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(name, permission, valueTemplate, period, delta) {
-      var _args3 = arguments;
-      return _regeneratorRuntime.wrap(function _callee3$(_context3) {
+      var _args4 = arguments;
+      return _regeneratorRuntime.wrap(function _callee3$(_context4) {
         while (1) {
-          switch (_context3.prev = _context3.next) {
+          switch (_context4.prev = _context4.next) {
             case 0:
               if (period === void 0) {
                 period = '0';
@@ -5374,20 +5463,20 @@ var Device = /*#__PURE__*/function (_StreamModel) {
                 delta = 0;
               }
 
-              this.validate('createValue', _args3);
+              this.validate('createValue', _args4);
               valueTemplate.name = name;
               valueTemplate.permission = permission;
               valueTemplate.period = period;
               valueTemplate.delta = delta.toString();
-              _context3.next = 9;
+              _context4.next = 9;
               return this._createValue(valueTemplate);
 
             case 9:
-              return _context3.abrupt("return", _context3.sent);
+              return _context4.abrupt("return", _context4.sent);
 
             case 10:
             case "end":
-              return _context3.stop();
+              return _context4.stop();
           }
         }
       }, _callee3, this);
@@ -5416,15 +5505,15 @@ var Device = /*#__PURE__*/function (_StreamModel) {
       var _params$delta;
 
       var base,
-          _args4 = arguments;
-      return _regeneratorRuntime.wrap(function _callee4$(_context4) {
+          _args5 = arguments;
+      return _regeneratorRuntime.wrap(function _callee4$(_context5) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
-              this.validate('createNumberValue', _args4);
+              this.validate('createNumberValue', _args5);
               base = this.getValueBase(params);
               base.delta = (_params$delta = params.delta) != null ? _params$delta : '0';
-              _context4.next = 5;
+              _context5.next = 5;
               return this._createValue(_extends({}, base, {
                 number: {
                   min: params.min,
@@ -5439,11 +5528,11 @@ var Device = /*#__PURE__*/function (_StreamModel) {
               }));
 
             case 5:
-              return _context4.abrupt("return", _context4.sent);
+              return _context5.abrupt("return", _context5.sent);
 
             case 6:
             case "end":
-              return _context4.stop();
+              return _context5.stop();
           }
         }
       }, _callee4, this);
@@ -5459,14 +5548,14 @@ var Device = /*#__PURE__*/function (_StreamModel) {
   _proto.createStringValue = /*#__PURE__*/function () {
     var _createStringValue = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(params) {
       var base,
-          _args5 = arguments;
-      return _regeneratorRuntime.wrap(function _callee5$(_context5) {
+          _args6 = arguments;
+      return _regeneratorRuntime.wrap(function _callee5$(_context6) {
         while (1) {
-          switch (_context5.prev = _context5.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
-              this.validate('createStringValue', _args5);
+              this.validate('createStringValue', _args6);
               base = this.getValueBase(params);
-              _context5.next = 4;
+              _context6.next = 4;
               return this._createValue(_extends({}, base, {
                 string: {
                   max: params.max,
@@ -5475,11 +5564,11 @@ var Device = /*#__PURE__*/function (_StreamModel) {
               }));
 
             case 4:
-              return _context5.abrupt("return", _context5.sent);
+              return _context6.abrupt("return", _context6.sent);
 
             case 5:
             case "end":
-              return _context5.stop();
+              return _context6.stop();
           }
         }
       }, _callee5, this);
@@ -5495,14 +5584,14 @@ var Device = /*#__PURE__*/function (_StreamModel) {
   _proto.createBlobValue = /*#__PURE__*/function () {
     var _createBlobValue = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(params) {
       var base,
-          _args6 = arguments;
-      return _regeneratorRuntime.wrap(function _callee6$(_context6) {
+          _args7 = arguments;
+      return _regeneratorRuntime.wrap(function _callee6$(_context7) {
         while (1) {
-          switch (_context6.prev = _context6.next) {
+          switch (_context7.prev = _context7.next) {
             case 0:
-              this.validate('createBlobValue', _args6);
+              this.validate('createBlobValue', _args7);
               base = this.getValueBase(params);
-              _context6.next = 4;
+              _context7.next = 4;
               return this._createValue(_extends({}, base, {
                 blob: {
                   max: params.max,
@@ -5511,11 +5600,11 @@ var Device = /*#__PURE__*/function (_StreamModel) {
               }));
 
             case 4:
-              return _context6.abrupt("return", _context6.sent);
+              return _context7.abrupt("return", _context7.sent);
 
             case 5:
             case "end":
-              return _context6.stop();
+              return _context7.stop();
           }
         }
       }, _callee6, this);
@@ -5531,14 +5620,14 @@ var Device = /*#__PURE__*/function (_StreamModel) {
   _proto.createXmlValue = /*#__PURE__*/function () {
     var _createXmlValue = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee7(params) {
       var base,
-          _args7 = arguments;
-      return _regeneratorRuntime.wrap(function _callee7$(_context7) {
+          _args8 = arguments;
+      return _regeneratorRuntime.wrap(function _callee7$(_context8) {
         while (1) {
-          switch (_context7.prev = _context7.next) {
+          switch (_context8.prev = _context8.next) {
             case 0:
-              this.validate('createXmlValue', _args7);
+              this.validate('createXmlValue', _args8);
               base = this.getValueBase(params);
-              _context7.next = 4;
+              _context8.next = 4;
               return this._createValue(_extends({}, base, {
                 xml: {
                   xsd: params.xsd,
@@ -5547,11 +5636,11 @@ var Device = /*#__PURE__*/function (_StreamModel) {
               }));
 
             case 4:
-              return _context7.abrupt("return", _context7.sent);
+              return _context8.abrupt("return", _context8.sent);
 
             case 5:
             case "end":
-              return _context7.stop();
+              return _context8.stop();
           }
         }
       }, _callee7, this);
@@ -5583,13 +5672,13 @@ var Device = /*#__PURE__*/function (_StreamModel) {
   };
 
   _proto.setParent = function setParent(parent) {
-    var _this2 = this;
+    var _this3 = this;
 
     _StreamModel.prototype.setParent.call(this, parent);
 
     this.value.forEach(function (val) {
       if (typeof val !== 'string') {
-        val.setParent(_this2);
+        val.setParent(_this3);
       }
     });
   };
@@ -5612,9 +5701,9 @@ Device.endpoint = '/2.0/device';
 Device.find = /*#__PURE__*/function () {
   var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee8(params, quantity, usage) {
     var query, key, data;
-    return _regeneratorRuntime.wrap(function _callee8$(_context8) {
+    return _regeneratorRuntime.wrap(function _callee8$(_context9) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context9.prev = _context9.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -5638,16 +5727,16 @@ Device.find = /*#__PURE__*/function () {
               query["this_" + key] = "=" + params[key];
             }
 
-            _context8.next = 8;
+            _context9.next = 8;
             return PermissionModel.request(Device.endpoint, quantity, usage, query);
 
           case 8:
-            data = _context8.sent;
-            return _context8.abrupt("return", Device.fromArray(data));
+            data = _context9.sent;
+            return _context9.abrupt("return", Device.fromArray(data));
 
           case 10:
           case "end":
-            return _context8.stop();
+            return _context9.stop();
         }
       }
     }, _callee8);
@@ -5660,9 +5749,9 @@ Device.find = /*#__PURE__*/function () {
 
 Device.findByName = /*#__PURE__*/function () {
   var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee9(name, quantity, usage) {
-    return _regeneratorRuntime.wrap(function _callee9$(_context9) {
+    return _regeneratorRuntime.wrap(function _callee9$(_context10) {
       while (1) {
-        switch (_context9.prev = _context9.next) {
+        switch (_context10.prev = _context10.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -5678,13 +5767,13 @@ Device.findByName = /*#__PURE__*/function () {
               usage = "Find " + quantity + " device with name " + name;
             }
 
-            return _context9.abrupt("return", Device.find({
+            return _context10.abrupt("return", Device.find({
               name: name
             }, quantity, usage));
 
           case 5:
           case "end":
-            return _context9.stop();
+            return _context10.stop();
         }
       }
     }, _callee9);
@@ -5697,20 +5786,20 @@ Device.findByName = /*#__PURE__*/function () {
 
 Device.findAllByName = /*#__PURE__*/function () {
   var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee10(name, usage) {
-    return _regeneratorRuntime.wrap(function _callee10$(_context10) {
+    return _regeneratorRuntime.wrap(function _callee10$(_context11) {
       while (1) {
-        switch (_context10.prev = _context10.next) {
+        switch (_context11.prev = _context11.next) {
           case 0:
             if (usage === void 0) {
               usage = '';
             }
 
             Device.validate('findAllByName', [name, usage]);
-            return _context10.abrupt("return", Device.findByName(name, 'all', usage));
+            return _context11.abrupt("return", Device.findByName(name, 'all', usage));
 
           case 3:
           case "end":
-            return _context10.stop();
+            return _context11.stop();
         }
       }
     }, _callee10);
@@ -5723,9 +5812,9 @@ Device.findAllByName = /*#__PURE__*/function () {
 
 Device.findByProduct = /*#__PURE__*/function () {
   var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee11(product, quantity, usage) {
-    return _regeneratorRuntime.wrap(function _callee11$(_context11) {
+    return _regeneratorRuntime.wrap(function _callee11$(_context12) {
       while (1) {
-        switch (_context11.prev = _context11.next) {
+        switch (_context12.prev = _context12.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -5741,13 +5830,13 @@ Device.findByProduct = /*#__PURE__*/function () {
               usage = "Find " + quantity + " device with product " + product;
             }
 
-            return _context11.abrupt("return", Device.find({
+            return _context12.abrupt("return", Device.find({
               product: product
             }, quantity, usage));
 
           case 5:
           case "end":
-            return _context11.stop();
+            return _context12.stop();
         }
       }
     }, _callee11);
@@ -5760,20 +5849,20 @@ Device.findByProduct = /*#__PURE__*/function () {
 
 Device.findAllByProduct = /*#__PURE__*/function () {
   var _ref5 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee12(product, usage) {
-    return _regeneratorRuntime.wrap(function _callee12$(_context12) {
+    return _regeneratorRuntime.wrap(function _callee12$(_context13) {
       while (1) {
-        switch (_context12.prev = _context12.next) {
+        switch (_context13.prev = _context13.next) {
           case 0:
             if (usage === void 0) {
               usage = '';
             }
 
             Device.validate('findAllByProduct', [product, usage]);
-            return _context12.abrupt("return", Device.findByProduct(product, 'all', usage));
+            return _context13.abrupt("return", Device.findByProduct(product, 'all', usage));
 
           case 3:
           case "end":
-            return _context12.stop();
+            return _context13.stop();
         }
       }
     }, _callee12);
@@ -5787,23 +5876,23 @@ Device.findAllByProduct = /*#__PURE__*/function () {
 Device.findById = /*#__PURE__*/function () {
   var _ref6 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee13(id) {
     var res;
-    return _regeneratorRuntime.wrap(function _callee13$(_context13) {
+    return _regeneratorRuntime.wrap(function _callee13$(_context14) {
       while (1) {
-        switch (_context13.prev = _context13.next) {
+        switch (_context14.prev = _context14.next) {
           case 0:
             Device.validate('findById', [id]);
-            _context13.next = 3;
+            _context14.next = 3;
             return Model.fetch(Device.endpoint + "/" + id, {
               expand: 3
             });
 
           case 3:
-            res = _context13.sent;
-            return _context13.abrupt("return", Device.fromArray(res)[0]);
+            res = _context14.sent;
+            return _context14.abrupt("return", Device.fromArray(res)[0]);
 
           case 5:
           case "end":
-            return _context13.stop();
+            return _context14.stop();
         }
       }
     }, _callee13);
@@ -5816,42 +5905,42 @@ Device.findById = /*#__PURE__*/function () {
 
 Device.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee14() {
   var params, url, data, res, i;
-  return _regeneratorRuntime.wrap(function _callee14$(_context14) {
+  return _regeneratorRuntime.wrap(function _callee14$(_context15) {
     while (1) {
-      switch (_context14.prev = _context14.next) {
+      switch (_context15.prev = _context15.next) {
         case 0:
           params = {
             expand: 3
           };
           url = Device.endpoint;
-          _context14.next = 4;
+          _context15.next = 4;
           return Model.fetch(url, params);
 
         case 4:
-          data = _context14.sent;
+          data = _context15.sent;
           res = Device.fromArray(data);
           i = 0;
 
         case 7:
           if (!(i < res.length)) {
-            _context14.next = 13;
+            _context15.next = 13;
             break;
           }
 
-          _context14.next = 10;
+          _context15.next = 10;
           return res[i].loadAllChildren(null);
 
         case 10:
           i++;
-          _context14.next = 7;
+          _context15.next = 7;
           break;
 
         case 13:
-          return _context14.abrupt("return", res);
+          return _context15.abrupt("return", res);
 
         case 14:
         case "end":
-          return _context14.stop();
+          return _context15.stop();
       }
     }
   }, _callee14);
@@ -5869,39 +5958,39 @@ function _createNetwork() {
   _createNetwork = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(params) {
     var networks,
         network,
-        _args3 = arguments;
-    return _regeneratorRuntime.wrap(function _callee3$(_context3) {
+        _args4 = arguments;
+    return _regeneratorRuntime.wrap(function _callee3$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            Model.validateMethod('Network', 'createNetwork', _args3);
-            _context3.next = 3;
+            Model.validateMethod('Network', 'createNetwork', _args4);
+            _context4.next = 3;
             return Network.fetch(params.name);
 
           case 3:
-            networks = _context3.sent;
+            networks = _context4.sent;
 
             if (!(networks.length !== 0)) {
-              _context3.next = 7;
+              _context4.next = 7;
               break;
             }
 
             printDebug("Using existing network with id " + networks[0].id());
-            return _context3.abrupt("return", networks[0]);
+            return _context4.abrupt("return", networks[0]);
 
           case 7:
             network = new Network();
             network.name = params.name;
             network.description = params.description;
-            _context3.next = 12;
+            _context4.next = 12;
             return network.create();
 
           case 12:
-            return _context3.abrupt("return", network);
+            return _context4.abrupt("return", network);
 
           case 13:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
     }, _callee3);
@@ -5964,69 +6053,157 @@ var Network = /*#__PURE__*/function (_StreamModel) {
 
   _proto.loadAllChildren = /*#__PURE__*/function () {
     var _loadAllChildren = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(json) {
-      var i, id;
-      return _regeneratorRuntime.wrap(function _callee$(_context) {
+      var _this2 = this;
+
+      var _loop, i, _i, id;
+
+      return _regeneratorRuntime.wrap(function _callee$(_context2) {
         while (1) {
-          switch (_context.prev = _context.next) {
+          switch (_context2.prev = _context2.next) {
             case 0:
-              if (json != null && json.device) {
-                this.device = json.device;
+              if (!(json != null && json.device)) {
+                _context2.next = 8;
+                break;
               }
 
+              _loop = /*#__PURE__*/_regeneratorRuntime.mark(function _loop(i) {
+                var id, data, newDevice, dev;
+                return _regeneratorRuntime.wrap(function _loop$(_context) {
+                  while (1) {
+                    switch (_context.prev = _context.next) {
+                      case 0:
+                        id = void 0;
+                        data = undefined;
+                        newDevice = undefined;
+
+                        if (typeof json.device[i] === 'string') {
+                          id = json.device[i];
+                        } else {
+                          id = json.device[i].meta.id;
+                          data = json.device[i];
+                        }
+
+                        dev = _this2.device.find(function (dev) {
+                          return dev.meta.id === id;
+                        });
+
+                        if (!dev) {
+                          _context.next = 9;
+                          break;
+                        }
+
+                        if (data) {
+                          dev.parse(data);
+                        }
+
+                        _context.next = 16;
+                        break;
+
+                      case 9:
+                        if (!data) {
+                          _context.next = 13;
+                          break;
+                        }
+
+                        newDevice = new Device();
+                        _context.next = 16;
+                        break;
+
+                      case 13:
+                        _context.next = 15;
+                        return Device.findById(id);
+
+                      case 15:
+                        newDevice = _context.sent;
+
+                      case 16:
+                        if (newDevice) {
+                          if (data) {
+                            newDevice.parse(data);
+                          }
+
+                          newDevice.parent = _this2;
+
+                          _this2.device.push(newDevice);
+                        }
+
+                      case 17:
+                      case "end":
+                        return _context.stop();
+                    }
+                  }
+                }, _loop);
+              });
               i = 0;
 
-            case 2:
-              if (!(i < this.device.length)) {
-                _context.next = 21;
+            case 3:
+              if (!(i < json.device.length)) {
+                _context2.next = 8;
                 break;
               }
 
-              if (!(typeof this.device[i] === 'string')) {
-                _context.next = 10;
+              return _context2.delegateYield(_loop(i), "t0", 5);
+
+            case 5:
+              i++;
+              _context2.next = 3;
+              break;
+
+            case 8:
+              _i = 0;
+
+            case 9:
+              if (!(_i < this.device.length)) {
+                _context2.next = 28;
                 break;
               }
 
-              id = this.device[i];
-              _context.next = 7;
+              if (!(typeof this.device[_i] === 'string')) {
+                _context2.next = 17;
+                break;
+              }
+
+              id = this.device[_i];
+              _context2.next = 14;
               return Device.findById(id);
 
-            case 7:
-              this.device[i] = _context.sent;
-              _context.next = 14;
+            case 14:
+              this.device[_i] = _context2.sent;
+              _context2.next = 21;
               break;
 
-            case 10:
-              if (!(i >= 3)) {
-                _context.next = 14;
+            case 17:
+              if (!(_i >= 3)) {
+                _context2.next = 21;
                 break;
               }
 
-              _context.next = 13;
+              _context2.next = 20;
               return Device.findById(
               /* istanbul ignore next */
-              this.device[i].meta.id || '');
+              this.device[_i].meta.id || '');
 
-            case 13:
-              this.device[i] = _context.sent;
+            case 20:
+              this.device[_i] = _context2.sent;
 
-            case 14:
-              if (!this.device[i]) {
-                _context.next = 18;
+            case 21:
+              if (!this.device[_i]) {
+                _context2.next = 25;
                 break;
               }
 
-              this.device[i].parent = this;
-              _context.next = 18;
-              return this.device[i].loadAllChildren(null);
+              this.device[_i].parent = this;
+              _context2.next = 25;
+              return this.device[_i].loadAllChildren(null);
 
-            case 18:
-              i++;
-              _context.next = 2;
+            case 25:
+              _i++;
+              _context2.next = 9;
               break;
 
-            case 21:
+            case 28:
             case "end":
-              return _context.stop();
+              return _context2.stop();
           }
         }
       }, _callee, this);
@@ -6046,13 +6223,13 @@ var Network = /*#__PURE__*/function (_StreamModel) {
           _devices$,
           oldJson,
           newJson,
-          _args2 = arguments;
+          _args3 = arguments;
 
-      return _regeneratorRuntime.wrap(function _callee2$(_context2) {
+      return _regeneratorRuntime.wrap(function _callee2$(_context3) {
         while (1) {
-          switch (_context2.prev = _context2.next) {
+          switch (_context3.prev = _context3.next) {
             case 0:
-              this.validate('createDevice', _args2);
+              this.validate('createDevice', _args3);
               device = new Device();
               devices = this.findDeviceByName(params.name);
 
@@ -6068,35 +6245,35 @@ var Network = /*#__PURE__*/function (_StreamModel) {
               device.parent = this;
 
               if (isEqual(oldJson, newJson)) {
-                _context2.next = 17;
+                _context3.next = 17;
                 break;
               }
 
               if (!(devices.length !== 0)) {
-                _context2.next = 14;
+                _context3.next = 14;
                 break;
               }
 
-              _context2.next = 12;
+              _context3.next = 12;
               return device.update();
 
             case 12:
-              _context2.next = 17;
+              _context3.next = 17;
               break;
 
             case 14:
-              _context2.next = 16;
+              _context3.next = 16;
               return device.create();
 
             case 16:
               this.device.push(device);
 
             case 17:
-              return _context2.abrupt("return", device);
+              return _context3.abrupt("return", device);
 
             case 18:
             case "end":
-              return _context2.stop();
+              return _context3.stop();
           }
         }
       }, _callee2, this);
@@ -6128,12 +6305,12 @@ var Network = /*#__PURE__*/function (_StreamModel) {
   };
 
   _proto.setParent = function setParent(parent) {
-    var _this2 = this;
+    var _this3 = this;
 
     this.parent = parent;
     this.device.forEach(function (dev) {
       if (typeof dev !== 'string') {
-        dev.setParent(_this2);
+        dev.setParent(_this3);
       }
     });
   };
@@ -6156,9 +6333,9 @@ Network.endpoint = '/2.0/network';
 Network.find = /*#__PURE__*/function () {
   var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(params, quantity, usage) {
     var query, key, data;
-    return _regeneratorRuntime.wrap(function _callee4$(_context4) {
+    return _regeneratorRuntime.wrap(function _callee4$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -6182,16 +6359,16 @@ Network.find = /*#__PURE__*/function () {
               query["this_" + key] = "=" + params[key];
             }
 
-            _context4.next = 8;
+            _context5.next = 8;
             return PermissionModel.request(Network.endpoint, quantity, usage, query);
 
           case 8:
-            data = _context4.sent;
-            return _context4.abrupt("return", Network.fromArray(data));
+            data = _context5.sent;
+            return _context5.abrupt("return", Network.fromArray(data));
 
           case 10:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
     }, _callee4);
@@ -6204,9 +6381,9 @@ Network.find = /*#__PURE__*/function () {
 
 Network.findByName = /*#__PURE__*/function () {
   var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(name, quantity, usage) {
-    return _regeneratorRuntime.wrap(function _callee5$(_context5) {
+    return _regeneratorRuntime.wrap(function _callee5$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             if (quantity === void 0) {
               quantity = 1;
@@ -6222,13 +6399,13 @@ Network.findByName = /*#__PURE__*/function () {
               usage = "Find " + quantity + " network with name " + name;
             }
 
-            return _context5.abrupt("return", Network.find({
+            return _context6.abrupt("return", Network.find({
               name: name
             }, quantity, usage));
 
           case 5:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
     }, _callee5);
@@ -6241,20 +6418,20 @@ Network.findByName = /*#__PURE__*/function () {
 
 Network.findAllByName = /*#__PURE__*/function () {
   var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee6(name, usage) {
-    return _regeneratorRuntime.wrap(function _callee6$(_context6) {
+    return _regeneratorRuntime.wrap(function _callee6$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
             if (usage === void 0) {
               usage = '';
             }
 
             Network.validate('findAllByName', [name, usage]);
-            return _context6.abrupt("return", Network.findByName(name, 'all', usage));
+            return _context7.abrupt("return", Network.findByName(name, 'all', usage));
 
           case 3:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
     }, _callee6);
@@ -6268,23 +6445,23 @@ Network.findAllByName = /*#__PURE__*/function () {
 Network.findById = /*#__PURE__*/function () {
   var _ref4 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee7(id) {
     var res;
-    return _regeneratorRuntime.wrap(function _callee7$(_context7) {
+    return _regeneratorRuntime.wrap(function _callee7$(_context8) {
       while (1) {
-        switch (_context7.prev = _context7.next) {
+        switch (_context8.prev = _context8.next) {
           case 0:
             Network.validate('findById', [id]);
-            _context7.next = 3;
+            _context8.next = 3;
             return Model.fetch(Network.endpoint + "/" + id, {
               expand: 4
             });
 
           case 3:
-            res = _context7.sent;
-            return _context7.abrupt("return", Network.fromArray(res)[0]);
+            res = _context8.sent;
+            return _context8.abrupt("return", Network.fromArray(res)[0]);
 
           case 5:
           case "end":
-            return _context7.stop();
+            return _context8.stop();
         }
       }
     }, _callee7);
@@ -6298,9 +6475,9 @@ Network.findById = /*#__PURE__*/function () {
 Network.fetch = /*#__PURE__*/function () {
   var _ref5 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee8(name, params) {
     var data, res, i;
-    return _regeneratorRuntime.wrap(function _callee8$(_context8) {
+    return _regeneratorRuntime.wrap(function _callee8$(_context9) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context9.prev = _context9.next) {
           case 0:
             if (name === void 0) {
               name = '';
@@ -6321,34 +6498,34 @@ Network.fetch = /*#__PURE__*/function () {
               });
             }
 
-            _context8.next = 7;
+            _context9.next = 7;
             return Model.fetch(Network.endpoint, params);
 
           case 7:
-            data = _context8.sent;
+            data = _context9.sent;
             res = Network.fromArray(data);
             i = 0;
 
           case 10:
             if (!(i < res.length)) {
-              _context8.next = 16;
+              _context9.next = 16;
               break;
             }
 
-            _context8.next = 13;
+            _context9.next = 13;
             return res[i].loadAllChildren(null);
 
           case 13:
             i++;
-            _context8.next = 10;
+            _context9.next = 10;
             break;
 
           case 16:
-            return _context8.abrupt("return", res);
+            return _context9.abrupt("return", res);
 
           case 17:
           case "end":
-            return _context8.stop();
+            return _context9.stop();
         }
       }
     }, _callee8);
