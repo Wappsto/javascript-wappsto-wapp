@@ -10,14 +10,21 @@ describe('console', () => {
         mockedAxios.post.mockResolvedValue({});
     });
 
-    it('can stop sending to wappsto', () => {
+    it('has startLogging as a warning', () => {
+        console.warn = jest.fn();
         startLogging();
+        expect(console.warn).toHaveBeenCalledWith(
+            'WAPPSTO WARN: DEPLICATED - The "startLogging" is not needed to be called anymore'
+        );
+    });
+
+    it('can stop sending to wappsto', () => {
         stopLogging();
         console.log('test start and stop');
         expect(mockedAxios.post).not.toHaveBeenCalled();
     });
 
-    it('can send a log message to wappsto', () => {
+    it('can send log messages to wappsto', () => {
         startLogging();
         console.log('test start');
         console.info('test start');

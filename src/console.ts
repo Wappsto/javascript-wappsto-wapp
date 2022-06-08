@@ -1,5 +1,6 @@
 import wappsto from './util/http_wrapper';
-import { printDebug } from './util/debug';
+import { printDebug, printWarning } from './util/debug';
+import { isBrowser } from './util/helpers';
 
 const defaultConsole = Object.assign({}, console);
 
@@ -19,7 +20,8 @@ function sendExtsync(key: string, ...args: any[]): any {
         });
 }
 
-export function startLogging(): void {
+
+export function backgroundLogging(): void {
     const newFunc = function (name: string) {
         return function (...args: any[]) {
             sendExtsync(name, arguments);
@@ -40,6 +42,20 @@ export function startLogging(): void {
     });
 }
 
+export function startLogging(): void {
+    if(console.error === defaultConsole.error && !isBrowser()) {
+        backgroundLogging();
+    } else {
+        printWarning('DEPLICATED - The "startLogging" is not needed to be called anymore');
+    }
+}
+
 export function stopLogging(): void {
     Object.assign(console, defaultConsole);
+}
+
+/* istanbul ignore next */
+if(!isBrowser()) {
+    /* istanbul ignore next */
+    backgroundLogging();
 }

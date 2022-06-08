@@ -52,23 +52,22 @@ describe('WappStorage', () => {
     });
 
     it('can add a new item', async () => {
-        mockedAxios.get
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        meta: {
-                            id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                            type: 'data',
-                            version: '2.0',
-                        },
-                        data_meta: {
-                            id: 'wapp_storage_default',
-                            type: 'wapp_storage',
-                        },
-                        key: 'item',
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    meta: {
+                        id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                        type: 'data',
+                        version: '2.0',
                     },
-                ],
-            });
+                    data_meta: {
+                        id: 'wapp_storage_default',
+                        type: 'wapp_storage',
+                    },
+                    key: 'item',
+                },
+            ],
+        });
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const fun = jest.fn();
@@ -173,8 +172,7 @@ describe('WappStorage', () => {
     });
 
     it('can reset the data', async () => {
-        mockedAxios.post
-            .mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce({ data: [] });
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
         mockedAxios.delete.mockResolvedValueOnce({ data: [] });
 
