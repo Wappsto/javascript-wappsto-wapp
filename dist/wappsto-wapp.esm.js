@@ -6238,13 +6238,13 @@ User.fetch = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().
   }, _callee4);
 }));
 
-var Data = /*#__PURE__*/function (_Model) {
-  _inheritsLoose(Data, _Model);
+var Data = /*#__PURE__*/function (_StreamModel) {
+  _inheritsLoose(Data, _StreamModel);
 
   function Data(id, type) {
     var _this;
 
-    _this = _Model.call(this, 'data', '2.0') || this;
+    _this = _StreamModel.call(this, 'data', '2.0') || this;
     _this.data_meta = {};
     _this.data = {};
     _this.data_meta.type = type;
@@ -6285,13 +6285,13 @@ var Data = /*#__PURE__*/function (_Model) {
   };
 
   _proto.toJSON = function toJSON() {
-    var obj = _Model.prototype.toJSON.call(this);
+    var obj = _StreamModel.prototype.toJSON.call(this);
 
     return Object.assign(obj, this.data);
   };
 
   return Data;
-}(Model);
+}(StreamModel);
 Data.endpoint = '/2.0/data';
 
 Data.findByDataId = /*#__PURE__*/function () {
@@ -6552,40 +6552,40 @@ function wappStorage(_x) {
 }
 
 function _wappStorage() {
-  _wappStorage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(name) {
+  _wappStorage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(name) {
     var storage,
-        _args5 = arguments;
-    return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+        _args4 = arguments;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            Model.validateMethod('WappStorage', 'wappStorage', _args5);
+            Model.validateMethod('WappStorage', 'wappStorage', _args4);
 
             if (name === undefined) {
               name = 'default';
             }
 
             if (!(storages[name] === undefined)) {
-              _context5.next = 7;
+              _context4.next = 7;
               break;
             }
 
             storage = new WappStorage(name);
-            _context5.next = 6;
+            _context4.next = 6;
             return storage.init();
 
           case 6:
             storages[name] = storage;
 
           case 7:
-            return _context5.abrupt("return", storages[name]);
+            return _context4.abrupt("return", storages[name]);
 
           case 8:
           case "end":
-            return _context5.stop();
+            return _context4.stop();
         }
       }
-    }, _callee5);
+    }, _callee4);
   }));
   return _wappStorage.apply(this, arguments);
 }
@@ -6657,9 +6657,6 @@ var WappStorage = /*#__PURE__*/function () {
               return this.data.update();
 
             case 4:
-              openStream.sendInternal("storage_" + this.name + "_updated");
-
-            case 5:
             case "end":
               return _context2.stop();
           }
@@ -6680,55 +6677,27 @@ var WappStorage = /*#__PURE__*/function () {
   };
 
   _proto.onChange = function onChange(cb) {
-    var _this = this;
-
     WappStorage.validate('onChange', arguments);
-    openStream.subscribeInternal("storage_" + this.name + "_updated",
-    /*#__PURE__*/
-
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(_) {
-        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                _context3.next = 2;
-                return _this.data.reload();
-
-              case 2:
-                cb();
-                return _context3.abrupt("return", undefined);
-
-              case 4:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3);
-      }));
-
-      return function (_x4) {
-        return _ref.apply(this, arguments);
-      };
-    }());
+    this.data.onChange(function (data) {
+      cb();
+    });
   };
 
   _proto.reload = /*#__PURE__*/function () {
-    var _reload = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-      return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+    var _reload = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context3.prev = _context3.next) {
             case 0:
-              _context4.next = 2;
+              _context3.next = 2;
               return this.data.reload();
 
             case 2:
             case "end":
-              return _context4.stop();
+              return _context3.stop();
           }
         }
-      }, _callee4, this);
+      }, _callee3, this);
     }));
 
     function reload() {

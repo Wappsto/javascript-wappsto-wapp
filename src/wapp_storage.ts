@@ -1,6 +1,5 @@
 import { Model } from './models/model';
 import { Data } from './models/data';
-import { openStream } from './stream_helpers';
 import { StorageChangeHandler } from './util/interfaces';
 
 const storages: Record<string, WappStorage> = {};
@@ -43,7 +42,6 @@ export class WappStorage {
         WappStorage.validate('set', arguments);
         this.data.set(name, item);
         await this.data.update();
-        openStream.sendInternal(`storage_${this.name}_updated`);
     }
 
     get(name: string): any {
@@ -53,15 +51,9 @@ export class WappStorage {
 
     onChange(cb: StorageChangeHandler): void {
         WappStorage.validate('onChange', arguments);
-        openStream.subscribeInternal(
-            `storage_${this.name}_updated`,
-            /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-            async (_: any) => {
-                await this.data.reload();
-                cb();
-                return undefined;
-            }
-        );
+        this.data.onChange((data) => {
+            cb();
+        });
     }
 
     async reload(): Promise<void> {

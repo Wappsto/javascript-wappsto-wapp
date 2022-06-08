@@ -56,32 +56,20 @@ describe('WappStorage', () => {
             .mockResolvedValueOnce({
                 data: [
                     {
-                        data_meta: {
-                            id: 'wapp_storage_default',
-                            type: 'wapp_storage',
-                        },
-                        key: 'item',
-                    },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        data_meta: {
-                            id: 'wapp_storage_default',
-                            type: 'wapp_storage',
-                        },
                         meta: {
+                            id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                             type: 'data',
                             version: '2.0',
                         },
+                        data_meta: {
+                            id: 'wapp_storage_default',
+                            type: 'wapp_storage',
+                        },
                         key: 'item',
-                        new_key: 'new_item',
                     },
                 ],
             });
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
-        mockedAxios.post.mockResolvedValueOnce({ data: [] });
 
         const fun = jest.fn();
         const c = await wappStorage();
@@ -91,28 +79,33 @@ describe('WappStorage', () => {
         const newRes = c.get('new_key');
 
         await server.connected;
-
         server.send({
             meta: {
+                id: '37eba085-b943-4958-aa78-c1bd4c73defc',
                 type: 'eventstream',
-                version: '2.0',
+                version: '2.1',
             },
-            event: 'extsync',
+            event: 'update',
             meta_object: {
-                type: 'extsync',
+                type: 'data',
                 version: '2.0',
+                id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             },
             data: {
+                data_meta: {
+                    type: 'wapp_storage',
+                    id: 'wapp_storage_default',
+                },
+                new_key: 'new_item',
                 meta: {
-                    type: 'extsync',
+                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                    type: 'data',
                     version: '2.0',
                 },
-                request: false,
-                method: 'POST',
-                uri: 'extsync/',
-                body: '{"type":"storage_default_updated","msg":""}',
+                path: '/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                timestamp: '2022-06-08T14:49:35.349971Z',
             },
-            path: '/extsync/direct',
+            path: '/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
         });
 
         await new Promise((r) => setTimeout(r, 1));
@@ -121,9 +114,9 @@ describe('WappStorage', () => {
         expect(newRes).toBe('new_item');
 
         expect(fun).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/data', {
@@ -134,7 +127,7 @@ describe('WappStorage', () => {
         });
 
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/data',
+            '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
                     id: 'wapp_storage_default',
@@ -142,6 +135,7 @@ describe('WappStorage', () => {
                 },
                 meta: {
                     type: 'data',
+                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                     version: '2.0',
                 },
                 key: 'item',
@@ -149,11 +143,6 @@ describe('WappStorage', () => {
             },
             {}
         );
-
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync', {
-            msg: '',
-            type: 'storage_default_updated',
-        });
     });
 
     it('can load new data from the server', async () => {
@@ -185,7 +174,6 @@ describe('WappStorage', () => {
 
     it('can reset the data', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
         mockedAxios.delete.mockResolvedValueOnce({ data: [] });
@@ -199,7 +187,7 @@ describe('WappStorage', () => {
         expect(resNew).toBe(undefined);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
     });

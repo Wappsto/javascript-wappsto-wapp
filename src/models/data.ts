@@ -1,4 +1,5 @@
 import { isArray, isEqual, pick, omit } from 'lodash';
+import { StreamModel } from './model.stream';
 import { Model } from './model';
 
 interface IDataMeta {
@@ -6,7 +7,7 @@ interface IDataMeta {
     type?: string;
 }
 
-export class Data extends Model {
+export class Data extends StreamModel {
     static endpoint = '/2.0/data';
     data_meta: IDataMeta = {};
     data?: any = {};
