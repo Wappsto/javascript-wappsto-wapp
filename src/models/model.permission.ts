@@ -89,19 +89,20 @@ export class PermissionModel extends Model {
             params,
         ]);
         return new Promise<Record<string, any>[]>(async (resolve) => {
+            let newParams = params || {};
             const id = PermissionModel.getPermissionHash(
                 endpoint.split('/')[2],
                 quantity,
                 message
             );
 
-            Object.assign(params, {
+            Object.assign(newParams, {
                 quantity: quantity,
                 message: message,
                 identifier: id,
                 method: ['retrieve', 'update'],
             });
-            const result = await Model.fetch(endpoint, params);
+            const result = await Model.fetch(endpoint, newParams);
 
             if (result.length === 0) {
                 printDebug(`Requesting new access to users data: ${message}`);
@@ -132,18 +133,18 @@ export class PermissionModel extends Model {
                         (quantity === 'all' || ids.length >= quantity)
                     ) {
                         if (quantity === 'all') {
-                            Object.assign(params, {
+                            Object.assign(newParams, {
                                 id: ids,
                             });
                         } else {
-                            Object.assign(params, {
+                            Object.assign(newParams, {
                                 id: ids.reverse().slice(0, quantity),
                             });
                         }
                         printDebug(
-                            `Got permission to ${JSON.stringify(params?.id)}`
+                            `Got permission to ${JSON.stringify(newParams?.id)}`
                         );
-                        const result = await Model.fetch(endpoint, params);
+                        const result = await Model.fetch(endpoint, newParams);
                         resolve(result);
                         return true;
                     }
