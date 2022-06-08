@@ -20,7 +20,6 @@ function sendExtsync(key: string, ...args: any[]): any {
         });
 }
 
-
 export function backgroundLogging(): void {
     const newFunc = function (name: string) {
         return function (...args: any[]) {
@@ -43,10 +42,12 @@ export function backgroundLogging(): void {
 }
 
 export function startLogging(): void {
-    if(console.error === defaultConsole.error && !isBrowser()) {
+    if (console.error === defaultConsole.error && !isBrowser()) {
         backgroundLogging();
     } else {
-        printWarning('DEPLICATED - The "startLogging" is not needed to be called anymore');
+        printWarning(
+            'DEPLICATED - The "startLogging" is not needed to be called anymore'
+        );
     }
 }
 
@@ -55,7 +56,7 @@ export function stopLogging(): void {
 }
 
 /* istanbul ignore next */
-if(!isBrowser()) {
+if (!isBrowser()) {
     /* istanbul ignore next */
     backgroundLogging();
 }
