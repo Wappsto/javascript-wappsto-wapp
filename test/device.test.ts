@@ -505,7 +505,55 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
-    it('can create a new number value as a child', async () => {
+    it('can create a value with historical disabled', async () => {
+        templateHelperStart();
+
+        const device = new Device();
+        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
+        const value = await device.createValue(
+            'name',
+            'rw',
+            ValueTemplate.NUMBER,
+            '0',
+            2,
+            true
+        );
+
+        templateHelperDone();
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            {
+                meta: {
+                    type: 'value',
+                    version: '2.0',
+                    historical: false,
+                },
+                name: 'name',
+                permission: 'rw',
+                type: 'number',
+                period: '0',
+                delta: '2',
+                number: {
+                    min: -128,
+                    max: 128,
+                    step: 0.1,
+                    unit: '',
+                },
+            },
+            {}
+        );
+
+        expect(value.name).toEqual('name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('number');
+        expect(value.number?.min).toEqual(-128);
+        expect(value.number?.max).toEqual(128);
+        expect(value.number?.step).toEqual(0.1);
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can create a new number value with historical disabled', async () => {
         mockedAxios.post
             .mockResolvedValueOnce({
                 data: [
@@ -554,6 +602,7 @@ describe('device', () => {
             step: 1,
             unit: 'unit',
             si_conversion: 'si_conversion',
+            disableLog: true,
         });
 
         expect(value.name).toEqual('Value Name');
@@ -578,6 +627,7 @@ describe('device', () => {
                 meta: {
                     type: 'value',
                     version: '2.0',
+                    historical: false,
                 },
                 name: 'Value Name',
                 delta: 'delta',

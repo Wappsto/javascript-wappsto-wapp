@@ -166,7 +166,7 @@ export class Model implements IModel {
     public toJSON(): Record<string, any> {
         const meta = Object.assign(
             {},
-            pick(this.meta, ['id', 'type', 'version'])
+            pick(this.meta, ['id', 'type', 'version', 'historical'])
         );
 
         return Object.assign(

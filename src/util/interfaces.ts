@@ -64,6 +64,7 @@ export interface IMeta {
     deprecated?: boolean;
     icon?: string;
     trace?: string;
+    historical?: boolean;
 }
 
 export interface INetwork {
@@ -114,7 +115,8 @@ export interface IDeviceFunc {
         permission: ValuePermission,
         valueTemplate: ValueType,
         period?: string,
-        delta?: number | 'inf'
+        delta?: number | 'inf',
+        disableLog?: boolean
     ): Promise<ValueType>;
     createNumberValue(parameters: IValueNumber): Promise<IValueNumber>;
     createStringValue(parameters: IValueString): Promise<IValueString>;
@@ -164,6 +166,7 @@ export interface IValueBase {
     description?: string;
     period?: string;
     delta?: string;
+    disableLog?: boolean;
 }
 
 export interface IValueNumberBase {

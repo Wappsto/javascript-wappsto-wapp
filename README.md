@@ -79,7 +79,7 @@ Then you need to create a device.
 To create a new device under an existing network, you should call createDevice. If a device exsists with the given name, the existing device will be returned.
 
 ```javascript
-let device = network.createDevice({
+let device = await network.createDevice({
 	name. 'Device Name',
 	product: 'Great Product',
 	serial: 'SG123456',
@@ -97,21 +97,37 @@ There will also be created the states nedded based on the permission. The only a
 The list of avaible value templates can be seen in the [value_template.ts](../main/src/util/value_template.ts) file.
 
 ```javascript
-let value = device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS);
+let value = await device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS);
 ```
 
-It is also possible to define a period for how often the library should poll your values for updates. In this way regulary reports will be send to the cloud. It is also possible to filter out small changes by setting the delta for number values. With the delta set, reported changes that are not bigger then the delta will be discarded.
-In the example below, period is set to 3600 [sec.], i.e. 1 hour interval and delta to 2 [deg.]. So changes in value data will only apply if after one hour new temperature value is bigger than 2 [deg.] of previous temperature value.
+It is also possible to define a period for how often the library
+should poll your values for updates. In this way regulary reports will
+be send to the cloud. It is also possible to filter out small changes
+by setting the delta for number values. With the delta set, reported
+changes that are not bigger then the delta will be discarded. In the
+example below, period is set to 3600 [sec.], i.e. 1 hour interval and
+delta to 2 [deg.]. So changes in value data will only apply if after
+one hour new temperature value is bigger than 2 [deg.] of previous
+temperature value.
 
 ```javascript
-let value = device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS, 3600, '2');
+let value = await device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS, 3600, '2');
+```
+
+It is also possible to define a value where the data is not put into
+the historical log. This is done by setting the `disableLog` to
+`true`. This can be set on the `createValue` and the special versions
+of the createValue funciton.
+
+```javascript
+let value = await device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS, 3600, '2', true);
 ```
 
 There are some helper functions to create custom number, string, blob and xml values.
 To create a custom number value:
 
 ```javascript
-let value = device.createNumberValue({
+let value = await device.createNumberValue({
 	name: 'Value Name',
 	permission: 'rw',
 	type: 'Counter',
@@ -121,14 +137,15 @@ let value = device.createNumberValue({
 	max: 10,
 	step: 1,
 	unit: 'count',
-	si_conversion: 'c'
+	si_conversion: 'c',
+    disableLog: false,
 });
 ```
 
 To create a custom string value:
 
 ```javascript
-let value = device.createStringValue({
+let value = await device.createStringValue({
 	name: 'Value Name',
 	permission: 'rw',
 	type: 'debug',
@@ -256,7 +273,6 @@ let network = Network.findByID('655937ac-c054-4cc0-80d7-400486b4ceb3');
 let device = Device.findByID('066c65d7-6612-4826-9e23-e63a579fbe8b');
 let value = Value.findByID('1157b4fa-2745-4940-9201-99eee5929eff');
 ```
-
 
 ### To change a value on a network created outside your wapp
 
@@ -392,7 +408,7 @@ so that the library can call it with the url that the user needs to visit, in or
 ```javascript
 try {
   let token = await Wappsto.OAuth.getToken('oauth name', (url) => {
-	console.log("Please visit " + url + " to generate the OAuth token");
+	console.log(`Please visit ${url} to generate the OAuth token`);
   });
   console.log("OAuth Token", token);
 } catch(e) {
@@ -406,18 +422,13 @@ It is possible to send custom notification to the main Wappsto.com
 dashboard.
 
 ```javascript
-await wappsto.notifi('This is a custom notification from my Wapp');
+await wappsto.notify('This is a custom notification from my Wapp');
 ```
 
 ### Background logging
 
-The debug log from the background wapp can be turn on like this:
-
-```javascript
-Wappsto.startLogging();
-```
-
-And to turn it off again.
+The debug log from the background wapp is enabled by default, but can
+be turned off by calling `stopLogging`.
 
 ```javascript
 Wappsto.stopLogging();

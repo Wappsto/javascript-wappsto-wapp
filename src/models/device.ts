@@ -129,6 +129,12 @@ export class Device extends StreamModel implements IDevice {
             params.period = value.period;
         }
 
+        const disableLog = params.disableLog;
+        delete params.disableLog;
+        if (disableLog === true) {
+            value.meta.historical = false;
+        }
+
         const oldJson = value.toJSON();
         value.parse(params);
         const newJson = value.toJSON();
@@ -167,7 +173,8 @@ export class Device extends StreamModel implements IDevice {
         permission: ValuePermission,
         valueTemplate: ValueType,
         period = '0',
-        delta: number | 'inf' = 0
+        delta: number | 'inf' = 0,
+        disableLog = false
     ): Promise<Value> {
         this.validate('createValue', arguments);
 
@@ -175,6 +182,7 @@ export class Device extends StreamModel implements IDevice {
         valueTemplate.permission = permission;
         valueTemplate.period = period;
         valueTemplate.delta = delta.toString();
+        valueTemplate.disableLog = disableLog;
 
         return await this._createValue(valueTemplate);
     }
@@ -189,6 +197,7 @@ export class Device extends StreamModel implements IDevice {
             description: params.description,
             period: params.period,
             delta: params.delta,
+            disableLog: params.disableLog,
         };
     }
 

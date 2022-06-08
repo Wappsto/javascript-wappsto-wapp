@@ -69,6 +69,7 @@ export const IMeta = t.iface([], {
     deprecated: t.opt('boolean'),
     icon: t.opt('string'),
     trace: t.opt('string'),
+    historical: t.opt('boolean'),
 });
 
 export const INetwork = t.iface([], {
@@ -84,8 +85,8 @@ export const INetworkFunc = t.iface([], {
         t.array('IDevice'),
         t.param('product', 'string')
     ),
-    findValueByName: t.func(t.array('IValue'), t.param('name', 'string')),
-    findValueByType: t.func(t.array('IValue'), t.param('type', 'string')),
+    findValueByName: t.func(t.array('ValueType'), t.param('name', 'string')),
+    findValueByType: t.func(t.array('ValueType'), t.param('type', 'string')),
     createDevice: t.func('IDevice', t.param('parameters', 'IDevice')),
     find: t.func(
         t.array('INetwork'),
@@ -125,15 +126,16 @@ export const IDevice = t.iface([], {
 
 export const IDeviceFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string', true)),
-    findValueByName: t.func(t.array('IValue'), t.param('name', 'string')),
-    findValueByType: t.func(t.array('IValue'), t.param('type', 'string')),
+    findValueByName: t.func(t.array('ValueType'), t.param('name', 'string')),
+    findValueByType: t.func(t.array('ValueType'), t.param('type', 'string')),
     createValue: t.func(
-        'IValue',
+        'ValueType',
         t.param('name', 'string'),
         t.param('permission', 'ValuePermission'),
-        t.param('valueTemplate', 'IValue'),
+        t.param('valueTemplate', 'ValueType'),
         t.param('period', 'string', true),
-        t.param('delta', t.union('number', t.lit('inf')), true)
+        t.param('delta', t.union('number', t.lit('inf')), true),
+        t.param('disableLog', 'boolean', true)
     ),
     createNumberValue: t.func(
         'IValueNumber',
@@ -193,7 +195,7 @@ export const ValuePermission = t.union(
     t.lit('wr')
 );
 
-export const IValue = t.union(
+export const ValueType = t.union(
     t.intersection(
         'IValueBase',
         t.iface([], {
@@ -227,6 +229,7 @@ export const IValueBase = t.iface([], {
     description: t.opt('string'),
     period: t.opt('string'),
     delta: t.opt('string'),
+    disableLog: t.opt('boolean'),
 });
 
 export const IValueNumberBase = t.iface([], {
@@ -282,34 +285,34 @@ export const IValueFunc = t.iface([], {
     getReportLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
     getControlLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
     find: t.func(
-        t.array('IValue'),
+        t.array('ValueType'),
         t.param('options', 'any'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string')
     ),
     findByName: t.func(
-        t.array('IValue'),
+        t.array('ValueType'),
         t.param('name', 'string'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string')
     ),
     findByType: t.func(
-        t.array('IValue'),
+        t.array('ValueType'),
         t.param('type', 'string'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string')
     ),
     findAllByName: t.func(
-        t.array('IValue'),
+        t.array('ValueType'),
         t.param('name', 'string'),
         t.param('usage', 'string')
     ),
     findAllByType: t.func(
-        t.array('IValue'),
+        t.array('ValueType'),
         t.param('type', 'string'),
         t.param('usage', 'string')
     ),
-    findById: t.func('IValue', t.param('id', 'string')),
+    findById: t.func('ValueType', t.param('id', 'string')),
     addEvent: t.func(
         'IEventLog',
         t.param('level', 'EventLogLevel'),
@@ -582,7 +585,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IDeviceFunc,
     IPermissionModelFunc,
     ValuePermission,
-    IValue,
+    ValueType,
     IValueBase,
     IValueNumberBase,
     IValueStringBlobBase,
