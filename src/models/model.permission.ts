@@ -89,7 +89,7 @@ export class PermissionModel extends Model {
             params,
         ]);
         return new Promise<Record<string, any>[]>(async (resolve) => {
-            let newParams = params || {};
+            const newParams = params || {};
             const id = PermissionModel.getPermissionHash(
                 endpoint.split('/')[2],
                 quantity,
