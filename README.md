@@ -371,11 +371,15 @@ wappsto.onWebHook((event) => {
 });
 ```
 
+The webhook url is `https://wappsto.com/services/extsync/<wapp token>`. The token can be obtained from the settings page of your wapp on `wappsto.com`.
+
 And if you want to cancel the web hook event handler, you can call `cancelWebHook`.
 
 ```javascript
 wappsto.cancelOnWebHook(handler);
 ```
+
+You can turn on `Ext Sync` support using the `wappsto-cli` using the `npx wapp configure` command.
 
 ### Wapp Storage
 
