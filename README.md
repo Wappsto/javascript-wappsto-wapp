@@ -80,7 +80,7 @@ To create a new device under an existing network, you should call createDevice. 
 
 ```javascript
 let device = await network.createDevice({
-	name. 'Device Name',
+	name: 'Device Name',
 	product: 'Great Product',
 	serial: 'SG123456',
 	description: 'My great new device',
@@ -366,17 +366,17 @@ Wappsto.cancelFromForeground();
 If the Ext Sync is enabled for the Wapp, a event handler for WebHooks can be registered.
 
 ```javascript
-wappsto.onWebHook((event) => {
+Wappsto.onWebHook((event) => {
   console.log("Web Hook event", event);
 });
 ```
 
-The webhook url is `https://wappsto.com/services/extsync/<wapp token>`. The token can be obtained from the settings page of your wapp on `wappsto.com`.
+The webhook url is `https://wappsto.com/services/extsync/request/<wapp token>`. The token can be obtained from the settings page of your wapp on `wappsto.com`.
 
 And if you want to cancel the web hook event handler, you can call `cancelWebHook`.
 
 ```javascript
-wappsto.cancelOnWebHook(handler);
+Wappsto.cancelOnWebHook(handler);
 ```
 
 You can turn on `Ext Sync` support using the `wappsto-cli` using the `npx wapp configure` command.
@@ -426,7 +426,7 @@ It is possible to send custom notification to the main Wappsto.com
 dashboard.
 
 ```javascript
-await wappsto.notify('This is a custom notification from my Wapp');
+await Wappsto.notify('This is a custom notification from my Wapp');
 ```
 
 ### Background logging
@@ -477,7 +477,7 @@ Wappsto.config({
 It is possible to change from the default 10 times the stream will try to reconnect in case of connection errors.
 
 ```javascript
-wappsto.config({
+Wappsto.config({
 	reconnectCount: 3
 });
 ```
