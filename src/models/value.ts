@@ -88,6 +88,22 @@ export class Value extends StreamModel implements IValueBase {
         ];
     }
 
+    public getValueType(): string {
+        if (this.number) {
+            return 'number';
+        }
+        if (this.string) {
+            return 'string';
+        }
+        if (this.blob) {
+            return 'blob';
+        }
+        if (this.xml) {
+            return 'xml';
+        }
+        return '';
+    }
+
     public created(): void {
         this.onChange((val) => {
             this.handlePeriodUpdate();
