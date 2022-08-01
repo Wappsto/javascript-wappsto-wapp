@@ -275,7 +275,7 @@ export class Device extends StreamModel implements IDevice {
     public setParent(parent: IModel): void {
         super.setParent(parent);
         this.value.forEach((val) => {
-            if (typeof val !== 'string') {
+            if (typeof val === 'object') {
                 val.setParent(this);
             }
         });

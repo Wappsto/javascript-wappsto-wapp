@@ -177,7 +177,7 @@ export class Network extends StreamModel implements INetwork {
     public setParent(parent: IModel): void {
         this.parent = parent;
         this.device.forEach((dev) => {
-            if (typeof dev !== 'string') {
+            if (typeof dev === 'object') {
                 dev.setParent(this);
             }
         });
