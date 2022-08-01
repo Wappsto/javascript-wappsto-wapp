@@ -34,6 +34,7 @@ export function backgroundLogging(): void {
 
     /* istanbul ignore next */
     process.on('uncaughtException', (err) => {
+        defaultConsole.error(err);
         const req = sendExtsync('error', [err.stack]);
         req.finally(function () {
             process.exit(1);
