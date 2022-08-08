@@ -41,12 +41,19 @@ export class WappStorage {
     async set(name: string, item: any): Promise<void> {
         WappStorage.validate('set', arguments);
         this.data.set(name, item);
+        process.stdout.write('set ' + name + ' ' + item + '\n');
         await this.data.update();
     }
 
     get(name: string): any {
         WappStorage.validate('get', arguments);
         return this.data.get(name);
+    }
+
+    async remove(name: string): Promise<void> {
+        WappStorage.validate('remove', arguments);
+        this.data.remove(name);
+        await this.data.update();
     }
 
     onChange(cb: StorageChangeHandler): void {

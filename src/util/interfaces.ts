@@ -406,6 +406,7 @@ export interface IWappStorageFunc {
     constructor(name: string): void;
     set(name: string, item: any): Promise<void>;
     get(name: string): any;
+    remove(name: string): Promise<void>;
     onChange(cb: StorageChangeHandler): void;
 }
 

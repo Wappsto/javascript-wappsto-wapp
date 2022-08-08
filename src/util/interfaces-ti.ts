@@ -539,6 +539,7 @@ export const IWappStorageFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string')),
     set: t.func('void', t.param('name', 'string'), t.param('item', 'any')),
     get: t.func('any', t.param('name', 'string')),
+    remove: t.func('void', t.param('name', 'string')),
     onChange: t.func('void', t.param('cb', 'StorageChangeHandler')),
 });
 

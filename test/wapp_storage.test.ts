@@ -35,11 +35,13 @@ describe('WappStorage', () => {
                 data_meta: {
                     id: 'wapp_storage_test',
                     type: 'wapp_storage',
+                    version: 1,
                 },
                 meta: {
                     type: 'data',
                     version: '2.0',
                 },
+                data: {},
             },
             {}
         );
@@ -63,8 +65,11 @@ describe('WappStorage', () => {
                     data_meta: {
                         id: 'wapp_storage_default',
                         type: 'wapp_storage',
+                        version: 1,
                     },
-                    key: 'item',
+                    data: {
+                        key: 'item',
+                    },
                 },
             ],
         });
@@ -94,8 +99,11 @@ describe('WappStorage', () => {
                 data_meta: {
                     type: 'wapp_storage',
                     id: 'wapp_storage_default',
+                    version: 1,
                 },
-                new_key: 'new_item',
+                data: {
+                    new_key: 'new_item',
+                },
                 meta: {
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                     type: 'data',
@@ -131,14 +139,17 @@ describe('WappStorage', () => {
                 data_meta: {
                     id: 'wapp_storage_default',
                     type: 'wapp_storage',
+                    version: 1,
                 },
                 meta: {
                     type: 'data',
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                     version: '2.0',
                 },
-                key: 'item',
-                new_key: 'new_item',
+                data: {
+                    key: 'item',
+                    new_key: 'new_item',
+                },
             },
             {}
         );
@@ -151,8 +162,11 @@ describe('WappStorage', () => {
                     data_meta: {
                         id: 'wapp_storage_default',
                         type: 'wapp_storage',
+                        version: 1,
                     },
-                    missing: 'item',
+                    data: {
+                        missing: 'item',
+                    },
                 },
             ],
         });
@@ -188,5 +202,109 @@ describe('WappStorage', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+    });
+
+    it('can remove a key', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: {
+                data_meta: {
+                    id: 'wapp_storage_remove',
+                    type: 'wapp_storage',
+                    version: 1,
+                },
+                meta: {
+                    type: 'data',
+                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                    version: '2.0',
+                },
+                data: {
+                    new: 'data',
+                },
+            },
+        });
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
+
+        const c = await wappStorage('remove');
+        await c.set('new', 'data');
+        const res1 = c.get('new');
+
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+            {
+                data_meta: {
+                    id: 'wapp_storage_remove',
+                    type: 'wapp_storage',
+                    version: 1,
+                },
+                meta: {
+                    type: 'data',
+                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                    version: '2.0',
+                },
+                data: {
+                    new: 'data',
+                },
+            },
+            {}
+        );
+
+        await c.remove('new');
+        const res2 = c.get('new');
+
+        expect(res1).toBe('data');
+        expect(res2).toBe(undefined);
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+            {
+                data_meta: {
+                    id: 'wapp_storage_remove',
+                    type: 'wapp_storage',
+                    version: 1,
+                },
+                meta: {
+                    type: 'data',
+                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                    version: '2.0',
+                },
+                data: {},
+            },
+            {}
+        );
+    });
+
+    it('can convert an old data to new format', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: {
+                data_meta: {
+                    id: 'wapp_storage_remove',
+                    type: 'wapp_storage',
+                },
+                meta: {
+                    type: 'data',
+                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                    version: '2.0',
+                },
+                old: 'data',
+            },
+        });
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+
+        const c = await wappStorage('convert');
+        const res1 = c.get('old');
+
+        expect(res1).toBe('data');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
     });
 });

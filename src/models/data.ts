@@ -5,18 +5,20 @@ import { Model } from './model';
 interface IDataMeta {
     id?: string;
     type?: string;
+    version?: number;
 }
 
 export class Data extends StreamModel {
     static endpoint = '/2.0/data';
     data_meta: IDataMeta = {};
-    data?: any = {};
+    data: any = {};
 
     constructor(id?: string, type?: string) {
         super('data', '2.0');
 
         this.data_meta.type = type;
         this.data_meta.id = id;
+        this.data_meta.version = 1;
     }
 
     url(): string {
@@ -24,7 +26,7 @@ export class Data extends StreamModel {
     }
 
     attributes(): string[] {
-        return ['meta', 'data_meta'];
+        return ['meta', 'data_meta', 'data'];
     }
 
     set(name: string, item: any): void {
@@ -33,6 +35,10 @@ export class Data extends StreamModel {
 
     get(name: string): any {
         return this.data[name];
+    }
+
+    remove(name: string): void {
+        delete this.data[name];
     }
 
     public static findByDataId = async (id: string) => {
@@ -57,14 +63,11 @@ export class Data extends StreamModel {
         }
         const oldModel = this.toJSON();
         Object.assign(this, pick(json, this.attributes()));
-        Object.assign(this.data, omit(json, this.attributes()));
+        if (this.data_meta.version !== 1) {
+            Object.assign(this.data, omit(json, ['meta', 'data_meta']));
+        }
         const newModel = this.toJSON();
 
         return !isEqual(oldModel, newModel);
-    }
-
-    public toJSON(): Record<string, any> {
-        const obj = super.toJSON();
-        return Object.assign(obj, this.data);
     }
 }
