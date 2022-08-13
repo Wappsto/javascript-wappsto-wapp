@@ -78,7 +78,7 @@
         "universal-websocket-client": "^1.0.2"
     },
     "devDependencies": {
-        "@size-limit/preset-small-lib": "^8.0.0",
+        "@size-limit/preset-small-lib": "^8.0.1",
         "@tsconfig/recommended": "^1.0.1",
         "@types/lodash": "^4.14.182",
         "@types/ws": "^8.5.3",
