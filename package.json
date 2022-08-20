@@ -80,7 +80,7 @@
     "devDependencies": {
         "@size-limit/preset-small-lib": "^8.0.0",
         "@tsconfig/recommended": "^1.0.1",
-        "@types/lodash": "^4.14.182",
+        "@types/lodash": "^4.14.184",
         "@types/ws": "^8.5.3",
         "browserify": "^17.0.0",
         "dts-cli": "^1.5.2",
