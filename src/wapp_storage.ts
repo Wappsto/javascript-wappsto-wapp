@@ -41,7 +41,6 @@ export class WappStorage {
     async set(name: string, item: any): Promise<void> {
         WappStorage.validate('set', arguments);
         this.data.set(name, item);
-        process.stdout.write('set ' + name + ' ' + item + '\n');
         await this.data.update();
     }
 
