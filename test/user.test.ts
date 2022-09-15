@@ -2,8 +2,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { User, config } from '../src/index';
-console.error = jest.fn();
+import { User, config, stopLogging } from '../src/index';
 
 describe('user', () => {
     const response = {
@@ -15,6 +14,11 @@ describe('user', () => {
         first_name: 'first',
         last_name: 'last',
     };
+
+    beforeAll(() => {
+        stopLogging();
+        console.error = jest.fn();
+    });
 
     beforeEach(() => {
         mockedAxios.get.mockResolvedValue({ data: [response] });

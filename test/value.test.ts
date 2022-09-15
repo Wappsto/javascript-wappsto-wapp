@@ -4,7 +4,14 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
-import { Device, Value, State, config, ValueTemplate } from '../src/index';
+import {
+    Device,
+    Value,
+    State,
+    config,
+    ValueTemplate,
+    stopLogging,
+} from '../src/index';
 import { openStream } from '../src/stream_helpers';
 
 describe('value', () => {
@@ -24,6 +31,7 @@ describe('value', () => {
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
     beforeAll(() => {
+        stopLogging();
         openStream.websocketUrl = 'ws://localhost:12345';
     });
 

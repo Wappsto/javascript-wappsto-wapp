@@ -14,14 +14,16 @@ import {
     cancelOnWebHook,
     cancelFromForeground,
     cancelFromBackground,
+    stopLogging,
 } from '../src/index';
 import { openStream } from '../src/stream_helpers';
-console.error = jest.fn();
 
 describe('stream', () => {
     let server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
     beforeAll(() => {
+        stopLogging();
+        console.error = jest.fn();
         openStream.websocketUrl = 'ws://localhost:12345';
     });
 

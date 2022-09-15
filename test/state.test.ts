@@ -2,7 +2,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { State, config } from '../src/index';
+import { State, config, stopLogging } from '../src/index';
 
 describe('state', () => {
     const response = {
@@ -15,6 +15,10 @@ describe('state', () => {
         timestamp: '2021-10-10T10:10:10Z',
         data: '0',
     };
+
+    beforeAll(() => {
+        stopLogging();
+    });
 
     afterEach(() => {
         jest.clearAllMocks();

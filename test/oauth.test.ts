@@ -3,9 +3,8 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { OAuth } from '../src/index';
+import { OAuth, stopLogging } from '../src/index';
 import { openStream } from '../src/stream_helpers';
-console.error = jest.fn();
 
 describe('oauth', () => {
     const response = {
@@ -24,6 +23,7 @@ describe('oauth', () => {
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
     beforeAll(() => {
+        stopLogging();
         openStream.websocketUrl = 'ws://localhost:12345';
     });
 
@@ -107,6 +107,8 @@ describe('oauth', () => {
     });
 
     it('will fail when there is no oauth', async () => {
+        console.error = jest.fn();
+
         mockedAxios.get.mockRejectedValueOnce({
             response: {
                 data: {

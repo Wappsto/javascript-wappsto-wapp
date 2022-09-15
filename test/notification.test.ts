@@ -2,9 +2,13 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { notify } from '../src/index';
+import { notify, stopLogging } from '../src/index';
 
 describe('notification', () => {
+    beforeAll(() => {
+        stopLogging();
+    });
+
     it('can create a new notification', () => {
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
 
