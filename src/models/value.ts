@@ -139,8 +139,23 @@ export class Value extends StreamModel implements IValueBase {
         return Value.fromArray(data);
     };
 
+    public async reload(reloadAll = false): Promise<void> {
+        try {
+            const response = await wappsto.get(
+                this.getUrl(),
+                Model.generateOptions({ expand: 2 })
+            );
+            this.parse(response.data);
+            await this.loadAllChildren(response.data, false);
+        } catch (e) {
+            /* istanbul ignore next */
+            printHttpError(e);
+        }
+    }
+
     public async loadAllChildren(
-        json: Record<string, any> | null
+        json: Record<string, any> | null,
+        reloadAll = false
     ): Promise<void> {
         for (let i = 0; i < this.state.length; i++) {
             if (typeof this.state[i] === 'string') {
@@ -148,6 +163,8 @@ export class Value extends StreamModel implements IValueBase {
                 this.state[i] = new State();
                 this.state[i].meta.id = id;
                 this.state[i].parent = this;
+                await this.state[i].reload();
+            } else if (reloadAll) {
                 await this.state[i].reload();
             }
         }

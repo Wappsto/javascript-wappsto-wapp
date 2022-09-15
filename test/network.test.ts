@@ -3,7 +3,14 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { createNetwork, Network, Device, Value, config } from '../src/index';
+import {
+    createNetwork,
+    Network,
+    Device,
+    Value,
+    config,
+    stopLogging,
+} from '../src/index';
 import { openStream } from '../src/stream_helpers';
 
 describe('network', () => {
@@ -61,6 +68,8 @@ describe('network', () => {
                                     type: 'state',
                                 },
                                 type: 'Control',
+                                timestamp: '',
+                                data: '1',
                             },
                         ],
                     },
@@ -138,6 +147,7 @@ describe('network', () => {
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
     beforeAll(() => {
+        stopLogging();
         openStream.websocketUrl = 'ws://localhost:12345';
     });
 
@@ -895,7 +905,6 @@ describe('network', () => {
 
     it('can handle a device create', async () => {
         const f = jest.fn();
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
         const n = new Network();
         n.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
         n.onCreate(f);
@@ -917,9 +926,44 @@ describe('network', () => {
             },
         });
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(f).toHaveBeenCalledTimes(1);
         expect(n.device.length).toBe(1);
         expect(n.device[0].name).toEqual('Device Name');
         expect(n.device[0].toJSON).toBeDefined();
+    });
+
+    it('reload all the data from the server', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [responseFull] })
+            .mockResolvedValueOnce({ data: [response] })
+            .mockResolvedValueOnce({ data: [responseFull.device[0]] })
+            .mockResolvedValueOnce({ data: [responseFull.device[0].value[0]] });
+
+        const network = await createNetwork({ name: 'Network Name' });
+
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+            params: { expand: 4, 'this_name=': 'Network Name' },
+        });
+
+        expect(network.id()).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(network.device.length).toEqual(1);
+
+        await network.reload(true);
+
+        expect(mockedAxios.get).toHaveBeenLastCalledWith(
+            '/2.0/value/c5a73d64-b398-434e-a236-df15342339d5',
+            {
+                params: {
+                    expand: 2,
+                },
+            }
+        );
+
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
     });
 });

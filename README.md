@@ -3,31 +3,33 @@
 This is a node/js library for easily creating wapps for [Wappsto](https://wappsto.com).
 
 ## Table of Contents
-  * [Install](#install)
-    + [Node](#node)
-    + [Browser](#browser)
-  * [Usage](#usage)
-    + [Create a new IoT Device](#create-a-new-iot-device)
-    + [To report a change in the value](#to-report-a-change-in-the-value)
-    + [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
-    + [Reporting events for value](#reporting-events-for-value)
-    + [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
-    + [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
-    + [Get retrive object by ID](#get-retrive-object-by-id)
-    + [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
-    + [Listing for changes on values](#listing-for-changes-on-values)
-    + [Sending an update event to a device](#sending-an-update-event-to-a-device)
-    + [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
-    + [Web Hook](#web-hook)
-    + [Wapp Storage](#wapp-storage)
-    + [OAuth](#oauth)
-    + [Notification](#notification)
-    + [Background logging](#background-logging)
-    + [Raw requests](#raw-requests)
-    + [Config](#config)
-      - [Enable verbose responses from wappsto](#enable-verbose-responses-from-wappsto)
-      - [Validation](#validation)
-      - [Stream Reconnect Count](#stream-reconnect-count)
+
+-   [Install](#install)
+    -   [Node](#node)
+    -   [Browser](#browser)
+-   [Usage](#usage)
+    -   [Create a new IoT Device](#create-a-new-iot-device)
+    -   [To report a change in the value](#to-report-a-change-in-the-value)
+    -   [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
+    -   [Reporting events for value](#reporting-events-for-value)
+    -   [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
+    -   [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
+    -   [Get retrive object by ID](#get-retrive-object-by-id)
+    -   [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
+    -   [To reload a model from the server](#to-reload-a-model-from-the-server)
+    -   [Listing for changes on values](#listing-for-changes-on-values)
+    -   [Sending an update event to a device](#sending-an-update-event-to-a-device)
+    -   [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
+    -   [Web Hook](#web-hook)
+    -   [Wapp Storage](#wapp-storage)
+    -   [OAuth](#oauth)
+    -   [Notification](#notification)
+    -   [Background logging](#background-logging)
+    -   [Raw requests](#raw-requests)
+    -   [Config](#config)
+        -   [Enable verbose responses from wappsto](#enable-verbose-responses-from-wappsto)
+        -   [Validation](#validation)
+        -   [Stream Reconnect Count](#stream-reconnect-count)
 
 ## Install
 
@@ -63,7 +65,6 @@ To use it in a webpage, include this script tag:
 
 Here are some examples on how to use the library.
 
-
 ### Create a new IoT Device
 
 First you need to create a IoT network.
@@ -71,7 +72,7 @@ To create a new network you need to call 'createNetwork'. If there is an Network
 
 ```javascript
 let network = await Wappsto.createNetwork({
-	name: 'new network name'
+	name: 'new network name',
 });
 ```
 
@@ -87,7 +88,7 @@ let device = await network.createDevice({
 	protocol: 'WAPP-JS',
 	communication: 'wapp',
 	version: '1.0.0',
-	manufacturer: 'My Self'
+	manufacturer: 'My Self',
 });
 ```
 
@@ -97,7 +98,11 @@ There will also be created the states nedded based on the permission. The only a
 The list of avaible value templates can be seen in the [value_template.ts](../main/src/util/value_template.ts) file.
 
 ```javascript
-let value = await device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS);
+let value = await device.createValue(
+	'Temperature',
+	'r',
+	Wappsto.ValueTemplate.TEMPERATURE_CELSIUS
+);
 ```
 
 It is also possible to define a period for how often the library
@@ -111,7 +116,13 @@ one hour new temperature value is bigger than 2 [deg.] of previous
 temperature value.
 
 ```javascript
-let value = await device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS, 3600, '2');
+let value = await device.createValue(
+	'Temperature',
+	'r',
+	Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
+	3600,
+	'2'
+);
 ```
 
 It is also possible to define a value where the data is not put into
@@ -120,7 +131,14 @@ the historical log. This is done by setting the `disableLog` to
 of the createValue funciton.
 
 ```javascript
-let value = await device.createValue('Temperature', 'r', Wappsto.ValueTemplate.TEMPERATURE_CELSIUS, 3600, '2', true);
+let value = await device.createValue(
+	'Temperature',
+	'r',
+	Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
+	3600,
+	'2',
+	true
+);
 ```
 
 There are some helper functions to create custom number, string, blob and xml values.
@@ -138,7 +156,7 @@ let value = await device.createNumberValue({
 	step: 1,
 	unit: 'count',
 	si_conversion: 'c',
-    disableLog: false,
+	disableLog: false,
 });
 ```
 
@@ -150,7 +168,7 @@ let value = await device.createStringValue({
 	permission: 'rw',
 	type: 'debug',
 	max: 10,
-	encoding: 'debug string'
+	encoding: 'debug string',
 });
 ```
 
@@ -175,7 +193,7 @@ To receive request to refresh the value, register a callback on `onRefresh`.
 
 ```javascript
 value.onRefresh((value) => {
-    value.report(1);
+	value.report(1);
 });
 ```
 
@@ -190,12 +208,11 @@ value.cancelOnRefresh();
 It is possible to save events in an event log for each value. Call
 `addEvent` on a value to create an event entry.
 The possible values for level is:
-    * important
-    * error
-    ' success
-    * warning
-    * info
-    * debug
+_ important
+_ error
+' success
+_ warning
+_ info \* debug
 
 ```javascript
 await value.addEvent('error', 'somthing wnt wrong');
@@ -204,7 +221,6 @@ await value.addEvent('error', 'somthing wnt wrong');
 ### To request access to an exsisting object from the user
 
 To request access to an exsisting object, a request have to be send. You can request a single object or multiple objects of the same type.
-
 
 To request access to a network with a spefict name, use `findByName`.
 
@@ -289,6 +305,20 @@ let data = value.getControlData();
 let timestamp = value.getControlTimestamp();
 ```
 
+### To reload a model from the server
+
+If you want to load the newiest data from the server, you can call `reload` on the model, to get the latest data for that model.
+
+```javascript
+await device.reload();
+```
+
+If you want to also load all the children data, you should call `reload` with `true`.
+
+```javascript
+await device.reload(true);
+```
+
 ### Listing for changes on values
 
 You can register onControl and onReport to receive events when the value changes.
@@ -339,19 +369,19 @@ The return value of your event handler is send back to the sender of the event.
 
 ```javascript
 Wappsto.fromBackground((msg) => {
-	console.log("Message from the background: "+msg);
-	return "Hello back";
+	console.log('Message from the background: ' + msg);
+	return 'Hello back';
 });
 
 Wappsto.fromForeground((msg) => {
-	console.log("Message from the foreground: "+msg);
-	return "Hello front";
+	console.log('Message from the foreground: ' + msg);
+	return 'Hello front';
 });
 
-let backgroundResult = await Wappsto.sendToBackground("hello");
-console.log("Result from background: "+backgroundResult);
-let foregroundResult = await Wappsto.sendToForeground("hello");
-console.log("Result from foreground: "+foregroundResult);
+let backgroundResult = await Wappsto.sendToBackground('hello');
+console.log('Result from background: ' + backgroundResult);
+let foregroundResult = await Wappsto.sendToForeground('hello');
+console.log('Result from foreground: ' + foregroundResult);
 ```
 
 If you do not want to receive anymore messages, you can cancel the event handler.
@@ -367,7 +397,7 @@ If the Ext Sync is enabled for the Wapp, a event handler for WebHooks can be reg
 
 ```javascript
 Wappsto.onWebHook((event) => {
-  console.log("Web Hook event", event);
+	console.log('Web Hook event', event);
 });
 ```
 
@@ -393,7 +423,7 @@ A callback can also be registered to be notified when the storage is updated.
 let storage = await Wappsto.wappStorage();
 //Signal when storage is changed
 storage.onChange(() => {
-	console.log("Storage is updated");
+	console.log('Storage is updated');
 });
 await storage.set('key', 'item');
 let data = storage.get('key');
@@ -411,12 +441,12 @@ so that the library can call it with the url that the user needs to visit, in or
 
 ```javascript
 try {
-  let token = await Wappsto.OAuth.getToken('oauth name', (url) => {
-	console.log(`Please visit ${url} to generate the OAuth token`);
-  });
-  console.log("OAuth Token", token);
-} catch(e) {
-  console.log("Failed to get OAuth token", e);
+	let token = await Wappsto.OAuth.getToken('oauth name', (url) => {
+		console.log(`Please visit ${url} to generate the OAuth token`);
+	});
+	console.log('OAuth Token', token);
+} catch (e) {
+	console.log('Failed to get OAuth token', e);
 }
 ```
 
@@ -444,7 +474,7 @@ It is possible to send your own requests to wappsto by using the `request` objec
 
 ```javascript
 let netwoks = await Wappsto.request.get('/network');
-await Wappsto.request.post('/network', {name: 'Network Name'});
+await Wappsto.request.post('/network', { name: 'Network Name' });
 ```
 
 ### Config
@@ -457,7 +487,7 @@ To enable verbose mode in wappsto, the verbose mode needs to be set to true.
 
 ```javascript
 Wappsto.config({
-  verbose: true
+	verbose: true,
 });
 ```
 
@@ -468,7 +498,7 @@ The default validation is 'normal'.
 
 ```javascript
 Wappsto.config({
-  validation: 'none'
+	validation: 'none',
 });
 ```
 
@@ -478,6 +508,6 @@ It is possible to change from the default 10 times the stream will try to reconn
 
 ```javascript
 Wappsto.config({
-	reconnectCount: 3
+	reconnectCount: 3,
 });
 ```

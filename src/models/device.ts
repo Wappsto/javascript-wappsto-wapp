@@ -64,7 +64,8 @@ export class Device extends StreamModel implements IDevice {
     }
 
     public async loadAllChildren(
-        json: Record<string, any> | null
+        json: Record<string, any> | null,
+        reloadAll = false
     ): Promise<void> {
         if (json?.value) {
             for (let i = 0; i < json.value.length; i++) {
@@ -109,7 +110,11 @@ export class Device extends StreamModel implements IDevice {
                 this.value[i].parent = this;
             }
             this.value[i].created();
-            await this.value[i].loadAllChildren(null);
+            if (reloadAll) {
+                await this.value[i].reload(true);
+            } else {
+                await this.value[i].loadAllChildren(null, reloadAll);
+            }
         }
     }
 

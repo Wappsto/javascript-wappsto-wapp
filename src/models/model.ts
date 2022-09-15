@@ -117,19 +117,21 @@ export class Model implements IModel {
         }
     }
 
+    /* istanbul ignore next */
     public async loadAllChildren(
-        json: Record<string, any> | null
+        json: Record<string, any> | null,
+        reloadAll = false
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     ): Promise<void> {}
 
-    public async reload(): Promise<void> {
+    public async reload(reloadAll = false): Promise<void> {
         try {
             const response = await wappsto.get(
                 this.getUrl(),
                 Model.generateOptions()
             );
             this.parse(response.data);
-            await this.loadAllChildren(response.data);
+            await this.loadAllChildren(response.data, reloadAll);
         } catch (e) {
             /* istanbul ignore next */
             printHttpError(e);

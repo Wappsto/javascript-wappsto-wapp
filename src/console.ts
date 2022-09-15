@@ -4,6 +4,13 @@ import { isBrowser } from './util/helpers';
 
 const defaultConsole = Object.assign({}, console);
 
+function newFunc(name: string) {
+    return function (...args: any[]) {
+        sendExtsync(name, arguments);
+        defaultConsole.log(...args);
+    };
+}
+
 function sendExtsync(key: string, ...args: any[]): any {
     const time = new Date().toISOString();
     const data = JSON.stringify({
@@ -21,12 +28,6 @@ function sendExtsync(key: string, ...args: any[]): any {
 }
 
 export function backgroundLogging(): void {
-    const newFunc = function (name: string) {
-        return function (...args: any[]) {
-            sendExtsync(name, arguments);
-            defaultConsole.log(...args);
-        };
-    };
     console.log = newFunc('log');
     console.info = newFunc('info');
     console.error = newFunc('error');

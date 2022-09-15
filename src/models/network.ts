@@ -75,7 +75,8 @@ export class Network extends StreamModel implements INetwork {
     }
 
     public async loadAllChildren(
-        json: Record<string, any> | null
+        json: Record<string, any> | null,
+        reloadAll = false
     ): Promise<void> {
         if (json?.device) {
             for (let i = 0; i < json.device.length; i++) {
@@ -124,7 +125,11 @@ export class Network extends StreamModel implements INetwork {
             }
             if (this.device[i]) {
                 this.device[i].parent = this;
-                await this.device[i].loadAllChildren(null);
+                if (reloadAll) {
+                    await this.device[i].reload(true);
+                } else {
+                    await this.device[i].loadAllChildren(null, reloadAll);
+                }
             }
         }
     }
