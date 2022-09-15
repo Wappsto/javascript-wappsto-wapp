@@ -41,7 +41,7 @@ export class WappStorage {
     async set(name: string, item: any): Promise<void> {
         WappStorage.validate('set', arguments);
         this.data.set(name, item);
-        await this.data.update();
+        await this.update();
     }
 
     get(name: string): any {
@@ -49,9 +49,25 @@ export class WappStorage {
         return this.data.get(name);
     }
 
+    keys(): Array<string> {
+        return this.data.keys();
+    }
+
+    values(): Array<any> {
+        return this.data.values();
+    }
+
+    entries(): Array<Array<any>> {
+        return this.data.entries();
+    }
+
     async remove(name: string): Promise<void> {
         WappStorage.validate('remove', arguments);
         this.data.remove(name);
+        await this.data.update();
+    }
+
+    async update(): Promise<void> {
         await this.data.update();
     }
 

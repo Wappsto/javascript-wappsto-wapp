@@ -3,13 +3,14 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { wappStorage } from '../src/index';
+import { wappStorage, stopLogging } from '../src/index';
 import { openStream } from '../src/stream_helpers';
 
 describe('WappStorage', () => {
     const server = new WS('ws://localhost:12345', { jsonProtocol: true });
 
     beforeAll(() => {
+        stopLogging();
         openStream.websocketUrl = 'ws://localhost:12345';
     });
 
@@ -306,5 +307,36 @@ describe('WappStorage', () => {
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
+    });
+
+    it('can get keys, values and entries', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: {
+                data_meta: {
+                    id: 'wapp_storage_remove',
+                    type: 'wapp_storage',
+                    version: 1,
+                },
+                meta: {
+                    type: 'data',
+                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                    version: '2.0',
+                },
+                data: {
+                    key1: 'data1',
+                    key2: ['data2'],
+                    key3: { key4: 'data4' },
+                },
+            },
+        });
+        const c = await wappStorage('keys and values');
+
+        expect(c.keys()).toEqual(['key1', 'key2', 'key3']);
+        expect(c.values()).toEqual(['data1', ['data2'], { key4: 'data4' }]);
+        expect(c.entries()).toEqual([
+            ['key1', 'data1'],
+            ['key2', ['data2']],
+            ['key3', { key4: 'data4' }],
+        ]);
     });
 });

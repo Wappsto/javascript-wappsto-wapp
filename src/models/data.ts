@@ -41,6 +41,18 @@ export class Data extends StreamModel {
         delete this.data[name];
     }
 
+    keys(): Array<string> {
+        return Object.keys(this.data);
+    }
+
+    values(): Array<any> {
+        return Object.values(this.data);
+    }
+
+    entries(): Array<Array<any>> {
+        return Object.entries(this.data);
+    }
+
     public static findByDataId = async (id: string) => {
         const json: any[] = await Model.fetch(Data.endpoint, {
             'this_data_meta.id': id,
