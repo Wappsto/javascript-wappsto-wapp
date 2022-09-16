@@ -18,5 +18,7 @@ export {
     cancelFromBackground,
     onWebHook,
     cancelOnWebHook,
+    signalForeground,
+    signalBackground,
 } from './stream_helpers';
 export * from './util/interfaces';

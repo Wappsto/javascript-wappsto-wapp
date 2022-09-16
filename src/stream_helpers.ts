@@ -23,6 +23,14 @@ export async function sendToBackground(msg: any): Promise<any> {
     return sendRequest('foreground', msg);
 }
 
+export async function signalForeground(msg: any): Promise<void> {
+    await openStream.sendEvent('background', msg);
+}
+
+export async function signalBackground(msg: any): Promise<void> {
+    await openStream.sendEvent('foreground', msg);
+}
+
 const request_handlers: Record<string, RequestHandler> = {};
 
 async function _handleRequest(event: any) {

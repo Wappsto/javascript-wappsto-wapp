@@ -387,7 +387,7 @@ export interface IStreamFunc {
     subscribeService(service: string, handler: ServiceHandler): void;
     addSignalHandler(type: string, handler: SignalHandler): void;
     sendRequest(msg: any): Promise<any>;
-    sendEvent(type: string, msg: string): Promise<any>;
+    sendEvent(type: string, msg: any): Promise<any>;
     sendResponse(event: any, code: number, msg: any): Promise<void>;
     onRequest(handler: RequestHandler, internal: boolean): void;
     onWebHook(handler: RequestHandler): void;

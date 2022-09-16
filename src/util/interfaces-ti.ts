@@ -223,6 +223,7 @@ export const ValueType = t.union(
 );
 
 export const IValueBase = t.iface([], {
+    [t.indexKey]: 'any',
     name: 'string',
     permission: 'ValuePermission',
     type: 'string',
@@ -502,11 +503,7 @@ export const IStreamFunc = t.iface([], {
         t.param('handler', 'SignalHandler')
     ),
     sendRequest: t.func('any', t.param('msg', 'any')),
-    sendEvent: t.func(
-        'any',
-        t.param('type', 'string'),
-        t.param('msg', 'string')
-    ),
+    sendEvent: t.func('any', t.param('type', 'string'), t.param('msg', 'any')),
     sendResponse: t.func(
         'void',
         t.param('event', 'any'),

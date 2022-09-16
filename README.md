@@ -215,12 +215,13 @@ It is possible to save events in an event log for each value. Call
 `addEvent` on a value to create an event entry.
 
 The possible values for level is:
-- important
-- error
-- success
-- warning
-- info
-- debug
+
+-   important
+-   error
+-   success
+-   warning
+-   info
+-   debug
 
 ```javascript
 await value.addEvent('error', 'something went wrong');
@@ -390,6 +391,13 @@ let backgroundResult = await Wappsto.sendToBackground('hello');
 console.log('Result from background: ' + backgroundResult);
 let foregroundResult = await Wappsto.sendToForeground('hello');
 console.log('Result from foreground: ' + foregroundResult);
+```
+
+If you want to send a message, but do not want a reply, you can use `signalBackground`.
+
+```javascript
+await Wappsto.signalBackground('start');
+await Wappsto.signalForeground('started');
 ```
 
 If you do not want to receive anymore messages, you can cancel the event handler.

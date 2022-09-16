@@ -275,14 +275,14 @@ export class Stream extends Model {
         });
     }
 
-    public async sendEvent(type: string, msg: string): Promise<any> {
+    public async sendEvent(type: string, msg: any): Promise<any> {
         this.validate('sendEvent', arguments);
 
         let result = {};
         try {
             const data = {
                 type: type,
-                msg: msg,
+                message: msg,
             };
             const response = await wappsto.post('/2.0/extsync', data);
             result = response.data;
