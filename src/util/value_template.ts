@@ -1,6 +1,7 @@
 import { ValueType } from './interfaces';
 
 export class ValueTemplate {
+    [key: string]: any;
     static version = '0.0.3';
 
     static BOOLEAN_TRUEFALSE: ValueType = {
