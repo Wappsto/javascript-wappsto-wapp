@@ -109,6 +109,7 @@ function handleBackgroundIsStarted(message: any): boolean {
 }
 
 export async function waitForBackground(timeout = 10): Promise<boolean> {
+    Model.validateMethod('Stream', 'waitForBackground', arguments);
     openStream.subscribeInternal(
         'backgroudIsStarted',
         handleBackgroundIsStarted

@@ -19,7 +19,7 @@ export function getErrorResponse(error: any): any {
     }
 }
 
-function getErrorMessage(error: any): string {
+export function getErrorMessage(error: any): string {
     /* istanbul ignore next */
     if (error.errno && error.errno === -111) {
         return `Failed to connect to ${error.address}`;

@@ -20,6 +20,7 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     -   [Listing for changes on values](#listing-for-changes-on-values)
     -   [Sending an update event to a device](#sending-an-update-event-to-a-device)
     -   [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
+    -   [Waiting for the background to be ready](#Waiting-for-the-background-to-be-ready)
     -   [Web Hook](#web-hook)
     -   [Wapp Storage](#wapp-storage)
     -   [OAuth](#oauth)
@@ -408,6 +409,25 @@ If you do not want to receive anymore messages, you can cancel the event handler
 ```javascript
 Wappsto.cancelFromBackground();
 Wappsto.cancelFromForeground();
+```
+
+### Waiting for the background to be ready
+
+If you need to comunitate with the background, it is a good idea to
+wait for the background to be ready. This can be do using the
+`waitForBackground` function.
+
+```javascript
+const result = await Wappsto.waitForBackground();
+if(result) {
+    console.log('The background is now ready');
+}
+```
+
+It waits for 10 seconds, but this can be changed by giving it a new timeout.
+
+```javascript
+const result = await Wappsto.waitForBackground(20);
 ```
 
 ### Web Hook

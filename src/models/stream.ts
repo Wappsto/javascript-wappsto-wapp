@@ -4,7 +4,7 @@ import { _config } from '../util/config';
 import { printDebug, printError } from '../util/debug';
 import { isUUID, isBrowser } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
-import { printHttpError } from '../util/http_wrapper';
+import { getErrorMessage } from '../util/http_wrapper';
 import { trace, clearTrace } from '../util/trace';
 import {
     IStreamEvent,
@@ -291,7 +291,12 @@ export class Stream extends Model {
             result = response.data;
         } catch (e) {
             /* istanbul ignore next */
-            printHttpError(e);
+            const errorMsg = getErrorMessage(e);
+            printError(
+                `Failed to send ${type} event (${JSON.stringify(
+                    msg
+                )}) because: ${errorMsg}`
+            );
         }
         return result;
     }
@@ -306,7 +311,12 @@ export class Stream extends Model {
         } catch (e: any) {
             /* 1istanbul ignore next */
             if (e.response.data?.code) {
-                printHttpError(e);
+                const errorMsg = getErrorMessage(e);
+                printError(
+                    `Failed to send request (${JSON.stringify(
+                        msg
+                    )}) because: ${errorMsg}`
+                );
             } else {
                 result = e.response.data;
             }
@@ -332,7 +342,12 @@ export class Stream extends Model {
             );
         } catch (e) {
             /* istanbul ignore next */
-            printHttpError(e);
+            const errorMsg = getErrorMessage(e);
+            printError(
+                `Failed to send response (${JSON.stringify(
+                    msg
+                )}) with code ${code} because: ${errorMsg}`
+            );
         }
     }
 
