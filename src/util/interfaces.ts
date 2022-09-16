@@ -160,6 +160,7 @@ export type ValueType =
     | (IValueBase & { xml: IValueXmlBase });
 
 export interface IValueBase {
+    [key: string]: any;
     name: string;
     permission: ValuePermission;
     type: string;

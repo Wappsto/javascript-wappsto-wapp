@@ -53,6 +53,12 @@ And include it in your project like this:
 let Wappsto = require('wappsto-wapp');
 ```
 
+or
+
+```javascript
+import Wappsto from 'wappsto-wapp';
+```
+
 ### Browser
 
 To use it in a webpage, include this script tag:
@@ -207,15 +213,17 @@ value.cancelOnRefresh();
 
 It is possible to save events in an event log for each value. Call
 `addEvent` on a value to create an event entry.
+
 The possible values for level is:
-_ important
-_ error
-' success
-_ warning
-_ info \* debug
+- important
+- error
+- success
+- warning
+- info
+- debug
 
 ```javascript
-await value.addEvent('error', 'somthing wnt wrong');
+await value.addEvent('error', 'something went wrong');
 ```
 
 ### To request access to an exsisting object from the user
@@ -305,20 +313,6 @@ let data = value.getControlData();
 let timestamp = value.getControlTimestamp();
 ```
 
-### To reload a model from the server
-
-If you want to load the newiest data from the server, you can call `reload` on the model, to get the latest data for that model.
-
-```javascript
-await device.reload();
-```
-
-If you want to also load all the children data, you should call `reload` with `true`.
-
-```javascript
-await device.reload(true);
-```
-
 ### Listing for changes on values
 
 You can register onControl and onReport to receive events when the value changes.
@@ -340,6 +334,20 @@ And you can cancel these callbacks by calling `cancelOnReport` and
 value.cancelOnReport();
 
 value.cancelOnControl();
+```
+
+### To reload a model from the server
+
+If you want to load the newiest data from the server manually, you can call `reload` on the model, to get the latest data for that model.
+
+```javascript
+await device.reload();
+```
+
+If you want to also load all the children data, you should call `reload` with `true`.
+
+```javascript
+await device.reload(true);
 ```
 
 ### Sending an update event to a device

@@ -121,6 +121,8 @@ export class Device extends StreamModel implements IDevice {
     private async _createValue(params: ValueType): Promise<Value> {
         let oldDelta;
         let oldPeriod = '0';
+        let oldType;
+
         let value = new Value();
         const values = this.findValueByName(params.name);
         if (values.length !== 0) {
@@ -132,6 +134,7 @@ export class Device extends StreamModel implements IDevice {
                 oldPeriod = params.period;
             }
             params.period = value.period;
+            oldType = value.getValueType();
         }
 
         const disableLog = params.disableLog;
@@ -154,6 +157,10 @@ export class Device extends StreamModel implements IDevice {
         value.parent = this;
 
         if (!isEqual(oldJson, newJson)) {
+            if (oldType !== undefined && params[oldType] === undefined) {
+                value.removeValueType(oldType);
+            }
+
             if (values.length !== 0) {
                 await value.update();
             } else {

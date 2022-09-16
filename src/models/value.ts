@@ -104,6 +104,23 @@ export class Value extends StreamModel implements IValueBase {
         return '';
     }
 
+    public removeValueType(oldType: string): void {
+        switch (oldType) {
+            case 'number':
+                this.number = undefined;
+                break;
+            case 'string':
+                this.string = undefined;
+                break;
+            case 'blob':
+                this.blob = undefined;
+                break;
+            case 'xml':
+                this.xml = undefined;
+                break;
+        }
+    }
+
     public created(): void {
         this.onChange((val) => {
             this.handlePeriodUpdate();
