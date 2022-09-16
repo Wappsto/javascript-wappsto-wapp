@@ -2,6 +2,7 @@ import { Model } from './models/model';
 import { IgnoreError, Stream } from './models/stream';
 import { printDebug } from './util/debug';
 import { RequestHandler } from './util/interfaces';
+import { isBrowser } from './util/helpers';
 
 const openStream: Stream = new Stream();
 
@@ -93,4 +94,44 @@ export function cancelFromBackground(): void {
 
 export function cancelFromForeground(): void {
     cancelFrom('foreground');
+}
+
+let backgroudIsStarted = false;
+
+function handleIsBackgroundStarted(message: any): boolean {
+    openStream.sendEvent('backgroudIsStarted', '');
+    return true;
+}
+
+function handleBackgroundIsStarted(message: any): boolean {
+    backgroudIsStarted = true;
+    return true;
+}
+
+export async function waitForBackground(timeout = 10): Promise<boolean> {
+    openStream.subscribeInternal(
+        'backgroudIsStarted',
+        handleBackgroundIsStarted
+    );
+    let count = timeout;
+    do {
+        await openStream.sendEvent('isBackgroudStarted', '');
+        let waits = 10;
+        while (!backgroudIsStarted && waits) {
+            await new Promise((r) => setTimeout(r, 100));
+            waits -= 1;
+        }
+        count -= 1;
+    } while (count && !backgroudIsStarted);
+
+    return !!count;
+}
+
+if (!isBrowser()) {
+    setTimeout(() => {
+        openStream.subscribeInternal(
+            'isBackgroudStarted',
+            handleIsBackgroundStarted
+        );
+    }, 0);
 }

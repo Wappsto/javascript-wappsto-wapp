@@ -17,6 +17,7 @@ import {
     stopLogging,
     signalBackground,
     signalForeground,
+    waitForBackground,
 } from '../src/index';
 import { openStream } from '../src/stream_helpers';
 
@@ -947,5 +948,66 @@ describe('stream', () => {
         expect(funF).toHaveBeenCalledWith({ signal: 'background' });
         expect(funF).toHaveBeenCalledTimes(1);
         expect(funB).toHaveBeenCalledTimes(1);
+    });
+
+    it('can wait for background', async () => {
+        const p = waitForBackground(4);
+
+        await server.connected;
+
+        server.send({
+            meta: {
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                type: 'eventstream',
+                version: '2.0',
+            },
+            event: 'extsync',
+            meta_object: {
+                type: 'extsync',
+                version: '2.0',
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+            },
+            data: {
+                meta: {
+                    type: 'extsync',
+                    version: '2.0',
+                    id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                },
+                request: false,
+                method: 'POST',
+                uri: 'extsync/',
+                body: '{"type":"isBackgroudStarted","message":""}',
+            },
+            path: '/extsync/direct',
+        });
+        server.send({
+            meta: {
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                type: 'eventstream',
+                version: '2.0',
+            },
+            event: 'extsync',
+            meta_object: {
+                type: 'extsync',
+                version: '2.0',
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+            },
+            data: {
+                meta: {
+                    type: 'extsync',
+                    version: '2.0',
+                    id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                },
+                request: false,
+                method: 'POST',
+                uri: 'extsync/',
+                body: '{"type":"backgroudIsStarted","message":""}',
+            },
+            path: '/extsync/direct',
+        });
+
+        const res = await p;
+
+        expect(res).toBe(true);
     });
 });

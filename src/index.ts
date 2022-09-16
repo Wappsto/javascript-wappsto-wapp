@@ -20,5 +20,6 @@ export {
     cancelOnWebHook,
     signalForeground,
     signalBackground,
+    waitForBackground,
 } from './stream_helpers';
 export * from './util/interfaces';

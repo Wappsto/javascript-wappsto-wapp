@@ -113,19 +113,23 @@ export class Stream extends Model {
                 1000 + this.getTimeout()
             );
 
-            const socket = new WebSocket(this.websocketUrl);
+            try {
+                const socket = new WebSocket(this.websocketUrl);
 
-            if (socket) {
-                socket.onopen = () => {
-                    this.socket = socket;
-                    clearTimeout(openTimeout);
-                    this.addListeners();
-                    resolve();
-                    this.waiting.forEach((r: any) => {
-                        r();
-                    });
-                    this.waiting = [];
-                };
+                if (socket) {
+                    socket.onopen = () => {
+                        this.socket = socket;
+                        clearTimeout(openTimeout);
+                        this.addListeners();
+                        resolve();
+                        this.waiting.forEach((r: any) => {
+                            r();
+                        });
+                        this.waiting = [];
+                    };
+                }
+            } catch (e) {
+                printDebug(`Failed to open WebSocket: ${e}`);
             }
         });
     }
@@ -211,7 +215,6 @@ export class Stream extends Model {
 
     public subscribeInternal(type: string, handler: ServiceHandler): void {
         this.validate('subscribeInternal', arguments);
-
         this.subscribeService('extsync', (event) => {
             let res: boolean | Promise<undefined | true> = false;
             try {
@@ -516,7 +519,11 @@ export class Stream extends Model {
         printDebug(
             `Sending a ${method} message to ${url}: ${JSON.stringify(hash)}`
         );
-        this.socket?.send(JSON.stringify(hash));
+        try {
+            this.socket?.send(JSON.stringify(hash));
+        } catch (e) {
+            printError(`Failed to send message on WebSocket: ${e}`);
+        }
     }
 
     private addListeners() {
@@ -573,7 +580,9 @@ export class Stream extends Model {
             }
 
             messages.forEach((msg: IStreamEvent) => {
-                printDebug(`Stream message: ${JSON.stringify(msg)}`);
+                if (msg.data?.uri !== 'extsync/wappsto/editor/console') {
+                    printDebug(`Stream message: ${JSON.stringify(msg)}`);
+                }
                 if (msg.meta_object?.type === 'extsync') {
                     const newData = msg.extsync || msg.data;
                     if (newData.request) {
