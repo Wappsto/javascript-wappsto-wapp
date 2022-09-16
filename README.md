@@ -304,7 +304,10 @@ let value = Value.findByID('1157b4fa-2745-4940-9201-99eee5929eff');
 To send a new data point to another value, just call the `control` function on the value.
 
 ```javascript
-await value.control('1');
+const result = await value.control('1');
+if (!result) {
+	console.warn('Failed to send control to device');
+}
 ```
 
 And to get the last controlled data and timestamp.

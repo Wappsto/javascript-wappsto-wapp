@@ -345,8 +345,9 @@ describe('value', () => {
         value.state.push(state);
         await value.report(10);
         await value.report('test', 'timestamp');
-        await value.control(10);
+        const res = await value.control(10);
 
+        expect(res).toBe(false);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(value.getReportData()).toBe('test');
         expect(value.getControlData()).toBe(undefined);
@@ -391,12 +392,14 @@ describe('value', () => {
         const state = new State('Control');
         state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
-        await value.control(10);
-        await value.control('test', 'timestamp');
+        const res1 = await value.control(10);
+        const res2 = await value.control('test', 'timestamp');
         await value.report(10);
         value.delta = '1';
         await value.report(20);
 
+        expect(res1).toBe(true);
+        expect(res2).toBe(true);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
@@ -1233,35 +1236,97 @@ describe('value', () => {
                     },
                 ],
             });
-        mockedAxios.patch.mockResolvedValueOnce({
-            data: [
-                {
-                    meta: {
-                        type: 'value',
-                        version: '2.0',
-                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+        mockedAxios.patch
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
                     },
-                },
-            ],
-        });
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.0',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            });
 
         const device = new Device();
         device.meta.id = '1714e470-76ef-4310-8c49-dda18ef8b819';
-        const value = await device.createValue(
+        const value_number = await device.createValue(
             'test',
             'r',
-            ValueTemplate.TEMPERATURE_CELSIUS
+            ValueTemplate.NUMBER
         );
-        const value2 = await device.createValue(
+        expect(value_number.number?.max).toBe(128);
+
+        const value_string = await device.createValue(
+            'test',
+            'rw',
+            ValueTemplate.STRING
+        );
+        expect(value_string.number).toBe(undefined);
+        expect(value_string.string?.max).toBe(64);
+
+        const value_blob = await device.createValue(
             'test',
             'rw',
             ValueTemplate.BLOB
         );
+        expect(value_blob.string).toBe(undefined);
+        expect(value_blob.blob?.max).toBe(280);
 
-        expect(value).toBe(value2);
-        expect(value.number).toBe(undefined);
-        expect(value.blob?.max).toBe(280);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        const value_xml = await device.createValue(
+            'test',
+            'rw',
+            ValueTemplate.XML
+        );
+        expect(value_xml.blob).toBe(undefined);
+        expect(value_xml.xml?.xsd).toBe('');
+
+        const value_number2 = await device.createValue(
+            'test',
+            'r',
+            ValueTemplate.NUMBER
+        );
+        expect(value_number2.number?.max).toBe(128);
+
+        expect(value_number).toBe(value_string);
+        expect(value_blob).toBe(value_string);
+        expect(value_xml).toBe(value_string);
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(4);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/1714e470-76ef-4310-8c49-dda18ef8b819/value',
@@ -1273,16 +1338,14 @@ describe('value', () => {
                 },
                 name: 'test',
                 number: {
-                    max: 50,
-                    meaningful_zero: false,
-                    min: -30,
-                    si_conversion: '[K] = [°C] + 273.15',
-                    step: 1,
-                    unit: '°C',
+                    max: 128,
+                    min: -128,
+                    step: 0.1,
+                    unit: '',
                 },
                 period: '0',
                 permission: 'r',
-                type: 'temperature',
+                type: 'number',
             },
             {}
         );

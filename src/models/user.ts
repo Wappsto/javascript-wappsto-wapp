@@ -36,7 +36,8 @@ export class User extends Model {
     public async create(): Promise<void> {
         printError("User can't be created");
     }
-    public async update(): Promise<void> {
+    public async update(): Promise<boolean> {
         printError("User can't be updated");
+        return false;
     }
 }

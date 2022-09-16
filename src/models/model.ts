@@ -103,7 +103,7 @@ export class Model implements IModel {
         }
     }
 
-    public async update(): Promise<void> {
+    public async update(): Promise<boolean> {
         try {
             const response = await wappsto.patch(
                 this.getUrl(),
@@ -111,9 +111,11 @@ export class Model implements IModel {
                 Model.generateOptions()
             );
             this.parse(response.data);
+            return true;
         } catch (e) {
             /* istanbul ignore next */
             printHttpError(e);
+            return false;
         }
     }
 

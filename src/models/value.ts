@@ -205,7 +205,7 @@ export class Value extends StreamModel implements IValueBase {
         type: StateType,
         data: string | number,
         timestamp: string | undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         const state = this.findState(type);
         if (state) {
             state.data = data.toString();
@@ -233,11 +233,12 @@ export class Value extends StreamModel implements IValueBase {
                 state.data = oldData;
                 state.timestamp = oldTimestamp;
 
-                await p;
+                return await p;
             } else {
-                await state.update();
+                return await state.update();
             }
         }
+        return false;
     }
 
     private findStateAndCallback(
@@ -418,9 +419,9 @@ export class Value extends StreamModel implements IValueBase {
     public async control(
         data: string | number,
         timestamp: string | undefined = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         this.validate('control', arguments);
-        this.findStateAndUpdate('Control', data, timestamp);
+        return await this.findStateAndUpdate('Control', data, timestamp);
     }
 
     public onControl(callback: ValueStreamCallback): void {
