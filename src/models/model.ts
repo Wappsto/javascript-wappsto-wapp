@@ -270,7 +270,7 @@ export class Model implements IModel {
         return options;
     }
 
-    private removeUndefined(obj: Record<string, any>, deep: number = 10) {
+    private removeUndefined(obj: Record<string, any>, deep = 10) {
         if (obj && deep) {
             Object.keys(obj).forEach((key) => {
                 const value = obj[key];

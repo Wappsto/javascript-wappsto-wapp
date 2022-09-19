@@ -12,6 +12,7 @@ export class Data extends StreamModel {
     static endpoint = '/2.0/data';
     data_meta: IDataMeta = {};
     data: any = {};
+    oldKeys: Array<string> = [];
 
     constructor(id?: string, type?: string) {
         super('data', '2.0');
@@ -73,13 +74,25 @@ export class Data extends StreamModel {
         if (isArray(json)) {
             json = json[0];
         }
+
         const oldModel = this.toJSON();
         Object.assign(this, pick(json, this.attributes()));
         if (this.data_meta.version !== 1) {
             Object.assign(this.data, omit(json, ['meta', 'data_meta']));
+            this.oldKeys = Object.keys(omit(this.data, ['meta', 'data_meta']));
         }
         const newModel = this.toJSON();
 
         return !isEqual(oldModel, newModel);
+    }
+
+    public toJSON(): Record<string, any> {
+        const result: Record<string, any> = super.toJSON();
+
+        this.oldKeys.forEach((k: string) => {
+            result[k] = null;
+        });
+
+        return result;
     }
 }

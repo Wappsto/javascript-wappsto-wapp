@@ -300,13 +300,29 @@ describe('WappStorage', () => {
 
         const c = await wappStorage('convert');
         const res1 = c.get('old');
+        await c.update();
 
         expect(res1).toBe('data');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+            {
+                old: null,
+                data: { old: 'data' },
+                data_meta: { id: 'wapp_storage_remove', type: 'wapp_storage' },
+                meta: {
+                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                    type: 'data',
+                    version: '2.0',
+                },
+            },
+            {}
+        );
     });
 
     it('can get keys, values and entries', async () => {
@@ -338,5 +354,28 @@ describe('WappStorage', () => {
             ['key2', ['data2']],
             ['key3', { key4: 'data4' }],
         ]);
+    });
+
+    it('can create a new instance with a deep object', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+
+        const ws = await wappStorage('test_deep');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+
+        const tmp = {};
+        const d1 = { d2: tmp };
+        const d2 = { d1: d1 };
+        d1.d2 = d2;
+
+        await ws.set('test', d1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+
+        mockedAxios.get.mockResolvedValueOnce({ data: [d1] });
+        ws.reload();
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
     });
 });
