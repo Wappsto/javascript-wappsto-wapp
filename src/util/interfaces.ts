@@ -114,7 +114,7 @@ export interface IDeviceFunc {
         name: string,
         permission: ValuePermission,
         valueTemplate: ValueType,
-        period?: string,
+        period?: number | string,
         delta?: number | 'inf',
         disableLog?: boolean
     ): Promise<ValueType>;
@@ -165,7 +165,7 @@ export interface IValueBase {
     permission: ValuePermission;
     type: string;
     description?: string;
-    period?: string;
+    period?: number | string;
     delta?: string;
     disableLog?: boolean;
 }

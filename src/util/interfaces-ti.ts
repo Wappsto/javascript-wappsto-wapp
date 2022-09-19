@@ -133,7 +133,7 @@ export const IDeviceFunc = t.iface([], {
         t.param('name', 'string'),
         t.param('permission', 'ValuePermission'),
         t.param('valueTemplate', 'ValueType'),
-        t.param('period', 'string', true),
+        t.param('period', t.union('number', 'string'), true),
         t.param('delta', t.union('number', t.lit('inf')), true),
         t.param('disableLog', 'boolean', true)
     ),
@@ -228,7 +228,7 @@ export const IValueBase = t.iface([], {
     permission: 'ValuePermission',
     type: 'string',
     description: t.opt('string'),
-    period: t.opt('string'),
+    period: t.opt(t.union('number', 'string')),
     delta: t.opt('string'),
     disableLog: t.opt('boolean'),
 });

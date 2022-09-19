@@ -120,7 +120,7 @@ export class Device extends StreamModel implements IDevice {
 
     private async _createValue(params: ValueType): Promise<Value> {
         let oldDelta;
-        let oldPeriod = '0';
+        let oldPeriod = 0;
         let oldType;
 
         let value = new Value();
@@ -131,7 +131,7 @@ export class Device extends StreamModel implements IDevice {
             oldDelta = params.delta;
             params.delta = value.delta;
             if (params.period) {
-                oldPeriod = params.period;
+                oldPeriod = Number(params.period);
             }
             params.period = value.period;
             oldType = value.getValueType();
@@ -151,7 +151,7 @@ export class Device extends StreamModel implements IDevice {
             value.delta = oldDelta;
         }
         if (value.period === undefined) {
-            value.period = oldPeriod;
+            value.period = oldPeriod.toString();
         }
 
         value.parent = this;
@@ -184,7 +184,7 @@ export class Device extends StreamModel implements IDevice {
         name: string,
         permission: ValuePermission,
         valueTemplate: ValueType,
-        period = '0',
+        period: number | string = 0,
         delta: number | 'inf' = 0,
         disableLog = false
     ): Promise<Value> {

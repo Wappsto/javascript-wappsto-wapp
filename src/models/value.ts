@@ -39,8 +39,8 @@ export class Value extends StreamModel implements IValueBase {
     permission: ValuePermission = 'r';
     tmp_permission: ValuePermission = 'r';
     type = '';
-    period?: string;
-    last_period = '';
+    period?: number | string;
+    last_period: number = 0;
     delta?: string;
 
     number?: IValueNumberBase;
@@ -309,6 +309,14 @@ export class Value extends StreamModel implements IValueBase {
         }
 
         return state;
+    }
+
+    public toJSON(): Record<string, any> {
+        const json = super.toJSON();
+        if(json['period'] !== undefined) {
+            json['period'] = json['period'].toString();
+        }
+        return json;
     }
 
     public parseChildren(json: Record<string, any>): boolean {
@@ -595,8 +603,8 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     private handlePeriodUpdate(): boolean {
-        if (this.period && this.period !== this.last_period) {
-            this.last_period = this.period;
+        if (this.period && Number(this.period) !== this.last_period) {
+            this.last_period = Number(this.period);
             this.startPeriodHandler();
             return true;
         }
@@ -605,7 +613,7 @@ export class Value extends StreamModel implements IValueBase {
 
     private getPeriodTimeout(): number {
         let timeout = 0;
-        timeout = parseInt(this.last_period);
+        timeout = this.last_period;
         if (timeout && isPositiveInteger(this.last_period)) {
             return getSecondsToNextPeriod(timeout) * 1000;
         } else {
