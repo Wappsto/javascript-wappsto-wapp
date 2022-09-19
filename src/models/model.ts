@@ -271,7 +271,7 @@ export class Model implements IModel {
     }
 
     private removeUndefined(obj: Record<string, any>, deep = 10) {
-        if (obj && deep) {
+        if (obj && deep > 0) {
             Object.keys(obj).forEach((key) => {
                 const value = obj[key];
                 const type = typeof value;

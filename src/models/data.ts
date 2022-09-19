@@ -77,9 +77,13 @@ export class Data extends StreamModel {
 
         const oldModel = this.toJSON();
         Object.assign(this, pick(json, this.attributes()));
+
         if (this.data_meta.version !== 1) {
+            this.data = {};
             Object.assign(this.data, omit(json, ['meta', 'data_meta']));
-            this.oldKeys = Object.keys(omit(this.data, ['meta', 'data_meta']));
+            this.oldKeys = Object.keys(
+                omit(this.data, ['meta', 'data_meta', 'data'])
+            );
         }
         const newModel = this.toJSON();
 

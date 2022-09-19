@@ -294,15 +294,18 @@ describe('WappStorage', () => {
                     version: '2.0',
                 },
                 old: 'data',
+                data: 'test',
             },
         });
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const c = await wappStorage('convert');
         const res1 = c.get('old');
+        const res2 = c.get('data');
         await c.update();
 
         expect(res1).toBe('data');
+        expect(res2).toBe('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
@@ -313,7 +316,7 @@ describe('WappStorage', () => {
             '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 old: null,
-                data: { old: 'data' },
+                data: { old: 'data', data: 'test' },
                 data_meta: { id: 'wapp_storage_remove', type: 'wapp_storage' },
                 meta: {
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
