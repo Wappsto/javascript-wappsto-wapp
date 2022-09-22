@@ -40,7 +40,7 @@ export class Value extends StreamModel implements IValueBase {
     tmp_permission: ValuePermission = 'r';
     type = '';
     period?: number | string;
-    last_period: number = 0;
+    last_period = 0;
     delta?: string;
 
     number?: IValueNumberBase;
@@ -313,7 +313,7 @@ export class Value extends StreamModel implements IValueBase {
 
     public toJSON(): Record<string, any> {
         const json = super.toJSON();
-        if(json['period'] !== undefined) {
+        if (json['period'] !== undefined) {
             json['period'] = json['period'].toString();
         }
         return json;

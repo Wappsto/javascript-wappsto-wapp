@@ -392,7 +392,7 @@ export interface IStreamFunc {
     onRequest(handler: RequestHandler, internal: boolean): void;
     onWebHook(handler: RequestHandler): void;
     fromForeground(callback: RequestHandler): void;
-    waitForBackground(timeout: number): Promise<boolean>;
+    waitForBackground(timeout?: number): Promise<boolean>;
 }
 
 export type OAuthRequestHandler = (url: string) => void;

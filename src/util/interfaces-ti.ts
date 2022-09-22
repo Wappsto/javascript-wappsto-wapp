@@ -517,7 +517,7 @@ export const IStreamFunc = t.iface([], {
     ),
     onWebHook: t.func('void', t.param('handler', 'RequestHandler')),
     fromForeground: t.func('void', t.param('callback', 'RequestHandler')),
-    waitForBackground: t.func('boolean', t.param('timeout', 'number')),
+    waitForBackground: t.func('boolean', t.param('timeout', 'number', true)),
 });
 
 export const OAuthRequestHandler = t.func('void', t.param('url', 'string'));
