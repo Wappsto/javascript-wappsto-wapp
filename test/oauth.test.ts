@@ -50,6 +50,10 @@ describe('oauth', () => {
         await new Promise((r) => setTimeout(r, 1));
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/oauth_connect/test',
+            {}
+        );
         expect(requestUrl).toBe('https://wappsto.com/oauth');
     });
 
@@ -93,7 +97,6 @@ describe('oauth', () => {
     });
 
     it('can return an old token', async () => {
-        //mockedAxios.get.mockResolvedValueOnce({ data: [{response}] });
         mockedAxios.get.mockResolvedValueOnce({ data: response });
 
         const token = await OAuth.getToken('test');
@@ -136,6 +139,11 @@ describe('oauth', () => {
         expect(error).toBe(
             'This installation does not have any oauth external with this name'
         );
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/oauth_connect/test',
+            {}
+        );
     });
 
     it('can call requet handler without data', async () => {
@@ -165,6 +173,10 @@ describe('oauth', () => {
         await new Promise((r) => setTimeout(r, 1));
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/oauth_connect/test',
+            {}
+        );
         expect(requestUrl).toBe(undefined);
     });
 });
