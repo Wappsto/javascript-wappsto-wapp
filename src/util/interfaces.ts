@@ -381,10 +381,14 @@ export interface IStreamModel {
 }
 
 export interface IStreamFunc {
-    subscribe(model: IStreamModel): void;
+    subscribe(model: IStreamModel, full?: boolean): void;
     sendInternal(type: string): Promise<any>;
     subscribeInternal(type: string, handler: ServiceHandler): void;
-    subscribeService(service: string, handler: ServiceHandler): void;
+    subscribeService(
+        service: string,
+        handler: ServiceHandler,
+        full?: boolean
+    ): void;
     addSignalHandler(type: string, handler: SignalHandler): void;
     sendRequest(msg: any): Promise<any>;
     sendEvent(type: string, msg: any): Promise<any>;

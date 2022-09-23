@@ -485,7 +485,11 @@ export const IStreamModel = t.iface([], {
 });
 
 export const IStreamFunc = t.iface([], {
-    subscribe: t.func('void', t.param('model', 'IStreamModel')),
+    subscribe: t.func(
+        'void',
+        t.param('model', 'IStreamModel'),
+        t.param('full', 'boolean', true)
+    ),
     sendInternal: t.func('any', t.param('type', 'string')),
     subscribeInternal: t.func(
         'void',
@@ -495,7 +499,8 @@ export const IStreamFunc = t.iface([], {
     subscribeService: t.func(
         'void',
         t.param('service', 'string'),
-        t.param('handler', 'ServiceHandler')
+        t.param('handler', 'ServiceHandler'),
+        t.param('full', 'boolean', true)
     ),
     addSignalHandler: t.func(
         'void',
