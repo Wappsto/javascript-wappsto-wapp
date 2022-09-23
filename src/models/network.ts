@@ -211,6 +211,7 @@ export class Network extends StreamModel implements INetwork {
             usage,
             query
         );
+
         return Network.fromArray(data);
     };
 

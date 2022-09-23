@@ -258,7 +258,7 @@ export class Value extends StreamModel implements IValueBase {
         }
     }
 
-    private findStateAndClear(type: StateType): void {
+    private findStateAndClearCallback(type: StateType): void {
         this.stateCallbacks[type] = [];
         const state = this.findState(type);
         if (state) {
@@ -458,11 +458,11 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     public cancelOnReport(): void {
-        this.findStateAndClear('Report');
+        this.findStateAndClearCallback('Report');
     }
 
     public cancelOnControl(): void {
-        this.findStateAndClear('Control');
+        this.findStateAndClearCallback('Control');
     }
 
     public cancelOnRefresh(): void {
