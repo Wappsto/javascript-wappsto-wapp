@@ -175,18 +175,19 @@ export class Stream extends Model {
         );
     }
 
-    public subscribe(model: IStreamModel): boolean {
+    public subscribe(model: IStreamModel, full = true): boolean {
         this.validate('subscribe', arguments);
+        const path = this.generatePathFromService(model.path(), full);
 
-        if (!this.models[model.path()]) {
-            this.models[model.path()] = [];
+        if (!this.models[path]) {
+            this.models[path] = [];
         }
-        if (this.models[model.path()].indexOf(model) === -1) {
-            this.models[model.path()].push(model);
+        if (this.models[path].indexOf(model) === -1) {
+            this.models[path].push(model);
 
             this.open().then(() => {
                 printDebug(`Add subscription: ${model.path()}`);
-                this.addSubscription(model.path());
+                this.addSubscription(path);
             });
 
             return true;
@@ -230,38 +231,50 @@ export class Stream extends Model {
         });
     }
 
-    public subscribeService(service: string, handler: ServiceHandler): void {
+    private generatePathFromService(service: string, full: boolean): string {
+        let path = `${service}${full ? '' : '?full=true'}`;
+        if (path[0] !== '/') {
+            path = '/' + path;
+        }
+        return path;
+    }
+
+    public subscribeService(
+        service: string,
+        handler: ServiceHandler,
+        full = true
+    ): void {
         this.validate('subscribeService', arguments);
 
         this.open().then(() => {
-            if (service[0] !== '/') {
-                service = '/' + service;
+            const path = this.generatePathFromService(service, full);
+            if (!this.services[path]) {
+                this.services[path] = [];
             }
-            if (!this.services[service]) {
-                this.services[service] = [];
-            }
-            this.services[service].push(handler);
+            this.services[path].push(handler);
 
-            printDebug(`Add service subscription: ${service}`);
+            printDebug(`Add service subscription: ${path}`);
 
-            this.addSubscription(service);
+            this.addSubscription(path);
         });
     }
 
-    public unsubscribeService(service: string, handler: ServiceHandler): void {
+    public unsubscribeService(
+        service: string,
+        handler: ServiceHandler,
+        full = true
+    ): void {
         this.validate('subscribeService', arguments);
+        const path = this.generatePathFromService(service, full);
 
-        if (service[0] !== '/') {
-            service = '/' + service;
-        }
-        if (this.services[service] !== undefined) {
-            const index = this.services[service].indexOf(handler);
+        if (this.services[path] !== undefined) {
+            const index = this.services[path].indexOf(handler);
             if (index !== -1) {
-                this.services[service].splice(index, 1);
+                this.services[path].splice(index, 1);
             }
 
-            if (this.services[service].length === 0) {
-                this.removeSubscription(service);
+            if (this.services[path].length === 0) {
+                this.removeSubscription(path);
             }
         }
     }
