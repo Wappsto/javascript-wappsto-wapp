@@ -951,9 +951,11 @@ describe('stream', () => {
     });
 
     it('can wait for background', async () => {
-        const p = waitForBackground(4);
+        const p = waitForBackground();
 
         await server.connected;
+
+        await new Promise((r) => setTimeout(r, 1));
 
         server.send({
             meta: {
@@ -1009,5 +1011,10 @@ describe('stream', () => {
         const res = await p;
 
         expect(res).toBe(true);
+    });
+
+    it('can timeout waiting for background', async () => {
+        const p = await waitForBackground(1);
+        expect(p).toBe(false);
     });
 });
