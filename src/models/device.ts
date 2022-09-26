@@ -1,7 +1,7 @@
 import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
-import { StreamModel } from './model.stream';
+import { ConnectionModel } from './model.connection';
 import { Model } from './model';
 import { Value } from './value';
 import { printDebug } from '../util/debug';
@@ -17,7 +17,7 @@ import {
     ValuePermission,
 } from '../util/interfaces';
 
-export class Device extends StreamModel implements IDevice {
+export class Device extends ConnectionModel implements IDevice {
     static endpoint = '/2.0/device';
     name: string;
     product?: string;

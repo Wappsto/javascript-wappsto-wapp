@@ -22,11 +22,23 @@ describe('network', () => {
         },
         name: 'test',
     };
+    const responseOffline = {
+        meta: {
+            type: 'network',
+            version: '2.0',
+            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+            connection: {},
+        },
+        name: 'test',
+    };
     const responseFull = {
         meta: {
             type: 'network',
             version: '2.0',
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+            connection: {
+                online: true,
+            },
         },
         name: 'Network Name',
         device: [
@@ -965,5 +977,23 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+    });
+
+    it('can check if network is online', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [responseFull] })
+            .mockResolvedValueOnce({ data: [response] })
+            .mockResolvedValueOnce({ data: [responseOffline] });
+
+        const network = await createNetwork({ name: 'test name' });
+        const res = network.isOnline();
+        const network2 = await createNetwork({ name: 'test name2' });
+        const res2 = network2.isOnline();
+        const network3 = await createNetwork({ name: 'test name3' });
+        const res3 = network3.isOnline();
+
+        expect(res).toBe(true);
+        expect(res2).toBe(false);
+        expect(res3).toBe(false);
     });
 });

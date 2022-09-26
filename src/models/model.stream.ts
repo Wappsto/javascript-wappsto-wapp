@@ -6,6 +6,7 @@ import { PermissionModel } from './model.permission';
 import { IStreamModel, IStreamEvent, StreamCallback } from '../util/interfaces';
 
 interface IStreamCallbacks {
+    event: StreamCallback[];
     change: StreamCallback[];
     delete: StreamCallback[];
     create: StreamCallback[];
@@ -13,10 +14,19 @@ interface IStreamCallbacks {
 
 export class StreamModel extends PermissionModel implements IStreamModel {
     streamCallback: IStreamCallbacks = {
+        event: [],
         change: [],
         delete: [],
         create: [],
     } as IStreamCallbacks;
+
+    public onEvent(callback: StreamCallback): void {
+        Model.validateMethod('Model', 'onEvent', arguments);
+        openStream.subscribe(this);
+        if (!checkList(this.streamCallback.event, callback)) {
+            this.streamCallback.event.push(callback);
+        }
+    }
 
     public onChange(callback: StreamCallback): void {
         Model.validateMethod('Model', 'onChange', arguments);
@@ -44,6 +54,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
 
     public clearAllCallbacks(): void {
         openStream.unsubscribe(this);
+        this.streamCallback.event = [];
         this.streamCallback.change = [];
         this.streamCallback.delete = [];
         this.streamCallback.create = [];
@@ -63,6 +74,9 @@ export class StreamModel extends PermissionModel implements IStreamModel {
                         cb(this);
                     });
                 }
+                this.streamCallback.event.forEach((cb) => {
+                    cb(this);
+                });
                 break;
             case 'delete':
                 this.streamCallback.delete.forEach((cb) => {

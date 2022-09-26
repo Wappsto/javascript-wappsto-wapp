@@ -1,7 +1,7 @@
 import { isEqual } from 'lodash';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
-import { StreamModel } from './model.stream';
+import { ConnectionModel } from './model.connection';
 import { Model } from './model';
 import { Device } from './device';
 import { Value } from './value';
@@ -25,7 +25,7 @@ export async function createNetwork(params: INetwork): Promise<Network> {
     return network;
 }
 
-export class Network extends StreamModel implements INetwork {
+export class Network extends ConnectionModel implements INetwork {
     static endpoint = '/2.0/network';
     name: string;
     description?: string;

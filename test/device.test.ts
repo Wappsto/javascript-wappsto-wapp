@@ -1288,4 +1288,72 @@ describe('device', () => {
         expect(d.value[0].name).toEqual('Value Name');
         expect(d.value[0].toJSON).toBeDefined();
     });
+
+    it('can listen for connection changes', async () => {
+        const f = jest.fn();
+        const d = new Device();
+        d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
+
+        d.onConnectionChange(f);
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'update',
+            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
+            data: {
+                meta: {
+                    id: '60323236-54bf-499e-a438-608a24619c94',
+                    type: 'value',
+                    connection: {
+                        online: true,
+                    },
+                },
+                name: 'Value Name',
+            },
+        });
+
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'update',
+            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
+            data: {
+                meta: {
+                    id: '60323236-54bf-499e-a438-608a24619c94',
+                    type: 'value',
+                    connection: {
+                        online: false,
+                    },
+                },
+                name: 'Value Name',
+            },
+        });
+
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'update',
+            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
+            data: {
+                meta: {
+                    id: '60323236-54bf-499e-a438-608a24619c94',
+                    type: 'value',
+                    connection: {
+                        online: false,
+                    },
+                },
+                name: 'Value Name',
+            },
+        });
+
+        expect(f).toHaveBeenCalledTimes(2);
+        expect(f).toHaveBeenCalledWith(d, true);
+        expect(f).toHaveBeenLastCalledWith(d, false);
+    });
 });

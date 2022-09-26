@@ -108,7 +108,9 @@ export class PermissionModel extends Model {
                 printDebug(`Requesting new access to users data: ${message}`);
             } else {
                 printDebug(
-                    `Found permission notification - returning old result`
+                    `Found permission notification - returning old result: ${JSON.stringify(
+                        result
+                    )}`
                 );
                 resolve(result);
             }

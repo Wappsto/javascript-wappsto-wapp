@@ -31,6 +31,7 @@ export interface IModelFunc {
     setParent(parent?: IModel): void;
     parse(json: Record<string, any>): boolean;
     parseChildren(json: Record<string, any>): boolean;
+    onEvent(callback: StreamCallback): void;
     onChange(callback: StreamCallback): void;
     onDelete(callback: StreamCallback): void;
     onCreate(callback: StreamCallback): void;
@@ -399,6 +400,14 @@ export interface IStreamFunc {
     waitForBackground(timeout?: number): Promise<boolean>;
 }
 
+export interface IConnectionModel {
+    isOnline(): boolean;
+}
+
+export interface IConnectionModelFunc {
+    onConnectionChange(callback: ConnectionCallback): void;
+}
+
 export type OAuthRequestHandler = (url: string) => void;
 
 export interface IOAuthFunc {
@@ -431,4 +440,8 @@ export type ValueStreamCallback = (
 export type RefreshStreamCallback = (
     value: IValueBase,
     origin: 'user' | 'period'
+) => void;
+export type ConnectionCallback = (
+    value: IConnectionModel,
+    connection: boolean
 ) => void;

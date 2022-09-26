@@ -37,6 +37,7 @@ export const IModelFunc = t.iface([], {
     setParent: t.func('void', t.param('parent', 'IModel', true)),
     parse: t.func('boolean', t.param('json', 'any')),
     parseChildren: t.func('boolean', t.param('json', 'any')),
+    onEvent: t.func('void', t.param('callback', 'StreamCallback')),
     onChange: t.func('void', t.param('callback', 'StreamCallback')),
     onDelete: t.func('void', t.param('callback', 'StreamCallback')),
     onCreate: t.func('void', t.param('callback', 'StreamCallback')),
@@ -525,6 +526,17 @@ export const IStreamFunc = t.iface([], {
     waitForBackground: t.func('boolean', t.param('timeout', 'number', true)),
 });
 
+export const IConnectionModel = t.iface([], {
+    isOnline: t.func('boolean'),
+});
+
+export const IConnectionModelFunc = t.iface([], {
+    onConnectionChange: t.func(
+        'void',
+        t.param('callback', 'ConnectionCallback')
+    ),
+});
+
 export const OAuthRequestHandler = t.func('void', t.param('url', 'string'));
 
 export const IOAuthFunc = t.iface([], {
@@ -575,6 +587,12 @@ export const RefreshStreamCallback = t.func(
     t.param('origin', t.union(t.lit('user'), t.lit('period')))
 );
 
+export const ConnectionCallback = t.func(
+    'void',
+    t.param('value', 'IConnectionModel'),
+    t.param('connection', 'boolean')
+);
+
 const exportedTypeSuite: t.ITypeSuite = {
     ValidationType,
     IConfig,
@@ -618,6 +636,8 @@ const exportedTypeSuite: t.ITypeSuite = {
     IStreamEvent,
     IStreamModel,
     IStreamFunc,
+    IConnectionModel,
+    IConnectionModelFunc,
     OAuthRequestHandler,
     IOAuthFunc,
     IWappStorageFunc,
@@ -628,5 +648,6 @@ const exportedTypeSuite: t.ITypeSuite = {
     StreamCallback,
     ValueStreamCallback,
     RefreshStreamCallback,
+    ConnectionCallback,
 };
 export default exportedTypeSuite;

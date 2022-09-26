@@ -14,13 +14,14 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     -   [Reporting events for value](#reporting-events-for-value)
     -   [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
     -   [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
-    -   [Get retrive object by ID](#get-retrive-object-by-id)
+    -   [Retrive object by ID](#retrive-object-by-id)
     -   [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
     -   [To reload a model from the server](#to-reload-a-model-from-the-server)
     -   [Listing for changes on values](#listing-for-changes-on-values)
     -   [Sending an update event to a device](#sending-an-update-event-to-a-device)
+    -   [Check if a device is online](#check-if-a-device-is-online)
     -   [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
-    -   [Waiting for the background to be ready](#Waiting-for-the-background-to-be-ready)
+    -   [Waiting for the background to be ready](#waiting-for-the-background-to-be-ready)
     -   [Web Hook](#web-hook)
     -   [Wapp Storage](#wapp-storage)
     -   [OAuth](#oauth)
@@ -290,7 +291,7 @@ let values = network.findValueByType('value type');
 let values = device.findValueByType('value type');
 ```
 
-### Get retrive object by ID
+### Retrive object by ID
 
 If you already have access to some objects, you can retrive them directly by their ID.
 
@@ -363,6 +364,30 @@ To send an event to a device to get a new report data.
 await value.refresh();
 ```
 
+### Check if a device is online
+
+It is possible to check if a network or device is online by calling
+`isOnline`.
+
+```javascript
+if (network.isOnline()) {
+	console.log('Network is online');
+}
+if (device.isOnline()) {
+	console.log('Device is online');
+}
+```
+
+You can also register a callback that are called every time the connection status changes.
+
+```javascript
+network.onConnectionChange((network, status) => {
+	console.log(
+		`Network ${network.name} is now ${status ? 'online' : 'offline'}`
+	);
+});
+```
+
 ### Changing the period and delta of a value
 
 To change the delta and period of a value you can call `setDelta` or
@@ -419,8 +444,8 @@ wait for the background to be ready. This can be do using the
 
 ```javascript
 const result = await Wappsto.waitForBackground();
-if(result) {
-    console.log('The background is now ready');
+if (result) {
+	console.log('The background is now ready');
 }
 ```
 

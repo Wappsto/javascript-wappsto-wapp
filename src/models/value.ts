@@ -250,8 +250,8 @@ export class Value extends StreamModel implements IValueBase {
             const state = this.findState(type);
             if (state) {
                 state.onChange(() => {
-                    this.stateCallbacks[state.type].forEach((c) => {
-                        c(this, state.data, state.timestamp);
+                    this.stateCallbacks[state.type].forEach((cb) => {
+                        cb(this, state.data, state.timestamp);
                     });
                 });
             }
