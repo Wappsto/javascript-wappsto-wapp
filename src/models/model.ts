@@ -24,6 +24,10 @@ export class Model implements IModel {
         return this.meta.id || '';
     }
 
+    public getType(): string {
+        return this.meta.type || '';
+    }
+
     public url(): string {
         return `/${this.meta.version}/${this.meta.type}`;
     }

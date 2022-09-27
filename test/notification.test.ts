@@ -38,7 +38,7 @@ describe('notification', () => {
     it('can create a new error notification with data', () => {
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
 
-        notify('message2','error',{test: 'data'});
+        notify('message2', 'error', { test: 'data' });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -51,7 +51,7 @@ describe('notification', () => {
                 custom: {
                     message: 'message2',
                     level: 'error',
-                    data: {test: 'data'},
+                    data: { test: 'data' },
                 },
             },
             {}

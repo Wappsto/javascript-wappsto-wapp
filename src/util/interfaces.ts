@@ -16,6 +16,7 @@ export interface IConfigFunc {
 
 export interface IModel {
     id(): string;
+    getType(): string;
     getUrl(): string;
     removeChild(child: IModel): void;
     setParent(parent?: IModel): void;
@@ -446,3 +447,8 @@ export type ConnectionCallback = (
     value: IConnectionModel,
     connection: boolean
 ) => void;
+
+export type Relationship = string;
+export interface IOntologyFunc {
+    constructor(from: IModel, relationship: Relationship, to: IModel): void;
+}

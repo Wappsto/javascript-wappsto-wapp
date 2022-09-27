@@ -21,6 +21,7 @@ export const IConfigFunc = t.iface([], {
 
 export const IModel = t.iface([], {
     id: t.func('string'),
+    getType: t.func('string'),
     getUrl: t.func('string'),
     removeChild: t.func('void', t.param('child', 'IModel')),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
@@ -599,6 +600,17 @@ export const ConnectionCallback = t.func(
     t.param('connection', 'boolean')
 );
 
+export const Relationship = t.name('string');
+
+export const IOntologyFunc = t.iface([], {
+    constructor: t.func(
+        'void',
+        t.param('from', 'IModel'),
+        t.param('relationship', 'Relationship'),
+        t.param('to', 'IModel')
+    ),
+});
+
 const exportedTypeSuite: t.ITypeSuite = {
     ValidationType,
     IConfig,
@@ -655,5 +667,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     ValueStreamCallback,
     RefreshStreamCallback,
     ConnectionCallback,
+    Relationship,
+    IOntologyFunc,
 };
 export default exportedTypeSuite;
