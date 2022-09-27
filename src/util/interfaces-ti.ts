@@ -403,7 +403,12 @@ export const INotificationBase = t.iface([], {
 });
 
 export const INotificationFunc = t.iface([], {
-    notify: t.func('void', t.param('message', 'string')),
+    notify: t.func(
+        'void',
+        t.param('message', 'string'),
+        t.param('level', 'EventLogLevel', true),
+        t.param('data', 'any', true)
+    ),
 });
 
 export const LogOperation = t.union(

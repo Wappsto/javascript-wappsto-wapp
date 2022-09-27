@@ -129,6 +129,7 @@ export class Stream extends Model {
                     };
                 }
             } catch (e) {
+                /* istanbul ignore next */
                 printDebug(`Failed to open WebSocket: ${e}`);
             }
         });
@@ -356,6 +357,7 @@ export class Stream extends Model {
         } catch (e) {
             /* istanbul ignore next */
             const errorMsg = getErrorMessage(e);
+            /* istanbul ignore next */
             printError(
                 `Failed to send response (${JSON.stringify(
                     msg
@@ -550,6 +552,7 @@ export class Stream extends Model {
         try {
             this.socket?.send(JSON.stringify(hash));
         } catch (e) {
+            /* istanbul ignore next */
             printError(`Failed to send message on WebSocket: ${e}`);
         }
     }

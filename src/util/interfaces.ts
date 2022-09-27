@@ -306,7 +306,7 @@ export interface INotificationBase {
 }
 
 export interface INotificationFunc {
-    notify(message: string): Promise<void>;
+    notify(message: string, level?: EventLogLevel, data?: any): Promise<void>;
 }
 
 export type LogOperation =
