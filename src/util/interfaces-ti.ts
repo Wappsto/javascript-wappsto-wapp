@@ -340,6 +340,7 @@ export const IState = t.iface([], {
 
 export const IStateFunc = t.iface([], {
     constructor: t.func('IState', t.param('type', 'StateType', true)),
+    findById: t.func('IState', t.param('id', 'string')),
 });
 
 export const EventLogLevel = t.union(

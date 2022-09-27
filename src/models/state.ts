@@ -21,6 +21,16 @@ export class State extends StreamModel implements IState {
         return ['data', 'type', 'timestamp'];
     }
 
+    private static validate(name: string, params: any): void {
+        Model.validateMethod('State', name, params);
+    }
+
+    static findById = async (id: string) => {
+        State.validate('findById', [id]);
+        const res = await Model.fetch(`${State.endpoint}/${id}`, { expand: 1 });
+        return State.fromArray(res)[0];
+    };
+
     public static fetch = async () => {
         const params = { expand: 1 };
         const url = State.endpoint;

@@ -160,7 +160,7 @@ export class Value extends StreamModel implements IValueBase {
         try {
             const response = await wappsto.get(
                 this.getUrl(),
-                Model.generateOptions({ expand: 2 })
+                Model.generateOptions({ expand: reloadAll ? 2 : 1 })
             );
             this.parse(response.data);
             await this.loadAllChildren(response.data, false);
@@ -174,15 +174,51 @@ export class Value extends StreamModel implements IValueBase {
         json: Record<string, any> | null,
         reloadAll = false
     ): Promise<void> {
-        for (let i = 0; i < this.state.length; i++) {
-            if (typeof this.state[i] === 'string') {
-                const id: string = this.state[i] as unknown as string;
-                this.state[i] = new State();
-                this.state[i].meta.id = id;
-                this.state[i].parent = this;
-                await this.state[i].reload();
-            } else if (reloadAll) {
-                await this.state[i].reload();
+        if (json?.state) {
+            for (let i = 0; i < json.state.length; i++) {
+                let id: string;
+                let data: Record<string, any> | undefined = undefined;
+                let newState: State | undefined = undefined;
+
+                if (typeof json.state[i] === 'string') {
+                    id = json.state[i] as string;
+                } else {
+                    id = json.state[i].meta.id;
+                    data = json.state[i];
+                }
+
+                const st = this.state.find((st) => st.meta.id === id);
+                if (st) {
+                    if (data) {
+                        st.parse(data);
+                    }
+                } else {
+                    if (data) {
+                        newState = new State();
+                    } else {
+                        newState = await State.findById(id);
+                    }
+                }
+
+                if (newState) {
+                    if (data) {
+                        newState.parse(data);
+                    }
+                    newState.parent = this;
+                    this.state.push(newState);
+                }
+            }
+        } else {
+            for (let i = 0; i < this.state.length; i++) {
+                if (typeof this.state[i] === 'string') {
+                    const id: string = this.state[i] as unknown as string;
+                    this.state[i] = new State();
+                    this.state[i].meta.id = id;
+                    this.state[i].parent = this;
+                    await this.state[i].reload();
+                } else if (reloadAll) {
+                    await this.state[i].reload();
+                }
             }
         }
     }

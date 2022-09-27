@@ -576,7 +576,6 @@ describe('value', () => {
 
     it('can handle a state create', async () => {
         const f = jest.fn();
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
         const v = new Value();
         v.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
         v.onCreate(f);
@@ -598,6 +597,7 @@ describe('value', () => {
             },
         });
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(f).toHaveBeenCalledTimes(1);
         expect(v.state.length).toBe(1);
         expect(v.state[0].type).toEqual('Report');
@@ -756,26 +756,6 @@ describe('value', () => {
     });
 
     it('will not override user delta and period from code', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: {
-                meta: {
-                    id: '35a99d31-b51a-4e20-ad54-a93e8eed21a3',
-                },
-                name: 'device',
-                value: [
-                    {
-                        meta: {
-                            type: 'value',
-                            version: '2.0',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        },
-                        permission: '',
-                        delta: '2',
-                        period: '10',
-                    },
-                ],
-            },
-        });
         mockedAxios.patch.mockResolvedValueOnce({
             data: [
                 {
@@ -1368,6 +1348,158 @@ describe('value', () => {
                 type: 'blob',
             },
             {}
+        );
+    });
+
+    it('can reload the value', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: { name: 'test 1' } });
+
+        const value = new Value();
+        value.name = 'start';
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const state = new State('Control');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        await value.reload();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
+            { params: { expand: 1 } }
+        );
+        expect(value.name).toEqual('test 1');
+
+        mockedAxios.get.mockResolvedValueOnce({ data: { name: 'test 2' } });
+        await value.reload();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+
+        expect(value.name).toEqual('test 2');
+    });
+
+    it('can reload the value and the children', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: {
+                state: [
+                    {
+                        meta: {
+                            id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                        },
+                        data: '1',
+                    },
+                ],
+            },
+        });
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const state = new State('Control');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        await value.reload(true);
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
+            { params: { expand: 2 } }
+        );
+        expect(value.getControlData()).toEqual('1');
+
+        mockedAxios.get.mockResolvedValueOnce({
+            data: {
+                state: [
+                    {
+                        meta: {
+                            id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                        },
+                        data: '2',
+                    },
+                ],
+            },
+        });
+        await value.reload(true);
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(value.getControlData()).toEqual('2');
+    });
+
+    it('can load all children', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: {
+                state: [
+                    {
+                        meta: {
+                            id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                        },
+                        data: '2',
+                    },
+                ],
+            },
+        });
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const state = new State('Control');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        await value.loadAllChildren(null, true);
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            {}
+        );
+    });
+
+    it('can load all children as id', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: {
+                    state: [
+                        {
+                            meta: {
+                                id: '44b3541b-ebe3-4d30-bbe6-8baa77a36e6d',
+                            },
+                            data: '2',
+                        },
+                        '0d362fb9-3c52-4c4c-89aa-19f33cbe2f4f',
+                    ],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: '0d362fb9-3c52-4c4c-89aa-19f33cbe2f4f',
+                    },
+                    data: '3',
+                },
+            });
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const state = new State('Control');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        await value.reload(true);
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
+            {
+                params: {
+                    expand: 2,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/state/0d362fb9-3c52-4c4c-89aa-19f33cbe2f4f',
+            {
+                params: {
+                    expand: 1,
+                },
+            }
         );
     });
 });

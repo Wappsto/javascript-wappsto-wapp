@@ -248,6 +248,7 @@ export interface IState {
 
 export interface IStateFunc {
     constructor(type?: StateType): IState;
+    findById(id: string): IState;
 }
 
 export type EventLogLevel =
