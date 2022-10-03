@@ -1,10 +1,11 @@
 import { Model } from './model';
+import { OntologyModel } from './model.ontology';
 import { Notification } from './notification';
 import { printDebug, printError } from '../util/debug';
 import { openStream } from '../stream_helpers';
 import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 
-export class PermissionModel extends Model {
+export class PermissionModel extends OntologyModel {
     private static getPermissionHash(
         type: string,
         quantity: number | 'all',

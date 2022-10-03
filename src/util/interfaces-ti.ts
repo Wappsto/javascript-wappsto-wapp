@@ -19,34 +19,9 @@ export const IConfigFunc = t.iface([], {
     config: t.func('IConfig', t.param('param', 'IConfig')),
 });
 
-export const IModel = t.iface([], {
-    id: t.func('string'),
-    getType: t.func('string'),
-    getUrl: t.func('string'),
-    removeChild: t.func('void', t.param('child', 'IModel')),
-    setParent: t.func('void', t.param('parent', 'IModel', true)),
-});
-
-export const IModelFunc = t.iface([], {
-    create: t.func('void', t.param('parameters', 'any')),
-    fetch: t.func(
-        t.array('any'),
-        t.param('endpoint', 'string'),
-        t.param('options', 'any', true),
-        t.param('throwError', 'boolean', true)
-    ),
-    setParent: t.func('void', t.param('parent', 'IModel', true)),
-    parse: t.func('boolean', t.param('json', 'any')),
-    parseChildren: t.func('boolean', t.param('json', 'any')),
-    onEvent: t.func('void', t.param('callback', 'StreamCallback')),
-    onChange: t.func('void', t.param('callback', 'StreamCallback')),
-    onDelete: t.func('void', t.param('callback', 'StreamCallback')),
-    onCreate: t.func('void', t.param('callback', 'StreamCallback')),
-});
-
 export const IConnection = t.iface([], {
-    timestamp: 'string',
-    online: 'boolean',
+    timestamp: t.opt('string'),
+    online: t.opt('boolean'),
 });
 
 export const IMeta = t.iface([], {
@@ -72,6 +47,33 @@ export const IMeta = t.iface([], {
     icon: t.opt('string'),
     trace: t.opt('string'),
     historical: t.opt('boolean'),
+});
+
+export const IModel = t.iface([], {
+    meta: t.opt('IMeta'),
+    id: t.func('string'),
+    getType: t.func('string'),
+    getUrl: t.func('string'),
+    reload: t.func('void'),
+    removeChild: t.func('void', t.param('child', 'IModel')),
+    setParent: t.func('void', t.param('parent', 'IModel', true)),
+});
+
+export const IModelFunc = t.iface([], {
+    create: t.func('void', t.param('parameters', 'any')),
+    fetch: t.func(
+        t.array('any'),
+        t.param('endpoint', 'string'),
+        t.param('options', 'any', true),
+        t.param('throwError', 'boolean', true)
+    ),
+    setParent: t.func('void', t.param('parent', 'IModel', true)),
+    parse: t.func('boolean', t.param('json', 'any')),
+    parseChildren: t.func('boolean', t.param('json', 'any')),
+    onEvent: t.func('void', t.param('callback', 'StreamCallback')),
+    onChange: t.func('void', t.param('callback', 'StreamCallback')),
+    onDelete: t.func('void', t.param('callback', 'StreamCallback')),
+    onCreate: t.func('void', t.param('callback', 'StreamCallback')),
 });
 
 export const INetwork = t.iface([], {
@@ -602,12 +604,42 @@ export const ConnectionCallback = t.func(
 
 export const Relationship = t.name('string');
 
+export const IOntology = t.iface([], {
+    relationship: 'Relationship',
+    to: 'IModel',
+    name: t.opt('string'),
+    description: t.opt('string'),
+    data: t.opt('any'),
+});
+
+export const IOntologyModel = t.iface([], {
+    relationship: 'Relationship',
+    models: t.array('IModel'),
+    to: 'any',
+    name: t.opt('string'),
+    description: t.opt('string'),
+    data: t.opt('any'),
+});
+
+export const IOntologyFilter = t.iface([], {
+    relationship: t.opt('Relationship'),
+    to: t.opt('IModel'),
+    name: t.opt('string'),
+});
+
 export const IOntologyFunc = t.iface([], {
-    constructor: t.func(
-        'void',
-        t.param('from', 'IModel'),
-        t.param('relationship', 'Relationship'),
-        t.param('to', 'IModel')
+    constructor: t.func('void'),
+    createEdge: t.func('void', t.param('params', 'IOntology')),
+    removeTo: t.func('boolean', t.param('to', 'IModel')),
+    deleteEdges: t.func('void', t.param('filters', 'IOntologyFilter')),
+    getAllEdges: t.func(
+        t.array('IOntologyModel'),
+        t.param('relationship', 'Relationship', true)
+    ),
+    fetch: t.func(
+        t.array('IOntologyModel'),
+        t.param('endpoint', 'string'),
+        t.param('options', 'any')
     ),
 });
 
@@ -615,10 +647,10 @@ const exportedTypeSuite: t.ITypeSuite = {
     ValidationType,
     IConfig,
     IConfigFunc,
-    IModel,
-    IModelFunc,
     IConnection,
     IMeta,
+    IModel,
+    IModelFunc,
     INetwork,
     INetworkFunc,
     IDevice,
@@ -668,6 +700,9 @@ const exportedTypeSuite: t.ITypeSuite = {
     RefreshStreamCallback,
     ConnectionCallback,
     Relationship,
+    IOntology,
+    IOntologyModel,
+    IOntologyFilter,
     IOntologyFunc,
 };
 export default exportedTypeSuite;

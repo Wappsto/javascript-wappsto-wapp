@@ -29,11 +29,11 @@ export class Model implements IModel {
     }
 
     public url(): string {
-        return `/${this.meta.version}/${this.meta.type}`;
+        return `/${this.meta.version}/${this.getType()}`;
     }
 
     public path(): string {
-        return `/${this.meta.type}/${this.id()}`;
+        return `/${this.getType()}/${this.id()}`;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
@@ -56,14 +56,14 @@ export class Model implements IModel {
     public restore(): void {}
 
     protected validate(name: string, params: any): void {
-        Model.validateMethod(this.meta.type, name, params);
+        Model.validateMethod(this.getType(), name, params);
     }
 
     public getUrl(): string {
         if (this.meta.id) {
             return this.url() + '/' + this.id();
         } else if (this.parent) {
-            return this.parent.getUrl() + '/' + this.meta.type;
+            return this.parent.getUrl() + '/' + this.getType();
         }
         return this.url();
     }
@@ -73,6 +73,7 @@ export class Model implements IModel {
         if (this.parent) {
             let valid = false;
             this.getUrl()
+                .split('?')[0]
                 .split('/')
                 .forEach((u) => {
                     if (isUUID(u)) {
