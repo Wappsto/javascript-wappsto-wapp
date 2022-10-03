@@ -15,8 +15,8 @@ export interface IConfigFunc {
 }
 
 export interface IConnection {
-    timestamp?: string;
-    online?: boolean;
+    timestamp: string;
+    online: boolean;
 }
 
 export interface IMeta {
@@ -46,7 +46,7 @@ export interface IMeta {
 }
 
 export interface IModel {
-    meta?: IMeta;
+    meta: IMeta;
     id(): string;
     getType(): string;
     getUrl(): string;

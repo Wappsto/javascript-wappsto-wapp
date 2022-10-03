@@ -20,8 +20,8 @@ export const IConfigFunc = t.iface([], {
 });
 
 export const IConnection = t.iface([], {
-    timestamp: t.opt('string'),
-    online: t.opt('boolean'),
+    timestamp: 'string',
+    online: 'boolean',
 });
 
 export const IMeta = t.iface([], {
@@ -50,7 +50,7 @@ export const IMeta = t.iface([], {
 });
 
 export const IModel = t.iface([], {
-    meta: t.opt('IMeta'),
+    meta: 'IMeta',
     id: t.func('string'),
     getType: t.func('string'),
     getUrl: t.func('string'),

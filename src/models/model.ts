@@ -219,12 +219,14 @@ export class Model implements IModel {
         parent?: IModel
     ): T[] {
         const obj = plainToClass(this, json);
-        obj.forEach((o: T) => {
-            if (o) {
-                const o2 = o as unknown as IModel;
-                o2.setParent(parent);
-            }
-        });
+        if (parent) {
+            obj.forEach((o: T) => {
+                if (o) {
+                    const o2 = o as unknown as IModel;
+                    o2.setParent(parent);
+                }
+            });
+        }
         return obj;
     }
 
