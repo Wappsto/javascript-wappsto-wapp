@@ -8,6 +8,7 @@ import { _config } from '../util/config';
 import { getTraceId } from '../util/trace';
 import { IMeta, IModel } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
+import { addModel } from '../util/modelStore';
 import { createCheckers } from 'ts-interface-checker';
 
 export class Model implements IModel {
@@ -36,6 +37,10 @@ export class Model implements IModel {
         return `/${this.getType()}/${this.id()}`;
     }
 
+    public getClass(): string {
+        return this.getType();
+    }
+
     /* eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
     public removeChild(_: IModel): void {}
 
@@ -44,7 +49,7 @@ export class Model implements IModel {
         return [];
     }
 
-    public setParent(parent: IModel): void {
+    public setParent(parent?: IModel): void {
         Model.validateMethod('Model', 'setParent', arguments);
         this.parent = parent;
     }
@@ -96,6 +101,7 @@ export class Model implements IModel {
         this.perserve();
         this.parse(response.data);
         this.restore();
+        addModel(this);
     }
 
     public async create(params: Record<string, any> = {}): Promise<void> {
@@ -109,19 +115,21 @@ export class Model implements IModel {
     }
 
     public async update(): Promise<boolean> {
-        try {
-            const response = await wappsto.patch(
-                this.getUrl(),
-                this.toJSON(),
-                Model.generateOptions()
-            );
-            this.parse(response.data);
-            return true;
-        } catch (e) {
-            /* istanbul ignore next */
-            printHttpError(e);
-            return false;
+        if (this.meta.id !== undefined) {
+            try {
+                const response = await wappsto.patch(
+                    this.getUrl(),
+                    this.toJSON(),
+                    Model.generateOptions()
+                );
+                this.parse(response.data);
+                return true;
+            } catch (e) {
+                /* istanbul ignore next */
+                printHttpError(e);
+            }
         }
+        return false;
     }
 
     /* istanbul ignore next */
@@ -132,27 +140,31 @@ export class Model implements IModel {
     ): Promise<void> {}
 
     public async reload(reloadAll = false): Promise<void> {
-        try {
-            const response = await wappsto.get(
-                this.getUrl(),
-                Model.generateOptions()
-            );
-            this.parse(response.data);
-            await this.loadAllChildren(response.data, reloadAll);
-        } catch (e) {
-            /* istanbul ignore next */
-            printHttpError(e);
+        if (this.meta.id !== undefined) {
+            try {
+                const response = await wappsto.get(
+                    this.getUrl(),
+                    Model.generateOptions()
+                );
+                this.parse(response.data);
+                await this.loadAllChildren(response.data, reloadAll);
+            } catch (e) {
+                /* istanbul ignore next */
+                printHttpError(e);
+            }
         }
     }
 
     public async delete(): Promise<void> {
-        try {
-            await wappsto.delete(this.getUrl(), Model.generateOptions());
+        if (this.meta.id !== undefined) {
+            try {
+                await wappsto.delete(this.getUrl(), Model.generateOptions());
+            } catch (e) {
+                /* istanbul ignore next */
+                printHttpError(e);
+            }
             this.parent?.removeChild(this);
             this.meta.id = undefined;
-        } catch (e) {
-            /* istanbul ignore next */
-            printHttpError(e);
         }
     }
 
@@ -219,14 +231,13 @@ export class Model implements IModel {
         parent?: IModel
     ): T[] {
         const obj = plainToClass(this, json);
-        if (parent) {
-            obj.forEach((o: T) => {
-                if (o) {
-                    const o2 = o as unknown as IModel;
-                    o2.setParent(parent);
-                }
-            });
-        }
+        obj.forEach((o: T) => {
+            if (o) {
+                const o2 = o as unknown as IModel;
+                o2.setParent(parent);
+                addModel(o2);
+            }
+        });
         return obj;
     }
 

@@ -38,6 +38,7 @@ describe('network', () => {
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
             connection: {
                 online: true,
+                timestamp: '',
             },
         },
         name: 'Network Name',

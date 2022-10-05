@@ -50,6 +50,7 @@ export interface IModel {
     id(): string;
     getType(): string;
     getUrl(): string;
+    getClass(): string;
     reload(): void;
     removeChild(child: IModel): void;
     setParent(parent?: IModel): void;
@@ -453,33 +454,32 @@ export type ConnectionCallback = (
 export type Relationship = string;
 export interface IOntology {
     relationship: Relationship;
-    to: IModel;
+    to: IOntologyModel;
     name?: string;
     description?: string;
     data?: any;
 }
-export interface IOntologyModel {
+export interface IOntologyModel extends IModel {
+    deleteBranch(): Promise<void>;
+    removeEdge(model: IModel): void;
+}
+export interface IOntologyEdge extends IModel {
     relationship: Relationship;
-    models: IModel[];
+    models: IOntologyModel[];
     to: Record<string, string[]>;
     name?: string;
     description?: string;
     data?: any;
-}
-export interface IOntologyFilter {
-    relationship?: Relationship;
-    to?: IModel;
-    name?: string;
 }
 export interface IOntologyFunc {
     constructor(): void;
     //constructor(from: IModel, relationship: Relationship, to: IModel): void;
     createEdge(params: IOntology): Promise<void>;
     removeTo(to: IModel): boolean;
-    deleteEdges(filters: IOntologyFilter): Promise<void>;
-    getAllEdges(relationship?: Relationship): Promise<IOntologyModel[]>;
+    deleteEdges(): Promise<void>;
+    getAllEdges(): Promise<IOntologyEdge[]>;
     fetch(
         endpoint: string,
         options: Record<string, any>
-    ): Promise<IOntologyModel[]>;
+    ): Promise<IOntologyEdge[]>;
 }

@@ -8,3 +8,5 @@ export { Data } from './data';
 export { Notification } from './notification';
 export { notify } from './notification.send';
 export { OAuth } from './oauth';
+export { Ontology } from './ontology';
+export { OntologyNode, createNode, getAllNodes } from './ontology.node';

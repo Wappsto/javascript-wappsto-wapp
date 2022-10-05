@@ -54,6 +54,7 @@ export const IModel = t.iface([], {
     id: t.func('string'),
     getType: t.func('string'),
     getUrl: t.func('string'),
+    getClass: t.func('string'),
     reload: t.func('void'),
     removeChild: t.func('void', t.param('child', 'IModel')),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
@@ -606,38 +607,34 @@ export const Relationship = t.name('string');
 
 export const IOntology = t.iface([], {
     relationship: 'Relationship',
-    to: 'IModel',
+    to: 'IOntologyModel',
     name: t.opt('string'),
     description: t.opt('string'),
     data: t.opt('any'),
 });
 
-export const IOntologyModel = t.iface([], {
+export const IOntologyModel = t.iface(['IModel'], {
+    deleteBranch: t.func('void'),
+    removeEdge: t.func('void', t.param('model', 'IModel')),
+});
+
+export const IOntologyEdge = t.iface(['IModel'], {
     relationship: 'Relationship',
-    models: t.array('IModel'),
+    models: t.array('IOntologyModel'),
     to: 'any',
     name: t.opt('string'),
     description: t.opt('string'),
     data: t.opt('any'),
 });
 
-export const IOntologyFilter = t.iface([], {
-    relationship: t.opt('Relationship'),
-    to: t.opt('IModel'),
-    name: t.opt('string'),
-});
-
 export const IOntologyFunc = t.iface([], {
     constructor: t.func('void'),
     createEdge: t.func('void', t.param('params', 'IOntology')),
     removeTo: t.func('boolean', t.param('to', 'IModel')),
-    deleteEdges: t.func('void', t.param('filters', 'IOntologyFilter')),
-    getAllEdges: t.func(
-        t.array('IOntologyModel'),
-        t.param('relationship', 'Relationship', true)
-    ),
+    deleteEdges: t.func('void'),
+    getAllEdges: t.func(t.array('IOntologyEdge')),
     fetch: t.func(
-        t.array('IOntologyModel'),
+        t.array('IOntologyEdge'),
         t.param('endpoint', 'string'),
         t.param('options', 'any')
     ),
@@ -702,7 +699,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     Relationship,
     IOntology,
     IOntologyModel,
-    IOntologyFilter,
+    IOntologyEdge,
     IOntologyFunc,
 };
 export default exportedTypeSuite;
