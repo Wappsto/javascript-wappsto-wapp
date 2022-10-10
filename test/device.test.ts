@@ -16,7 +16,7 @@ describe('device', () => {
     const response = {
         meta: {
             type: 'device',
-            version: '2.0',
+            version: '2.1',
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
         },
         name: 'test',
@@ -26,7 +26,7 @@ describe('device', () => {
         {
             meta: {
                 type: 'device',
-                version: '2.0',
+                version: '2.1',
                 id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
             },
             name: 'test',
@@ -34,7 +34,7 @@ describe('device', () => {
         {
             meta: {
                 type: 'device',
-                version: '2.0',
+                version: '2.1',
                 id: '7c1611da-46e2-4f0d-85fa-1b010561b35d',
             },
             name: 'test',
@@ -68,11 +68,11 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device',
+            '/2.1/device',
             {
                 meta: {
                     type: 'device',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'test',
             },
@@ -98,7 +98,7 @@ describe('device', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/device/' + device.meta.id,
+            '/2.1/device/' + device.meta.id,
             response,
             {}
         );
@@ -112,7 +112,7 @@ describe('device', () => {
         const devices = await Device.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: { expand: 3 },
         });
         expect(devices[0]?.name).toEqual('test');
@@ -126,7 +126,7 @@ describe('device', () => {
         config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: { expand: 3, verbose: true },
         });
         expect(devices[0]?.name).toEqual('test');
@@ -144,7 +144,7 @@ describe('device', () => {
         expect(device.toJSON).toBeDefined();
 
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/device/b62e285a-5188-4304-85a0-3982dcb575bc',
+            '/2.1/device/b62e285a-5188-4304-85a0-3982dcb575bc',
             {
                 params: { expand: 3 },
             }
@@ -176,7 +176,7 @@ describe('device', () => {
         const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: {
                 expand: 3,
                 quantity: 1,
@@ -186,7 +186,7 @@ describe('device', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: {
                 expand: 3,
                 id: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
@@ -209,7 +209,7 @@ describe('device', () => {
         const devices = await Device.findByProduct('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: {
                 expand: 3,
                 this_product: '=test',
@@ -287,7 +287,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'value',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
@@ -298,7 +298,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'state',
-                            version: '2.0',
+                            version: '2.1',
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
@@ -309,7 +309,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'state',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
                         },
                     },
@@ -322,11 +322,11 @@ describe('device', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: '',
                 type: 'Report',
@@ -334,11 +334,11 @@ describe('device', () => {
             {}
         );
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: '',
                 type: 'Control',
@@ -363,11 +363,11 @@ describe('device', () => {
         templateHelperDone();
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'name',
                 permission: 'rw',
@@ -407,11 +407,11 @@ describe('device', () => {
         templateHelperDone();
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'name',
                 permission: 'rw',
@@ -444,11 +444,11 @@ describe('device', () => {
         templateHelperDone();
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'name',
                 permission: 'rw',
@@ -485,11 +485,11 @@ describe('device', () => {
         templateHelperDone();
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'name',
                 permission: 'rw',
@@ -529,11 +529,11 @@ describe('device', () => {
         templateHelperDone();
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                     historical: false,
                 },
                 name: 'name',
@@ -567,7 +567,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'value',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                         permission: '',
@@ -579,7 +579,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'state',
-                            version: '2.0',
+                            version: '2.1',
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
@@ -590,7 +590,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'state',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
                         },
                     },
@@ -627,13 +627,13 @@ describe('device', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/35a99d31-b51a-4e20-ad54-a93e8eed21a3/value',
+            '/2.1/device/35a99d31-b51a-4e20-ad54-a93e8eed21a3/value',
             expect.objectContaining({
                 permission: 'rw',
                 type: 'type',
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                     historical: false,
                 },
                 name: 'Value Name',
@@ -649,11 +649,11 @@ describe('device', () => {
             {}
         );
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: '',
                 type: 'Report',
@@ -661,11 +661,11 @@ describe('device', () => {
             {}
         );
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: '',
                 type: 'Control',
@@ -681,7 +681,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'value',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
@@ -692,7 +692,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'state',
-                            version: '2.0',
+                            version: '2.1',
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
@@ -703,7 +703,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'state',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
                         },
                     },
@@ -724,14 +724,14 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/35a99d31-b51a-4e20-ad54-a93e8eed21a3/value',
+            '/2.1/device/35a99d31-b51a-4e20-ad54-a93e8eed21a3/value',
             expect.objectContaining({
                 permission: 'wr',
                 type: 'type',
                 period: '0',
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'Value Name',
                 delta: 'delta',
@@ -743,11 +743,11 @@ describe('device', () => {
             {}
         );
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: '',
                 type: 'Report',
@@ -755,11 +755,11 @@ describe('device', () => {
             {}
         );
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: '',
                 type: 'Control',
@@ -783,7 +783,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'value',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
@@ -794,7 +794,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'state',
-                            version: '2.0',
+                            version: '2.1',
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
@@ -815,14 +815,14 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/35a99d31-b51a-4e20-ad54-a93e8eed21a3/value',
+            '/2.1/device/35a99d31-b51a-4e20-ad54-a93e8eed21a3/value',
             expect.objectContaining({
                 permission: 'r',
                 type: 'type',
                 period: '0',
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'Value Name',
                 delta: 'delta',
@@ -834,11 +834,11 @@ describe('device', () => {
             {}
         );
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: '',
                 type: 'Report',
@@ -862,7 +862,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'value',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
@@ -873,7 +873,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'state',
-                            version: '2.0',
+                            version: '2.1',
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
@@ -895,14 +895,14 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/device/35a99d31-b51a-4e20-ad54-a93e8eed21a3/value',
+            '/2.1/device/35a99d31-b51a-4e20-ad54-a93e8eed21a3/value',
             expect.objectContaining({
                 permission: 'w',
                 type: 'type',
                 period: '0',
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'Value Name',
                 delta: 'delta',
@@ -914,11 +914,11 @@ describe('device', () => {
             {}
         );
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: '',
                 type: 'Control',
@@ -944,7 +944,7 @@ describe('device', () => {
                     period: '0',
                     meta: {
                         type: 'value',
-                        version: '2.0',
+                        version: '2.1',
                         id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     },
                     name: 'Value Name',
@@ -998,7 +998,7 @@ describe('device', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             expect.objectContaining({
                 permission: 'rw',
                 type: 'type',
@@ -1006,7 +1006,7 @@ describe('device', () => {
                 meta: {
                     id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'Value Name',
                 delta: 'delta',
@@ -1031,7 +1031,7 @@ describe('device', () => {
                     period: '0',
                     meta: {
                         type: 'value',
-                        version: '2.0',
+                        version: '2.1',
                         id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     },
                     name: 'Value Name',
@@ -1097,14 +1097,14 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             expect.objectContaining({
                 permission: 'rw',
                 type: 'type',
                 period: '0',
                 meta: {
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                     id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                 },
                 name: 'Value Name',
@@ -1128,7 +1128,7 @@ describe('device', () => {
         const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: {
                 expand: 3,
                 quantity: 'all',
@@ -1155,7 +1155,7 @@ describe('device', () => {
         const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: {
                 expand: 3,
                 quantity: 'all',
@@ -1182,7 +1182,7 @@ describe('device', () => {
         const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/device', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: {
                 expand: 3,
                 quantity: 1,
@@ -1208,7 +1208,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'value',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
                         },
                         name: 'Test Value',
@@ -1222,7 +1222,7 @@ describe('device', () => {
                     {
                         meta: {
                             type: 'value',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
                         },
                         name: 'Test Value',

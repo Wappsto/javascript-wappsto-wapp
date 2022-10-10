@@ -32,7 +32,7 @@ import {
 } from '../util/interfaces';
 
 export class Value extends StreamModel implements IValueBase {
-    static endpoint = '/2.0/value';
+    static endpoint = '/2.1/value';
 
     name: string;
     description?: string;

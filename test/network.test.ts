@@ -17,7 +17,7 @@ describe('network', () => {
     const response = {
         meta: {
             type: 'network',
-            version: '2.0',
+            version: '2.1',
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
         },
         name: 'test',
@@ -25,7 +25,7 @@ describe('network', () => {
     const responseOffline = {
         meta: {
             type: 'network',
-            version: '2.0',
+            version: '2.1',
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
             connection: {},
         },
@@ -34,7 +34,7 @@ describe('network', () => {
     const responseFull = {
         meta: {
             type: 'network',
-            version: '2.0',
+            version: '2.1',
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
             connection: {
                 online: true,
@@ -46,7 +46,7 @@ describe('network', () => {
             {
                 meta: {
                     id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
-                    version: '2.0',
+                    version: '2.1',
                     type: 'device',
                 },
                 name: 'Device Name',
@@ -55,7 +55,7 @@ describe('network', () => {
                     {
                         meta: {
                             id: 'c5a73d64-b398-434e-a236-df15342339d5',
-                            version: '2.0',
+                            version: '2.1',
                             type: 'value',
                         },
                         name: 'Value Name',
@@ -66,7 +66,7 @@ describe('network', () => {
                             {
                                 meta: {
                                     type: 'eventlog',
-                                    version: '2.0',
+                                    version: '2.1',
                                     id: '8e24c08f-2a99-4cae-9992-2da76326de8c',
                                 },
                                 message: 'test',
@@ -77,7 +77,7 @@ describe('network', () => {
                             {
                                 meta: {
                                     id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
-                                    version: '2.0',
+                                    version: '2.1',
                                     type: 'state',
                                 },
                                 type: 'Control',
@@ -94,7 +94,7 @@ describe('network', () => {
         {
             meta: {
                 type: 'network',
-                version: '2.0',
+                version: '2.1',
                 id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
             },
             name: 'test',
@@ -102,7 +102,7 @@ describe('network', () => {
         {
             meta: {
                 type: 'network',
-                version: '2.0',
+                version: '2.1',
                 id: 'aa9da00a-b5e2-4651-a111-92cb0899ee7c',
             },
             name: 'test',
@@ -111,7 +111,7 @@ describe('network', () => {
     const responseHalf = {
         meta: {
             type: 'network',
-            version: '2.0',
+            version: '2.1',
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
         },
         name: 'Network Name',
@@ -184,11 +184,11 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/network',
+            '/2.1/network',
             {
                 meta: {
                     type: 'network',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'test',
             },
@@ -216,7 +216,7 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/network/' + network.meta.id,
+            '/2.1/network/' + network.meta.id,
             response,
             {}
         );
@@ -275,17 +275,17 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: { expand: 4, 'this_name=': 'Wapp Network' },
         });
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/value/c5a73d64-b398-434e-a236-df15342339d5',
+            '/2.1/value/c5a73d64-b398-434e-a236-df15342339d5',
             {
                 delta: '0',
                 meta: {
                     id: 'c5a73d64-b398-434e-a236-df15342339d5',
                     type: 'value',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'Value Name',
                 number: { max: 100, min: 0, step: 1, unit: 'c' },
@@ -296,10 +296,10 @@ describe('network', () => {
             {}
         );
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/value/c5a73d64-b398-434e-a236-df15342339d5/state',
+            '/2.1/value/c5a73d64-b398-434e-a236-df15342339d5/state',
             expect.objectContaining({
                 data: '',
-                meta: { type: 'state', version: '2.0' },
+                meta: { type: 'state', version: '2.1' },
                 type: 'Report',
             }),
             {}
@@ -339,7 +339,7 @@ describe('network', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: { expand: 4, verbose: true },
         });
         expect(networks[0]?.name).toEqual('test');
@@ -383,7 +383,7 @@ describe('network', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
                 expand: 4,
                 quantity: 1,
@@ -453,7 +453,7 @@ describe('network', () => {
         expect(network.toJSON).toBeDefined();
 
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/network/b62e285a-5188-4304-85a0-3982dcb575bc',
+            '/2.1/network/b62e285a-5188-4304-85a0-3982dcb575bc',
             {
                 params: { expand: 4 },
             }
@@ -545,14 +545,14 @@ describe('network', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/network/0a4de380-1c16-4b5c-a081-912b931ff891/device',
+            '/2.1/network/0a4de380-1c16-4b5c-a081-912b931ff891/device',
             {
                 communication: 'communication',
                 description: 'description',
                 manufacturer: 'manufacturer',
                 meta: {
                     type: 'device',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 name: 'Device Name',
                 product: 'product',
@@ -582,7 +582,7 @@ describe('network', () => {
                 {
                     meta: {
                         type: 'network',
-                        version: '2.0',
+                        version: '2.1',
                         id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     },
                     name: 'Network Name',
@@ -598,7 +598,7 @@ describe('network', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
                 expand: 4,
                 'this_name=': 'Network Name',
@@ -618,7 +618,7 @@ describe('network', () => {
                     manufacturer: 'manufacturer',
                     meta: {
                         type: 'device',
-                        version: '2.0',
+                        version: '2.1',
                         id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     },
                     name: 'Device Name',
@@ -650,14 +650,14 @@ describe('network', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/device/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            '/2.1/device/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             {
                 communication: 'communication',
                 description: 'description',
                 manufacturer: 'manufacturer',
                 meta: {
                     type: 'device',
-                    version: '2.0',
+                    version: '2.1',
                     id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                 },
                 name: 'Device Name',
@@ -709,7 +709,7 @@ describe('network', () => {
         const network = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
                 expand: 4,
                 quantity: 'all',
@@ -773,7 +773,7 @@ describe('network', () => {
         const network = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
                 expand: 4,
                 quantity: 1,
@@ -797,7 +797,7 @@ describe('network', () => {
 
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
-            '/2.0/network/f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02',
+            '/2.1/network/f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02',
             {}
         );
     });
@@ -873,7 +873,7 @@ describe('network', () => {
                     {
                         meta: {
                             type: 'device',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
                         },
                         name: 'Device Test',
@@ -885,7 +885,7 @@ describe('network', () => {
                     {
                         meta: {
                             type: 'device',
-                            version: '2.0',
+                            version: '2.1',
                             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
                         },
                         name: 'Device Test',
@@ -956,7 +956,7 @@ describe('network', () => {
 
         const network = await createNetwork({ name: 'Network Name' });
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: { expand: 4, 'this_name=': 'Network Name' },
         });
 
@@ -966,7 +966,7 @@ describe('network', () => {
         await network.reload(true);
 
         expect(mockedAxios.get).toHaveBeenLastCalledWith(
-            '/2.0/value/c5a73d64-b398-434e-a236-df15342339d5',
+            '/2.1/value/c5a73d64-b398-434e-a236-df15342339d5',
             {
                 params: {
                     expand: 2,

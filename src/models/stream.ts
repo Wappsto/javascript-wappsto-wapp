@@ -301,7 +301,7 @@ export class Stream extends Model {
                 type: type,
                 message: msg,
             };
-            const response = await wappsto.post('/2.0/extsync', data);
+            const response = await wappsto.post('/2.1/extsync', data);
             result = response.data;
         } catch (e) {
             /* istanbul ignore next */
@@ -320,7 +320,7 @@ export class Stream extends Model {
 
         let result = {};
         try {
-            const response = await wappsto.post('/2.0/extsync/request', msg);
+            const response = await wappsto.post('/2.1/extsync/request', msg);
             result = response.data;
         } catch (e: any) {
             /* 1istanbul ignore next */
@@ -351,7 +351,7 @@ export class Stream extends Model {
                 body: msg,
             };
             await wappsto.patch(
-                `/2.0/extsync/response/${event?.meta?.id}`,
+                `/2.1/extsync/response/${event?.meta?.id}`,
                 data
             );
         } catch (e) {

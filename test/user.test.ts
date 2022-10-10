@@ -8,7 +8,7 @@ describe('user', () => {
     const response = {
         meta: {
             type: 'user',
-            version: '2.0',
+            version: '2.1',
             id: '6e1698b9-717f-4e85-b3d0-5dff0fcb79da',
         },
         first_name: 'first',

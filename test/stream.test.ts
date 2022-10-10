@@ -45,7 +45,7 @@ describe('stream', () => {
         await server.connected;
 
         server.send({
-            jsonrpc: '2.0',
+            jsonrpc: '2.1',
             result: {
                 value: 'hello',
             },
@@ -103,7 +103,7 @@ describe('stream', () => {
         await server.connected;
 
         server.send({
-            jsonrpc: '2.0',
+            jsonrpc: '2.1',
             error: 'stream error',
         });
 
@@ -425,7 +425,7 @@ describe('stream', () => {
         expect(fun).toHaveBeenCalledTimes(1);
 
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/extsync/response/1ae385e6-849c-44ac-9731-b360c1e774d4',
+            '/2.1/extsync/response/1ae385e6-849c-44ac-9731-b360c1e774d4',
             {
                 body: true,
                 code: 200,
@@ -504,27 +504,27 @@ describe('stream', () => {
 
         expect(responseForground).toBe(res);
         expect(responseBackground).toBe(res);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
             message: {
                 test: 'test message',
             },
             type: 'background',
         });
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
             message: {
                 test: 'test message',
             },
             type: 'foreground',
         });
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/extsync/response/6718413a-4d78-4110-af0d-9291ab76196e',
+            '/2.1/extsync/response/6718413a-4d78-4110-af0d-9291ab76196e',
             {
                 body: true,
                 code: 200,
             }
         );
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/extsync/response/632bfbc6-64f6-4bff-9121-5b656c6e5ea1',
+            '/2.1/extsync/response/632bfbc6-64f6-4bff-9121-5b656c6e5ea1',
             {
                 body: true,
                 code: 200,
@@ -601,21 +601,21 @@ describe('stream', () => {
         expect(funFore).toHaveBeenCalledTimes(1);
         expect(funWeb).toHaveBeenCalledWith('test');
         expect(funFore).toHaveBeenCalledWith({ test: 'foreground' });
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
             message: {
                 test: 'test message',
             },
             type: 'background',
         });
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/extsync/response/754526f7-7d6d-4cba-9ad9-9109a555edd4',
+            '/2.1/extsync/response/754526f7-7d6d-4cba-9ad9-9109a555edd4',
             {
                 body: true,
                 code: 200,
             }
         );
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/extsync/response/9d9dc628-8542-4953-8d89-791978681b98',
+            '/2.1/extsync/response/9d9dc628-8542-4953-8d89-791978681b98',
             {
                 body: true,
                 code: 200,
@@ -678,7 +678,7 @@ describe('stream', () => {
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/extsync/response/foreground',
+            '/2.1/extsync/response/foreground',
             {
                 body: {
                     error: 'msg.berror is not a function',
@@ -705,7 +705,7 @@ describe('stream', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.0/extsync/response/foreground',
+            '/2.1/extsync/response/foreground',
             {
                 body: {
                     error: 'msg.berror is not a function',
@@ -805,7 +805,7 @@ describe('stream', () => {
 
         const res = await sendToForeground('test');
 
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync/request', {
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
             message: 'test',
             type: 'background',
         });
@@ -930,13 +930,13 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync', {
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
             message: {
                 test: 'test signal',
             },
             type: 'background',
         });
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync', {
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
             message: {
                 test: 'test signal',
             },
@@ -961,18 +961,18 @@ describe('stream', () => {
             meta: {
                 id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
                 type: 'eventstream',
-                version: '2.0',
+                version: '2.1',
             },
             event: 'extsync',
             meta_object: {
                 type: 'extsync',
-                version: '2.0',
+                version: '2.1',
                 id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
             },
             data: {
                 meta: {
                     type: 'extsync',
-                    version: '2.0',
+                    version: '2.1',
                     id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
                 },
                 request: false,
@@ -986,18 +986,18 @@ describe('stream', () => {
             meta: {
                 id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
                 type: 'eventstream',
-                version: '2.0',
+                version: '2.1',
             },
             event: 'extsync',
             meta_object: {
                 type: 'extsync',
-                version: '2.0',
+                version: '2.1',
                 id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
             },
             data: {
                 meta: {
                     type: 'extsync',
-                    version: '2.0',
+                    version: '2.1',
                     id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
                 },
                 request: false,

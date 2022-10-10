@@ -8,7 +8,7 @@ describe('state', () => {
     const response = {
         meta: {
             type: 'state',
-            version: '2.0',
+            version: '2.1',
             id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
         },
         type: 'Report',
@@ -28,7 +28,7 @@ describe('state', () => {
         const state = new State('Report');
 
         expect(state.type).toEqual('Report');
-        expect(state.url()).toEqual('/2.0/state');
+        expect(state.url()).toEqual('/2.1/state');
     });
 
     it('can create a state on wappsto', async () => {
@@ -39,11 +39,11 @@ describe('state', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/state',
+            '/2.1/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 type: 'Report',
                 data: '',
@@ -66,7 +66,7 @@ describe('state', () => {
 
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/state/' + state.meta.id,
+            '/2.1/state/' + state.meta.id,
             response,
             {}
         );
@@ -80,7 +80,7 @@ describe('state', () => {
         const states = await State.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
             params: { expand: 1 },
         });
         expect(states[0]?.type).toEqual('Report');
@@ -94,7 +94,7 @@ describe('state', () => {
         config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/state', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
             params: { expand: 1, verbose: true },
         });
         expect(states[0]?.type).toEqual('Report');

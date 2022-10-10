@@ -4,7 +4,7 @@ import { printDebug } from '../util/debug';
 import { OAuthRequestHandler } from '../util/interfaces';
 
 export class OAuth extends Model {
-    static endpoint = '/2.0/oauth_connect';
+    static endpoint = '/2.1/oauth_connect';
 
     name: string;
     api?: string;
@@ -14,7 +14,7 @@ export class OAuth extends Model {
     params?: Record<string, any>;
 
     constructor(name: string) {
-        super('2.0', 'oauth');
+        super('2.1', 'oauth');
         Model.validateMethod('OAuth', 'constructor', arguments);
         this.name = name;
     }
@@ -24,7 +24,7 @@ export class OAuth extends Model {
         return new Promise<Record<string, any>>(async (resolve, reject) => {
             try {
                 const data = await Model.fetch(
-                    `/2.0/oauth_connect/${this.name}`,
+                    `/2.1/oauth_connect/${this.name}`,
                     {},
                     true
                 );

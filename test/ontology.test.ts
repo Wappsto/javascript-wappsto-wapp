@@ -114,7 +114,7 @@ describe('Ontology', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
+            '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
             {
                 meta: {
                     type: 'ontology',
@@ -131,7 +131,7 @@ describe('Ontology', () => {
             {}
         );
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
+            '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
             {
                 meta: {
                     type: 'ontology',
@@ -158,7 +158,7 @@ describe('Ontology', () => {
                 meta: {
                     id: 'dd4e6da3-f70f-403b-8ba0-79b1c14028d8',
                     type: 'data',
-                    version: '2.0',
+                    version: '2.1',
                 },
             },
         });
@@ -170,7 +170,7 @@ describe('Ontology', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/data',
+            '/2.1/data',
             {
                 data: {},
                 data_meta: {
@@ -178,7 +178,7 @@ describe('Ontology', () => {
                     type: 'ontology_node',
                     version: 1,
                 },
-                meta: { type: 'data', version: '2.0' },
+                meta: { type: 'data', version: '2.1' },
             },
             {}
         );
@@ -265,7 +265,7 @@ describe('Ontology', () => {
                 data: {
                     meta: {
                         type: 'state',
-                        version: '2.0',
+                        version: '2.1',
                         id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
                     },
                     type: 'Report',
@@ -277,7 +277,7 @@ describe('Ontology', () => {
                 data: {
                     meta: {
                         type: 'network',
-                        version: '2.0',
+                        version: '2.1',
                         id: 'f11fa9d7-3b2b-474e-95e4-f086c5606154',
                     },
                 },
@@ -286,7 +286,7 @@ describe('Ontology', () => {
                 data: {
                     meta: {
                         type: 'device',
-                        version: '2.0',
+                        version: '2.1',
                         id: '8a3f67a6-751c-483b-a2ef-ba890948e6e4',
                     },
                 },
@@ -295,7 +295,7 @@ describe('Ontology', () => {
                 data: {
                     meta: {
                         type: 'value',
-                        version: '2.0',
+                        version: '2.1',
                         id: '75d7d198-7f91-45e2-9b79-754073d7e758',
                     },
                 },
@@ -305,7 +305,7 @@ describe('Ontology', () => {
                 data: {
                     meta: {
                         type: 'data',
-                        version: '2.0',
+                        version: '2.1',
                         id: '97e0dd7c-8e22-4263-82f9-d26102643465',
                     },
                 },
@@ -321,19 +321,19 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(6);
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
+            '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
             {}
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/network/f11fa9d7-3b2b-474e-95e4-f086c5606154',
+            '/2.1/network/f11fa9d7-3b2b-474e-95e4-f086c5606154',
             {}
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/device/8a3f67a6-751c-483b-a2ef-ba890948e6e4',
+            '/2.1/device/8a3f67a6-751c-483b-a2ef-ba890948e6e4',
             {}
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/value/75d7d198-7f91-45e2-9b79-754073d7e758',
+            '/2.1/value/75d7d198-7f91-45e2-9b79-754073d7e758',
             {
                 params: {
                     expand: 1,
@@ -341,11 +341,11 @@ describe('Ontology', () => {
             }
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/state/311b2c2d-54de-4e00-a850-f6712c4622bd',
+            '/2.1/state/311b2c2d-54de-4e00-a850-f6712c4622bd',
             {}
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/data/97e0dd7c-8e22-4263-82f9-d26102643465',
+            '/2.1/data/97e0dd7c-8e22-4263-82f9-d26102643465',
             {}
         );
 
@@ -583,11 +583,11 @@ describe('Ontology', () => {
         await state1.createEdge({ relationship: 'look', to: state2 });
 
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
+            '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
             {}
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/state/f0a9683f-da8b-4fe6-9925-2e6768ddedeb/ontology',
+            '/2.1/state/f0a9683f-da8b-4fe6-9925-2e6768ddedeb/ontology',
             {}
         );
 
@@ -687,7 +687,7 @@ describe('Ontology', () => {
         expect(mockedAxios.delete).toHaveBeenCalledTimes(2);
 
         expect(mockedAxios.delete).toHaveBeenCalledWith(
-            '/2.0/data/45332794-e710-4702-90d6-632fe461d3e5',
+            '/2.1/data/45332794-e710-4702-90d6-632fe461d3e5',
             {}
         );
         expect(mockedAxios.delete).toHaveBeenCalledWith(

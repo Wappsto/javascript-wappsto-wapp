@@ -20,7 +20,7 @@ function sendExtsync(key: string, ...args: any[]): any {
     });
 
     return wappsto
-        .post('/2.0/extsync/wappsto/editor/console', data)
+        .post('/2.1/extsync/wappsto/editor/console', data)
         ?.catch((e: any) => {
             /* istanbul ignore next */
             printDebug(e);

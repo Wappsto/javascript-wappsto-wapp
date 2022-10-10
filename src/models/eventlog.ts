@@ -2,7 +2,7 @@ import { Model } from './model';
 import { IEventLog, EventLogLevel } from '../util/interfaces';
 
 export class EventLog extends Model implements IEventLog {
-    static endpoint = '/2.0/eventlog';
+    static endpoint = '/2.1/eventlog';
     message = '';
     level: EventLogLevel = 'info';
     info?: Record<string, any>;

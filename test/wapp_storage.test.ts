@@ -31,7 +31,7 @@ describe('WappStorage', () => {
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/data',
+            '/2.1/data',
             {
                 data_meta: {
                     id: 'wapp_storage_test',
@@ -40,13 +40,13 @@ describe('WappStorage', () => {
                 },
                 meta: {
                     type: 'data',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: {},
             },
             {}
         );
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/data', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/data', {
             params: {
                 'this_data_meta.id': 'wapp_storage_test',
                 expand: 1,
@@ -61,7 +61,7 @@ describe('WappStorage', () => {
                     meta: {
                         id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                         type: 'data',
-                        version: '2.0',
+                        version: '2.1',
                     },
                     data_meta: {
                         id: 'wapp_storage_default',
@@ -93,7 +93,7 @@ describe('WappStorage', () => {
             event: 'update',
             meta_object: {
                 type: 'data',
-                version: '2.0',
+                version: '2.1',
                 id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             },
             data: {
@@ -108,7 +108,7 @@ describe('WappStorage', () => {
                 meta: {
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                     type: 'data',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 path: '/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                 timestamp: '2022-06-08T14:49:35.349971Z',
@@ -127,7 +127,7 @@ describe('WappStorage', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/data', {
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/data', {
             params: {
                 'this_data_meta.id': 'wapp_storage_default',
                 expand: 1,
@@ -135,7 +135,7 @@ describe('WappStorage', () => {
         });
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+            '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
                     id: 'wapp_storage_default',
@@ -145,7 +145,7 @@ describe('WappStorage', () => {
                 meta: {
                     type: 'data',
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: {
                     key: 'item',
@@ -216,7 +216,7 @@ describe('WappStorage', () => {
                 meta: {
                     type: 'data',
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: {
                     new: 'data',
@@ -232,7 +232,7 @@ describe('WappStorage', () => {
         const res1 = c.get('new');
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+            '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
                     id: 'wapp_storage_remove',
@@ -242,7 +242,7 @@ describe('WappStorage', () => {
                 meta: {
                     type: 'data',
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: {
                     new: 'data',
@@ -263,7 +263,7 @@ describe('WappStorage', () => {
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+            '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
                     id: 'wapp_storage_remove',
@@ -273,7 +273,7 @@ describe('WappStorage', () => {
                 meta: {
                     type: 'data',
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: {},
             },
@@ -291,7 +291,7 @@ describe('WappStorage', () => {
                 meta: {
                     type: 'data',
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 old: 'data',
                 data: 'test',
@@ -313,7 +313,7 @@ describe('WappStorage', () => {
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+            '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 old: null,
                 data: { old: 'data', data: 'test' },
@@ -321,7 +321,7 @@ describe('WappStorage', () => {
                 meta: {
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                     type: 'data',
-                    version: '2.0',
+                    version: '2.1',
                 },
             },
             {}
@@ -339,7 +339,7 @@ describe('WappStorage', () => {
                 meta: {
                     type: 'data',
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                    version: '2.0',
+                    version: '2.1',
                 },
                 data: {
                     key1: 'data1',

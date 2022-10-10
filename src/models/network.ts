@@ -26,7 +26,7 @@ export async function createNetwork(params: INetwork): Promise<Network> {
 }
 
 export class Network extends ConnectionModel implements INetwork {
-    static endpoint = '/2.0/network';
+    static endpoint = '/2.1/network';
     name: string;
     description?: string;
     @Type(() => Device)

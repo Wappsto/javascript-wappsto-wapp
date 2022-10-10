@@ -18,7 +18,7 @@ import {
 } from '../util/interfaces';
 
 export class Device extends ConnectionModel implements IDevice {
-    static endpoint = '/2.0/device';
+    static endpoint = '/2.1/device';
     name: string;
     product?: string;
     serial?: string;

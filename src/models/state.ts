@@ -3,7 +3,7 @@ import { StreamModel } from './model.stream';
 import { IState, StateStatus } from '../util/interfaces';
 
 export class State extends StreamModel implements IState {
-    static endpoint = '/2.0/state';
+    static endpoint = '/2.1/state';
 
     data = '';
     status?: StateStatus;

@@ -9,13 +9,13 @@ interface IDataMeta {
 }
 
 export class Data extends StreamModel {
-    static endpoint = '/2.0/data';
+    static endpoint = '/2.1/data';
     data_meta: IDataMeta = {};
     data: any = {};
     oldKeys: Array<string> = [];
 
     constructor(id?: string, type?: string) {
-        super('data', '2.0');
+        super('data', '2.1');
 
         this.data_meta.type = type;
         this.data_meta.id = id;

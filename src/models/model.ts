@@ -16,7 +16,7 @@ export class Model implements IModel {
     parent?: IModel;
     static checker = createCheckers(interfaceTI);
 
-    constructor(type: string, version = '2.0') {
+    constructor(type: string, version = '2.1') {
         this.meta.type = type;
         this.meta.version = version;
     }

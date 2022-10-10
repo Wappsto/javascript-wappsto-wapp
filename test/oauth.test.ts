@@ -10,7 +10,7 @@ describe('oauth', () => {
     const response = {
         meta: {
             type: 'oauth_connect',
-            version: '2.0',
+            version: '2.1',
             id: 'aa4704c1-caa7-4a95-bb74-9bfb33fc970a',
         },
         name: 'test',
@@ -51,7 +51,7 @@ describe('oauth', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/oauth_connect/test',
+            '/2.1/oauth_connect/test',
             {}
         );
         expect(requestUrl).toBe('https://wappsto.com/oauth');
@@ -90,7 +90,7 @@ describe('oauth', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/oauth_connect/test',
+            '/2.1/oauth_connect/test',
             {}
         );
         expect(token.oauth_token).toBe('oauth test token');
@@ -103,7 +103,7 @@ describe('oauth', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/oauth_connect/test',
+            '/2.1/oauth_connect/test',
             {}
         );
         expect(token.oauth_token).toBe('oauth test token');
@@ -141,7 +141,7 @@ describe('oauth', () => {
         );
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/oauth_connect/test',
+            '/2.1/oauth_connect/test',
             {}
         );
     });
@@ -174,7 +174,7 @@ describe('oauth', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.0/oauth_connect/test',
+            '/2.1/oauth_connect/test',
             {}
         );
         expect(requestUrl).toBe(undefined);
