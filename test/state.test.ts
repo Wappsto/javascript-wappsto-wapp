@@ -55,7 +55,7 @@ describe('state', () => {
     });
 
     it('can update a state on wappsto', async () => {
-        mockedAxios.patch.mockResolvedValue({ data: response });
+        mockedAxios.put.mockResolvedValue({ data: response });
 
         const state = new State('Report');
         await state.create();
@@ -64,8 +64,8 @@ describe('state', () => {
         state.type = 'Control';
         await state.update();
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/state/' + state.meta.id,
             response,
             {}

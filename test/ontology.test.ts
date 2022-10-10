@@ -110,7 +110,7 @@ describe('Ontology', () => {
         expect(network.ontology[0]).toBe(edge1);
         expect(network.ontology[1]).toBe(edge2);
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -457,7 +457,7 @@ describe('Ontology', () => {
         expect(network.ontology.length).toBe(1);
         expect(network.ontology[0].models.length).toBe(1);
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
@@ -591,7 +591,7 @@ describe('Ontology', () => {
             {}
         );
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
@@ -682,7 +682,7 @@ describe('Ontology', () => {
 
         expect(node1.ontology.length).toBe(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(4);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(2);
 

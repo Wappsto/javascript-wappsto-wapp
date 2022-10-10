@@ -117,7 +117,7 @@ export class Model implements IModel {
     public async update(): Promise<boolean> {
         if (this.meta.id !== undefined) {
             try {
-                const response = await wappsto.patch(
+                const response = await wappsto.put(
                     this.getUrl(),
                     this.toJSON(),
                     Model.generateOptions()

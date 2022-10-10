@@ -27,7 +27,7 @@ describe('WappStorage', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -74,7 +74,7 @@ describe('WappStorage', () => {
                 },
             ],
         });
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.put.mockResolvedValueOnce({ data: [] });
 
         const fun = jest.fn();
         const c = await wappStorage();
@@ -123,7 +123,7 @@ describe('WappStorage', () => {
 
         expect(fun).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
@@ -134,7 +134,7 @@ describe('WappStorage', () => {
             },
         });
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
@@ -178,7 +178,7 @@ describe('WappStorage', () => {
         const newData = c.get('missing');
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
 
@@ -188,7 +188,7 @@ describe('WappStorage', () => {
 
     it('can reset the data', async () => {
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.put.mockResolvedValueOnce({ data: [] });
         mockedAxios.delete.mockResolvedValueOnce({ data: [] });
 
         const c = await wappStorage();
@@ -201,7 +201,7 @@ describe('WappStorage', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
     });
 
@@ -223,7 +223,7 @@ describe('WappStorage', () => {
                 },
             },
         });
-        mockedAxios.patch
+        mockedAxios.put
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
 
@@ -231,7 +231,7 @@ describe('WappStorage', () => {
         await c.set('new', 'data');
         const res1 = c.get('new');
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
@@ -258,11 +258,11 @@ describe('WappStorage', () => {
         expect(res2).toBe(undefined);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
@@ -297,7 +297,7 @@ describe('WappStorage', () => {
                 data: 'test',
             },
         });
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.put.mockResolvedValueOnce({ data: [] });
 
         const c = await wappStorage('convert');
         const res1 = c.get('old');
@@ -308,11 +308,11 @@ describe('WappStorage', () => {
         expect(res2).toBe('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 old: null,
@@ -364,7 +364,7 @@ describe('WappStorage', () => {
         mockedAxios.post.mockResolvedValueOnce({
             data: { meta: { id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5' } },
         });
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.put.mockResolvedValueOnce({ data: [] });
 
         const ws = await wappStorage('test_deep');
 
@@ -377,7 +377,7 @@ describe('WappStorage', () => {
         d1.d2 = d2;
 
         await ws.set('test', d1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
         mockedAxios.get.mockResolvedValueOnce({ data: [d1] });
         ws.reload();

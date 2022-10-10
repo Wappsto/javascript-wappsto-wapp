@@ -180,7 +180,7 @@ describe('network', () => {
         const network = new Network('test');
         await network.create();
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -201,7 +201,7 @@ describe('network', () => {
 
     it('can update a network on wappsto', async () => {
         mockedAxios.post.mockResolvedValueOnce({ data: response });
-        mockedAxios.patch.mockResolvedValueOnce({ data: response });
+        mockedAxios.put.mockResolvedValueOnce({ data: response });
 
         const network = new Network('test');
         await network.create();
@@ -214,8 +214,8 @@ describe('network', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/network/' + network.meta.id,
             response,
             {}
@@ -257,7 +257,7 @@ describe('network', () => {
     it('can create a new network from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.put.mockResolvedValueOnce({ data: [] });
 
         const network = await createNetwork({ name: 'Wapp Network' });
         const device = await network.createDevice({ name: 'Device Name' });
@@ -273,12 +273,12 @@ describe('network', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.0/network', {
             params: { expand: 4, 'this_name=': 'Wapp Network' },
         });
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/value/c5a73d64-b398-434e-a236-df15342339d5',
             {
                 delta: '0',
@@ -610,7 +610,7 @@ describe('network', () => {
     });
 
     it('can return device as a child', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({
+        mockedAxios.put.mockResolvedValueOnce({
             data: [
                 {
                     communication: 'communication',
@@ -647,9 +647,9 @@ describe('network', () => {
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/device/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             {
                 communication: 'communication',
@@ -907,7 +907,7 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
 
         expect(dev1.name).toEqual('Device Test');
         expect(dev2.name).toEqual('Device Test');
@@ -976,7 +976,7 @@ describe('network', () => {
 
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(4);
     });
 

@@ -38,15 +38,15 @@ describe('http_wrapper', () => {
     });
 
     it('can call PATCH', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({
+        mockedAxios.put.mockResolvedValueOnce({
             data: 'test',
         });
 
-        const res = await request.patch('/network', 'data');
+        const res = await request.put('/network', 'data');
 
         expect(res.data).toEqual('test');
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith('/network', 'data');
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledWith('/network', 'data');
     });
 
     it('can call PUT', async () => {

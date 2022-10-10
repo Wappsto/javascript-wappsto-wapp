@@ -369,7 +369,7 @@ describe('stream', () => {
                 resolve(true);
             })
         );
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.put.mockResolvedValueOnce({ data: [] });
 
         onWebHook(fun);
         await server.connected;
@@ -555,7 +555,7 @@ describe('stream', () => {
             })
         );
         mockedAxios.post.mockResolvedValueOnce({ data: res });
-        mockedAxios.patch
+        mockedAxios.put
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
 
@@ -648,7 +648,7 @@ describe('stream', () => {
 
         expect(fun).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
     });
 
     it('can handle an error from the background/foreground', async () => {

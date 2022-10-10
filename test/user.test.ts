@@ -39,7 +39,7 @@ describe('user', () => {
         const user = new User();
         await user.update();
 
-        expect(mockedAxios.patch).not.toHaveBeenCalled();
+        expect(mockedAxios.put).not.toHaveBeenCalled();
     });
 
     it('can create a new user from wappsto', async () => {

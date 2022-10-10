@@ -85,7 +85,7 @@ describe('device', () => {
 
     it('can update a device on wappsto', async () => {
         mockedAxios.post.mockResolvedValueOnce({ data: response });
-        mockedAxios.patch.mockResolvedValueOnce({ data: response });
+        mockedAxios.put.mockResolvedValueOnce({ data: response });
 
         const device = new Device('test');
         await device.create();
@@ -95,9 +95,9 @@ describe('device', () => {
         await device.update();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/device/' + device.meta.id,
             response,
             {}
@@ -319,7 +319,7 @@ describe('device', () => {
 
     const templateHelperDone = () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
@@ -624,7 +624,7 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/device/35a99d31-b51a-4e20-ad54-a93e8eed21a3/value',
@@ -936,7 +936,7 @@ describe('device', () => {
     });
 
     it('can return value as a child', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({
+        mockedAxios.put.mockResolvedValueOnce({
             data: [
                 {
                     permission: 'rw',
@@ -995,9 +995,9 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             expect.objectContaining({
                 permission: 'rw',
@@ -1023,7 +1023,7 @@ describe('device', () => {
     });
 
     it('can update a value when the parameters are changed', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({
+        mockedAxios.put.mockResolvedValueOnce({
             data: [
                 {
                     permission: 'rw',
@@ -1093,10 +1093,10 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.0/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             expect.objectContaining({
                 permission: 'rw',
@@ -1250,7 +1250,7 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(5);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
 
         expect(val1.name).toEqual('Test Value');
         expect(val2.name).toEqual('Test Value');
