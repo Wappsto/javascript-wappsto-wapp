@@ -1,6 +1,9 @@
 import 'reflect-metadata';
+import { setupModelStore } from './util/modelStore.setup';
 
 Error.stackTraceLimit = Infinity;
+
+setupModelStore();
 
 export { config } from './util/config';
 export { ValueTemplate } from './util/value_template';

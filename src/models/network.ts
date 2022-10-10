@@ -179,7 +179,7 @@ export class Network extends ConnectionModel implements INetwork {
         });
     }
 
-    public setParent(parent: IModel): void {
+    public setParent(parent: IModel | undefined): void {
         this.parent = parent;
         this.device.forEach((dev) => {
             if (typeof dev === 'object') {

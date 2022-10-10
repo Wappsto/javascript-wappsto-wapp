@@ -139,7 +139,7 @@ export class Value extends StreamModel implements IValueBase {
         this.permission = this.tmp_permission;
     }
 
-    public setParent(parent: IModel): void {
+    public setParent(parent?: IModel): void {
         super.setParent(parent);
         this.state.forEach((state) => {
             if (typeof state !== 'string') {

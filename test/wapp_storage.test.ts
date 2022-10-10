@@ -361,7 +361,9 @@ describe('WappStorage', () => {
 
     it('can create a new instance with a deep object', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
-        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce({
+            data: { meta: { id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5' } },
+        });
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const ws = await wappStorage('test_deep');

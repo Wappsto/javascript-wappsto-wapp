@@ -14,29 +14,6 @@ export interface IConfigFunc {
     config(param: IConfig): IConfig;
 }
 
-export interface IModel {
-    id(): string;
-    getUrl(): string;
-    removeChild(child: IModel): void;
-    setParent(parent?: IModel): void;
-}
-
-export interface IModelFunc {
-    create(parameters: Record<string, any>): Promise<void>;
-    fetch(
-        endpoint: string,
-        options?: Record<string, any>,
-        throwError?: boolean
-    ): Promise<Record<string, any>[]>;
-    setParent(parent?: IModel): void;
-    parse(json: Record<string, any>): boolean;
-    parseChildren(json: Record<string, any>): boolean;
-    onEvent(callback: StreamCallback): void;
-    onChange(callback: StreamCallback): void;
-    onDelete(callback: StreamCallback): void;
-    onCreate(callback: StreamCallback): void;
-}
-
 export interface IConnection {
     timestamp: string;
     online: boolean;
@@ -66,6 +43,33 @@ export interface IMeta {
     icon?: string;
     trace?: string;
     historical?: boolean;
+}
+
+export interface IModel {
+    meta: IMeta;
+    id(): string;
+    getType(): string;
+    getUrl(): string;
+    getClass(): string;
+    reload(): void;
+    removeChild(child: IModel): void;
+    setParent(parent?: IModel): void;
+}
+
+export interface IModelFunc {
+    create(parameters: Record<string, any>): Promise<void>;
+    fetch(
+        endpoint: string,
+        options?: Record<string, any>,
+        throwError?: boolean
+    ): Promise<Record<string, any>[]>;
+    setParent(parent?: IModel): void;
+    parse(json: Record<string, any>): boolean;
+    parseChildren(json: Record<string, any>): boolean;
+    onEvent(callback: StreamCallback): void;
+    onChange(callback: StreamCallback): void;
+    onDelete(callback: StreamCallback): void;
+    onCreate(callback: StreamCallback): void;
 }
 
 export interface INetwork {
@@ -446,3 +450,46 @@ export type ConnectionCallback = (
     value: IConnectionModel,
     connection: boolean
 ) => void;
+
+export type Relationship = string;
+export interface IOntology {
+    relationship: Relationship;
+    to: IOntologyModel;
+    name?: string;
+    description?: string;
+    data?: any;
+}
+export interface IOntologyModel extends IModel {
+    createEdge(params: IOntology): Promise<IOntologyEdge>;
+    deleteBranch(): Promise<void>;
+    deleteEdge(model: IModel): void;
+}
+export interface IOntologyModelFunc {
+    createEdge(params: IOntology): Promise<IOntologyEdge>;
+    deleteBranch(): Promise<void>;
+    deleteEdge(model: IModel): void;
+}
+export interface IOntologyEdge extends IModel {
+    relationship: Relationship;
+    models: IOntologyModel[];
+    to: Record<string, string[]>;
+    name?: string;
+    description?: string;
+    data?: any;
+}
+export interface IOntologyEdgeFunc {
+    constructor(): void;
+    removeTo(to: IModel): boolean;
+    deleteEdges(): Promise<void>;
+    getAllEdges(): Promise<IOntologyEdge[]>;
+    fetch(
+        endpoint: string,
+        options: Record<string, any>
+    ): Promise<IOntologyEdge[]>;
+}
+export type IOntologyNode = IModel;
+export interface IOntologyNodeFunc extends IOntologyModelFunc {
+    constructor(name?: string): void;
+    createNode(name: string): Promise<IOntologyNode>;
+    findNode(name: string): Promise<IOntologyNode>;
+}

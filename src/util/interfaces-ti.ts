@@ -19,30 +19,6 @@ export const IConfigFunc = t.iface([], {
     config: t.func('IConfig', t.param('param', 'IConfig')),
 });
 
-export const IModel = t.iface([], {
-    id: t.func('string'),
-    getUrl: t.func('string'),
-    removeChild: t.func('void', t.param('child', 'IModel')),
-    setParent: t.func('void', t.param('parent', 'IModel', true)),
-});
-
-export const IModelFunc = t.iface([], {
-    create: t.func('void', t.param('parameters', 'any')),
-    fetch: t.func(
-        t.array('any'),
-        t.param('endpoint', 'string'),
-        t.param('options', 'any', true),
-        t.param('throwError', 'boolean', true)
-    ),
-    setParent: t.func('void', t.param('parent', 'IModel', true)),
-    parse: t.func('boolean', t.param('json', 'any')),
-    parseChildren: t.func('boolean', t.param('json', 'any')),
-    onEvent: t.func('void', t.param('callback', 'StreamCallback')),
-    onChange: t.func('void', t.param('callback', 'StreamCallback')),
-    onDelete: t.func('void', t.param('callback', 'StreamCallback')),
-    onCreate: t.func('void', t.param('callback', 'StreamCallback')),
-});
-
 export const IConnection = t.iface([], {
     timestamp: 'string',
     online: 'boolean',
@@ -71,6 +47,34 @@ export const IMeta = t.iface([], {
     icon: t.opt('string'),
     trace: t.opt('string'),
     historical: t.opt('boolean'),
+});
+
+export const IModel = t.iface([], {
+    meta: 'IMeta',
+    id: t.func('string'),
+    getType: t.func('string'),
+    getUrl: t.func('string'),
+    getClass: t.func('string'),
+    reload: t.func('void'),
+    removeChild: t.func('void', t.param('child', 'IModel')),
+    setParent: t.func('void', t.param('parent', 'IModel', true)),
+});
+
+export const IModelFunc = t.iface([], {
+    create: t.func('void', t.param('parameters', 'any')),
+    fetch: t.func(
+        t.array('any'),
+        t.param('endpoint', 'string'),
+        t.param('options', 'any', true),
+        t.param('throwError', 'boolean', true)
+    ),
+    setParent: t.func('void', t.param('parent', 'IModel', true)),
+    parse: t.func('boolean', t.param('json', 'any')),
+    parseChildren: t.func('boolean', t.param('json', 'any')),
+    onEvent: t.func('void', t.param('callback', 'StreamCallback')),
+    onChange: t.func('void', t.param('callback', 'StreamCallback')),
+    onDelete: t.func('void', t.param('callback', 'StreamCallback')),
+    onCreate: t.func('void', t.param('callback', 'StreamCallback')),
 });
 
 export const INetwork = t.iface([], {
@@ -599,14 +603,65 @@ export const ConnectionCallback = t.func(
     t.param('connection', 'boolean')
 );
 
+export const Relationship = t.name('string');
+
+export const IOntology = t.iface([], {
+    relationship: 'Relationship',
+    to: 'IOntologyModel',
+    name: t.opt('string'),
+    description: t.opt('string'),
+    data: t.opt('any'),
+});
+
+export const IOntologyModel = t.iface(['IModel'], {
+    createEdge: t.func('IOntologyEdge', t.param('params', 'IOntology')),
+    deleteBranch: t.func('void'),
+    deleteEdge: t.func('void', t.param('model', 'IModel')),
+});
+
+export const IOntologyModelFunc = t.iface([], {
+    createEdge: t.func('IOntologyEdge', t.param('params', 'IOntology')),
+    deleteBranch: t.func('void'),
+    deleteEdge: t.func('void', t.param('model', 'IModel')),
+});
+
+export const IOntologyEdge = t.iface(['IModel'], {
+    relationship: 'Relationship',
+    models: t.array('IOntologyModel'),
+    to: 'any',
+    name: t.opt('string'),
+    description: t.opt('string'),
+    data: t.opt('any'),
+});
+
+export const IOntologyEdgeFunc = t.iface([], {
+    constructor: t.func('void'),
+    removeTo: t.func('boolean', t.param('to', 'IModel')),
+    deleteEdges: t.func('void'),
+    getAllEdges: t.func(t.array('IOntologyEdge')),
+    fetch: t.func(
+        t.array('IOntologyEdge'),
+        t.param('endpoint', 'string'),
+        t.param('options', 'any')
+    ),
+});
+
+export const IOntologyNode = t.iface(['IModel'], {});
+
+export const IOntologyNodeFunc = t.iface(['IOntologyModelFunc'], {
+    constructor: t.func('void', t.param('name', 'string', true)),
+    createNode: t.func('IOntologyNode', t.param('name', 'string')),
+    findNode: t.func('IOntologyNode', t.param('name', 'string')),
+});
+
 const exportedTypeSuite: t.ITypeSuite = {
     ValidationType,
     IConfig,
     IConfigFunc,
-    IModel,
-    IModelFunc,
     IConnection,
     IMeta,
+    IModel,
+    IModelFunc,
     INetwork,
     INetworkFunc,
     IDevice,
@@ -655,5 +710,13 @@ const exportedTypeSuite: t.ITypeSuite = {
     ValueStreamCallback,
     RefreshStreamCallback,
     ConnectionCallback,
+    Relationship,
+    IOntology,
+    IOntologyModel,
+    IOntologyModelFunc,
+    IOntologyEdge,
+    IOntologyEdgeFunc,
+    IOntologyNode,
+    IOntologyNodeFunc,
 };
 export default exportedTypeSuite;

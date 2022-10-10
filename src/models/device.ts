@@ -284,7 +284,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public setParent(parent: IModel): void {
+    public setParent(parent?: IModel): void {
         super.setParent(parent);
         this.value.forEach((val) => {
             if (typeof val === 'object') {
