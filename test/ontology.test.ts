@@ -21,6 +21,9 @@ describe('Ontology', () => {
     });
 
     it('can create a new edge', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [],
+        });
         mockedAxios.post
             .mockResolvedValueOnce({
                 data: {
@@ -35,22 +38,6 @@ describe('Ontology', () => {
                     relationship: 'child',
                     to: {
                         state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
-                    },
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
-                    meta: {
-                        id: '9764d589-047e-4089-af0c-6034349df23f',
-                        type: 'ontology',
-                        version: '2.1',
-                    },
-                    name: 'Onto name2',
-                    description: 'Onto description2',
-                    data: { test: 'data2' },
-                    relationship: 'look',
-                    to: {
-                        state: ['047f00f9-276b-4f5b-ba28-c1ab05f16e52'],
                     },
                 },
             })
@@ -108,21 +95,24 @@ describe('Ontology', () => {
         expect(edge1.name).toEqual('Onto name');
         expect(edge1.description).toEqual('Onto description');
         expect(edge1.data).toEqual({ test: 'data' });
+        expect(edge1.models[0]).toBe(state1);
 
         expect(edge2.relationship).toEqual('look');
         expect(edge2.models.length).toBe(1);
         expect(edge2.name).toEqual('Onto name2');
         expect(edge2.description).toEqual('Onto description2');
         expect(edge2.data).toEqual({ test: 'data2' });
-
         expect(edge2.models[0]).toBe(state2);
 
-        expect(network.ontology.length).toBe(3);
+        expect(edge2).toBe(edge3);
+
+        expect(network.ontology.length).toBe(2);
         expect(network.ontology[0]).toBe(edge1);
         expect(network.ontology[1]).toBe(edge2);
-        expect(network.ontology[2]).toBe(edge3);
 
-        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
             {
@@ -157,25 +147,12 @@ describe('Ontology', () => {
             },
             {}
         );
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-            '/2.0/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
-            {
-                meta: {
-                    type: 'ontology',
-                    version: '2.1',
-                },
-                relationship: 'look',
-                to: {
-                    state: ['047f00f9-276b-4f5b-ba28-c1ab05f16e52'],
-                },
-            },
-            {}
-        );
-
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
     });
 
     it('can create a new node', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [],
+        });
         mockedAxios.post.mockResolvedValueOnce({
             data: {
                 meta: {
@@ -190,6 +167,7 @@ describe('Ontology', () => {
         expect(node.data_meta.type).toEqual('ontology_node');
         expect(node.getClass()).toEqual('ontology_node');
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.0/data',
@@ -340,6 +318,7 @@ describe('Ontology', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(6);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.0/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
@@ -434,12 +413,17 @@ describe('Ontology', () => {
         const nodes = await getAllNodes();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+
         expect(nodes.length).toBe(2);
         expect(nodes[0].data_meta.id).toEqual('ontology_node_1');
         expect(nodes[1].data_meta.id).toEqual('ontology_node_2');
     });
 
     it('can remove an edge', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [],
+        });
         mockedAxios.post.mockResolvedValueOnce({
             data: {
                 meta: {
@@ -475,12 +459,16 @@ describe('Ontology', () => {
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
 
         await edge1.delete();
         expect(network.ontology.length).toBe(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(
+            '/2.1/ontology/75f43647-bf73-44df-a04e-4d04e47cd0fc',
+            {}
+        );
     });
 
     it('can delete all edges', async () => {
@@ -527,6 +515,7 @@ describe('Ontology', () => {
         await network.deleteEdges();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(2);
 
         expect(network.ontology.length).toBe(0);
@@ -560,9 +549,16 @@ describe('Ontology', () => {
                     },
                 },
             });
-        mockedAxios.get.mockResolvedValueOnce({
-            data: [],
-        });
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
+                data: [],
+            });
         mockedAxios.delete
             .mockResolvedValueOnce({
                 data: {},
@@ -580,11 +576,24 @@ describe('Ontology', () => {
         const state2 = new State();
         state2.meta.id = 'd2d27eab-bfaa-4253-b9cb-6402dc04e16b';
 
+        addModel(state1);
+        addModel(state2);
+
         await network.createEdge({ relationship: 'child', to: state1 });
         await state1.createEdge({ relationship: 'look', to: state2 });
 
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
+            {}
+        );
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.0/state/f0a9683f-da8b-4fe6-9925-2e6768ddedeb/ontology',
+            {}
+        );
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(network.ontology.length).toBe(1);
         expect(state1.ontology.length).toBe(1);
@@ -592,10 +601,39 @@ describe('Ontology', () => {
         await network.deleteBranch();
         expect(network.ontology.length).toBe(0);
         expect(state1.ontology.length).toBe(0);
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(2);
     });
 
     it('can remove a node', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            id: '45332794-e710-4702-90d6-632fe461d3e5',
+                            type: 'data',
+                            version: '2.1',
+                        },
+                        data_meta: {
+                            type: 'ontology_node',
+                            version: '1',
+                            id: 'ontology_node_2',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
+                data: [],
+            });
         mockedAxios.post
             .mockResolvedValueOnce({
                 data: {
@@ -608,20 +646,6 @@ describe('Ontology', () => {
                         type: 'ontology_node',
                         version: '1',
                         id: 'ontology_node_1',
-                    },
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
-                    meta: {
-                        id: '09af28b3-0e84-4230-ab96-88990cfa04b8',
-                        type: 'data',
-                        version: '2.1',
-                    },
-                    data_meta: {
-                        type: 'ontology_node',
-                        version: '1',
-                        id: 'ontology_node_2',
                     },
                 },
             })
@@ -651,17 +675,19 @@ describe('Ontology', () => {
             to: node2,
         });
 
-        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
 
         await edge1.deleteBranch();
 
         expect(node1.ontology.length).toBe(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(2);
 
         expect(mockedAxios.delete).toHaveBeenCalledWith(
-            '/2.0/data/09af28b3-0e84-4230-ab96-88990cfa04b8',
+            '/2.0/data/45332794-e710-4702-90d6-632fe461d3e5',
             {}
         );
         expect(mockedAxios.delete).toHaveBeenCalledWith(

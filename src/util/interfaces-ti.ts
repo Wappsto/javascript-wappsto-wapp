@@ -614,8 +614,15 @@ export const IOntology = t.iface([], {
 });
 
 export const IOntologyModel = t.iface(['IModel'], {
+    createEdge: t.func('IOntologyEdge', t.param('params', 'IOntology')),
     deleteBranch: t.func('void'),
-    removeEdge: t.func('void', t.param('model', 'IModel')),
+    deleteEdge: t.func('void', t.param('model', 'IModel')),
+});
+
+export const IOntologyModelFunc = t.iface([], {
+    createEdge: t.func('IOntologyEdge', t.param('params', 'IOntology')),
+    deleteBranch: t.func('void'),
+    deleteEdge: t.func('void', t.param('model', 'IModel')),
 });
 
 export const IOntologyEdge = t.iface(['IModel'], {
@@ -627,9 +634,8 @@ export const IOntologyEdge = t.iface(['IModel'], {
     data: t.opt('any'),
 });
 
-export const IOntologyFunc = t.iface([], {
+export const IOntologyEdgeFunc = t.iface([], {
     constructor: t.func('void'),
-    createEdge: t.func('void', t.param('params', 'IOntology')),
     removeTo: t.func('boolean', t.param('to', 'IModel')),
     deleteEdges: t.func('void'),
     getAllEdges: t.func(t.array('IOntologyEdge')),
@@ -638,6 +644,14 @@ export const IOntologyFunc = t.iface([], {
         t.param('endpoint', 'string'),
         t.param('options', 'any')
     ),
+});
+
+export const IOntologyNode = t.iface(['IModel'], {});
+
+export const IOntologyNodeFunc = t.iface(['IOntologyModelFunc'], {
+    constructor: t.func('void', t.param('name', 'string', true)),
+    createNode: t.func('IOntologyNode', t.param('name', 'string')),
+    findNode: t.func('IOntologyNode', t.param('name', 'string')),
 });
 
 const exportedTypeSuite: t.ITypeSuite = {
@@ -699,7 +713,10 @@ const exportedTypeSuite: t.ITypeSuite = {
     Relationship,
     IOntology,
     IOntologyModel,
+    IOntologyModelFunc,
     IOntologyEdge,
-    IOntologyFunc,
+    IOntologyEdgeFunc,
+    IOntologyNode,
+    IOntologyNodeFunc,
 };
 export default exportedTypeSuite;

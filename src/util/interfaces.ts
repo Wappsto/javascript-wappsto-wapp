@@ -460,8 +460,14 @@ export interface IOntology {
     data?: any;
 }
 export interface IOntologyModel extends IModel {
+    createEdge(params: IOntology): Promise<IOntologyEdge>;
     deleteBranch(): Promise<void>;
-    removeEdge(model: IModel): void;
+    deleteEdge(model: IModel): void;
+}
+export interface IOntologyModelFunc {
+    createEdge(params: IOntology): Promise<IOntologyEdge>;
+    deleteBranch(): Promise<void>;
+    deleteEdge(model: IModel): void;
 }
 export interface IOntologyEdge extends IModel {
     relationship: Relationship;
@@ -471,10 +477,8 @@ export interface IOntologyEdge extends IModel {
     description?: string;
     data?: any;
 }
-export interface IOntologyFunc {
+export interface IOntologyEdgeFunc {
     constructor(): void;
-    //constructor(from: IModel, relationship: Relationship, to: IModel): void;
-    createEdge(params: IOntology): Promise<void>;
     removeTo(to: IModel): boolean;
     deleteEdges(): Promise<void>;
     getAllEdges(): Promise<IOntologyEdge[]>;
@@ -482,4 +486,10 @@ export interface IOntologyFunc {
         endpoint: string,
         options: Record<string, any>
     ): Promise<IOntologyEdge[]>;
+}
+export type IOntologyNode = IModel;
+export interface IOntologyNodeFunc extends IOntologyModelFunc {
+    constructor(name?: string): void;
+    createNode(name: string): Promise<IOntologyNode>;
+    findNode(name: string): Promise<IOntologyNode>;
 }

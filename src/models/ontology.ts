@@ -21,7 +21,7 @@ export class Ontology extends Model implements IOntologyEdge {
         to?: IOntologyModel
     ) {
         super('ontology', '2.1');
-        Model.validateMethod('Ontology', 'constructor', arguments);
+        Model.validateMethod('OntologyEdge', 'constructor', arguments);
 
         this.parent = from;
         if (relationship) {
@@ -50,7 +50,7 @@ export class Ontology extends Model implements IOntologyEdge {
         return res;
     }
 
-    public addModel(to: IOntologyModel): boolean {
+    private addModel(to: IOntologyModel): boolean {
         if (this.models.find((o) => o === to) === undefined) {
             this.models.push(to);
             return true;
@@ -79,7 +79,7 @@ export class Ontology extends Model implements IOntologyEdge {
         await super.delete();
         if (this.parent) {
             const p = this.parent as IOntologyModel;
-            p.removeEdge(this);
+            p.deleteEdge(this);
         }
     }
 
@@ -111,6 +111,6 @@ export class Ontology extends Model implements IOntologyEdge {
     };
 
     private static validate(name: string, params: any): void {
-        Model.validateMethod('Ontology', name, params);
+        Model.validateMethod('OntologyEdge', name, params);
     }
 }
