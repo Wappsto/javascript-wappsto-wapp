@@ -301,7 +301,7 @@ export class Stream extends Model {
                 type: type,
                 message: msg,
             };
-            const response = await wappsto.post('/2.1/extsync', data);
+            const response = await wappsto.post('/2.0/extsync', data);
             result = response.data;
         } catch (e) {
             /* istanbul ignore next */

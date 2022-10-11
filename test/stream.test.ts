@@ -930,13 +930,13 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync', {
             message: {
                 test: 'test signal',
             },
             type: 'background',
         });
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.0/extsync', {
             message: {
                 test: 'test signal',
             },
