@@ -25,6 +25,8 @@ export async function createNode(name: string): Promise<OntologyNode> {
         await node.create();
     }
 
+    await node.getAllEdges();
+
     return node;
 }
 

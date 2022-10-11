@@ -461,6 +461,7 @@ export interface IOntology {
 }
 export interface IOntologyModel extends IModel {
     createEdge(params: IOntology): Promise<IOntologyEdge>;
+    getAllEdges(): Promise<IOntologyEdge[]>;
     deleteBranch(): Promise<void>;
     deleteEdge(model: IModel): void;
 }
@@ -487,7 +488,7 @@ export interface IOntologyEdgeFunc {
         options: Record<string, any>
     ): Promise<IOntologyEdge[]>;
 }
-export type IOntologyNode = IModel;
+export type IOntologyNode = IOntologyModel;
 export interface IOntologyNodeFunc extends IOntologyModelFunc {
     constructor(name?: string): void;
     createNode(name: string): Promise<IOntologyNode>;

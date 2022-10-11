@@ -1,3 +1,5 @@
+import { IModel } from './interfaces';
+
 export function isBrowser(): boolean {
     return (
         typeof window !== 'undefined' &&
@@ -37,11 +39,7 @@ export function randomIntFromInterval(min: number, max: number): number {
 export function isPositiveInteger(str: number | string) {
     const num = Number(str);
 
-    if (Number.isInteger(num) && num > 0) {
-        return true;
-    }
-
-    return false;
+    return Number.isInteger(num) && num > 0;
 }
 
 function escapeRegExp(str: string) {
@@ -50,4 +48,12 @@ function escapeRegExp(str: string) {
 
 export function replaceAll(str: string, find: string, replace: string): string {
     return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
+export function compareModels(m1: IModel, m2: IModel) {
+    return m1.id() === m2.id();
+}
+
+export function uniqueModels(value: IModel, index: number, self: IModel[]) {
+    return self.findIndex((model) => compareModels(model, value)) === index;
 }

@@ -150,9 +150,13 @@ describe('Ontology', () => {
     });
 
     it('can create a new node', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: [],
-        });
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
+                data: [],
+            });
         mockedAxios.post.mockResolvedValueOnce({
             data: {
                 meta: {
@@ -167,7 +171,7 @@ describe('Ontology', () => {
         expect(node.data_meta.type).toEqual('ontology_node');
         expect(node.getClass()).toEqual('ontology_node');
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.1/data',
@@ -322,7 +326,11 @@ describe('Ontology', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(6);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
-            {}
+            {
+                params: {
+                    expand: 1,
+                },
+            }
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/network/f11fa9d7-3b2b-474e-95e4-f086c5606154',
@@ -584,11 +592,19 @@ describe('Ontology', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
-            {}
+            {
+                params: {
+                    expand: 1,
+                },
+            }
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/state/f0a9683f-da8b-4fe6-9925-2e6768ddedeb/ontology',
-            {}
+            {
+                params: {
+                    expand: 1,
+                },
+            }
         );
 
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
@@ -613,6 +629,9 @@ describe('Ontology', () => {
                 data: [],
             })
             .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
                 data: [
                     {
                         meta: {
@@ -627,9 +646,6 @@ describe('Ontology', () => {
                         },
                     },
                 ],
-            })
-            .mockResolvedValueOnce({
-                data: [],
             })
             .mockResolvedValueOnce({
                 data: [],
@@ -675,7 +691,7 @@ describe('Ontology', () => {
             to: node2,
         });
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
 
         await edge1.deleteBranch();
@@ -693,6 +709,106 @@ describe('Ontology', () => {
         expect(mockedAxios.delete).toHaveBeenCalledWith(
             '/2.1/ontology/b0553348-deac-4ed8-a546-f72346a60bb0',
             {}
+        );
+    });
+
+    it('can transverse the graph', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            id: '45332794-e710-4702-90d6-632fe461d3e5',
+                            type: 'data',
+                            version: '2.1',
+                        },
+                        data_meta: {
+                            type: 'ontology_node',
+                            version: '1',
+                            id: 'ontology_node_2',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
+                data: [],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            id: 'b0553348-deac-4ed8-a546-f72346a60bb0',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                        relationship: 'look',
+                        to: { state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'] },
+                    },
+                ],
+            });
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: '09af28b3-0e84-4230-ab96-88990cfa04b8',
+                        type: 'data',
+                        version: '2.1',
+                    },
+                    data_meta: {
+                        type: 'ontology_node',
+                        version: '1',
+                        id: 'ontology_node_1',
+                    },
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: 'b0553348-deac-4ed8-a546-f72346a60bb0',
+                        type: 'ontology',
+                        version: '2.1',
+                    },
+                    relationship: 'look',
+                    to: {},
+                },
+            });
+
+        const node1 = await createNode('node 1');
+        const node2 = await createNode('node 2');
+        await node1.createEdge({
+            relationship: 'link',
+            to: node2,
+        });
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+
+        const empty = await node1.transverse('*');
+
+        expect(empty.length).toBe(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.get).toHaveBeenLastCalledWith(
+            '/2.1/data/09af28b3-0e84-4230-ab96-88990cfa04b8/ontology',
+            { params: { expand: 1, path: '*' } }
+        );
+
+        const leafs = await node1.transverse('*', true);
+
+        expect(leafs.length).toBe(1);
+        expect(leafs[0].id()).toBe('f0a9683f-da8b-4fe6-9925-2e6768ddedeb');
+        expect(mockedAxios.get).toHaveBeenCalledTimes(6);
+        expect(mockedAxios.get).toHaveBeenLastCalledWith(
+            '/2.1/data/09af28b3-0e84-4230-ab96-88990cfa04b8/ontology',
+            { params: { expand: 1, path: '*', all_edge: true } }
         );
     });
 });

@@ -615,6 +615,7 @@ export const IOntology = t.iface([], {
 
 export const IOntologyModel = t.iface(['IModel'], {
     createEdge: t.func('IOntologyEdge', t.param('params', 'IOntology')),
+    getAllEdges: t.func(t.array('IOntologyEdge')),
     deleteBranch: t.func('void'),
     deleteEdge: t.func('void', t.param('model', 'IModel')),
 });
@@ -646,7 +647,7 @@ export const IOntologyEdgeFunc = t.iface([], {
     ),
 });
 
-export const IOntologyNode = t.iface(['IModel'], {});
+export const IOntologyNode = t.name('IOntologyModel');
 
 export const IOntologyNodeFunc = t.iface(['IOntologyModelFunc'], {
     constructor: t.func('void', t.param('name', 'string', true)),

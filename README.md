@@ -26,6 +26,7 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     -   [Wapp Storage](#wapp-storage)
     -   [OAuth](#oauth)
     -   [Notification](#notification)
+    -   [Ontology](#ontology)
     -   [Background logging](#background-logging)
     -   [Raw requests](#raw-requests)
     -   [Config](#config)
@@ -521,6 +522,40 @@ dashboard.
 
 ```javascript
 await Wappsto.notify('This is a custom notification from my Wapp');
+```
+
+### Ontology
+
+To build a relationship graph of your data, you need to define the ontology.
+
+To create a node in the graph, you call the `createNode` function.
+
+```javascript
+const startNode = await Wappsto.createNode('start node');
+```
+
+To add a relationship between two objects, you call `createEdge` with the relationship that you want to define.
+
+```javascript
+const edge = await startNode.createEdge({ relationship: 'child', to: endNode });
+```
+
+You can also supply more information about the edge.
+
+```javascript
+const fullEdge = await startNode.createEdge({
+	relationship: 'child',
+	to: endNode,
+	name: 'My Edge',
+	description: 'This is my first edge',
+	data: { msg: 'My own data for this edge' },
+});
+```
+
+To remove an edge, you can just call `delete` on teh edge, but if you want to remove the whole branch, you can call `deleteBranch`. This will remove all edges and nodes under this node or edge.
+
+```javascript
+await startNode.deleteBranch();
 ```
 
 ### Background logging

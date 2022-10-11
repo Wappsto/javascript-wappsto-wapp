@@ -6,6 +6,7 @@ import {
     IOntologyModel,
     IOntologyEdge,
 } from '../util/interfaces';
+import { compareModels, uniqueModels } from '../util/helpers';
 
 export class OntologyModel extends Model implements IOntologyModel {
     ontology: Ontology[] = [];
@@ -53,7 +54,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         Model.validateMethod('OntologyModel', 'deleteEdge', arguments);
 
         for (let i = 0; i < this.ontology.length; i++) {
-            if (this.ontology[i].id() === edge.id()) {
+            if (compareModels(this.ontology[i], edge)) {
                 this.ontology.splice(i, 1);
                 return;
             }
@@ -66,7 +67,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         for (let i = 0; i < this.ontology.length; i++) {
             const o = this.ontology[i];
             if (o.relationship === params.relationship) {
-                if (o.models.find((m) => m.id() === params.to.id())) {
+                if (o.models.find((m) => compareModels(m, params.to))) {
                     return o;
                 }
             }
@@ -98,5 +99,25 @@ export class OntologyModel extends Model implements IOntologyModel {
             });
         }
         return this.ontology;
+    }
+
+    public async transverse(
+        path: string,
+        getAll?: boolean
+    ): Promise<IOntologyModel[]> {
+        const params: Record<string, any> = { path: path };
+
+        if (getAll) {
+            params['all_edge'] = true;
+        }
+
+        const models: IOntologyModel[] = [];
+        const leafs = await Ontology.fetch(`${this.getUrl()}/ontology`, params);
+
+        leafs.forEach((leaf: IOntologyEdge) => {
+            models.push(...leaf.models);
+        });
+
+        return models.filter(uniqueModels);
     }
 }

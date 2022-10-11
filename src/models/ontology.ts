@@ -4,6 +4,7 @@ import {
     IOntologyModel,
     IOntologyEdge,
 } from '../util/interfaces';
+import { compareModels } from '../util/helpers';
 import { getModel } from '../util/modelStore';
 
 export class Ontology extends Model implements IOntologyEdge {
@@ -51,7 +52,7 @@ export class Ontology extends Model implements IOntologyEdge {
     }
 
     private addModel(to: IOntologyModel): boolean {
-        if (this.models.find((o) => o === to) === undefined) {
+        if (this.models.find((o) => compareModels(o, to)) === undefined) {
             this.models.push(to);
             return true;
         }
@@ -99,6 +100,8 @@ export class Ontology extends Model implements IOntologyEdge {
         params: Record<string, any> = {}
     ): Promise<Ontology[]> => {
         Ontology.validate('fetch', [endpoint, params]);
+
+        params['expand'] = 1;
 
         const data = await Model.fetch(endpoint, params);
         const res = Ontology.fromArray(data);
