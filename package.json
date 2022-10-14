@@ -59,11 +59,15 @@
     "size-limit": [
         {
             "path": "dist/wappsto-wapp.cjs.production.min.js",
-            "limit": "70 KB"
+            "limit": "80 KB"
         },
         {
             "path": "dist/wappsto-wapp.esm.js",
-            "limit": "50 KB"
+            "limit": "60 KB"
+        },
+        {
+            "path": "dist/wappsto-wapp.js",
+            "limit": "100 KB"
         }
     ],
     "dependencies": {
