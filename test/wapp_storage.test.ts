@@ -110,10 +110,10 @@ describe('WappStorage', () => {
                     type: 'data',
                     version: '2.1',
                 },
-                path: '/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                path: '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                 timestamp: '2022-06-08T14:49:35.349971Z',
             },
-            path: '/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+            path: '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
         });
 
         await new Promise((r) => setTimeout(r, 1));
@@ -317,7 +317,11 @@ describe('WappStorage', () => {
             {
                 old: null,
                 data: { old: 'data', data: 'test' },
-                data_meta: { id: 'wapp_storage_remove', type: 'wapp_storage' },
+                data_meta: {
+                    id: 'wapp_storage_remove',
+                    type: 'wapp_storage',
+                    version: 1,
+                },
                 meta: {
                     id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
                     type: 'data',

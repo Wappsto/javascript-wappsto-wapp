@@ -237,7 +237,7 @@ describe('network', () => {
             meta_object: {
                 type: 'notification',
             },
-            path: '/notification/',
+            path: '/2.1/notification/',
             data: {
                 base: {
                     code: 1100013,
@@ -923,13 +923,12 @@ describe('network', () => {
         n.onCreate(f);
 
         await server.connected;
-
         server.send({
             meta_object: {
                 type: 'event',
             },
             event: 'create',
-            path: '/network/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
+            path: '/2.1/network/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
             data: {
                 meta: {
                     id: '60323236-54bf-499e-a438-608a24619c94',

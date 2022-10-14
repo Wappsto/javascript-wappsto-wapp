@@ -11,7 +11,7 @@ export class Notification extends Model {
     identifier?: string;
 
     constructor() {
-        super('notification', '2.1');
+        super('notification');
     }
 
     public getIds(): string[] {

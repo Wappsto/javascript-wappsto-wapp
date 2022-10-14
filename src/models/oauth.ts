@@ -14,7 +14,7 @@ export class OAuth extends Model {
     params?: Record<string, any>;
 
     constructor(name: string) {
-        super('2.1', 'oauth');
+        super('oauth');
         Model.validateMethod('OAuth', 'constructor', arguments);
         this.name = name;
     }
@@ -64,7 +64,7 @@ export class OAuth extends Model {
     static getToken = async (name: string, handler?: OAuthRequestHandler) => {
         OAuth.validate('staticGetToken', [name, handler]);
         const oauth = new OAuth(name);
-        return await oauth.getToken(handler);
+        return oauth.getToken(handler);
     };
 
     private static validate(name: string, params: any): void {

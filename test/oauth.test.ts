@@ -110,7 +110,9 @@ describe('oauth', () => {
     });
 
     it('will fail when there is no oauth', async () => {
-        console.error = jest.fn();
+        const jestError = jest.fn();
+        const tmp = console.error;
+        console.error = jestError;
 
         mockedAxios.get.mockRejectedValueOnce({
             response: {
@@ -134,8 +136,9 @@ describe('oauth', () => {
         } catch (e: any) {
             error = e.toString();
         }
+        console.error = tmp;
 
-        expect(console.error).toHaveBeenCalledTimes(1);
+        expect(jestError).toHaveBeenCalledTimes(1);
         expect(error).toBe(
             'This installation does not have any oauth external with this name'
         );

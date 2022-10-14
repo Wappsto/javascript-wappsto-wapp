@@ -2,7 +2,7 @@ import { Model } from './model';
 import { session, baseUrl } from '../session';
 import { _config } from '../util/config';
 import { printDebug, printError } from '../util/debug';
-import { isUUID, isBrowser } from '../util/helpers';
+import { isUUID, isBrowser, isVersion, toString } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { getErrorMessage } from '../util/http_wrapper';
 import { trace, clearTrace } from '../util/trace';
@@ -52,7 +52,7 @@ export class Stream extends Model {
     onRequestHandlers: Record<number, RequestHandler[]> = { 0: [], 1: [] };
 
     constructor() {
-        super('stream', '2.1');
+        super('stream');
         this.websocketUrl = `${baseUrl}`;
         if (!this.websocketUrl.endsWith('/')) {
             this.websocketUrl += `/`;
@@ -116,18 +116,16 @@ export class Stream extends Model {
             try {
                 const socket = new WebSocket(this.websocketUrl);
 
-                if (socket) {
-                    socket.onopen = () => {
-                        this.socket = socket;
-                        clearTimeout(openTimeout);
-                        this.addListeners();
-                        resolve();
-                        this.waiting.forEach((r: any) => {
-                            r();
-                        });
-                        this.waiting = [];
-                    };
-                }
+                socket.onopen = () => {
+                    this.socket = socket;
+                    clearTimeout(openTimeout);
+                    this.addListeners();
+                    resolve();
+                    this.waiting.forEach((r: any) => {
+                        r();
+                    });
+                    this.waiting = [];
+                };
             } catch (e) {
                 /* istanbul ignore next */
                 printDebug(`Failed to open WebSocket: ${e}`);
@@ -155,7 +153,7 @@ export class Stream extends Model {
         this.sendMessage(
             'POST',
             '/services/2.1/websocket/open/subscription',
-            subscription
+            `/2.1${subscription}`
         );
     }
 
@@ -212,7 +210,7 @@ export class Stream extends Model {
     public async sendInternal(type: string): Promise<any> {
         this.validate('sendInternal', arguments);
 
-        return await this.sendEvent(type, '');
+        return this.sendEvent(type, '');
     }
 
     public subscribeInternal(type: string, handler: ServiceHandler): void {
@@ -301,13 +299,13 @@ export class Stream extends Model {
                 type: type,
                 message: msg,
             };
-            const response = await wappsto.post('/2.0/extsync', data);
+            const response = await wappsto.post('/2.1/extsync', data);
             result = response.data;
         } catch (e) {
             /* istanbul ignore next */
             const errorMsg = getErrorMessage(e);
             printError(
-                `Failed to send ${type} event (${JSON.stringify(
+                `Failed to send ${type} event (${toString(
                     msg
                 )}) because: ${errorMsg}`
             );
@@ -327,7 +325,7 @@ export class Stream extends Model {
             if (e.response.data?.code) {
                 const errorMsg = getErrorMessage(e);
                 printError(
-                    `Failed to send request (${JSON.stringify(
+                    `Failed to send request (${toString(
                         msg
                     )}) because: ${errorMsg}`
                 );
@@ -359,7 +357,7 @@ export class Stream extends Model {
             const errorMsg = getErrorMessage(e);
             /* istanbul ignore next */
             printError(
-                `Failed to send response (${JSON.stringify(
+                `Failed to send response (${toString(
                     msg
                 )}) with code ${code} because: ${errorMsg}`
             );
@@ -405,7 +403,7 @@ export class Stream extends Model {
         } catch (e) {
             this.sendResponse(event, 501, e);
             printError('An error happend when calling request handler');
-            printError(JSON.stringify(e));
+            printError(toString(e));
         }
         return undefined;
     };
@@ -483,23 +481,24 @@ export class Stream extends Model {
                 /* istanbul ignore next */
                 return;
             }
-
+            if (isVersion(items[0])) {
+                items.shift();
+            }
             const last = items[items.length - 1];
 
             paths.push(
-                '/' + items.slice(items.length - 2, items.length).join('/')
+                `/${items.slice(items.length - 2, items.length).join('/')}`
             );
 
             if (!isUUID(last)) {
                 paths.push(
-                    '/' +
-                        items
-                            .slice(items.length - 3, items.length - 1)
-                            .join('/')
+                    `/${items
+                        .slice(items.length - 3, items.length - 1)
+                        .join('/')}`
                 );
             }
             items.forEach((i) => {
-                if (!isUUID(i)) {
+                if (!isUUID(i) && !isVersion(i)) {
                     services.push(`/${i}`);
                 }
             });
@@ -546,11 +545,9 @@ export class Stream extends Model {
             hash.params.data = body;
         }
 
-        printDebug(
-            `Sending a ${method} message to ${url}: ${JSON.stringify(hash)}`
-        );
+        printDebug(`Sending a ${method} message to ${url}: ${toString(hash)}`);
         try {
-            this.socket?.send(JSON.stringify(hash));
+            this.socket?.send(toString(hash));
         } catch (e) {
             /* istanbul ignore next */
             printError(`Failed to send message on WebSocket: ${e}`);
@@ -591,14 +588,12 @@ export class Stream extends Model {
                         this.backoff = 1;
                     }
                     printDebug(
-                        `Stream rpc ${message.id} result: ${JSON.stringify(
+                        `Stream rpc ${message.id} result: ${toString(
                             message.result.value
                         )}`
                     );
                 } else {
-                    printError(
-                        `Stream rpc error: ${JSON.stringify(message.error)}`
-                    );
+                    printError(`Stream rpc error: ${toString(message.error)}`);
                 }
                 return;
             }
@@ -612,7 +607,7 @@ export class Stream extends Model {
 
             messages.forEach((msg: IStreamEvent) => {
                 if (msg.data?.uri !== 'extsync/wappsto/editor/console') {
-                    printDebug(`Stream message: ${JSON.stringify(msg)}`);
+                    printDebug(`Stream message: ${toString(msg)}`);
                 }
                 if (msg.meta_object?.type === 'extsync') {
                     const newData = msg.extsync || msg.data;

@@ -15,7 +15,7 @@ export class Data extends StreamModel {
     oldKeys: Array<string> = [];
 
     constructor(id?: string, type?: string) {
-        super('data', '2.1');
+        super('data');
 
         this.data_meta.type = type;
         this.data_meta.id = id;
@@ -79,6 +79,7 @@ export class Data extends StreamModel {
         Object.assign(this, pick(json, this.attributes()));
 
         if (this.data_meta.version !== 1) {
+            this.data_meta.version = 1;
             this.data = {};
             Object.assign(this.data, omit(json, ['meta', 'data_meta']));
             this.oldKeys = Object.keys(

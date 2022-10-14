@@ -4,6 +4,7 @@ import { createCheckers } from 'ts-interface-checker';
 
 class Config implements IConfig {
     debug = false;
+    requests = false;
     verbose = false;
     validation: ValidationType = 'normal';
     reconnectCount = 10;
@@ -24,6 +25,9 @@ export function config(param: IConfig): Config {
 
     if (param.debug !== undefined) {
         _config.debug = param.debug;
+    }
+    if (param.requests !== undefined) {
+        _config.requests = param.requests;
     }
     if (param.verbose !== undefined) {
         _config.verbose = param.verbose;

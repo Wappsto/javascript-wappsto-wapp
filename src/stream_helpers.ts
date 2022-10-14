@@ -13,7 +13,7 @@ async function sendRequest(type: string, msg: any): Promise<any> {
         type: type,
         message: msg,
     };
-    return await openStream.sendRequest(data);
+    return openStream.sendRequest(data);
 }
 
 export async function sendToForeground(msg: any): Promise<any> {

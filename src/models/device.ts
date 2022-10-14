@@ -196,7 +196,7 @@ export class Device extends ConnectionModel implements IDevice {
         valueTemplate.delta = delta.toString();
         valueTemplate.disableLog = disableLog;
 
-        return await this._createValue(valueTemplate);
+        return this._createValue(valueTemplate);
     }
 
     private getValueBase(
@@ -217,7 +217,7 @@ export class Device extends ConnectionModel implements IDevice {
         this.validate('createNumberValue', arguments);
         const base = this.getValueBase(params);
         base.delta = params.delta ?? '0';
-        return await this._createValue({
+        return this._createValue({
             ...base,
             number: {
                 min: params.min,
@@ -235,7 +235,7 @@ export class Device extends ConnectionModel implements IDevice {
     public async createStringValue(params: IValueString): Promise<Value> {
         this.validate('createStringValue', arguments);
         const base = this.getValueBase(params);
-        return await this._createValue({
+        return this._createValue({
             ...base,
             string: {
                 max: params.max,
@@ -247,7 +247,7 @@ export class Device extends ConnectionModel implements IDevice {
     public async createBlobValue(params: IValueBlob): Promise<Value> {
         this.validate('createBlobValue', arguments);
         const base = this.getValueBase(params);
-        return await this._createValue({
+        return this._createValue({
             ...base,
             blob: {
                 max: params.max,
@@ -259,7 +259,7 @@ export class Device extends ConnectionModel implements IDevice {
     public async createXmlValue(params: IValueXml): Promise<Value> {
         this.validate('createXmlValue', arguments);
         const base = this.getValueBase(params);
-        return await this._createValue({
+        return this._createValue({
             ...base,
             xml: {
                 xsd: params.xsd,

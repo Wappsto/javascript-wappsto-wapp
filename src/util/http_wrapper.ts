@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { session, baseUrl } from '../session';
-import { printError, printDebug } from './debug';
+import { printError, printDebug, printRequest } from './debug';
+import { toString } from './helpers';
+import { _config } from '../util/config';
+
+type Methods = 'head' | 'options' | 'put' | 'post' | 'patch' | 'delete' | 'get';
 
 const axiosInstance = axios.create({
     baseURL: baseUrl,
@@ -10,25 +14,30 @@ const axiosInstance = axios.create({
     },
 });
 
-type AxiosFun = (url: string, data?: any, config?: any) => Promise<any>;
-async function wrap(func: AxiosFun, url: string, data?: any, config?: any) {
+async function wrap(func: Methods, url: string, data?: any, config?: any) {
     try {
+        let response;
         if (config === undefined) {
-            return await func(url, data);
+            response = await axiosInstance[func](url, data);
         } else {
-            return await func(url, data, config);
+            response = await axiosInstance[func](url, data, config);
         }
+
+        printRequest(
+            `${func} ${url} ${toString(config)} ${toString(data)} => ${toString(
+                response?.data
+            )}`
+        );
+
+        return response;
     } catch (error: unknown) {
+        /* istanbul ignore next */
         if (error instanceof Error) {
-            /* istanbul ignore next */
             if (axios.isAxiosError(error)) {
-                /* istanbul ignore next */
                 if (error.response === undefined) {
-                    /* istanbul ignore next */
                     process.stderr.write(
                         `WAPPSTO FATAL ERROR: ${error.message}\n`
                     );
-                    /* istanbul ignore next */
                     process.exit(11);
                 }
             }
@@ -39,19 +48,19 @@ async function wrap(func: AxiosFun, url: string, data?: any, config?: any) {
 
 const wrapper = {
     get: async (url: string, config?: any): Promise<any> => {
-        return await wrap(axiosInstance.get, url, config);
+        return wrap('get', url, config);
     },
     post: async (url: string, data?: any, config?: any): Promise<any> => {
-        return await wrap(axiosInstance.post, url, data, config);
+        return wrap('post', url, data, config);
     },
     patch: async (url: string, data?: any, config?: any): Promise<any> => {
-        return await wrap(axiosInstance.patch, url, data, config);
+        return wrap('patch', url, data, config);
     },
     put: async (url: string, data?: any, config?: any): Promise<any> => {
-        return await wrap(axiosInstance.put, url, data, config);
+        return wrap('put', url, data, config);
     },
     delete: async (url: string, config?: any): Promise<any> => {
-        return await wrap(axiosInstance.delete, url, config);
+        return wrap('delete', url, config);
     },
 };
 
@@ -78,27 +87,33 @@ export function getErrorMessage(error: any): string {
                 case 507000000:
                     return 'Timeout, waiting for response on extsync request';
                 default:
-                    printDebug(JSON.stringify(error.response.data));
+                    /* istanbul ignore next */
+                    if (_config.debug) {
+                        printError(
+                            `Failed Request: ${error.request?.method} ${
+                                error.request?.path
+                            } ${toString(error.config?.data)} => ${toString(
+                                error.response?.data
+                            )}`
+                        );
+                    }
                     return error.response.data.message;
             }
         } else {
-            return `${error.response.statusText} for ${error.config.url}`;
+            return `${error.response.statusText} for ${error.config?.url}`;
         }
     }
 
-    /* istanbul ignore next */
     if (error instanceof TypeError) {
         return error.toString();
     }
 
-    /* istanbul ignore next */
-    printDebug(JSON.stringify(error));
-    /* istanbul ignore next */
+    printDebug(toString(error));
     return `Unknown HTTP error: ${error.errno} (${error.code})`;
 }
 
-export function printHttpError(error: any): string {
+export function printHttpError(message: string, error: any): string {
     const msg = getErrorMessage(error);
-    printError(msg);
+    printError(`${message}: ${msg}`);
     return msg;
 }

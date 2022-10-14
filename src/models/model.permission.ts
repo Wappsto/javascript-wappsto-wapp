@@ -2,6 +2,7 @@ import { Model } from './model';
 import { OntologyModel } from './model.ontology';
 import { Notification } from './notification';
 import { printDebug, printError } from '../util/debug';
+import { toString } from '../util/helpers';
 import { openStream } from '../stream_helpers';
 import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 
@@ -24,7 +25,10 @@ export class PermissionModel extends OntologyModel {
 
                 /* istanbul ignore next */
                 if (!data) {
-                    printHttpError(error);
+                    printHttpError(
+                        'PermissionModel.create - Missing error data',
+                        error
+                    );
                     reject(error);
                     return;
                 }
@@ -59,7 +63,7 @@ export class PermissionModel extends OntologyModel {
                                             'Failed to get permission to save data under users account'
                                         );
                                         /* istanbul ignore next */
-                                        printDebug(JSON.stringify(e));
+                                        printDebug(toString(e));
                                     }
                                 }
                             }
@@ -69,7 +73,7 @@ export class PermissionModel extends OntologyModel {
                     );
                 } else {
                     /* istanbul ignore next */
-                    printHttpError(error);
+                    printHttpError('Permission.create - Unhandled code', error);
                     /* istanbul ignore next */
                     reject(data);
                 }
@@ -109,7 +113,7 @@ export class PermissionModel extends OntologyModel {
                 printDebug(`Requesting new access to users data: ${message}`);
             } else {
                 printDebug(
-                    `Found permission notification - returning old result: ${JSON.stringify(
+                    `Found permission notification - returning old result: ${toString(
                         result
                     )}`
                 );
@@ -145,7 +149,7 @@ export class PermissionModel extends OntologyModel {
                             });
                         }
                         printDebug(
-                            `Got permission to ${JSON.stringify(newParams?.id)}`
+                            `Got permission to ${toString(newParams?.id)}`
                         );
                         const result = await Model.fetch(endpoint, newParams);
                         resolve(result);

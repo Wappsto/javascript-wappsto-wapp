@@ -2,7 +2,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { config, Value } from '../src/index';
+import { config, Value, request } from '../src/index';
 import { printDebug, printWarning, printError } from '../src/util/debug';
 import { IModel } from '../src/util/interfaces';
 console.log = jest.fn();
@@ -11,16 +11,30 @@ console.error = jest.fn();
 
 describe('config', () => {
     beforeEach(() => {
-        mockedAxios.post.mockResolvedValue({});
+        jest.clearAllMocks();
     });
 
     it('can enable debug', () => {
+        mockedAxios.post.mockResolvedValueOnce({ data: 'test' });
+
         printDebug('test 1');
         config({ debug: true });
         printDebug('test 2');
 
         expect(console.log).toHaveBeenCalledTimes(1);
         expect(console.log).toHaveBeenCalledWith('WAPPSTO DEBUG: test 2');
+    });
+
+    it('can enable requests', async () => {
+        mockedAxios.post.mockResolvedValueOnce({});
+
+        config({ requests: true });
+        await request.post('test', { data: 'test' }, { config: 'test' });
+
+        expect(console.log).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledWith(
+            'WAPPSTO REQUEST: post test {"config":"test"} {"data":"test"} => "test"'
+        );
     });
 
     it('can change validation mode', () => {

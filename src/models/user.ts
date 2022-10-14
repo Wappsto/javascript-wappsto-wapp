@@ -18,7 +18,7 @@ export class User extends Model {
     verified_email?: boolean;
 
     constructor() {
-        super('user', '2.1');
+        super('user');
     }
 
     public static me = async (): Promise<User> => {

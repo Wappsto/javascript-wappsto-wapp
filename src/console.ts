@@ -1,6 +1,6 @@
 import wappsto from './util/http_wrapper';
 import { printDebug, printWarning } from './util/debug';
-import { isBrowser } from './util/helpers';
+import { isBrowser, toString } from './util/helpers';
 
 const defaultConsole = Object.assign({}, console);
 
@@ -13,7 +13,7 @@ function newFunc(name: string) {
 
 function sendExtsync(key: string, ...args: any[]): any {
     const time = new Date().toISOString();
-    const data = JSON.stringify({
+    const data = toString({
         key: key,
         arguments: args[0],
         time: time,

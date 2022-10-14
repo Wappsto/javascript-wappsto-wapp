@@ -21,7 +21,7 @@ export class Ontology extends Model implements IOntologyEdge {
         relationship?: Relationship,
         to?: IOntologyModel
     ) {
-        super('ontology', '2.1');
+        super('ontology');
         Model.validateMethod('OntologyEdge', 'constructor', arguments);
 
         this.parent = from;

@@ -166,7 +166,7 @@ export class Value extends StreamModel implements IValueBase {
             await this.loadAllChildren(response.data, false);
         } catch (e) {
             /* istanbul ignore next */
-            printHttpError(e);
+            printHttpError('Value.reload', e);
         }
     }
 
@@ -269,9 +269,9 @@ export class Value extends StreamModel implements IValueBase {
                 state.data = oldData;
                 state.timestamp = oldTimestamp;
 
-                return await p;
+                return p;
             } else {
-                return await state.update();
+                return state.update();
             }
         }
         return false;
@@ -422,7 +422,6 @@ export class Value extends StreamModel implements IValueBase {
     ): Promise<void> {
         if (
             this.delta &&
-            this.delta !== '' &&
             this.delta !== '0' &&
             !this.reportIsForced &&
             !force
@@ -465,7 +464,7 @@ export class Value extends StreamModel implements IValueBase {
         timestamp: string | undefined = undefined
     ): Promise<boolean> {
         this.validate('control', arguments);
-        return await this.findStateAndUpdate('Control', data, timestamp);
+        return this.findStateAndUpdate('Control', data, timestamp);
     }
 
     public onControl(callback: ValueStreamCallback): void {
@@ -516,7 +515,7 @@ export class Value extends StreamModel implements IValueBase {
             await wappsto.patch(this.getUrl(), data, Model.generateOptions());
         } catch (e) {
             /* istanbul ignore next */
-            printHttpError(e);
+            printHttpError('Value.changeAttribute', e);
         }
     }
 

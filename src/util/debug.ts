@@ -6,6 +6,12 @@ export function printDebug(message: string): void {
     }
 }
 
+export function printRequest(message: string): void {
+    if (_config.requests) {
+        console.log(`WAPPSTO REQUEST: ${message}`);
+    }
+}
+
 export function printError(message: string | unknown): void {
     if (typeof message === 'string') {
         console.error(`WAPPSTO ERROR: ${message}`);

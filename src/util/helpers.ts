@@ -13,6 +13,11 @@ export function isUUID(data: string) {
     return reg.test(data);
 }
 
+export function isVersion(data: string) {
+    const reg = /^\d\.\d$/i;
+    return reg.test(data);
+}
+
 export function checkList(list: any[], check: any): boolean {
     for (let i = 0; i < list.length; i++) {
         if (list[i] === check || list[i].toString() === check.toString()) {
@@ -56,4 +61,21 @@ export function compareModels(m1: IModel, m2: IModel) {
 
 export function uniqueModels(value: IModel, index: number, self: IModel[]) {
     return self.findIndex((model) => compareModels(model, value)) === index;
+}
+
+export function getCircularReplacer() {
+    const seen = new WeakSet();
+    return (key: string, value: any) => {
+        if (typeof value === 'object' && value !== null) {
+            if (seen.has(value)) {
+                return 'CREF';
+            }
+            seen.add(value);
+        }
+        return value;
+    };
+}
+
+export function toString(json: Record<string, any> | unknown): string {
+    return json ? JSON.stringify(json, getCircularReplacer()) : '';
 }

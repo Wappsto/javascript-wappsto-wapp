@@ -29,8 +29,12 @@ export class Model implements IModel {
         return this.meta.type || '';
     }
 
+    public getVersion(): string {
+        return this.meta.version || '2.1';
+    }
+
     public url(): string {
-        return `/${this.meta.version}/${this.getType()}`;
+        return `/${this.getVersion()}/${this.getType()}`;
     }
 
     public path(): string {
@@ -110,7 +114,7 @@ export class Model implements IModel {
             await this._create(params);
         } catch (e) {
             /* istanbul ignore next */
-            printHttpError(e);
+            printHttpError('Model.create', e);
         }
     }
 
@@ -122,11 +126,12 @@ export class Model implements IModel {
                     this.toJSON(),
                     Model.generateOptions()
                 );
+
                 this.parse(response.data);
                 return true;
             } catch (e) {
                 /* istanbul ignore next */
-                printHttpError(e);
+                printHttpError('Model.update', e);
             }
         }
         return false;
@@ -150,7 +155,7 @@ export class Model implements IModel {
                 await this.loadAllChildren(response.data, reloadAll);
             } catch (e) {
                 /* istanbul ignore next */
-                printHttpError(e);
+                printHttpError('Model.reload', e);
             }
         }
     }
@@ -161,7 +166,7 @@ export class Model implements IModel {
                 await wappsto.delete(this.getUrl(), Model.generateOptions());
             } catch (e) {
                 /* istanbul ignore next */
-                printHttpError(e);
+                printHttpError('Model.delete', e);
             }
             this.parent?.removeChild(this);
             this.meta.id = undefined;
@@ -204,20 +209,18 @@ export class Model implements IModel {
         Model.validateMethod('Model', 'fetch', [endpoint, params, throwError]);
         let res: any[] = [];
         try {
-            const response = await wappsto.get(
-                endpoint,
-                Model.generateOptions(params)
-            );
+            const query = Model.generateOptions(params);
+            const response = await wappsto.get(endpoint, query);
 
             if (response.data) {
                 if (isArray(response.data)) {
                     res = response.data;
-                } else if (response.data) {
+                } else {
                     res = [response.data];
                 }
             }
         } catch (e) {
-            const msg = printHttpError(e);
+            const msg = printHttpError('Model.fetch', e);
             if (throwError) {
                 throw msg;
             }
