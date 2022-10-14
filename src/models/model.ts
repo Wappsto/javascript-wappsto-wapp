@@ -1,4 +1,7 @@
-import { isArray, isEqual, pick, omit } from 'lodash';
+import isEqual from 'lodash.isequal';
+import isArray from 'lodash.isarray';
+import pick from 'lodash.pick';
+import omit from 'lodash.omit';
 import { plainToClass } from 'class-transformer';
 import { isUUID, replaceAll } from '../util/helpers';
 import wappsto from '../util/http_wrapper';

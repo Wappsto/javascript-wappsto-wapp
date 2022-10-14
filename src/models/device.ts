@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import isEqual from 'lodash.isequal';
 import { Type } from 'class-transformer';
 import { PermissionModel } from './model.permission';
 import { ConnectionModel } from './model.connection';
