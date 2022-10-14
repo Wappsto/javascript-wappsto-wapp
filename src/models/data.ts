@@ -1,5 +1,4 @@
 import isEqual from 'lodash.isequal';
-import isArray from 'lodash.isarray';
 import pick from 'lodash.pick';
 import omit from 'lodash.omit';
 import { StreamModel } from './model.stream';
@@ -74,7 +73,7 @@ export class Data extends StreamModel {
 
     public parse(json: Record<string, any>): boolean {
         Model.validateMethod('Model', 'parse', arguments);
-        if (isArray(json)) {
+        if (Array.isArray(json)) {
             json = json[0];
         }
 

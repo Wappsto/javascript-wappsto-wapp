@@ -61,13 +61,13 @@ export class Stream extends Model {
 
         if (
             !this.websocketUrl.startsWith('http') &&
-            typeof window === 'object' &&
-            window &&
-            window.location &&
-            window.location.origin
+            typeof window === 'object'
         ) {
-            /* istanbul ignore next */
-            this.websocketUrl = window.location.origin + this.websocketUrl;
+            const w = window as any;
+            if (w.location && w.location.origin) {
+                /* istanbul ignore next */
+                this.websocketUrl = w.location.origin + this.websocketUrl;
+            }
         }
         this.websocketUrl = this.websocketUrl.replace(/^http/, 'ws');
 
