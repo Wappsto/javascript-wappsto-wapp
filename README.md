@@ -524,6 +524,22 @@ dashboard.
 await Wappsto.notify('This is a custom notification from my Wapp');
 ```
 
+You can also send an email to your self by calling `sendMail`.
+
+```javascript
+await Wappsto.sendMail({
+	subject: 'Mail with information',
+	body: '<h1>Hello from the Wapp</h1><p>Here is some more information</p>',
+	from: 'My New Wapp',
+});
+```
+
+It is also possible to send a SMS to your self, if your phone number is verified.
+
+```javascript
+await Wappsto.sendSMS('Simple SMS from your Wapp');
+```
+
 ### Ontology
 
 To build a relationship graph of your data, you need to define the ontology.
@@ -552,7 +568,7 @@ const fullEdge = await startNode.createEdge({
 });
 ```
 
-To remove an edge, you can just call `delete` on teh edge, but if you want to remove the whole branch, you can call `deleteBranch`. This will remove all edges and nodes under this node or edge.
+To remove an edge, you can just call `delete` on the edge, but if you want to remove the whole branch, you can call `deleteBranch`. This will remove all edges and nodes under this node or edge.
 
 ```javascript
 await startNode.deleteBranch();
@@ -579,16 +595,6 @@ await Wappsto.request.post('/network', { name: 'Network Name' });
 ### Config
 
 It is possible to change some of the behavior of the library using config.
-
-#### Enable verbose responses from wappsto
-
-To enable verbose mode in wappsto, the verbose mode needs to be set to true.
-
-```javascript
-Wappsto.config({
-	verbose: true,
-});
-```
 
 #### Validation
 

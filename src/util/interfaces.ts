@@ -3,6 +3,7 @@
 export type ValidationType = 'none' | 'normal';
 export interface IConfig {
     verbose?: boolean;
+    requests?: boolean;
     debug?: boolean;
     validation?: ValidationType;
     reconnectCount?: number;
@@ -311,6 +312,8 @@ export interface INotificationBase {
 
 export interface INotificationFunc {
     notify(message: string, level?: EventLogLevel, data?: any): Promise<void>;
+    sendMail(params: IMail): Promise<boolean>;
+    sendSMS(msg: string): Promise<boolean>;
 }
 
 export type LogOperation =
@@ -493,4 +496,9 @@ export interface IOntologyNodeFunc extends IOntologyModelFunc {
     constructor(name?: string): void;
     createNode(name: string): Promise<IOntologyNode>;
     findNode(name: string): Promise<IOntologyNode>;
+}
+export interface IMail {
+    body: string;
+    subject: string;
+    from: string;
 }

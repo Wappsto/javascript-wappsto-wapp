@@ -8,6 +8,7 @@ export const ValidationType = t.union(t.lit('none'), t.lit('normal'));
 
 export const IConfig = t.iface([], {
     verbose: t.opt('boolean'),
+    requests: t.opt('boolean'),
     debug: t.opt('boolean'),
     validation: t.opt('ValidationType'),
     reconnectCount: t.opt('number'),
@@ -413,6 +414,8 @@ export const INotificationFunc = t.iface([], {
         t.param('level', 'EventLogLevel', true),
         t.param('data', 'any', true)
     ),
+    sendMail: t.func('boolean', t.param('params', 'IMail')),
+    sendSMS: t.func('boolean', t.param('msg', 'string')),
 });
 
 export const LogOperation = t.union(
@@ -655,6 +658,12 @@ export const IOntologyNodeFunc = t.iface(['IOntologyModelFunc'], {
     findNode: t.func('IOntologyNode', t.param('name', 'string')),
 });
 
+export const IMail = t.iface([], {
+    body: 'string',
+    subject: 'string',
+    from: 'string',
+});
+
 const exportedTypeSuite: t.ITypeSuite = {
     ValidationType,
     IConfig,
@@ -719,5 +728,6 @@ const exportedTypeSuite: t.ITypeSuite = {
     IOntologyEdgeFunc,
     IOntologyNode,
     IOntologyNodeFunc,
+    IMail,
 };
 export default exportedTypeSuite;
