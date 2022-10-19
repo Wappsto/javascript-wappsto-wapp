@@ -794,7 +794,10 @@ describe('network', () => {
         const network = new Network('network');
         network.meta.id = 'f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02';
         await network.delete();
+        const res = await network.update();
 
+        expect(res).toBe(false);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
             '/2.1/network/f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02',

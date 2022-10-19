@@ -279,7 +279,8 @@ export class Value extends StreamModel implements IValueBase {
 
     private findStateAndCallback(
         type: StateType,
-        callback: ValueStreamCallback
+        callback: ValueStreamCallback,
+        callOnInit: boolean
     ): void {
         if (!checkList(this.stateCallbacks[type], callback)) {
             this.stateCallbacks[type].push(callback);
@@ -290,6 +291,9 @@ export class Value extends StreamModel implements IValueBase {
                         cb(this, state.data, state.timestamp);
                     });
                 });
+                if (callOnInit) {
+                    callback(this, state.data, state.timestamp);
+                }
             }
         }
     }
@@ -469,12 +473,12 @@ export class Value extends StreamModel implements IValueBase {
 
     public onControl(callback: ValueStreamCallback): void {
         this.validate('onControl', arguments);
-        this.findStateAndCallback('Control', callback);
+        this.findStateAndCallback('Control', callback, false);
     }
 
-    public onReport(callback: ValueStreamCallback): void {
+    public onReport(callback: ValueStreamCallback, callOnInit?: boolean): void {
         this.validate('onReport', arguments);
-        this.findStateAndCallback('Report', callback);
+        this.findStateAndCallback('Report', callback, callOnInit || false);
     }
 
     public onRefresh(callback: RefreshStreamCallback): void {

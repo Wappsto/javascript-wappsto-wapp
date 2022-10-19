@@ -1502,4 +1502,19 @@ describe('value', () => {
             }
         );
     });
+
+    it('can call teh onReport callback on init', () => {
+        const fun = jest.fn();
+        const value = new Value();
+        const state = new State('Report');
+        value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
+        state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
+        state.data = 'data';
+        state.timestamp = 'timestamp';
+        value.state.push(state);
+        value.onReport(fun, true);
+
+        expect(fun).toHaveBeenCalledTimes(1);
+        expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
+    });
 });

@@ -334,6 +334,14 @@ value.onControl((value, data, timestamp) => {
 });
 ```
 
+If you want the onReport callback to be called with the current data,
+then you can set the ´callOnInit´ to `true` when registering your
+`onReport` callback.
+
+```javascript
+value.onReport(reportCallback, true);
+```
+
 And you can cancel these callbacks by calling `cancelOnReport` and
 `cancelOnControl`.
 
@@ -614,5 +622,17 @@ It is possible to change from the default 10 times the stream will try to reconn
 ```javascript
 Wappsto.config({
 	reconnectCount: 3,
+});
+```
+
+#### Debug information
+
+It is possible to get a lot of extra debug information about when the
+library is doing by enabling debug options.
+
+```javascript
+Wappsto.config({
+    debug: true,
+    requests: true,
 });
 ```

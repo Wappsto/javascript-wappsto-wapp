@@ -149,7 +149,7 @@ export class PermissionModel extends OntologyModel {
                             });
                         }
                         printDebug(
-                            `Got permission to ${toString(newParams?.id)}`
+                            `Got permission to ${toString(newParams.id)}`
                         );
                         const result = await Model.fetch(endpoint, newParams);
                         resolve(result);

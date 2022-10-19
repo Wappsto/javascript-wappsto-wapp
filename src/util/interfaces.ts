@@ -212,7 +212,7 @@ export interface IValueFunc {
     forceReport(data: string | number, timestamp: string | undefined): void;
     control(data: string | number, timestamp: string | undefined): void;
     onControl(callback: ValueStreamCallback): void;
-    onReport(callback: ValueStreamCallback): void;
+    onReport(callback: ValueStreamCallback, callOnInit?: boolean): void;
     onRefresh(callback: RefreshStreamCallback): void;
     getReportLog(request: ILogRequest): Promise<ILogResponse>;
     getControlLog(request: ILogRequest): Promise<ILogResponse>;
@@ -391,14 +391,12 @@ export interface IStreamModel {
 
 export interface IStreamFunc {
     subscribe(model: IStreamModel, full?: boolean): void;
-    sendInternal(type: string): Promise<any>;
     subscribeInternal(type: string, handler: ServiceHandler): void;
     subscribeService(
         service: string,
         handler: ServiceHandler,
         full?: boolean
     ): void;
-    addSignalHandler(type: string, handler: SignalHandler): void;
     sendRequest(msg: any): Promise<any>;
     sendEvent(type: string, msg: any): Promise<any>;
     sendResponse(event: any, code: number, msg: any): Promise<void>;
@@ -434,7 +432,6 @@ export interface IWappStorageFunc {
 }
 
 export type StorageChangeHandler = () => void;
-export type SignalHandler = (event: string) => void;
 export type ServiceHandler = (
     event: any
 ) => Promise<true | undefined> | boolean;

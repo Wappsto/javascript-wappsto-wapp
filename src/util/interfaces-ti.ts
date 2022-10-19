@@ -287,7 +287,11 @@ export const IValueFunc = t.iface([], {
         t.param('timestamp', t.union('string', 'undefined'))
     ),
     onControl: t.func('void', t.param('callback', 'ValueStreamCallback')),
-    onReport: t.func('void', t.param('callback', 'ValueStreamCallback')),
+    onReport: t.func(
+        'void',
+        t.param('callback', 'ValueStreamCallback'),
+        t.param('callOnInit', 'boolean', true)
+    ),
     onRefresh: t.func('void', t.param('callback', 'RefreshStreamCallback')),
     getReportLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
     getControlLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
@@ -504,7 +508,6 @@ export const IStreamFunc = t.iface([], {
         t.param('model', 'IStreamModel'),
         t.param('full', 'boolean', true)
     ),
-    sendInternal: t.func('any', t.param('type', 'string')),
     subscribeInternal: t.func(
         'void',
         t.param('type', 'string'),
@@ -515,11 +518,6 @@ export const IStreamFunc = t.iface([], {
         t.param('service', 'string'),
         t.param('handler', 'ServiceHandler'),
         t.param('full', 'boolean', true)
-    ),
-    addSignalHandler: t.func(
-        'void',
-        t.param('type', 'string'),
-        t.param('handler', 'SignalHandler')
     ),
     sendRequest: t.func('any', t.param('msg', 'any')),
     sendEvent: t.func('any', t.param('type', 'string'), t.param('msg', 'any')),
@@ -572,8 +570,6 @@ export const IWappStorageFunc = t.iface([], {
 });
 
 export const StorageChangeHandler = t.func('void');
-
-export const SignalHandler = t.func('void', t.param('event', 'string'));
 
 export const ServiceHandler = t.func(
     t.union(t.union(t.lit(true), 'undefined'), 'boolean'),
@@ -713,7 +709,6 @@ const exportedTypeSuite: t.ITypeSuite = {
     IOAuthFunc,
     IWappStorageFunc,
     StorageChangeHandler,
-    SignalHandler,
     ServiceHandler,
     RequestHandler,
     StreamCallback,

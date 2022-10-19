@@ -9,7 +9,6 @@ import { trace, clearTrace } from '../util/trace';
 import {
     IStreamEvent,
     ServiceHandler,
-    SignalHandler,
     RequestHandler,
     IStreamModel,
 } from '../util/interfaces';
@@ -33,10 +32,6 @@ interface StreamServiceHash {
     [key: string]: ServiceHandler[];
 }
 
-interface StreamSignalHash {
-    [key: string]: SignalHandler[];
-}
-
 export class Stream extends Model {
     static endpoint = '/2.1/stream';
     socket?: WebSocket;
@@ -44,7 +39,6 @@ export class Stream extends Model {
     ignoreReconnect = false;
     models: StreamModelHash = {};
     services: StreamServiceHash = {};
-    handlers: StreamSignalHash = {};
     subscriptions: string[] = [];
     opened = false;
     backoff = 1;
@@ -59,13 +53,13 @@ export class Stream extends Model {
         }
         this.websocketUrl += `2.1/websocket/open`;
 
+        /* istanbul ignore next */
         if (
             !this.websocketUrl.startsWith('http') &&
             typeof window === 'object'
         ) {
             const w = window as any;
             if (w.location && w.location.origin) {
-                /* istanbul ignore next */
                 this.websocketUrl = w.location.origin + this.websocketUrl;
             }
         }
@@ -207,12 +201,6 @@ export class Stream extends Model {
         }
     }
 
-    public async sendInternal(type: string): Promise<any> {
-        this.validate('sendInternal', arguments);
-
-        return this.sendEvent(type, '');
-    }
-
     public subscribeInternal(type: string, handler: ServiceHandler): void {
         this.validate('subscribeInternal', arguments);
         this.subscribeService('extsync', (event) => {
@@ -276,18 +264,6 @@ export class Stream extends Model {
                 this.removeSubscription(path);
             }
         }
-    }
-
-    public addSignalHandler(type: string, handler: SignalHandler): void {
-        this.validate('addSignalHandler', arguments);
-
-        this.open().then(() => {
-            printDebug(`Add Signal Handler: ${type}`);
-            if (!this.handlers[type]) {
-                this.handlers[type] = [];
-            }
-            this.handlers[type].push(handler);
-        });
     }
 
     public async sendEvent(type: string, msg: any): Promise<any> {
@@ -444,13 +420,6 @@ export class Stream extends Model {
             this.sendMessage('PATCH', '/services/2.1/websocket/open', {
                 subscription: this.subscriptions,
             });
-        });
-    }
-
-    private handleEvent(type: string, event: any): void {
-        printDebug(`Handle Event: ${type}`);
-        this.handlers[type]?.forEach((handler: SignalHandler) => {
-            handler(event);
         });
     }
 
@@ -627,18 +596,12 @@ export class Stream extends Model {
         };
 
         this.socket.onerror = (event: any) => {
-            try {
-                this.handleEvent('error', event);
-            } catch (e) {
-                /* istanbul ignore next */
-                printError('Stream error: ' + this.websocketUrl);
-            }
+            /* istanbul ignore next */
+            printError('Stream error: ' + this.websocketUrl);
         };
 
         this.socket.onclose = (event: CloseEvent) => {
-            if (this.ignoreReconnect) {
-                this.handleEvent('close', event);
-            } else {
+            if (!this.ignoreReconnect) {
                 reconnect();
             }
         };
