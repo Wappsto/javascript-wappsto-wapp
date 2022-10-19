@@ -1513,8 +1513,9 @@ describe('value', () => {
         state.timestamp = 'timestamp';
         value.state.push(state);
         value.onReport(fun, true);
+        value.onReport(fun, true);
 
-        expect(fun).toHaveBeenCalledTimes(1);
+        expect(fun).toHaveBeenCalledTimes(2);
         expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
     });
 });

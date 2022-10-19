@@ -282,18 +282,18 @@ export class Value extends StreamModel implements IValueBase {
         callback: ValueStreamCallback,
         callOnInit: boolean
     ): void {
-        if (!checkList(this.stateCallbacks[type], callback)) {
-            this.stateCallbacks[type].push(callback);
-            const state = this.findState(type);
-            if (state) {
+        const state = this.findState(type);
+        if (state) {
+            if (!checkList(this.stateCallbacks[type], callback)) {
+                this.stateCallbacks[type].push(callback);
                 state.onChange(() => {
                     this.stateCallbacks[state.type].forEach((cb) => {
                         cb(this, state.data, state.timestamp);
                     });
                 });
-                if (callOnInit) {
-                    callback(this, state.data, state.timestamp);
-                }
+            }
+            if (callOnInit) {
+                callback(this, state.data, state.timestamp);
             }
         }
     }
