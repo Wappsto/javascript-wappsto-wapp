@@ -13,6 +13,7 @@ import {
     getSecondsToNextPeriod,
     randomIntFromInterval,
     isPositiveInteger,
+    compareDates,
 } from '../util/helpers';
 import { printDebug } from '../util/debug';
 import {
@@ -243,44 +244,45 @@ export class Value extends StreamModel implements IValueBase {
         timestamp: string | undefined
     ): Promise<boolean> {
         const state = this.findState(type);
-        if (state) {
-            state.data = data.toString();
-            state.timestamp = timestamp || this.getTime();
-            if (this.sendReportWithJitter && type === 'Report') {
-                this.sendReportWithJitter = false;
-                const eventTimestamp = state.timestamp;
-
-                const timeout = randomIntFromInterval(
-                    _config.jitterMin,
-                    _config.jitterMax
-                );
-                await new Promise((r) => {
-                    this.jitterTimer = setTimeout(r, timeout * 1000);
-                });
-
-                const oldData = state.data;
-                const oldTimestamp = state.timestamp;
-
-                state.data = data.toString();
-                state.timestamp = eventTimestamp;
-
-                const p = state.update();
-
-                state.data = oldData;
-                state.timestamp = oldTimestamp;
-
-                return p;
-            } else {
-                return state.update();
-            }
+        if (!state) {
+            return false;
         }
-        return false;
+
+        state.data = data.toString();
+        state.timestamp = timestamp || this.getTime();
+        if (type !== 'Report' || !this.sendReportWithJitter) {
+            return state.update();
+        }
+
+        this.sendReportWithJitter = false;
+        const eventTimestamp = state.timestamp;
+
+        const timeout = randomIntFromInterval(
+            _config.jitterMin,
+            _config.jitterMax
+        );
+        await new Promise((r) => {
+            this.jitterTimer = setTimeout(r, timeout * 1000);
+        });
+
+        const oldData = state.data;
+        const oldTimestamp = state.timestamp;
+
+        state.data = data.toString();
+        state.timestamp = eventTimestamp;
+
+        const p = state.update();
+
+        state.data = oldData;
+        state.timestamp = oldTimestamp;
+
+        return p;
     }
 
     private findStateAndCallback(
         type: StateType,
         callback: ValueStreamCallback,
-        callOnInit: boolean
+        callOnInit?: boolean
     ): void {
         const state = this.findState(type);
         if (state) {
@@ -292,7 +294,7 @@ export class Value extends StreamModel implements IValueBase {
                     });
                 });
             }
-            if (callOnInit) {
+            if (callOnInit === true) {
                 callback(this, state.data, state.timestamp);
             }
         }
@@ -424,11 +426,17 @@ export class Value extends StreamModel implements IValueBase {
         timestamp: string | undefined = undefined,
         force: boolean
     ): Promise<void> {
+        const oldState = this.findState('Report');
+        if (!oldState) {
+            return;
+        }
+
         if (
             this.delta &&
             this.delta !== '0' &&
             !this.reportIsForced &&
-            !force
+            !force &&
+            compareDates(timestamp || new Date(), oldState.timestamp)
         ) {
             if (this.delta.toLowerCase() === 'inf') {
                 printDebug(
@@ -437,10 +445,6 @@ export class Value extends StreamModel implements IValueBase {
                 return;
             }
 
-            const oldState = this.findState('Report');
-            if (!oldState) {
-                return;
-            }
             const oldData = parseFloat(oldState.data);
             let newData: number;
             if (typeof data === 'string') {
@@ -473,12 +477,12 @@ export class Value extends StreamModel implements IValueBase {
 
     public onControl(callback: ValueStreamCallback): void {
         this.validate('onControl', arguments);
-        this.findStateAndCallback('Control', callback, false);
+        this.findStateAndCallback('Control', callback);
     }
 
     public onReport(callback: ValueStreamCallback, callOnInit?: boolean): void {
         this.validate('onReport', arguments);
-        this.findStateAndCallback('Report', callback, callOnInit || false);
+        this.findStateAndCallback('Report', callback, callOnInit);
     }
 
     public onRefresh(callback: RefreshStreamCallback): void {

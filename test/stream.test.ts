@@ -1013,6 +1013,87 @@ describe('stream', () => {
         expect(res).toBe(true);
     });
 
+    it('can signal that the background is ready', async () => {
+        await server.connected;
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        server.send({
+            meta: {
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                type: 'eventstream',
+                version: '2.1',
+            },
+            event: 'extsync',
+            meta_object: {
+                type: 'extsync',
+                version: '2.1',
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+            },
+            data: {
+                meta: {
+                    type: 'extsync',
+                    version: '2.1',
+                    id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                },
+                request: false,
+                method: 'POST',
+                uri: 'extsync/',
+                body: '{"type":"isBackgroudStarted","message":""}',
+            },
+            path: '/extsync/direct',
+        });
+
+        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+        fromForeground((msg) => {
+        });
+
+        server.send({
+            meta: {
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                type: 'eventstream',
+                version: '2.1',
+            },
+            event: 'extsync',
+            meta_object: {
+                type: 'extsync',
+                version: '2.1',
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+            },
+            data: {
+                meta: {
+                    type: 'extsync',
+                    version: '2.1',
+                    id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                },
+                request: false,
+                method: 'POST',
+                uri: 'extsync/',
+                body: '{"type":"isBackgroudStarted","message":""}',
+            },
+            path: '/extsync/direct',
+        });
+
+        const msg = expect.objectContaining({
+            jsonrpc: '2.0',
+            method: 'PATCH',
+            params: {
+                data: {
+                    subscription: [
+                        '/extsync',
+                        '/state/cda4d978-39e9-47bf-8497-9813b0f94973',
+                    ],
+                },
+                url: '/services/2.1/websocket/open',
+            },
+        });
+
+        await expect(server).toReceiveMessage(msg);
+        expect(server).toHaveReceivedMessages([msg]);
+
+        server.close();
+    });
+
     it('can timeout waiting for background', async () => {
         const p = await waitForBackground(1);
         expect(p).toBe(false);

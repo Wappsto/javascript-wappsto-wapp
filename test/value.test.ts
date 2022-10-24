@@ -160,7 +160,7 @@ describe('value', () => {
     });
 
     it('can trigger an refresh event to the device', async () => {
-        mockedAxios.put.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -179,7 +179,7 @@ describe('value', () => {
     });
 
     it('can trigger a delta event to the device', async () => {
-        mockedAxios.put.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -198,7 +198,7 @@ describe('value', () => {
     });
 
     it('can trigger a period event to the device', async () => {
-        mockedAxios.put.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -1064,9 +1064,12 @@ describe('value', () => {
             period: '2',
         });
 
+        const timestamp_jitter = '2022-02-02T02:02:02Z';
+        const timestamp = '2022-02-02T03:03:03Z';
+
         value.onRefresh((val, type) => {
-            value.report(10, 'timestamp-jitter');
-            value.report(100, 'timestamp');
+            value.report(10, timestamp_jitter);
+            value.report(100, timestamp);
         });
 
         await server.connected;
@@ -1110,7 +1113,7 @@ describe('value', () => {
 
         expect(firstCallCount).toBe(2);
         expect(value.getReportData()).toEqual('100');
-        expect(value.getReportTimestamp()).toEqual('timestamp');
+        expect(value.getReportTimestamp()).toEqual(timestamp);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.put).toHaveBeenCalledTimes(3);
@@ -1137,7 +1140,7 @@ describe('value', () => {
                 },
                 type: 'Report',
                 data: '100',
-                timestamp: 'timestamp',
+                timestamp: timestamp,
             },
             {}
         );
@@ -1151,7 +1154,7 @@ describe('value', () => {
                 },
                 type: 'Report',
                 data: '10',
-                timestamp: 'timestamp-jitter',
+                timestamp: timestamp_jitter,
             },
             {}
         );
@@ -1503,7 +1506,7 @@ describe('value', () => {
         );
     });
 
-    it('can call teh onReport callback on init', () => {
+    it('can call the onReport callback on init', () => {
         const fun = jest.fn();
         const value = new Value();
         const state = new State('Report');
@@ -1517,5 +1520,71 @@ describe('value', () => {
 
         expect(fun).toHaveBeenCalledTimes(2);
         expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
+    });
+
+    it('can send old data without delta', async () => {
+        mockedAxios.put
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        value.delta = '2';
+        const state = new State('Report');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        const timestamp1 = '2022-02-02T03:03:03Z';
+        const timestamp2 = '2022-02-02T02:02:02Z';
+        const timestamp3 = '2022-02-02T01:01:01Z';
+
+        await value.report(1, timestamp1);
+        await value.report(1, timestamp2);
+        await value.report(1, timestamp3);
+
+        expect(mockedAxios.put).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            {
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: '1',
+                timestamp: timestamp1,
+            },
+            {}
+        );
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            {
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: '1',
+                timestamp: timestamp2,
+            },
+            {}
+        );
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            {
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: '1',
+                timestamp: timestamp3,
+            },
+            {}
+        );
     });
 });

@@ -79,3 +79,23 @@ export function getCircularReplacer() {
 export function toString(json: Record<string, any> | unknown): string {
     return json ? JSON.stringify(json, getCircularReplacer()) : '';
 }
+
+export function toTime(date: Date | string | number): number {
+    if (typeof date === 'string') {
+        return Date.parse(date);
+    } else if (typeof date === 'number') {
+        return date;
+    } else {
+        return date.getTime();
+    }
+}
+
+export function compareDates(
+    date1: Date | string | number,
+    date2: Date | string | number
+): boolean {
+    const d1 = toTime(date1);
+    const d2 = toTime(date2);
+
+    return d1 >= d2;
+}

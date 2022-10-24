@@ -99,8 +99,12 @@ export function cancelFromForeground(): void {
 let backgroudIsStarted = false;
 
 function handleIsBackgroundStarted(message: any): boolean {
-    openStream.sendEvent('backgroudIsStarted', '');
-    return true;
+    let res = false;
+    if (request_handlers['foreground']) {
+        openStream.sendEvent('backgroudIsStarted', '');
+        res = true;
+    }
+    return res;
 }
 
 function handleBackgroundIsStarted(message: any): boolean {
