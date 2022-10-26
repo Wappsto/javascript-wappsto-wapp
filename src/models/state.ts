@@ -21,6 +21,10 @@ export class State extends StreamModel implements IState {
         return ['data', 'type', 'timestamp'];
     }
 
+    protected usePutForUpdate(): boolean {
+        return false;
+    }
+
     private static validate(name: string, params: any): void {
         Model.validateMethod('State', name, params);
     }

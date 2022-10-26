@@ -47,6 +47,10 @@ export class Model implements IModel {
         return this.getType();
     }
 
+    protected usePutForUpdate(): boolean {
+        return true;
+    }
+
     /* eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
     public removeChild(_: IModel): void {}
 
@@ -123,7 +127,13 @@ export class Model implements IModel {
     public async update(): Promise<boolean> {
         if (this.meta.id !== undefined) {
             try {
-                const response = await wappsto.put(
+                let func;
+                if (this.usePutForUpdate()) {
+                    func = wappsto.put;
+                } else {
+                    func = wappsto.patch;
+                }
+                const response = await func(
                     this.getUrl(),
                     this.toJSON(),
                     Model.generateOptions()

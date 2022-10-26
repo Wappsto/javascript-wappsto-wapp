@@ -126,7 +126,7 @@ describe('value', () => {
     });
 
     it('can return an old state when creating', async () => {
-        mockedAxios.put.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -141,8 +141,8 @@ describe('value', () => {
         });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
@@ -334,7 +334,7 @@ describe('value', () => {
     });
 
     it('can send a report', async () => {
-        mockedAxios.put
+        mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
 
@@ -348,10 +348,10 @@ describe('value', () => {
         const res = await value.control(10);
 
         expect(res).toBe(false);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(value.getReportData()).toBe('test');
         expect(value.getControlData()).toBe(undefined);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -364,7 +364,7 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
@@ -383,7 +383,7 @@ describe('value', () => {
     });
 
     it('can send a control', async () => {
-        mockedAxios.put
+        mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
 
@@ -400,8 +400,8 @@ describe('value', () => {
 
         expect(res1).toBe(true);
         expect(res2).toBe(true);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -416,7 +416,7 @@ describe('value', () => {
         );
         expect(value.getControlData()).toBe('test');
         expect(value.getReportData()).toBe(undefined);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
@@ -605,7 +605,7 @@ describe('value', () => {
     });
 
     it('drops message when there is a delta', async () => {
-        mockedAxios.put
+        mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] })
@@ -630,8 +630,8 @@ describe('value', () => {
         await value.report(123123);
         await value.forceReport(444);
 
-        expect(mockedAxios.put).toHaveBeenCalledTimes(6);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(6);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -644,7 +644,7 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -657,7 +657,7 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -670,7 +670,7 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -683,7 +683,7 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -699,7 +699,7 @@ describe('value', () => {
     });
 
     it('can handle delta update from user', async () => {
-        mockedAxios.put
+        mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
 
@@ -726,8 +726,8 @@ describe('value', () => {
         await value.report(2);
         await value.report(3);
 
-        expect(mockedAxios.put).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -740,7 +740,7 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -911,7 +911,7 @@ describe('value', () => {
     });
 
     it('can send a report with a high delta when it is triggered by user', async () => {
-        mockedAxios.put
+        mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
@@ -962,7 +962,7 @@ describe('value', () => {
         await value.report(1);
         await value.report(9);
 
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
 
         server.send({
             meta_object: {
@@ -978,8 +978,8 @@ describe('value', () => {
         expect(value.getReportData()).toEqual('100');
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
             expect.objectContaining({
                 meta: {
@@ -992,7 +992,7 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
             expect.objectContaining({
                 meta: {
@@ -1005,7 +1005,7 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
             expect.objectContaining({
                 meta: {
@@ -1022,7 +1022,7 @@ describe('value', () => {
 
     it('can send a report with a high delta when it is triggered by period', async () => {
         config({ jitterMin: 2, jitterMax: 2 });
-        mockedAxios.put
+        mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
@@ -1064,11 +1064,11 @@ describe('value', () => {
             period: '2',
         });
 
-        const timestamp_jitter = '2022-02-02T02:02:02Z';
+        const timestamp_jitter = '2022-02-02T02:02:02.000Z';
         const timestamp = '2022-02-02T03:03:03Z';
 
         value.onRefresh((val, type) => {
-            value.report(10, timestamp_jitter);
+            value.report(10, Date.parse(timestamp_jitter));
             value.report(100, timestamp);
         });
 
@@ -1079,13 +1079,13 @@ describe('value', () => {
 
         let wait = 2000;
         while (wait !== 0) {
-            if (mockedAxios.put.mock.calls.length >= 2) {
+            if (mockedAxios.patch.mock.calls.length >= 2) {
                 break;
             }
             await new Promise((r) => setTimeout(r, 1));
             wait -= 1;
         }
-        const firstCallCount = mockedAxios.put.mock.calls.length;
+        const firstCallCount = mockedAxios.patch.mock.calls.length;
 
         server.send({
             meta_object: {
@@ -1102,7 +1102,7 @@ describe('value', () => {
         while (wait !== 0) {
             await new Promise((r) => setTimeout(r, 1));
             wait -= 1;
-            if (mockedAxios.put.mock.calls.length >= 3) {
+            if (mockedAxios.patch.mock.calls.length >= 3) {
                 break;
             }
         }
@@ -1116,8 +1116,8 @@ describe('value', () => {
         expect(value.getReportTimestamp()).toEqual(timestamp);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             expect.objectContaining({
                 meta: {
@@ -1130,7 +1130,7 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             {
                 meta: {
@@ -1144,7 +1144,7 @@ describe('value', () => {
             },
             {}
         );
-        expect(mockedAxios.put).toHaveBeenLastCalledWith(
+        expect(mockedAxios.patch).toHaveBeenLastCalledWith(
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             {
                 meta: {
@@ -1523,7 +1523,7 @@ describe('value', () => {
     });
 
     it('can send old data without delta', async () => {
-        mockedAxios.put
+        mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
@@ -1543,8 +1543,8 @@ describe('value', () => {
         await value.report(1, timestamp2);
         await value.report(1, timestamp3);
 
-        expect(mockedAxios.put).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
@@ -1558,7 +1558,7 @@ describe('value', () => {
             },
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
@@ -1572,7 +1572,7 @@ describe('value', () => {
             },
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {

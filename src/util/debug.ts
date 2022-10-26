@@ -1,4 +1,5 @@
-import { _config } from '../util/config';
+import { _config } from './config';
+import { toString } from './helpers';
 
 export function printDebug(message: string): void {
     if (_config.debug) {
@@ -6,9 +7,18 @@ export function printDebug(message: string): void {
     }
 }
 
-export function printRequest(message: string): void {
-    if (_config.requests) {
-        console.log(`WAPPSTO REQUEST: ${message}`);
+export function printRequest(
+    func: string,
+    url: string,
+    config: Record<string, any>,
+    data: Record<string, any>,
+    response?: Record<string, any>
+) {
+    if (_config.requests && !url.includes('/console')) {
+        const msg = `${func} ${url} ${toString(config)} ${toString(
+            data
+        )} => ${toString(response)}`;
+        console.log(`WAPPSTO REQUEST: ${msg}`);
     }
 }
 

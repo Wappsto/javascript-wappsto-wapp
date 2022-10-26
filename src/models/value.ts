@@ -17,6 +17,7 @@ import {
 } from '../util/helpers';
 import { printDebug } from '../util/debug';
 import {
+    Timestamp,
     IModel,
     IValueBase,
     IValueNumberBase,
@@ -241,7 +242,7 @@ export class Value extends StreamModel implements IValueBase {
     private async findStateAndUpdate(
         type: StateType,
         data: string | number,
-        timestamp: string | undefined
+        timestamp: Timestamp
     ): Promise<boolean> {
         const state = this.findState(type);
         if (!state) {
@@ -249,7 +250,14 @@ export class Value extends StreamModel implements IValueBase {
         }
 
         state.data = data.toString();
-        state.timestamp = timestamp || this.getTime();
+        if (!timestamp) {
+            state.timestamp = this.getTime();
+        } else if (typeof timestamp === 'string') {
+            state.timestamp = timestamp;
+        } else {
+            state.timestamp = new Date(timestamp).toISOString();
+        }
+
         if (type !== 'Report' || !this.sendReportWithJitter) {
             return state.update();
         }
@@ -405,7 +413,7 @@ export class Value extends StreamModel implements IValueBase {
 
     public async report(
         data: string | number,
-        timestamp: string | undefined = undefined
+        timestamp: Timestamp = undefined
     ): Promise<void> {
         this.validate('report', arguments);
 
@@ -414,7 +422,7 @@ export class Value extends StreamModel implements IValueBase {
 
     public async forceReport(
         data: string | number,
-        timestamp: string | undefined = undefined
+        timestamp: Timestamp = undefined
     ): Promise<void> {
         this.validate('forceReport', arguments);
 
@@ -423,7 +431,7 @@ export class Value extends StreamModel implements IValueBase {
 
     private async sendReport(
         data: string | number,
-        timestamp: string | undefined = undefined,
+        timestamp: Timestamp = undefined,
         force: boolean
     ): Promise<void> {
         const oldState = this.findState('Report');
@@ -469,7 +477,7 @@ export class Value extends StreamModel implements IValueBase {
 
     public async control(
         data: string | number,
-        timestamp: string | undefined = undefined
+        timestamp: Timestamp = undefined
     ): Promise<boolean> {
         this.validate('control', arguments);
         return this.findStateAndUpdate('Control', data, timestamp);

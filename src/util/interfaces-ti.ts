@@ -4,6 +4,8 @@
 import * as t from 'ts-interface-checker';
 // tslint:disable:object-literal-key-quotes
 
+export const Timestamp = t.union('string', 'number', 'undefined');
+
 export const ValidationType = t.union(t.lit('none'), t.lit('normal'));
 
 export const IConfig = t.iface([], {
@@ -274,17 +276,17 @@ export const IValueFunc = t.iface([], {
     report: t.func(
         'void',
         t.param('data', t.union('string', 'number')),
-        t.param('timestamp', t.union('string', 'undefined'))
+        t.param('timestamp', 'Timestamp')
     ),
     forceReport: t.func(
         'void',
         t.param('data', t.union('string', 'number')),
-        t.param('timestamp', t.union('string', 'undefined'))
+        t.param('timestamp', 'Timestamp')
     ),
     control: t.func(
         'void',
         t.param('data', t.union('string', 'number')),
-        t.param('timestamp', t.union('string', 'undefined'))
+        t.param('timestamp', 'Timestamp')
     ),
     onControl: t.func('void', t.param('callback', 'ValueStreamCallback')),
     onReport: t.func(
@@ -661,6 +663,7 @@ export const IMail = t.iface([], {
 });
 
 const exportedTypeSuite: t.ITypeSuite = {
+    Timestamp,
     ValidationType,
     IConfig,
     IConfigFunc,

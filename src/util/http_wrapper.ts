@@ -23,11 +23,7 @@ async function wrap(func: Methods, url: string, data?: any, config?: any) {
             response = await axiosInstance[func](url, data, config);
         }
 
-        printRequest(
-            `${func} ${url} ${toString(config)} ${toString(data)} => ${toString(
-                response?.data
-            )}`
-        );
+        printRequest(func, url, config, data, response?.data);
 
         return response;
     } catch (error: unknown) {
@@ -97,7 +93,9 @@ export function getErrorMessage(error: any): string {
                             )}`
                         );
                     }
-                    return error.response.data.message;
+                    return `${error.response.data.message} (${toString(
+                        error.response.data.data
+                    )})`;
             }
         } else {
             return `${error.response.statusText} for ${error.config?.url}`;

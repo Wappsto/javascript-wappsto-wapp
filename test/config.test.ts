@@ -3,7 +3,12 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { config, Value, request } from '../src/index';
-import { printDebug, printWarning, printError } from '../src/util/debug';
+import {
+    printDebug,
+    printWarning,
+    printError,
+    printRequest,
+} from '../src/util/debug';
 import { IModel } from '../src/util/interfaces';
 console.log = jest.fn();
 console.warn = jest.fn();
@@ -29,11 +34,14 @@ describe('config', () => {
         mockedAxios.post.mockResolvedValueOnce({});
 
         config({ requests: true });
-        await request.post('test', { data: 'test' }, { config: 'test' });
+        const data = { key: 'test', data: {} };
+        data.data = data;
+        await request.post('test', data, { config: 'test' });
 
+        printRequest('post', '/2.1/extsync/wappsto/editor/console', {}, {});
         expect(console.log).toHaveBeenCalledTimes(1);
         expect(console.log).toHaveBeenCalledWith(
-            'WAPPSTO REQUEST: post test {"config":"test"} {"data":"test"} => "test"'
+            'WAPPSTO REQUEST: post test {"config":"test"} {"key":"test","data":"CREF"} => test'
         );
     });
 

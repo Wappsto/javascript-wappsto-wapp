@@ -77,16 +77,23 @@ export function getCircularReplacer() {
 }
 
 export function toString(json: Record<string, any> | unknown): string {
-    return json ? JSON.stringify(json, getCircularReplacer()) : '';
+    if (!json) {
+        return '';
+    }
+    if (typeof json === 'string') {
+        return json;
+    }
+    return JSON.stringify(json, getCircularReplacer());
 }
 
 export function toTime(date: Date | string | number): number {
     if (typeof date === 'string') {
         return Date.parse(date);
-    } else if (typeof date === 'number') {
-        return date;
-    } else {
+    } else if (typeof date === 'object') {
         return date.getTime();
+    } else {
+        /* istanbul ignore next */
+        return date;
     }
 }
 

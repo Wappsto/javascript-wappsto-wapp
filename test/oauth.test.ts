@@ -140,7 +140,7 @@ describe('oauth', () => {
 
         expect(jestError).toHaveBeenCalledTimes(1);
         expect(error).toBe(
-            'This installation does not have any oauth external with this name'
+            'This installation does not have any oauth external with this name ({"wrong_value":"name","wrong_attribute":"test"})'
         );
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(

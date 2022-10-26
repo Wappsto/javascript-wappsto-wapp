@@ -1045,8 +1045,7 @@ describe('stream', () => {
         });
 
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-        fromForeground((msg) => {
-        });
+        fromForeground((msg) => {});
 
         server.send({
             meta: {

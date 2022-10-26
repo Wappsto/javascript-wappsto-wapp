@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
+export type Timestamp = string | number | undefined;
 export type ValidationType = 'none' | 'normal';
 export interface IConfig {
     verbose?: boolean;
@@ -208,9 +209,9 @@ export interface IValueXml extends IValueBase, IValueXmlBase {}
 export interface IValueFunc {
     constructor(name?: string): IState;
     createState(parameters: IState): IState;
-    report(data: string | number, timestamp: string | undefined): void;
-    forceReport(data: string | number, timestamp: string | undefined): void;
-    control(data: string | number, timestamp: string | undefined): void;
+    report(data: string | number, timestamp: Timestamp): void;
+    forceReport(data: string | number, timestamp: Timestamp): void;
+    control(data: string | number, timestamp: Timestamp): void;
     onControl(callback: ValueStreamCallback): void;
     onReport(callback: ValueStreamCallback, callOnInit?: boolean): void;
     onRefresh(callback: RefreshStreamCallback): void;
