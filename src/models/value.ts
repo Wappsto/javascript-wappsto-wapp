@@ -259,7 +259,7 @@ export class Value extends StreamModel implements IValueBase {
         }
 
         if (type !== 'Report' || !this.sendReportWithJitter) {
-            return state.update();
+            return await state.update();
         }
 
         this.sendReportWithJitter = false;
@@ -284,7 +284,7 @@ export class Value extends StreamModel implements IValueBase {
         state.data = oldData;
         state.timestamp = oldTimestamp;
 
-        return p;
+        return await p;
     }
 
     private findStateAndCallback(
@@ -411,7 +411,7 @@ export class Value extends StreamModel implements IValueBase {
         return this.findStateAndTimestamp('Report');
     }
 
-    public async report(
+    public report(
         data: string | number,
         timestamp: Timestamp = undefined
     ): Promise<void> {
@@ -420,7 +420,7 @@ export class Value extends StreamModel implements IValueBase {
         return this.sendReport(data, timestamp, false);
     }
 
-    public async forceReport(
+    public forceReport(
         data: string | number,
         timestamp: Timestamp = undefined
     ): Promise<void> {
@@ -475,7 +475,7 @@ export class Value extends StreamModel implements IValueBase {
         await this.findStateAndUpdate('Report', data, timestamp);
     }
 
-    public async control(
+    public control(
         data: string | number,
         timestamp: Timestamp = undefined
     ): Promise<boolean> {
@@ -535,15 +535,15 @@ export class Value extends StreamModel implements IValueBase {
         }
     }
 
-    public async refresh(): Promise<void> {
+    public refresh(): Promise<void> {
         return this.changeAttribute('status', 'update');
     }
 
-    public async setPeriod(period: number): Promise<void> {
+    public setPeriod(period: number): Promise<void> {
         return this.changeAttribute('period', period.toString());
     }
 
-    public async setDelta(delta: number): Promise<void> {
+    public setDelta(delta: number): Promise<void> {
         return this.changeAttribute('delta', delta.toString());
     }
 
@@ -571,13 +571,13 @@ export class Value extends StreamModel implements IValueBase {
         };
     }
 
-    public async getReportLog(request: ILogRequest): Promise<ILogResponse> {
+    public getReportLog(request: ILogRequest): Promise<ILogResponse> {
         this.validate('getReportLog', arguments);
 
         return this.findStateAndLog('Report', request);
     }
 
-    public async getControlLog(request: ILogRequest): Promise<ILogResponse> {
+    public getControlLog(request: ILogRequest): Promise<ILogResponse> {
         this.validate('getControlLog', arguments);
 
         return this.findStateAndLog('Control', request);
@@ -609,7 +609,7 @@ export class Value extends StreamModel implements IValueBase {
         return Value.fromArray(data);
     };
 
-    static findByName = async (
+    static findByName = (
         name: string,
         quantity: number | 'all' = 1,
         usage = ''
@@ -621,7 +621,7 @@ export class Value extends StreamModel implements IValueBase {
         return Value.find({ name: name }, quantity, usage);
     };
 
-    static findByType = async (
+    static findByType = (
         type: string,
         quantity: number | 'all' = 1,
         usage = ''
@@ -633,12 +633,12 @@ export class Value extends StreamModel implements IValueBase {
         return Value.find({ type: type }, quantity, usage);
     };
 
-    static findAllByName = async (name: string, usage = '') => {
+    static findAllByName = (name: string, usage = '') => {
         Value.validate('findAllByName', [name, usage]);
         return Value.findByName(name, 'all', usage);
     };
 
-    static findAllByType = async (type: string, usage = '') => {
+    static findAllByType = (type: string, usage = '') => {
         Value.validate('findAllByType', [type, usage]);
         return Value.findByType(type, 'all', usage);
     };

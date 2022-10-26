@@ -34,14 +34,14 @@ export async function sendSMS(message: string): Promise<boolean> {
     return false;
 }
 
-export async function notify(
+export function notify(
     message: string,
     level?: EventLogLevel,
     data?: any
 ): Promise<void> {
     Model.validateMethod('notification', 'notify', arguments);
     const noti = new SendNotification(message, level, data);
-    await noti.create();
+    return noti.create();
 }
 
 export class SendNotification extends PermissionModel {

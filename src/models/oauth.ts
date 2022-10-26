@@ -19,7 +19,7 @@ export class OAuth extends Model {
         this.name = name;
     }
 
-    public async getToken(handler?: OAuthRequestHandler) {
+    public getToken(handler?: OAuthRequestHandler) {
         OAuth.validate('getToken', arguments);
         return new Promise<Record<string, any>>(async (resolve, reject) => {
             try {
@@ -40,15 +40,13 @@ export class OAuth extends Model {
                 );
                 openStream.subscribeService(
                     '/oauth_connect',
-                    async (
-                        event: Record<string, any>
-                    ): Promise<true | undefined> => {
+                    (event: Record<string, any>): boolean => {
                         if (event.data?.name === this.name) {
                             printDebug('Got OAuth token from stream');
                             resolve(event.data.params);
                             return true;
                         }
-                        return;
+                        return false;
                     }
                 );
 
@@ -61,7 +59,7 @@ export class OAuth extends Model {
         });
     }
 
-    static getToken = async (name: string, handler?: OAuthRequestHandler) => {
+    static getToken = (name: string, handler?: OAuthRequestHandler) => {
         OAuth.validate('staticGetToken', [name, handler]);
         const oauth = new OAuth(name);
         return oauth.getToken(handler);

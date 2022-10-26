@@ -340,9 +340,7 @@ export class Stream extends Model {
         }
     }
 
-    private onRequestHandler = async (
-        event: any
-    ): Promise<true | undefined> => {
+    private onRequestHandler = (event: any): boolean => {
         try {
             let res;
             const handlers =
@@ -381,7 +379,7 @@ export class Stream extends Model {
             printError('An error happend when calling request handler');
             printError(toString(e));
         }
-        return undefined;
+        return false;
     };
 
     public onRequest(handler: RequestHandler, internal: boolean): void {

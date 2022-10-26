@@ -215,7 +215,7 @@ export class Network extends ConnectionModel implements INetwork {
         return Network.fromArray(data);
     };
 
-    static findByName = async (
+    static findByName = (
         name: string,
         quantity: number | 'all' = 1,
         usage = ''
@@ -227,7 +227,7 @@ export class Network extends ConnectionModel implements INetwork {
         return Network.find({ name: name }, quantity, usage);
     };
 
-    static findAllByName = async (name: string, usage = '') => {
+    static findAllByName = (name: string, usage = '') => {
         Network.validate('findAllByName', [name, usage]);
         return Network.findByName(name, 'all', usage);
     };

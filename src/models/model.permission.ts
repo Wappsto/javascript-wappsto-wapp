@@ -15,7 +15,7 @@ export class PermissionModel extends OntologyModel {
         return `${type}-${quantity}-${message}`;
     }
 
-    public async create(): Promise<void> {
+    public create(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 await this._create();
@@ -81,12 +81,12 @@ export class PermissionModel extends OntologyModel {
         });
     }
 
-    public static request = async (
+    public static request(
         endpoint: string,
         quantity: number | 'all',
         message: string,
         params?: Record<string, any>
-    ): Promise<Record<string, any>[]> => {
+    ): Promise<Record<string, any>[]> {
         Model.validateMethod('PermissionModel', 'request', [
             endpoint,
             quantity,
@@ -159,5 +159,5 @@ export class PermissionModel extends OntologyModel {
                 return undefined;
             });
         });
-    };
+    }
 }

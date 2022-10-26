@@ -180,7 +180,7 @@ export class Device extends ConnectionModel implements IDevice {
         return value;
     }
 
-    public async createValue(
+    public createValue(
         name: string,
         permission: ValuePermission,
         valueTemplate: ValueType,
@@ -213,7 +213,7 @@ export class Device extends ConnectionModel implements IDevice {
         };
     }
 
-    public async createNumberValue(params: IValueNumber): Promise<Value> {
+    public createNumberValue(params: IValueNumber): Promise<Value> {
         this.validate('createNumberValue', arguments);
         const base = this.getValueBase(params);
         base.delta = params.delta ?? '0';
@@ -232,7 +232,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public async createStringValue(params: IValueString): Promise<Value> {
+    public createStringValue(params: IValueString): Promise<Value> {
         this.validate('createStringValue', arguments);
         const base = this.getValueBase(params);
         return this._createValue({
@@ -244,7 +244,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public async createBlobValue(params: IValueBlob): Promise<Value> {
+    public createBlobValue(params: IValueBlob): Promise<Value> {
         this.validate('createBlobValue', arguments);
         const base = this.getValueBase(params);
         return this._createValue({
@@ -256,7 +256,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public async createXmlValue(params: IValueXml): Promise<Value> {
+    public createXmlValue(params: IValueXml): Promise<Value> {
         this.validate('createXmlValue', arguments);
         const base = this.getValueBase(params);
         return this._createValue({
@@ -320,43 +320,43 @@ export class Device extends ConnectionModel implements IDevice {
         return Device.fromArray(data);
     };
 
-    public static findByName = async (
+    public static findByName(
         name: string,
         quantity: number | 'all' = 1,
         usage = ''
-    ) => {
+    ) {
         Device.validate('findByName', [name, quantity, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device with name ${name}`;
         }
         return Device.find({ name: name }, quantity, usage);
-    };
+    }
 
-    public static findAllByName = async (name: string, usage = '') => {
+    public static findAllByName(name: string, usage = '') {
         Device.validate('findAllByName', [name, usage]);
 
         return Device.findByName(name, 'all', usage);
-    };
+    }
 
-    public static findByProduct = async (
+    public static findByProduct(
         product: string,
         quantity: number | 'all' = 1,
         usage = ''
-    ) => {
+    ) {
         Device.validate('findByProduct', [product, quantity, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device with product ${product}`;
         }
         return Device.find({ product: product }, quantity, usage);
-    };
+    }
 
-    public static findAllByProduct = async (product: string, usage = '') => {
+    public static findAllByProduct(product: string, usage = '') {
         Device.validate('findAllByProduct', [product, usage]);
 
         return Device.findByProduct(product, 'all', usage);
-    };
+    }
 
     public static findById = async (id: string) => {
         Device.validate('findById', [id]);
