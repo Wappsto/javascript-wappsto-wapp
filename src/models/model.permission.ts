@@ -118,6 +118,7 @@ export class PermissionModel extends OntologyModel {
                     )}`
                 );
                 resolve(result);
+                return;
             }
 
             printDebug(
