@@ -1587,4 +1587,79 @@ describe('value', () => {
             {}
         );
     });
+
+    it('can not override data by sending fast', async () => {
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const state = new State('Control');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        value.control('1');
+        value.control('2');
+        value.control('3');
+        value.control('4');
+
+        await new Promise((r) => setTimeout(r, 1000));
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Control',
+                data: '1',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Control',
+                data: '2',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Control',
+                data: '3',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Control',
+                data: '4',
+            }),
+            {}
+        );
+    });
 });

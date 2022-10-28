@@ -138,8 +138,7 @@ export class Model implements IModel {
                     this.toJSON(),
                     Model.generateOptions()
                 );
-
-                this.parse(response.data);
+                this.parse(response?.data);
                 return true;
             } catch (e) {
                 /* istanbul ignore next */

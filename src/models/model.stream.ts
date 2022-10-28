@@ -60,7 +60,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         this.streamCallback.create = [];
     }
 
-    handleStream(event: IStreamEvent): void {
+    async handleStream(event: IStreamEvent): Promise<void> {
         switch (event.event) {
             case 'create':
                 this.parseChildren(event.data);

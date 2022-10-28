@@ -433,7 +433,10 @@ export class Stream extends Model {
         }
     }
 
-    private handleMessage(type: string, event: IStreamEvent): void {
+    private async handleMessage(
+        type: string,
+        event: IStreamEvent
+    ): Promise<void> {
         const paths: string[] = [];
         const services: string[] = [];
         if (type === 'message') {
@@ -472,26 +475,29 @@ export class Stream extends Model {
         } else {
             services.push(`/${type}`);
         }
-        paths.forEach((path) => {
-            this.models[path]?.forEach((model: IStreamModel) => {
-                model.handleStream(event);
-            });
-        });
-        services.forEach((path) => {
+        for (let i = 0; i < paths.length; i += 1) {
+            const path = paths[i];
+            for (let j = 0; j < this.models[path]?.length; j += 1) {
+                const model = this.models[path][j];
+                await model.handleStream(event);
+            }
+        }
+        for (let i = 0; i < services.length; i += 1) {
+            const path = services[i];
             const tmpList = this.services[path];
-            tmpList?.forEach((callback: ServiceHandler) => {
+            for (let j = 0; j < tmpList?.length; j += 1) {
+                const callback = tmpList[j];
                 const p = callback(event);
                 if (p) {
                     if (p === true) {
                         this.filterCallback(callback, path, p);
                     } else {
-                        p.then((res) => {
-                            this.filterCallback(callback, path, res);
-                        });
+                        const res = await p;
+                        this.filterCallback(callback, path, res);
                     }
                 }
-            });
-        });
+            }
+        }
     }
 
     private sendMessage(
@@ -521,6 +527,61 @@ export class Stream extends Model {
         }
     }
 
+    queue: any[] = [];
+
+    private async handleQueue(): Promise<void> {
+        if (this.queue.length === 0) {
+            return;
+        }
+        const message = this.queue[0];
+
+        if (message.jsonrpc) {
+            if (message.result) {
+                if (message.result.value !== true) {
+                    this.backoff = 1;
+                }
+                printDebug(
+                    `Stream rpc ${message.id} result: ${toString(
+                        message.result.value
+                    )}`
+                );
+            } else {
+                printError(`Stream rpc error: ${toString(message.error)}`);
+            }
+        } else {
+            let messages: IStreamEvent[] = [];
+            if (message.constructor !== Array) {
+                messages = [message];
+            } else {
+                messages = message;
+            }
+
+            for (let i = 0; i < messages.length; i++) {
+                const msg: IStreamEvent = messages[i];
+                if (msg.data?.uri !== 'extsync/wappsto/editor/console') {
+                    printDebug(`Stream message: ${toString(msg)}`);
+                }
+                if (msg.meta_object?.type === 'extsync') {
+                    const newData = msg.extsync || msg.data;
+                    if (newData.request) {
+                        await this.handleMessage('extsync/request', newData);
+                    } else if (
+                        newData.uri !== 'extsync/wappsto/editor/console'
+                    ) {
+                        await this.handleMessage('extsync', newData);
+                    }
+                    continue;
+                }
+                this.checkAndSendTrace(msg);
+                await this.handleMessage('message', msg);
+                clearTrace('ok');
+            }
+        }
+
+        this.queue.shift();
+        this.handleQueue();
+    }
+
     private addListeners() {
         if (!this.socket) {
             /* istanbul ignore next */
@@ -539,6 +600,10 @@ export class Stream extends Model {
             if (ev.type === 'message') {
                 try {
                     message = JSON.parse(ev.data);
+                    this.queue.push(message);
+                    if (this.queue.length === 1) {
+                        this.handleQueue();
+                    }
                 } catch (e) {
                     /* istanbul ignore next */
                     printError('Failed to parse stream event');
@@ -548,49 +613,6 @@ export class Stream extends Model {
             } else {
                 printError("Can't handle binary stream data");
             }
-
-            if (message.jsonrpc) {
-                if (message.result) {
-                    if (message.result.value !== true) {
-                        this.backoff = 1;
-                    }
-                    printDebug(
-                        `Stream rpc ${message.id} result: ${toString(
-                            message.result.value
-                        )}`
-                    );
-                } else {
-                    printError(`Stream rpc error: ${toString(message.error)}`);
-                }
-                return;
-            }
-
-            let messages: IStreamEvent[] = [];
-            if (message.constructor !== Array) {
-                messages = [message];
-            } else {
-                messages = message;
-            }
-
-            messages.forEach((msg: IStreamEvent) => {
-                if (msg.data?.uri !== 'extsync/wappsto/editor/console') {
-                    printDebug(`Stream message: ${toString(msg)}`);
-                }
-                if (msg.meta_object?.type === 'extsync') {
-                    const newData = msg.extsync || msg.data;
-                    if (newData.request) {
-                        this.handleMessage('extsync/request', newData);
-                    } else if (
-                        newData.uri !== 'extsync/wappsto/editor/console'
-                    ) {
-                        this.handleMessage('extsync', newData);
-                    }
-                    return;
-                }
-                this.checkAndSendTrace(msg);
-                this.handleMessage('message', msg);
-                clearTrace('ok');
-            });
         };
 
         this.socket.onerror = (event: any) => {

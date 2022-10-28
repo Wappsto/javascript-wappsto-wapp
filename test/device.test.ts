@@ -1283,6 +1283,8 @@ describe('device', () => {
             },
         });
 
+        await new Promise((r) => setTimeout(r, 1));
+
         expect(f).toHaveBeenCalledTimes(1);
         expect(d.value.length).toBe(1);
         expect(d.value[0].name).toEqual('Value Name');
@@ -1351,6 +1353,8 @@ describe('device', () => {
                 name: 'Value Name',
             },
         });
+
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(f).toHaveBeenCalledTimes(2);
         expect(f).toHaveBeenCalledWith(d, true);

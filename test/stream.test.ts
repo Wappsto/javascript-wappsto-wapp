@@ -184,6 +184,8 @@ describe('stream', () => {
             },
         });
 
+        await new Promise((r) => setTimeout(r, 1));
+
         expect(funR).toHaveBeenCalledTimes(1);
         expect(funC).toHaveBeenCalledTimes(1);
         expect(funR).toHaveBeenCalledWith(value, 'data', 'timestamp');
@@ -215,6 +217,8 @@ describe('stream', () => {
             },
         });
 
+        await new Promise((r) => setTimeout(r, 1));
+
         expect(funR).toHaveBeenCalledTimes(2);
         expect(funC).toHaveBeenCalledTimes(1);
         expect(funR).toHaveBeenCalledWith(value, 'data2', 'timestamp2');
@@ -241,6 +245,8 @@ describe('stream', () => {
                 timestamp: 'timestamp',
             },
         });
+
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(fun).toHaveBeenCalledWith(value);
     });
@@ -285,6 +291,8 @@ describe('stream', () => {
             },
         });
 
+        await new Promise((r) => setTimeout(r, 1));
+
         expect(fun).toBeCalledTimes(2);
         expect(fun).toHaveBeenCalledWith(value, 'user');
 
@@ -300,6 +308,8 @@ describe('stream', () => {
                 status: 'update',
             },
         });
+
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(fun).toBeCalledTimes(2);
     });
@@ -330,6 +340,8 @@ describe('stream', () => {
             },
         });
 
+        await new Promise((r) => setTimeout(r, 1));
+
         expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
     });
 
@@ -358,6 +370,8 @@ describe('stream', () => {
                 timestamp: 'timestamp',
             },
         });
+
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
     });
@@ -746,6 +760,8 @@ describe('stream', () => {
             },
         });
 
+        await new Promise((r) => setTimeout(r, 1));
+
         cancelFromBackground();
         cancelFromForeground();
 
@@ -770,6 +786,8 @@ describe('stream', () => {
             },
         });
 
+        await new Promise((r) => setTimeout(r, 1));
+
         fromForeground(funF);
         fromBackground(funB);
 
@@ -793,6 +811,8 @@ describe('stream', () => {
                 body: '{"type": "foreground","message": {"test": "foreground"}}',
             },
         });
+
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(funF).toHaveBeenCalledTimes(2);
         expect(funB).toHaveBeenCalledTimes(2);
@@ -1086,6 +1106,8 @@ describe('stream', () => {
                 url: '/services/2.1/websocket/open',
             },
         });
+
+        await new Promise((r) => setTimeout(r, 1));
 
         await expect(server).toReceiveMessage(msg);
         expect(server).toHaveReceivedMessages([msg]);
