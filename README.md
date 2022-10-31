@@ -232,36 +232,52 @@ await value.addEvent('error', 'something went wrong');
 
 ### To request access to an exsisting object from the user
 
-To request access to an exsisting object, a request have to be send. You can request a single object or multiple objects of the same type.
+To request access to an exsisting object, a request have to be
+send. You can request a single object or multiple objects of the same
+type. To request access to multiple objects, you can specify the
+amount after fx. the name `findByName('name', 3)`. You can also
+request access to all the possible objects that matches the request by
+calling `findAllByName`.
 
-To request access to a network with a spefict name, use `findByName`.
+To request access to a network with a spefict name, use
+`findByName`.
 
 ```javascript
-let networks = await Wappsto.Network.findByName('Network name');
+let oneNetwork = await Wappsto.Network.findByName('Network name');
+let multipleNetworks = await Wappsto.Network.findByName('Network name', 3);
+let allNetworks = await Wappsto.Network.findAllByName('Network name');
 ```
 
 To request access to a device with a spefict name, use `findByName`.
 
 ```javascript
-let devices = await Wappsto.Device.findByName('Device name');
+let oneDevice = await Wappsto.Device.findByName('Device name');
+let multipleDevices = await Wappsto.Device.findByName('Device name', 3);
+let allDevices = await Wappsto.Device.findAllByName('Device name');
 ```
 
 To request access to a device with a spefict product, use `findByProduct`.
 
 ```javascript
-let devices = await Wappsto.Device.findByProduct('Product name');
+let oneDevice = await Wappsto.Device.findByProduct('Product name');
+let multipleDevices = await Wappsto.Device.findByProduct('Product name', 3);
+let allDevices = await Wappsto.Device.findAllByProduct('Product name');
 ```
 
 To request access to a value with a spefict name, use `findByName`.
 
 ```javascript
-let values = await Wappsto.Value.findByName('Value name');
+let oneValue = await Wappsto.Value.findByName('Value name');
+let multipleValues = await Wappsto.Value.findByName('Value name', 3);
+let allValues = await Wappsto.Value.findAllByName('Value name');
 ```
 
 To request access to a value with a spefict type, use `findByType`.
 
 ```javascript
-let values = await Wappsto.Value.findByType('Type name');
+let oneValue = await Wappsto.Value.findByType('Type name');
+let multipleValues = await Wappsto.Value.findByType('Type name', 3);
+let allValues = await Wappsto.Value.findAllByType('Type name');
 ```
 
 ### To find a child from an exsisting object
@@ -297,9 +313,9 @@ let values = device.findValueByType('value type');
 If you already have access to some objects, you can retrive them directly by their ID.
 
 ```javascript
-let network = Network.findByID('655937ac-c054-4cc0-80d7-400486b4ceb3');
-let device = Device.findByID('066c65d7-6612-4826-9e23-e63a579fbe8b');
-let value = Value.findByID('1157b4fa-2745-4940-9201-99eee5929eff');
+let network = Wappsto.Network.findById('655937ac-c054-4cc0-80d7-400486b4ceb3');
+let device = Wappsto.Device.findById('066c65d7-6612-4826-9e23-e63a579fbe8b');
+let value = Wappsto.Value.findById('1157b4fa-2745-4940-9201-99eee5929eff');
 ```
 
 ### To change a value on a network created outside your wapp
