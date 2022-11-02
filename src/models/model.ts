@@ -14,7 +14,7 @@ import { addModel } from '../util/modelStore';
 import { createCheckers } from 'ts-interface-checker';
 
 export class Model implements IModel {
-    meta: IMeta = {};
+    meta: IMeta = { version: '2.1' };
     parent?: IModel;
     static checker = createCheckers(interfaceTI);
 
@@ -32,7 +32,7 @@ export class Model implements IModel {
     }
 
     public getVersion(): string {
-        return this.meta.version || '2.1';
+        return this.meta.version;
     }
 
     public url(): string {
