@@ -574,7 +574,7 @@ export const IWappStorageFunc = t.iface([], {
 export const StorageChangeHandler = t.func('void');
 
 export const ServiceHandler = t.func(
-    t.union(t.union('boolean', 'undefined'), 'boolean'),
+    t.union(t.union('boolean', 'undefined', 'void'), 'boolean', 'void'),
     t.param('event', 'any')
 );
 

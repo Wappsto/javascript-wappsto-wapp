@@ -203,12 +203,12 @@ export class Stream extends Model {
 
     public subscribeInternal(type: string, handler: ServiceHandler): void {
         this.validate('subscribeInternal', arguments);
-        this.subscribeService('extsync', (event) => {
-            let res: boolean | Promise<boolean | undefined> = false;
+        this.subscribeService('extsync', async (event) => {
+            let res: boolean | undefined | void = false;
             try {
                 const body = JSON.parse(event.body);
                 if (body.type === type) {
-                    res = handler(body);
+                    res = await handler(body);
                 }
             } catch (e) {
                 /* istanbul ignore next */
@@ -422,7 +422,7 @@ export class Stream extends Model {
     private filterCallback(
         callback: ServiceHandler,
         path: string,
-        result: boolean | undefined
+        result: boolean
     ): void {
         if (result === true) {
             this.services[path] = this.services[path].filter(
@@ -488,10 +488,10 @@ export class Stream extends Model {
                 const p = callback(event);
                 if (p) {
                     if (p === true) {
-                        this.filterCallback(callback, path, p);
+                        this.filterCallback(callback, path, true);
                     } else {
                         const res = await p;
-                        this.filterCallback(callback, path, res);
+                        this.filterCallback(callback, path, res || false);
                     }
                 }
             }

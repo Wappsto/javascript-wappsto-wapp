@@ -98,22 +98,21 @@ export function cancelFromForeground(): void {
 
 let backgroudIsStarted = false;
 
-function handleIsBackgroundStarted(message: any): boolean {
-    let res = false;
+function handleIsBackgroundStarted(message: any): void {
     if (request_handlers['foreground']) {
         openStream.sendEvent('backgroudIsStarted', '');
-        res = true;
     }
-    return res;
 }
 
-function handleBackgroundIsStarted(message: any): boolean {
+function handleBackgroundIsStarted(message: any): void {
     backgroudIsStarted = true;
-    return true;
 }
 
 export async function waitForBackground(timeout = 10): Promise<boolean> {
     Model.validateMethod('Stream', 'waitForBackground', arguments);
+    if (backgroudIsStarted) {
+        return true;
+    }
     openStream.subscribeInternal(
         'backgroudIsStarted',
         handleBackgroundIsStarted

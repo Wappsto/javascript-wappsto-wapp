@@ -435,7 +435,7 @@ export interface IWappStorageFunc {
 export type StorageChangeHandler = () => void;
 export type ServiceHandler = (
     event: any
-) => Promise<boolean | undefined> | boolean;
+) => Promise<boolean | undefined | void> | boolean | void;
 export type RequestHandler = (event: any) => Promise<any> | any;
 export type StreamCallback = (model: IStreamModel) => void;
 export type ValueStreamCallback = (

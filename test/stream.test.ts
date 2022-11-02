@@ -971,6 +971,11 @@ describe('stream', () => {
         expect(funB).toHaveBeenCalledTimes(1);
     });
 
+    it('can timeout waiting for background', async () => {
+        const p = await waitForBackground(1);
+        expect(p).toBe(false);
+    });
+
     it('can wait for background', async () => {
         const p = waitForBackground();
 
@@ -1032,11 +1037,43 @@ describe('stream', () => {
         const res = await p;
 
         expect(res).toBe(true);
+
+        const p2 = waitForBackground();
+
+        server.send({
+            meta: {
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                type: 'eventstream',
+                version: '2.1',
+            },
+            event: 'extsync',
+            meta_object: {
+                type: 'extsync',
+                version: '2.1',
+                id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+            },
+            data: {
+                meta: {
+                    type: 'extsync',
+                    version: '2.1',
+                    id: 'bdc241a1-d6f9-4095-ad80-7f0ed7f40f85',
+                },
+                request: false,
+                method: 'POST',
+                uri: 'extsync/',
+                body: '{"type":"backgroudIsStarted","message":""}',
+            },
+            path: '/extsync/direct',
+        });
+
+        const res2 = await p2;
+
+        expect(res2).toBe(true);
     });
 
     it('can signal that the background is ready', async () => {
         await server.connected;
-
+        console.log('********************');
         await new Promise((r) => setTimeout(r, 1));
 
         server.send({
@@ -1094,6 +1131,8 @@ describe('stream', () => {
             path: '/extsync/direct',
         });
 
+        await new Promise((r) => setTimeout(r, 1000));
+
         const msg = expect.objectContaining({
             jsonrpc: '2.0',
             method: 'PATCH',
@@ -1108,15 +1147,11 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
-
         await expect(server).toReceiveMessage(msg);
         expect(server).toHaveReceivedMessages([msg]);
-    });
 
-    it('can timeout waiting for background', async () => {
-        const p = await waitForBackground(1);
-        expect(p).toBe(false);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenCalledWith( "/2.1/extsync", {"message": "", "type": "backgroudIsStarted"});
     });
 
     it('makes sure that onRequest is awaited', async () => {
