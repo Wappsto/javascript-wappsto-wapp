@@ -464,8 +464,8 @@ Wappsto.cancelFromForeground();
 ### Waiting for the background to be ready
 
 If you need to comunitate with the background, it is a good idea to
-wait for the background to be ready. This can be do using the
-`waitForBackground` function.
+wait for the background to be ready and have registered the `waitForForground` handler.
+This can be do using the `waitForBackground` function.
 
 ```javascript
 const result = await Wappsto.waitForBackground();
@@ -474,7 +474,7 @@ if (result) {
 }
 ```
 
-It waits for 10 seconds, but this can be changed by giving it a new timeout.
+It waits for 10 seconds, but this can be changed by giving it a new timeout. And `-1` to wait for ever.
 
 ```javascript
 const result = await Wappsto.waitForBackground(20);
@@ -505,7 +505,7 @@ You can turn on `Ext Sync` support using the `wappsto-cli` using the `npx wapp c
 It is possible to store configuration parameters and other information in the Wapp Storage.
 This data is persisted on Wappsto and can be read from the foreground and background wapp.
 The data can be reload from the server by calling `reload` function.
-The data can be deleted by calling the `clear` function.
+The data can be deleted by calling the `reset` function.
 A callback can also be registered to be notified when the storage is updated.
 
 ```javascript
@@ -519,7 +519,7 @@ let data = storage.get('key');
 // Reload the data from the server
 await storage.reload();
 // Delete all the saved data
-await storage.clear();
+await storage.reset();
 ```
 
 ### OAuth
@@ -648,7 +648,7 @@ library is doing by enabling debug options.
 
 ```javascript
 Wappsto.config({
-    debug: true,
-    requests: true,
+	debug: true,
+	requests: true,
 });
 ```
