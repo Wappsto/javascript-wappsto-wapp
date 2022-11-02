@@ -64,24 +64,32 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         switch (event.event) {
             case 'create':
                 this.parseChildren(event.data);
-                this.streamCallback.create.forEach((cb) => {
-                    cb(this);
-                });
+                for (let i = 0; i < this.streamCallback.create.length; i++) {
+                    const cb = this.streamCallback.create[i];
+                    await cb(this);
+                }
                 break;
             case 'update':
                 if (this.parse(event.data)) {
-                    this.streamCallback.change.forEach((cb) => {
-                        cb(this);
-                    });
+                    for (
+                        let i = 0;
+                        i < this.streamCallback.change.length;
+                        i++
+                    ) {
+                        const cb = this.streamCallback.change[i];
+                        await cb(this);
+                    }
                 }
-                this.streamCallback.event.forEach((cb) => {
-                    cb(this);
-                });
+                for (let i = 0; i < this.streamCallback.event.length; i++) {
+                    const cb = this.streamCallback.event[i];
+                    await cb(this);
+                }
                 break;
             case 'delete':
-                this.streamCallback.delete.forEach((cb) => {
-                    cb(this);
-                });
+                for (let i = 0; i < this.streamCallback.delete.length; i++) {
+                    const cb = this.streamCallback.delete[i];
+                    await cb(this);
+                }
                 break;
             /* istanbul ignore next */
             default:

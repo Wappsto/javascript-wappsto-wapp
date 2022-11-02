@@ -34,6 +34,11 @@ describe('stream', () => {
         jest.clearAllMocks();
     });
 
+    afterAll(() => {
+        openStream.close();
+        server.close();
+    });
+
     it('can trigger an onReport handler', async () => {
         const fun = jest.fn();
         const value = new Value();
@@ -903,11 +908,7 @@ describe('stream', () => {
             })
         );
         const funB = jest.fn();
-        funB.mockReturnValue(
-            new Promise<boolean>((resolve) => {
-                resolve(true);
-            })
-        );
+        funB.mockReturnValue(true);
 
         mockedAxios.post
             .mockResolvedValueOnce({ data: res })
@@ -1111,12 +1112,124 @@ describe('stream', () => {
 
         await expect(server).toReceiveMessage(msg);
         expect(server).toHaveReceivedMessages([msg]);
-
-        server.close();
     });
 
     it('can timeout waiting for background', async () => {
         const p = await waitForBackground(1);
         expect(p).toBe(false);
+    });
+
+    it('makes sure that onRequest is awaited', async () => {
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: false })
+            .mockResolvedValueOnce({ data: false });
+
+        const result: Array<number> = [];
+
+        fromForeground(async (event) => {
+            if (event.test === 1) {
+                await new Promise((r) => setTimeout(r, 10));
+            }
+            result.push(event.test);
+        });
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                meta: {
+                    id: 'bbe306a7-7216-4d7d-8be1-08d94cd2142d',
+                },
+                request: 'request',
+                uri: 'extsync/',
+                body: '{"type": "foreground","message": {"test": 1}}',
+            },
+        });
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                meta: {
+                    id: '67756021-3b92-431d-8a70-692c295ca521',
+                },
+                request: 'request',
+                uri: 'extsync/',
+                body: '{"type": "foreground","message": {"test": 2}}',
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 100));
+
+        expect(result).toEqual([1, 2]);
+
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/extsync/response/bbe306a7-7216-4d7d-8be1-08d94cd2142d',
+            {
+                body: undefined,
+                code: 200,
+            }
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/extsync/response/67756021-3b92-431d-8a70-692c295ca521',
+            {
+                body: undefined,
+                code: 200,
+            }
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+    });
+
+    it('makes sure that onReport is awaited', async () => {
+        const value = new Value();
+        const state = new State('Report');
+        value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
+        state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
+        value.state.push(state);
+
+        const result: Array<string> = [];
+
+        value.onReport(async (val, data) => {
+            if (data === '1') {
+                await new Promise((r) => setTimeout(r, 10));
+            }
+            result.push(data);
+        });
+        await new Promise((r) => setTimeout(r, 1));
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'update',
+            path: '/network/9a51cbd4-afb3-4628-9c8b-df64a0d729e9/device/c5fe846f-d6d8-413a-abb5-620519dd6b75/value/6c06b63e-39ec-44a5-866a-c081aafb6726/state/cda4d978-39e9-47bf-8497-9813b0f94973',
+            data: {
+                data: '1',
+                timestamp: 'timestamp',
+            },
+        });
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'update',
+            path: '/network/9a51cbd4-afb3-4628-9c8b-df64a0d729e9/device/c5fe846f-d6d8-413a-abb5-620519dd6b75/value/6c06b63e-39ec-44a5-866a-c081aafb6726/state/cda4d978-39e9-47bf-8497-9813b0f94973',
+            data: {
+                data: '2',
+                timestamp: 'timestamp',
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 100));
+
+        expect(result).toEqual(['1', '2']);
     });
 });

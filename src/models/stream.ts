@@ -204,7 +204,7 @@ export class Stream extends Model {
     public subscribeInternal(type: string, handler: ServiceHandler): void {
         this.validate('subscribeInternal', arguments);
         this.subscribeService('extsync', (event) => {
-            let res: boolean | Promise<undefined | true> = false;
+            let res: boolean | Promise<boolean | undefined> = false;
             try {
                 const body = JSON.parse(event.body);
                 if (body.type === type) {
@@ -298,7 +298,7 @@ export class Stream extends Model {
             result = response.data;
         } catch (e: any) {
             /* 1istanbul ignore next */
-            if (e.response.data?.code) {
+            if (e.response.data?.code !== undefined) {
                 const errorMsg = getErrorMessage(e);
                 printError(
                     `Failed to send request (${toString(
@@ -340,7 +340,7 @@ export class Stream extends Model {
         }
     }
 
-    private onRequestHandler = (event: any): boolean => {
+    private onRequestHandler = async (event: any): Promise<boolean> => {
         try {
             let res;
             const handlers =
@@ -353,30 +353,28 @@ export class Stream extends Model {
                     if (!(err instanceof IgnoreError)) {
                         printError(err);
                         this.sendResponse(event, 400, { error: err.message });
-                    }
-                }
-                if (p) {
-                    if (p.then) {
-                        p.then((res: any) => {
-                            this.sendResponse(event, 200, res);
-                        }).catch((err: any) => {
-                            if (!(err instanceof IgnoreError)) {
-                                printError(err);
-                                this.sendResponse(event, 400, {
-                                    error: err.message,
-                                });
-                            }
-                        });
                         continue;
-                    } else {
-                        res = p;
                     }
                 }
-                this.sendResponse(event, 200, res);
+
+                try {
+                    res = await p;
+                    this.sendResponse(event, 200, res);
+                } catch (err: any) {
+                    if (!(err instanceof IgnoreError)) {
+                        printError(err);
+                        this.sendResponse(event, 400, {
+                            error: err.message,
+                        });
+                    }
+                }
             }
         } catch (e) {
+            /* istanbul ignore next */
             this.sendResponse(event, 501, e);
+            /* istanbul ignore next */
             printError('An error happend when calling request handler');
+            /* istanbul ignore next */
             printError(toString(e));
         }
         return false;

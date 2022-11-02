@@ -360,10 +360,12 @@ export class Device extends ConnectionModel implements IDevice {
 
     public static findById = async (id: string) => {
         Device.validate('findById', [id]);
-        const res = await Model.fetch(`${Device.endpoint}/${id}`, {
-            expand: 3,
-        });
-        return Device.fromArray(res)[0];
+        const devices = await Device.find(
+            { 'meta.id': id },
+            1,
+            `Find device with id ${id}`
+        );
+        return devices[0];
     };
 
     public static fetch = async () => {

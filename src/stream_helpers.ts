@@ -46,7 +46,7 @@ async function _handleRequest(event: any) {
     }
 
     if (request_handlers[data.type]) {
-        return request_handlers[data.type](data.message);
+        return await request_handlers[data.type](data.message);
     } else {
         throw new IgnoreError('Wrong request handler');
     }
@@ -127,7 +127,7 @@ export async function waitForBackground(timeout = 10): Promise<boolean> {
             waits -= 1;
         }
         count -= 1;
-    } while (count && !backgroudIsStarted);
+    } while (count !== 0 && !backgroudIsStarted);
 
     return !!count;
 }

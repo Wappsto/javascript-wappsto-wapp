@@ -119,6 +119,7 @@ describe('network', () => {
             {
                 meta: {
                     id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                    version: '2.1',
                     type: 'device',
                 },
                 name: 'Device Name',
@@ -127,6 +128,7 @@ describe('network', () => {
                     {
                         meta: {
                             id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                            version: '2.1',
                             type: 'value',
                         },
                         name: 'Value Name',
@@ -134,6 +136,7 @@ describe('network', () => {
                             {
                                 meta: {
                                     id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                    version: '2.1',
                                     type: 'state',
                                 },
                                 type: 'Report',
@@ -149,6 +152,7 @@ describe('network', () => {
             {
                 meta: {
                     id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                    version: '2.1',
                     type: 'device',
                 },
                 name: 'Device Name',
@@ -166,6 +170,11 @@ describe('network', () => {
 
     afterEach(() => {
         jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+        openStream.close();
+        server.close();
     });
 
     it('can create a new network class', () => {
@@ -441,35 +450,20 @@ describe('network', () => {
         expect(value[0].type).toEqual('test');
     });
 
-    it('can find network by id', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
-
-        const network = await Network.findById(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
-
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(network.name).toEqual('Network Name');
-        expect(network.toJSON).toBeDefined();
-
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.1/network/b62e285a-5188-4304-85a0-3982dcb575bc',
-            {
-                params: { expand: 4 },
-            }
-        );
-    });
-
     it('can reload and get new devices', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({
                 data: {
-                    meta: { id: '0a4de380-1c16-4b5c-a081-912b931ff891' },
+                    meta: {
+                        id: '0a4de380-1c16-4b5c-a081-912b931ff891',
+                        version: '2.1',
+                    },
                     name: 'network',
                     device: [
                         {
                             meta: {
                                 id: '048d2bb4-f0dc-48da-9bb8-f83f48f8bcc4',
+                                version: '2.1',
                             },
                             name: 'device 1',
                         },
@@ -477,12 +471,14 @@ describe('network', () => {
                         {
                             meta: {
                                 id: 'b3fb2261-e6d9-48c4-97a2-71bf299736b8',
+                                version: '2.1',
                             },
                             name: 'device 3',
                         },
                         {
                             meta: {
                                 id: '0af35945-f38b-4528-a7c7-3a7d42a2a132',
+                                version: '2.1',
                             },
                             name: 'device 4',
                         },
@@ -491,7 +487,10 @@ describe('network', () => {
             })
             .mockResolvedValueOnce({
                 data: {
-                    meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' },
+                    meta: {
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        version: '2.1',
+                    },
                     name: 'device 2',
                 },
             })
@@ -499,6 +498,7 @@ describe('network', () => {
                 data: {
                     meta: {
                         id: 'b3fb2261-e6d9-48c4-97a2-71bf299736b8',
+                        version: '2.1',
                     },
                     name: 'device 3',
                 },
@@ -527,7 +527,14 @@ describe('network', () => {
 
     it('can create a new device as a child', async () => {
         mockedAxios.post.mockResolvedValueOnce({
-            data: [{ meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' } }],
+            data: [
+                {
+                    meta: {
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        version: '2.1',
+                    },
+                },
+            ],
         });
 
         const network = new Network();
@@ -816,6 +823,7 @@ describe('network', () => {
                 data: {
                     meta: {
                         id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                        version: '2.1',
                         type: 'device',
                     },
                     name: 'Device Name 4',
@@ -824,6 +832,7 @@ describe('network', () => {
                         {
                             meta: {
                                 id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                                version: '2.1',
                                 type: 'value',
                             },
                             name: 'Value Name',
@@ -831,6 +840,7 @@ describe('network', () => {
                                 {
                                     meta: {
                                         id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                        version: '2.1',
                                         type: 'state',
                                     },
                                     type: 'Control',
@@ -998,5 +1008,60 @@ describe('network', () => {
         expect(res).toBe(true);
         expect(res2).toBe(false);
         expect(res3).toBe(false);
+    });
+
+    it('can find network by id', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [responseFull] });
+
+        const r = Network.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
+        await server.connected;
+        await new Promise((r) => setTimeout(r, 1));
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                custom: {
+                    data: {
+                        selected: [
+                            {
+                                meta: {
+                                    id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                                },
+                            },
+                        ],
+                    },
+                },
+                base: {
+                    code: 1100004,
+                    identifier:
+                        'network-1-Find network with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                    ids: [],
+                },
+            },
+        });
+
+        const network = await r;
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+            params: {
+                expand: 4,
+                quantity: 1,
+                message:
+                    'Find network with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                identifier:
+                    'network-1-Find network with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                'this_meta.id': '=b62e285a-5188-4304-85a0-3982dcb575bc',
+                method: ['retrieve', 'update'],
+            },
+        });
+        expect(network.toJSON).toBeDefined();
+        expect(network.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 });

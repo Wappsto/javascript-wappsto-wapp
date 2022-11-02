@@ -18,6 +18,11 @@ describe('WappStorage', () => {
         jest.clearAllMocks();
     });
 
+    afterAll(() => {
+        openStream.close();
+        server.close();
+    });
+
     it('can create a new instance', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
@@ -194,7 +199,7 @@ describe('WappStorage', () => {
         const c = await wappStorage();
         await c.set('key', 'item');
         const resOld = c.get('key');
-        c.reset();
+        await c.reset();
         const resNew = c.get('key');
         expect(resOld).toBe('item');
         expect(resNew).toBe(undefined);

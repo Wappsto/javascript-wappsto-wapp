@@ -296,10 +296,12 @@ export class Value extends StreamModel implements IValueBase {
         if (state) {
             if (!checkList(this.stateCallbacks[type], callback)) {
                 this.stateCallbacks[type].push(callback);
-                state.onChange(() => {
-                    this.stateCallbacks[state.type].forEach((cb) => {
-                        cb(this, state.data, state.timestamp);
-                    });
+                state.onChange(async () => {
+                    const callbacks = this.stateCallbacks[state.type];
+                    for (let i = 0; i < callbacks.length; i++) {
+                        const cb = callbacks[i];
+                        await cb(this, state.data, state.timestamp);
+                    }
                 });
             }
             if (callOnInit === true) {
@@ -645,8 +647,12 @@ export class Value extends StreamModel implements IValueBase {
 
     static findById = async (id: string) => {
         Value.validate('findById', [id]);
-        const res = await Model.fetch(`${Value.endpoint}/${id}`, { expand: 2 });
-        return Value.fromArray(res)[0];
+        const values = await Value.find(
+            { 'meta.id': id },
+            1,
+            `Find value with id ${id}`
+        );
+        return values[0];
     };
 
     private static validate(name: string, params: any): void {

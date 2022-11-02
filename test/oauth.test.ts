@@ -31,6 +31,11 @@ describe('oauth', () => {
         jest.clearAllMocks();
     });
 
+    afterAll(() => {
+        openStream.close();
+        server.close();
+    });
+
     it('can call requet handler', async () => {
         mockedAxios.get.mockResolvedValueOnce({
             data: [

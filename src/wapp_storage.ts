@@ -38,10 +38,10 @@ export class WappStorage {
         }
     }
 
-    async set(name: string, item: any): Promise<void> {
+    set(name: string, item: any): Promise<boolean> {
         WappStorage.validate('set', arguments);
         this.data.set(name, item);
-        await this.update();
+        return this.update();
     }
 
     get(name: string): any {
@@ -61,14 +61,14 @@ export class WappStorage {
         return this.data.entries();
     }
 
-    async remove(name: string): Promise<void> {
+    remove(name: string): Promise<boolean> {
         WappStorage.validate('remove', arguments);
         this.data.remove(name);
-        await this.data.update();
+        return this.data.update();
     }
 
-    async update(): Promise<void> {
-        await this.data.update();
+    update(): Promise<boolean> {
+        return this.data.update();
     }
 
     onChange(cb: StorageChangeHandler): void {
@@ -78,14 +78,14 @@ export class WappStorage {
         });
     }
 
-    async reload(): Promise<void> {
-        await this.data.reload();
+    reload(): Promise<void> {
+        return this.data.reload();
     }
 
-    reset(): void {
-        this.data.delete();
+    async reset(): Promise<void> {
+        await this.data.delete();
         this.data = new Data(this.id, 'wapp_storage');
-        this.data.create();
+        await this.data.create();
     }
 
     private static validate(name: string, params: any): void {

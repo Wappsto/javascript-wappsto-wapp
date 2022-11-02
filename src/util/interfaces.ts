@@ -24,7 +24,7 @@ export interface IConnection {
 export interface IMeta {
     id?: string;
     type?: string;
-    version?: string;
+    version: string;
     redirect?: string;
 
     manufacturer?: string;
@@ -435,7 +435,7 @@ export interface IWappStorageFunc {
 export type StorageChangeHandler = () => void;
 export type ServiceHandler = (
     event: any
-) => Promise<true | undefined> | boolean;
+) => Promise<boolean | undefined> | boolean;
 export type RequestHandler = (event: any) => Promise<any> | any;
 export type StreamCallback = (model: IStreamModel) => void;
 export type ValueStreamCallback = (

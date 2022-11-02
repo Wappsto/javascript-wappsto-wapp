@@ -234,10 +234,12 @@ export class Network extends ConnectionModel implements INetwork {
 
     static findById = async (id: string) => {
         Network.validate('findById', [id]);
-        const res = await Model.fetch(`${Network.endpoint}/${id}`, {
-            expand: 4,
-        });
-        return Network.fromArray(res)[0];
+        const networks = await Network.find(
+            { 'meta.id': id },
+            1,
+            `Find network with id ${id}`
+        );
+        return networks[0];
     };
 
     static fetch = async (name = '', params: Record<string, any> = {}) => {

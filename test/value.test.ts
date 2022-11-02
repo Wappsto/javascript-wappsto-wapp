@@ -39,6 +39,11 @@ describe('value', () => {
         jest.clearAllMocks();
     });
 
+    afterAll(() => {
+        openStream.close();
+        server.close();
+    });
+
     it('can create a new value class', () => {
         const name = 'Test Value';
         const value = new Value(name);
@@ -213,25 +218,6 @@ describe('value', () => {
                 period: '3600',
             },
             {}
-        );
-    });
-
-    it('can find value by id', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
-
-        const value = await Value.findById(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
-
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(value.name).toEqual('test');
-        expect(value.toJSON).toBeDefined();
-
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.1/value/b62e285a-5188-4304-85a0-3982dcb575bc',
-            {
-                params: { expand: 2 },
-            }
         );
     });
 
@@ -975,6 +961,8 @@ describe('value', () => {
             },
         });
 
+        await new Promise((r) => setTimeout(r, 1));
+
         expect(value.getReportData()).toEqual('100');
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
@@ -1606,7 +1594,7 @@ describe('value', () => {
         value.control('3');
         value.control('4');
 
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(4);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -1661,5 +1649,59 @@ describe('value', () => {
             }),
             {}
         );
+    });
+
+    it('can find value by id', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [response] });
+
+        const r = Value.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        await server.connected;
+        server.send({
+            path: '/notification/',
+            data: {
+                base: {
+                    code: 1100013,
+                    identifier:
+                        'value-1-Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                },
+            },
+        });
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                base: {
+                    code: 1100013,
+                    identifier:
+                        'value-1-Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                },
+            },
+        });
+        const value = await r;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+            params: {
+                expand: 2,
+                quantity: 1,
+                message:
+                    'Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                identifier:
+                    'value-1-Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                'this_meta.id': '=b62e285a-5188-4304-85a0-3982dcb575bc',
+                method: ['retrieve', 'update'],
+            },
+        });
+        expect(value.toJSON).toBeDefined();
+        expect(value.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 });

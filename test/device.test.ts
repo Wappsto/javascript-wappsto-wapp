@@ -52,6 +52,11 @@ describe('device', () => {
         jest.clearAllMocks();
     });
 
+    afterAll(() => {
+        openStream.close();
+        server.close();
+    });
+
     it('can create a new device class', () => {
         const name = 'Test Device';
         const device = new Device(name);
@@ -130,25 +135,6 @@ describe('device', () => {
             params: { expand: 3, verbose: true },
         });
         expect(devices[0]?.name).toEqual('test');
-    });
-
-    it('can find device by id', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
-
-        const device = await Device.findById(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
-
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(device.name).toEqual('test');
-        expect(device.toJSON).toBeDefined();
-
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.1/device/b62e285a-5188-4304-85a0-3982dcb575bc',
-            {
-                params: { expand: 3 },
-            }
-        );
     });
 
     it('can find a device by name', async () => {
@@ -1261,7 +1247,6 @@ describe('device', () => {
 
     it('can handle a value create', async () => {
         const f = jest.fn();
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
         const d = new Device();
         d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
         d.onCreate(f);
@@ -1273,7 +1258,7 @@ describe('device', () => {
                 type: 'event',
             },
             event: 'create',
-            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
+            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/value',
             data: {
                 meta: {
                     id: '60323236-54bf-499e-a438-608a24619c94',
@@ -1285,6 +1270,7 @@ describe('device', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(f).toHaveBeenCalledTimes(1);
         expect(d.value.length).toBe(1);
         expect(d.value[0].name).toEqual('Value Name');
@@ -1359,5 +1345,49 @@ describe('device', () => {
         expect(f).toHaveBeenCalledTimes(2);
         expect(f).toHaveBeenCalledWith(d, true);
         expect(f).toHaveBeenLastCalledWith(d, false);
+    });
+
+    it('can find device by id', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [response] });
+
+        const r = Device.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
+
+        await new Promise((r) => setTimeout(r, 1));
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                base: {
+                    code: 1100004,
+                    identifier:
+                        'device-1-Find device with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                },
+            },
+        });
+
+        const device = await r;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+            params: {
+                expand: 3,
+                quantity: 1,
+                message:
+                    'Find device with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                identifier:
+                    'device-1-Find device with id b62e285a-5188-4304-85a0-3982dcb575bc',
+                'this_meta.id': '=b62e285a-5188-4304-85a0-3982dcb575bc',
+                method: ['retrieve', 'update'],
+            },
+        });
+        expect(device.toJSON).toBeDefined();
+        expect(device.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 });

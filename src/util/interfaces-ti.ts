@@ -30,7 +30,7 @@ export const IConnection = t.iface([], {
 export const IMeta = t.iface([], {
     id: t.opt('string'),
     type: t.opt('string'),
-    version: t.opt('string'),
+    version: 'string',
     redirect: t.opt('string'),
     manufacturer: t.opt('string'),
     iot: t.opt('boolean'),
@@ -574,7 +574,7 @@ export const IWappStorageFunc = t.iface([], {
 export const StorageChangeHandler = t.func('void');
 
 export const ServiceHandler = t.func(
-    t.union(t.union(t.lit(true), 'undefined'), 'boolean'),
+    t.union(t.union('boolean', 'undefined'), 'boolean'),
     t.param('event', 'any')
 );
 
