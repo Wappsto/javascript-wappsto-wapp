@@ -1073,7 +1073,7 @@ describe('stream', () => {
 
     it('can signal that the background is ready', async () => {
         await server.connected;
-        console.log('********************');
+
         await new Promise((r) => setTimeout(r, 1));
 
         server.send({
@@ -1151,7 +1151,10 @@ describe('stream', () => {
         expect(server).toHaveReceivedMessages([msg]);
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.post).toHaveBeenCalledWith( "/2.1/extsync", {"message": "", "type": "backgroudIsStarted"});
+        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
+            message: '',
+            type: 'backgroudIsStarted',
+        });
     });
 
     it('makes sure that onRequest is awaited', async () => {
