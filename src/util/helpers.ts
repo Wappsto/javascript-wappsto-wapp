@@ -89,12 +89,14 @@ export function toString(json: Record<string, any> | unknown): string {
 export function toTime(date: Date | string | number): number {
     if (typeof date === 'string') {
         return Date.parse(date);
-    } else if (typeof date === 'object') {
-        return date.getTime();
-    } else {
-        /* istanbul ignore next */
-        return date;
     }
+
+    if (typeof date === 'object') {
+        return date.getTime();
+    }
+
+    /* istanbul ignore next */
+    return date;
 }
 
 export function compareDates(

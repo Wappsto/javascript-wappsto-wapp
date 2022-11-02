@@ -19,12 +19,12 @@ function sendExtsync(key: string, ...args: any[]): any {
         time: time,
     });
 
-    return wappsto
-        .post('/2.1/extsync/wappsto/editor/console', data)
-        ?.catch((e: any) => {
-            /* istanbul ignore next */
-            printDebug(e);
-        });
+    try {
+        return wappsto.post('/2.1/extsync/wappsto/editor/console', data);
+    } catch (e: any) {
+        /* istanbul ignore next */
+        printDebug(e);
+    }
 }
 
 export function backgroundLogging(): void {

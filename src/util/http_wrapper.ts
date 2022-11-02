@@ -89,7 +89,7 @@ export function getErrorMessage(error: any): string {
                             `Failed Request: ${error.request?.method} ${
                                 error.request?.path
                             } ${toString(error.config?.data)} => ${toString(
-                                error.response?.data
+                                error.response.data
                             )}`
                         );
                     }
