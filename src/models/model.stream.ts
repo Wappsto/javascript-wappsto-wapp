@@ -20,44 +20,49 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         create: [],
     } as IStreamCallbacks;
 
-    public onEvent(callback: StreamCallback): void {
+    public async onEvent(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onEvent', arguments);
-        openStream.subscribe(this);
+        const res = await openStream.subscribe(this);
         if (!checkList(this.streamCallback.event, callback)) {
             this.streamCallback.event.push(callback);
         }
+        return res;
     }
 
-    public onChange(callback: StreamCallback): void {
+    public async onChange(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onChange', arguments);
-        openStream.subscribe(this);
+        const res = await openStream.subscribe(this);
         if (!checkList(this.streamCallback.change, callback)) {
             this.streamCallback.change.push(callback);
         }
+        return res;
     }
 
-    public onDelete(callback: StreamCallback): void {
+    public async onDelete(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onDelete', arguments);
-        openStream.subscribe(this);
+        const res = await openStream.subscribe(this);
         if (!checkList(this.streamCallback.delete, callback)) {
             this.streamCallback.delete.push(callback);
         }
+        return res;
     }
 
-    public onCreate(callback: StreamCallback): void {
+    public async onCreate(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onDelete', arguments);
-        openStream.subscribe(this);
+        const res = await openStream.subscribe(this);
         if (this.streamCallback.create.indexOf(callback) === -1) {
             this.streamCallback.create.push(callback);
         }
+        return res;
     }
 
-    public clearAllCallbacks(): void {
-        openStream.unsubscribe(this);
+    public async clearAllCallbacks(): Promise<boolean> {
+        const res = await openStream.unsubscribe(this);
         this.streamCallback.event = [];
         this.streamCallback.change = [];
         this.streamCallback.delete = [];
         this.streamCallback.create = [];
+        return res;
     }
 
     async handleStream(event: IStreamEvent): Promise<void> {
@@ -93,7 +98,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
                 break;
             /* istanbul ignore next */
             default:
-                printError('Unhandled stream event type: ' + event.event);
+                printError(`Unhandled stream event type: ${event.event}`);
                 break;
         }
     }

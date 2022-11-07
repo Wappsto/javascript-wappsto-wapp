@@ -8,7 +8,7 @@ import { isBrowser } from './util/helpers';
  * @return The content of the cookie if found, else null
  */
 function readCookie(name: string): string {
-    const nameEQ = name + '=';
+    const nameEQ = `${name}=`;
     const ca = window.document.cookie.split(';');
     for (let i = 0; i < ca.length; i++) {
         let c = ca[i];

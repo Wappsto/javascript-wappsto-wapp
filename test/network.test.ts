@@ -3,178 +3,169 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import {
-    createNetwork,
-    Network,
-    Device,
-    Value,
-    config,
-    stopLogging,
-} from '../src/index';
-import { openStream } from '../src/stream_helpers';
+import { createNetwork, Network, Device, Value, config } from '../src/index';
+import { before, after, newWServer, sendRpcResponse } from './util/stream';
+
+const response = {
+    meta: {
+        type: 'network',
+        version: '2.1',
+        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+    },
+    name: 'test',
+};
+const responseOffline = {
+    meta: {
+        type: 'network',
+        version: '2.1',
+        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+        connection: {},
+    },
+    name: 'test',
+};
+const responseFull = {
+    meta: {
+        type: 'network',
+        version: '2.1',
+        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+        connection: {
+            online: true,
+            timestamp: '',
+        },
+    },
+    name: 'Network Name',
+    device: [
+        {
+            meta: {
+                id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                version: '2.1',
+                type: 'device',
+            },
+            name: 'Device Name',
+            product: 'Device Product',
+            value: [
+                {
+                    meta: {
+                        id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                        version: '2.1',
+                        type: 'value',
+                    },
+                    name: 'Value Name',
+                    permission: 'w',
+                    type: 'temperature',
+                    number: { min: 0, max: 100, step: 1, unit: 'c' },
+                    eventlog: [
+                        {
+                            meta: {
+                                type: 'eventlog',
+                                version: '2.1',
+                                id: '8e24c08f-2a99-4cae-9992-2da76326de8c',
+                            },
+                            message: 'test',
+                            level: 'error',
+                        },
+                    ],
+                    state: [
+                        {
+                            meta: {
+                                id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                version: '2.1',
+                                type: 'state',
+                            },
+                            type: 'Control',
+                            timestamp: '',
+                            data: '1',
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+};
+const response2Networks = [
+    {
+        meta: {
+            type: 'network',
+            version: '2.1',
+            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+        },
+        name: 'test',
+    },
+    {
+        meta: {
+            type: 'network',
+            version: '2.1',
+            id: 'aa9da00a-b5e2-4651-a111-92cb0899ee7c',
+        },
+        name: 'test',
+    },
+];
+const responseHalf = {
+    meta: {
+        type: 'network',
+        version: '2.1',
+        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+    },
+    name: 'Network Name',
+    device: [
+        {
+            meta: {
+                id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                version: '2.1',
+                type: 'device',
+            },
+            name: 'Device Name',
+            product: 'Device Product',
+            value: [
+                {
+                    meta: {
+                        id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                        version: '2.1',
+                        type: 'value',
+                    },
+                    name: 'Value Name',
+                    state: [
+                        {
+                            meta: {
+                                id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                version: '2.1',
+                                type: 'state',
+                            },
+                            type: 'Report',
+                        },
+                        '9ee509d7-07ce-4e71-9016-340d53867af4',
+                    ],
+                },
+                'ffeed32d-c8f4-47f9-b12b-ce7d9f2342ca',
+            ],
+        },
+        'd9fd72a2-fd2e-4079-b114-d8927f88d9ab',
+        'b8b4864c-1da5-41db-8fd3-22191176b266',
+        {
+            meta: {
+                id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                version: '2.1',
+                type: 'device',
+            },
+            name: 'Device Name',
+            product: 'Device Product',
+        },
+    ],
+};
 
 describe('network', () => {
-    const response = {
-        meta: {
-            type: 'network',
-            version: '2.1',
-            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-        },
-        name: 'test',
-    };
-    const responseOffline = {
-        meta: {
-            type: 'network',
-            version: '2.1',
-            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-            connection: {},
-        },
-        name: 'test',
-    };
-    const responseFull = {
-        meta: {
-            type: 'network',
-            version: '2.1',
-            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-            connection: {
-                online: true,
-                timestamp: '',
-            },
-        },
-        name: 'Network Name',
-        device: [
-            {
-                meta: {
-                    id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
-                    version: '2.1',
-                    type: 'device',
-                },
-                name: 'Device Name',
-                product: 'Device Product',
-                value: [
-                    {
-                        meta: {
-                            id: 'c5a73d64-b398-434e-a236-df15342339d5',
-                            version: '2.1',
-                            type: 'value',
-                        },
-                        name: 'Value Name',
-                        permission: 'w',
-                        type: 'temperature',
-                        number: { min: 0, max: 100, step: 1, unit: 'c' },
-                        eventlog: [
-                            {
-                                meta: {
-                                    type: 'eventlog',
-                                    version: '2.1',
-                                    id: '8e24c08f-2a99-4cae-9992-2da76326de8c',
-                                },
-                                message: 'test',
-                                level: 'error',
-                            },
-                        ],
-                        state: [
-                            {
-                                meta: {
-                                    id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
-                                    version: '2.1',
-                                    type: 'state',
-                                },
-                                type: 'Control',
-                                timestamp: '',
-                                data: '1',
-                            },
-                        ],
-                    },
-                ],
-            },
-        ],
-    };
-    const response2Networks = [
-        {
-            meta: {
-                type: 'network',
-                version: '2.1',
-                id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-            },
-            name: 'test',
-        },
-        {
-            meta: {
-                type: 'network',
-                version: '2.1',
-                id: 'aa9da00a-b5e2-4651-a111-92cb0899ee7c',
-            },
-            name: 'test',
-        },
-    ];
-    const responseHalf = {
-        meta: {
-            type: 'network',
-            version: '2.1',
-            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-        },
-        name: 'Network Name',
-        device: [
-            {
-                meta: {
-                    id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
-                    version: '2.1',
-                    type: 'device',
-                },
-                name: 'Device Name',
-                product: 'Device Product',
-                value: [
-                    {
-                        meta: {
-                            id: 'c5a73d64-b398-434e-a236-df15342339d5',
-                            version: '2.1',
-                            type: 'value',
-                        },
-                        name: 'Value Name',
-                        state: [
-                            {
-                                meta: {
-                                    id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
-                                    version: '2.1',
-                                    type: 'state',
-                                },
-                                type: 'Report',
-                            },
-                            '9ee509d7-07ce-4e71-9016-340d53867af4',
-                        ],
-                    },
-                    'ffeed32d-c8f4-47f9-b12b-ce7d9f2342ca',
-                ],
-            },
-            'd9fd72a2-fd2e-4079-b114-d8927f88d9ab',
-            'b8b4864c-1da5-41db-8fd3-22191176b266',
-            {
-                meta: {
-                    id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
-                    version: '2.1',
-                    type: 'device',
-                },
-                name: 'Device Name',
-                product: 'Device Product',
-            },
-        ],
-    };
-
-    const server = new WS('ws://localhost:12345', { jsonProtocol: true });
+    let server: WS;
 
     beforeAll(() => {
-        stopLogging();
-        openStream.websocketUrl = 'ws://localhost:12345';
+        before();
+    });
+
+    beforeEach(() => {
+        server = newWServer();
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
-    });
-
-    afterAll(() => {
-        openStream.close();
-        server.close();
+        after();
     });
 
     it('can create a new network class', () => {
@@ -225,7 +216,7 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.1/network/' + network.meta.id,
+            `/2.1/network/${network.meta.id}`,
             response,
             {}
         );
@@ -355,13 +346,25 @@ describe('network', () => {
     });
 
     it('can find a network by name', async () => {
+        console.log('***************************************');
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [response] });
 
         const r = Network.findByName('test');
         await server.connected;
-        await new Promise((r) => setTimeout(r, 1));
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/notification',
+                },
+            })
+        );
+        sendRpcResponse(server);
 
         server.send({
             meta_object: {
@@ -387,7 +390,7 @@ describe('network', () => {
                 },
             },
         });
-
+        console.log('wait for network');
         const network = await r;
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
@@ -933,9 +936,25 @@ describe('network', () => {
         const f = jest.fn();
         const n = new Network();
         n.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
-        n.onCreate(f);
+
+        const createPromise = n.onCreate(f);
 
         await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/network/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38',
+                },
+            })
+        );
+        sendRpcResponse(server);
+
+        await createPromise;
+
         server.send({
             meta_object: {
                 type: 'event',
@@ -950,6 +969,8 @@ describe('network', () => {
                 name: 'Device Name',
             },
         });
+
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);

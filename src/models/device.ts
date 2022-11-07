@@ -176,7 +176,7 @@ export class Device extends ConnectionModel implements IDevice {
             await value.createState({ type: 'Control' });
         }
 
-        value.created();
+        await value.created();
         return value;
     }
 

@@ -123,8 +123,9 @@ export class Value extends StreamModel implements IValueBase {
         }
     }
 
-    public created(): void {
-        this.onChange((val) => {
+    public async created(): Promise<void> {
+        await this.onChange((val) => {
+            console.log('Value changed', val);
             this.handlePeriodUpdate();
         });
 
@@ -287,16 +288,21 @@ export class Value extends StreamModel implements IValueBase {
         return await p;
     }
 
-    private findStateAndCallback(
+    private async findStateAndCallback(
         type: StateType,
         callback: ValueStreamCallback,
         callOnInit?: boolean
-    ): void {
+    ): Promise<boolean> {
+        let res = false;
         const state = this.findState(type);
         if (state) {
+            if (callOnInit === true) {
+                callback(this, state.data, state.timestamp);
+            }
+
             if (!checkList(this.stateCallbacks[type], callback)) {
                 this.stateCallbacks[type].push(callback);
-                state.onChange(async () => {
+                res = await state.onChange(async () => {
                     const callbacks = this.stateCallbacks[state.type];
                     for (let i = 0; i < callbacks.length; i++) {
                         const cb = callbacks[i];
@@ -304,18 +310,17 @@ export class Value extends StreamModel implements IValueBase {
                     }
                 });
             }
-            if (callOnInit === true) {
-                callback(this, state.data, state.timestamp);
-            }
         }
+        return res;
     }
 
-    private findStateAndClearCallback(type: StateType): void {
+    private async findStateAndClearCallback(type: StateType): Promise<boolean> {
         this.stateCallbacks[type] = [];
         const state = this.findState(type);
         if (state) {
-            state.clearAllCallbacks();
+            return state.clearAllCallbacks();
         }
+        return false;
     }
 
     public async addEvent(
@@ -485,22 +490,25 @@ export class Value extends StreamModel implements IValueBase {
         return this.findStateAndUpdate('Control', data, timestamp);
     }
 
-    public onControl(callback: ValueStreamCallback): void {
+    public onControl(callback: ValueStreamCallback): Promise<boolean> {
         this.validate('onControl', arguments);
-        this.findStateAndCallback('Control', callback);
+        return this.findStateAndCallback('Control', callback);
     }
 
-    public onReport(callback: ValueStreamCallback, callOnInit?: boolean): void {
+    public onReport(
+        callback: ValueStreamCallback,
+        callOnInit?: boolean
+    ): Promise<boolean> {
         this.validate('onReport', arguments);
-        this.findStateAndCallback('Report', callback, callOnInit);
+        return this.findStateAndCallback('Report', callback, callOnInit);
     }
 
-    public onRefresh(callback: RefreshStreamCallback): void {
+    public async onRefresh(callback: RefreshStreamCallback): Promise<boolean> {
         this.validate('onRefresh', arguments);
         this.status = '';
         if (!checkList(this.refreshCallbacks, callback)) {
             this.refreshCallbacks.push(callback);
-            this.onChange(() => {
+            return this.onChange(() => {
                 if (this.status === 'update') {
                     this.reportIsForced = true;
                     this.status = '';
@@ -508,19 +516,20 @@ export class Value extends StreamModel implements IValueBase {
                 }
             });
         }
+        return false;
     }
 
-    public cancelOnReport(): void {
-        this.findStateAndClearCallback('Report');
+    public cancelOnReport(): Promise<boolean> {
+        return this.findStateAndClearCallback('Report');
     }
 
-    public cancelOnControl(): void {
-        this.findStateAndClearCallback('Control');
+    public cancelOnControl(): Promise<boolean> {
+        return this.findStateAndClearCallback('Control');
     }
 
-    public cancelOnRefresh(): void {
+    public cancelOnRefresh(): Promise<boolean> {
         this.refreshCallbacks = [];
-        this.clearAllCallbacks();
+        return this.clearAllCallbacks();
     }
 
     private async changeAttribute(

@@ -14,16 +14,19 @@ export class ConnectionModel extends StreamModel implements IConnectionModel {
         return false;
     }
 
-    public onConnectionChange(callback: ConnectionCallback): void {
+    public async onConnectionChange(
+        callback: ConnectionCallback
+    ): Promise<boolean> {
         Model.validateMethod(
             'ConnectionModel',
             'onConnectionChange',
             arguments
         );
+        let res = false;
         this.currentStatus = this.isOnline();
         if (!checkList(this.connectionCallbacks, callback)) {
             this.connectionCallbacks.push(callback);
-            this.onEvent(() => {
+            res = await this.onEvent(() => {
                 if (this.isOnline() !== this.currentStatus) {
                     this.currentStatus = this.isOnline();
                     this.connectionCallbacks.forEach((cb) => {
@@ -32,5 +35,6 @@ export class ConnectionModel extends StreamModel implements IConnectionModel {
                 }
             });
         }
+        return res;
     }
 }

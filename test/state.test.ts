@@ -66,7 +66,7 @@ describe('state', () => {
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.1/state/' + state.meta.id,
+            `/2.1/state/${state.meta.id}`,
             response,
             {}
         );

@@ -5,21 +5,26 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { wappStorage, stopLogging } from '../src/index';
 import { openStream } from '../src/stream_helpers';
+import { sendRpcResponse } from './util/stream';
 
 describe('WappStorage', () => {
-    const server = new WS('ws://localhost:12345', { jsonProtocol: true });
+    let server: WS;
 
     beforeAll(() => {
         stopLogging();
+        console.error = jest.fn();
         openStream.websocketUrl = 'ws://localhost:12345';
     });
 
-    afterEach(() => {
-        jest.clearAllMocks();
+    beforeEach(() => {
+        server = new WS('ws://localhost:12345', { jsonProtocol: true });
     });
 
-    afterAll(() => {
+    afterEach(() => {
+        WS.clean();
+        jest.clearAllMocks();
         openStream.close();
+        openStream.reset();
         server.close();
     });
 
@@ -83,12 +88,37 @@ describe('WappStorage', () => {
 
         const fun = jest.fn();
         const c = await wappStorage();
-        c.onChange(fun);
+        const changeP = c.onChange(fun);
         const res = c.get('key');
         await c.set('new_key', 'new_item');
         const newRes = c.get('new_key');
 
         await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                },
+            })
+        );
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/extsync',
+                },
+            })
+        );
+        sendRpcResponse(server);
+
+        await changeP;
+
         server.send({
             meta: {
                 id: '37eba085-b943-4958-aa78-c1bd4c73defc',

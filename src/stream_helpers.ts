@@ -5,8 +5,15 @@ import { RequestHandler } from './util/interfaces';
 import { isBrowser } from './util/helpers';
 
 const openStream: Stream = new Stream();
+let request_handlers: Record<string, RequestHandler> = {};
+let backgroudIsStarted = false;
 
 export { openStream };
+
+export function streamHelperReset() {
+    backgroudIsStarted = false;
+    request_handlers = {};
+}
 
 async function sendRequest(type: string, msg: any): Promise<any> {
     const data = {
@@ -32,8 +39,6 @@ export async function signalBackground(msg: any): Promise<void> {
     await openStream.sendEvent('foreground', msg);
 }
 
-const request_handlers: Record<string, RequestHandler> = {};
-
 async function _handleRequest(event: any) {
     let data: any = {};
     try {
@@ -52,21 +57,26 @@ async function _handleRequest(event: any) {
     }
 }
 
-function handleRequest(type: string, callback: RequestHandler): void {
-    if (Object.keys(request_handlers).length === 0) {
-        openStream.onRequest(_handleRequest, true);
-    }
+async function handleRequest(
+    type: string,
+    callback: RequestHandler
+): Promise<boolean> {
+    let res = true;
     request_handlers[type] = callback;
+    if (Object.keys(request_handlers).length === 1) {
+        res = await openStream.onRequest(_handleRequest, true);
+    }
+    return res;
 }
 
-export function fromForeground(callback: RequestHandler): void {
+export function fromForeground(callback: RequestHandler): Promise<boolean> {
     Model.validateMethod('Stream', 'fromForeground', arguments);
-    handleRequest('foreground', callback);
+    return handleRequest('foreground', callback);
 }
 
-export function fromBackground(callback: RequestHandler): void {
+export function fromBackground(callback: RequestHandler): Promise<boolean> {
     Model.validateMethod('Stream', 'fromForeground', arguments);
-    handleRequest('background', callback);
+    return handleRequest('background', callback);
 }
 
 export function onWebHook(handler: RequestHandler): void {
@@ -96,16 +106,16 @@ export function cancelFromForeground(): void {
     cancelFrom('foreground');
 }
 
-let backgroudIsStarted = false;
-
-function handleIsBackgroundStarted(message: any): void {
+function handleIsBackgroundStarted(message: any): undefined {
     if (request_handlers['foreground']) {
         openStream.sendEvent('backgroudIsStarted', '');
     }
+    return;
 }
 
-function handleBackgroundIsStarted(message: any): void {
+function handleBackgroundIsStarted(message: any): undefined {
     backgroudIsStarted = true;
+    return;
 }
 
 export async function waitForBackground(timeout = 10): Promise<boolean> {
@@ -113,7 +123,7 @@ export async function waitForBackground(timeout = 10): Promise<boolean> {
     if (backgroudIsStarted) {
         return true;
     }
-    openStream.subscribeInternal(
+    await openStream.subscribeInternal(
         'backgroudIsStarted',
         handleBackgroundIsStarted
     );

@@ -76,9 +76,9 @@ export class Model implements IModel {
 
     public getUrl(): string {
         if (this.meta.id) {
-            return this.url() + '/' + this.id();
+            return `${this.url()}/${this.id()}`;
         } else if (this.parent) {
-            return this.parent.getUrl() + '/' + this.getType();
+            return `${this.parent.getUrl()}/${this.getType()}`;
         }
         return this.url();
     }

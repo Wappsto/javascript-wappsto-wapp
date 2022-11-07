@@ -3,16 +3,24 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import {
-    Device,
-    Value,
-    ValueTemplate,
-    config,
-    stopLogging,
-} from '../src/index';
-import { openStream } from '../src/stream_helpers';
+import { Device, Value, ValueTemplate, config } from '../src/index';
+import { before, after, newWServer, sendRpcResponse } from './util/stream';
 
 describe('device', () => {
+    let server: WS;
+
+    beforeAll(() => {
+        before();
+    });
+
+    beforeEach(() => {
+        server = newWServer();
+    });
+
+    afterEach(() => {
+        after();
+    });
+
     const response = {
         meta: {
             type: 'device',
@@ -40,22 +48,6 @@ describe('device', () => {
             name: 'test',
         },
     ];
-
-    const server = new WS('ws://localhost:12345', { jsonProtocol: true });
-
-    beforeAll(() => {
-        stopLogging();
-        openStream.websocketUrl = 'ws://localhost:12345';
-    });
-
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
-    afterAll(() => {
-        openStream.close();
-        server.close();
-    });
 
     it('can create a new device class', () => {
         const name = 'Test Device';
@@ -103,7 +95,7 @@ describe('device', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.1/device/' + device.meta.id,
+            `/2.1/device/${device.meta.id}`,
             response,
             {}
         );
@@ -1249,9 +1241,23 @@ describe('device', () => {
         const f = jest.fn();
         const d = new Device();
         d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
-        d.onCreate(f);
+        const createPromise = d.onCreate(f);
 
         await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38',
+                },
+            })
+        );
+        sendRpcResponse(server);
+
+        await createPromise;
 
         server.send({
             meta_object: {
@@ -1282,9 +1288,23 @@ describe('device', () => {
         const d = new Device();
         d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
 
-        d.onConnectionChange(f);
+        const connP = d.onConnectionChange(f);
 
         await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    data: '/2.1/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38',
+                    url: '/services/2.1/websocket/open/subscription',
+                },
+            })
+        );
+        sendRpcResponse(server);
+
+        await connP;
 
         server.send({
             meta_object: {

@@ -71,10 +71,10 @@ export class WappStorage {
         return this.data.update();
     }
 
-    onChange(cb: StorageChangeHandler): void {
+    onChange(cb: StorageChangeHandler): Promise<boolean> {
         WappStorage.validate('onChange', arguments);
-        this.data.onChange((data) => {
-            cb();
+        return this.data.onChange(async (data) => {
+            await cb();
         });
     }
 

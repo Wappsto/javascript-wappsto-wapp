@@ -10,38 +10,35 @@ import {
     State,
     config,
     ValueTemplate,
-    stopLogging,
 } from '../src/index';
-import { openStream } from '../src/stream_helpers';
+import { before, after, newWServer, sendRpcResponse } from './util/stream';
+
+const response = {
+    meta: {
+        type: 'value',
+        version: '2.1',
+        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+    },
+    name: 'test',
+    permission: '',
+    type: '',
+    period: '0',
+    delta: '0',
+};
 
 describe('value', () => {
-    const response = {
-        meta: {
-            type: 'value',
-            version: '2.1',
-            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-        },
-        name: 'test',
-        permission: '',
-        type: '',
-        period: '0',
-        delta: '0',
-    };
-
-    const server = new WS('ws://localhost:12345', { jsonProtocol: true });
+    let server: WS;
 
     beforeAll(() => {
-        stopLogging();
-        openStream.websocketUrl = 'ws://localhost:12345';
+        before();
+    });
+
+    beforeEach(() => {
+        server = newWServer();
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
-    });
-
-    afterAll(() => {
-        openStream.close();
-        server.close();
+        after();
     });
 
     it('can create a new value class', () => {
@@ -93,7 +90,7 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            '/2.1/value/' + value.meta.id,
+            `/2.1/value/${value.meta.id}`,
             response,
             {}
         );
@@ -564,9 +561,24 @@ describe('value', () => {
         const f = jest.fn();
         const v = new Value();
         v.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
-        v.onCreate(f);
+        const createP = v.onCreate(f);
 
         await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    data: '/2.1/value/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38',
+                    url: '/services/2.1/websocket/open/subscription',
+                },
+            })
+        );
+
+        sendRpcResponse(server);
+
+        await createP;
 
         server.send({
             meta_object: {
@@ -685,19 +697,38 @@ describe('value', () => {
     });
 
     it('can handle delta update from user', async () => {
+        const funR = jest.fn();
         mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
-        value.delta = '2';
+        value.delta = '1';
         const state = new State('Report');
         state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
-        await value.report(1);
+
+        const reportPromise = value.onChange(funR);
 
         await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
+                },
+            })
+        );
+        sendRpcResponse(server);
+
+        await reportPromise;
+
+        await value.report(1);
+
         server.send({
             meta_object: {
                 type: 'value',
@@ -709,9 +740,12 @@ describe('value', () => {
             },
         });
 
+        await new Promise((r) => setTimeout(r, 1));
+
         await value.report(2);
         await value.report(3);
 
+        expect(value.delta).toEqual("2");
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
@@ -826,7 +860,7 @@ describe('value', () => {
                         meta: {
                             type: 'value',
                             version: '2.1',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                            id: 'e094d45e-49cd-465f-8a04-c5a879f796e2',
                         },
                     },
                 ],
@@ -846,23 +880,41 @@ describe('value', () => {
         const fun = jest.fn();
         const device = new Device();
         device.meta.id = '1714e470-76ef-4310-8c49-dda18ef8b819';
-        const value = await device.createValue(
+
+        const valuePromise = device.createValue(
             'test',
             'r',
             ValueTemplate.TEMPERATURE_CELSIUS
         );
 
-        value.onRefresh(fun);
-        value.onRefresh(fun);
-        value.onRefresh(fun);
-
         await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/value/e094d45e-49cd-465f-8a04-c5a879f796e2',
+                },
+            })
+        );
+
+        sendRpcResponse(server);
+
+        const value = await valuePromise;
+
+        const p1 = value.onRefresh(fun);
+        const p2 = value.onRefresh(fun);
+
+        await Promise.all([p1, p2]);
+
         server.send({
             meta_object: {
                 type: 'value',
             },
             event: 'update',
-            path: '/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            path: '/value/e094d45e-49cd-465f-8a04-c5a879f796e2',
             data: {
                 period: '2',
             },
@@ -882,11 +934,12 @@ describe('value', () => {
                 type: 'value',
             },
             event: 'update',
-            path: '/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            path: '/value/e094d45e-49cd-465f-8a04-c5a879f796e2',
             data: {
                 period: '0',
             },
         });
+        await new Promise((r) => setTimeout(r, 1));
 
         value.cancelPeriod();
 
@@ -1494,7 +1547,7 @@ describe('value', () => {
         );
     });
 
-    it('can call the onReport callback on init', () => {
+    it('can call the onReport callback on init', async () => {
         const fun = jest.fn();
         const value = new Value();
         const state = new State('Report');
@@ -1503,8 +1556,29 @@ describe('value', () => {
         state.data = 'data';
         state.timestamp = 'timestamp';
         value.state.push(state);
-        value.onReport(fun, true);
-        value.onReport(fun, true);
+
+        const p1 = value.onReport(fun, true);
+        const p2 = value.onReport(fun, true);
+        const p3 = value.onReport(fun);
+
+        await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                     "data": "/2.1/state/cda4d978-39e9-47bf-8497-9813b0f94973",
+                    "url": "/services/2.1/websocket/open/subscription",
+                },
+            })
+        );
+        sendRpcResponse(server);
+        console.log(server.messages);
+
+        await p1;
+        await p2;
+        await p3;
 
         expect(fun).toHaveBeenCalledTimes(2);
         expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
