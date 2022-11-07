@@ -6,6 +6,7 @@ export interface IConfig {
     verbose?: boolean;
     requests?: boolean;
     debug?: boolean;
+    stream?: boolean;
     validation?: ValidationType;
     reconnectCount?: number;
     jitterMin?: number;

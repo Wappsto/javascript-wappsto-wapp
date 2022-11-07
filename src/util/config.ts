@@ -6,6 +6,7 @@ class Config implements IConfig {
     debug = false;
     requests = false;
     verbose = false;
+    stream = false;
     validation: ValidationType = 'normal';
     reconnectCount = 10;
     jitterMin = 1;
@@ -28,6 +29,9 @@ export function config(param: IConfig): Config {
     }
     if (param.requests !== undefined) {
         _config.requests = param.requests;
+    }
+    if (param.stream !== undefined) {
+        _config.stream = param.stream;
     }
     if (param.verbose !== undefined) {
         _config.verbose = param.verbose;

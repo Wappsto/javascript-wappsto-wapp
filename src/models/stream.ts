@@ -1,7 +1,7 @@
 import { Model } from './model';
 import { session, baseUrl } from '../session';
 import { _config } from '../util/config';
-import { printDebug, printError } from '../util/debug';
+import { printDebug, printError, printStream } from '../util/debug';
 import { isUUID, isBrowser, isVersion, toString } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { getErrorMessage } from '../util/http_wrapper';
@@ -82,7 +82,7 @@ export class Stream extends Model {
         this.waiting = [];
         this.backoff = 1;
         Object.values(this.rpc_response).forEach((resolve: any) => {
-            // console.log('Clean up', resolve);
+            printStream('Clean up', resolve);
             resolve(false);
         });
         this.rpc_response = {};
@@ -474,7 +474,7 @@ export class Stream extends Model {
         type: string,
         event: IStreamEvent
     ): Promise<void> {
-        // console.log('handleMessage', type, event);
+        printStream('handleMessage', type, event);
         const paths: string[] = [];
         const services: string[] = [];
         if (type === 'message') {
@@ -513,8 +513,8 @@ export class Stream extends Model {
         } else {
             services.push(`/${type}`);
         }
-        //console.log(services, this.services);
-        //console.log(paths, this.models);
+        printStream('services', services, this.services);
+        printStream('paths', paths, this.models);
         for (let i = 0; i < paths.length; i += 1) {
             const path = paths[i];
             for (let j = 0; j < this.models[path]?.length; j += 1) {
@@ -565,13 +565,13 @@ export class Stream extends Model {
                 this.rpc_response[hash.id] = resolve;
             });
             this.socket?.send(toString(hash));
-            // console.log('Waiting for', hash);
+            printStream('Waiting for', hash);
             const timeoutPromise = new Promise<boolean>((resolve) => {
                 setTimeout(resolve, 1000, false);
             });
             res = await Promise.race([p, timeoutPromise]);
             delete this.rpc_response[hash.id];
-            //console.log('ready', hash.id);
+            printStream('ready', hash.id);
         } catch (e) {
             /* istanbul ignore next */
             printError(`Failed to send message on WebSocket: ${e}`);

@@ -34,3 +34,9 @@ export function printError(message: string | unknown): void {
 export function printWarning(message: string): void {
     console.warn(`WAPPSTO WARN: ${message}`);
 }
+
+export function printStream(message: string, ...args: any[]): void {
+    if (_config.stream) {
+        console.log(`WAPPSTO STREAM: ${message}`, ...args);
+    }
+}

@@ -8,6 +8,7 @@ import {
     printWarning,
     printError,
     printRequest,
+    printStream,
 } from '../src/util/debug';
 import { IModel } from '../src/util/interfaces';
 console.log = jest.fn();
@@ -42,6 +43,21 @@ describe('config', () => {
         expect(console.log).toHaveBeenCalledTimes(1);
         expect(console.log).toHaveBeenCalledWith(
             'WAPPSTO REQUEST: post test {"config":"test"} {"key":"test","data":"CREF"} => test'
+        );
+    });
+
+    it('can enable stream', async () => {
+        printStream('test 1', { test: 1 }, 1);
+
+        config({ stream: true });
+
+        printStream('test 2', { test: 2 }, 2);
+
+        expect(console.log).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledWith(
+            'WAPPSTO STREAM: test 2',
+            { test: 2 },
+            2
         );
     });
 

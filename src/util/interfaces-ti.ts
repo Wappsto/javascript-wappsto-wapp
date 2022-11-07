@@ -12,6 +12,7 @@ export const IConfig = t.iface([], {
     verbose: t.opt('boolean'),
     requests: t.opt('boolean'),
     debug: t.opt('boolean'),
+    stream: t.opt('boolean'),
     validation: t.opt('ValidationType'),
     reconnectCount: t.opt('number'),
     jitterMin: t.opt('number'),

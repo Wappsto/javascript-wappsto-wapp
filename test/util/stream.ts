@@ -4,7 +4,7 @@ import { stopLogging } from '../../src/index';
 
 let server: WS;
 let autoTimer: any;
-let answered: number = 0;
+let answered = 0;
 
 export function after() {
     // console.log('********* TEST DONE **********');
