@@ -28,7 +28,7 @@ describe('value', () => {
     });
 
     beforeEach(() => {
-        server = newWServer();
+        server = newWServer(true);
     });
 
     afterEach(() => {

@@ -14,7 +14,7 @@ describe('device', () => {
     });
 
     beforeEach(() => {
-        server = newWServer();
+        server = newWServer(true);
     });
 
     afterEach(() => {
