@@ -1410,4 +1410,51 @@ describe('device', () => {
         expect(device.toJSON).toBeDefined();
         expect(device.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
+
+    it('can make a device online', async () => {
+        templateHelperStart();
+        const d = new Device();
+        d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
+
+        await d.createValue(
+            'Connection',
+            'rw',
+            ValueTemplate.CONNECTION_STATUS
+        );
+        templateHelperDone();
+
+        const responseOnline = await d.setConnectionStatus(1);
+
+        const responseOffline = await d.setConnectionStatus(false);
+
+        expect(responseOnline).toEqual(true);
+        expect(responseOffline).toEqual(true);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
+            expect.objectContaining({
+                data: '1',
+                meta: {
+                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    type: 'state',
+                    version: '2.1',
+                },
+                type: 'Report',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
+            expect.objectContaining({
+                data: '0',
+                meta: {
+                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    type: 'state',
+                    version: '2.1',
+                },
+                type: 'Report',
+            }),
+            {}
+        );
+    });
 });

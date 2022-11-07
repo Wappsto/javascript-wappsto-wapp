@@ -125,7 +125,6 @@ export class Value extends StreamModel implements IValueBase {
 
     public async created(): Promise<void> {
         await this.onChange((val) => {
-            console.log('Value changed', val);
             this.handlePeriodUpdate();
         });
 
@@ -421,7 +420,7 @@ export class Value extends StreamModel implements IValueBase {
     public report(
         data: string | number,
         timestamp: Timestamp = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         this.validate('report', arguments);
 
         return this.sendReport(data, timestamp, false);
@@ -430,7 +429,7 @@ export class Value extends StreamModel implements IValueBase {
     public forceReport(
         data: string | number,
         timestamp: Timestamp = undefined
-    ): Promise<void> {
+    ): Promise<boolean> {
         this.validate('forceReport', arguments);
 
         return this.sendReport(data, timestamp, true);
@@ -440,10 +439,10 @@ export class Value extends StreamModel implements IValueBase {
         data: string | number,
         timestamp: Timestamp = undefined,
         force: boolean
-    ): Promise<void> {
+    ): Promise<boolean> {
         const oldState = this.findState('Report');
         if (!oldState) {
-            return;
+            return false;
         }
 
         if (
@@ -457,7 +456,7 @@ export class Value extends StreamModel implements IValueBase {
                 printDebug(
                     `Dropping value update for "${this.name}" because delta is Inf`
                 );
-                return;
+                return false;
             }
 
             const oldData = parseFloat(oldState.data);
@@ -474,12 +473,12 @@ export class Value extends StreamModel implements IValueBase {
                 printDebug(
                     `Dropping value update for "${this.name}" because the change is less then ${delta}`
                 );
-                return;
+                return false;
             }
         }
 
         this.reportIsForced = false;
-        await this.findStateAndUpdate('Report', data, timestamp);
+        return this.findStateAndUpdate('Report', data, timestamp);
     }
 
     public control(

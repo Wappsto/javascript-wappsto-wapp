@@ -4,13 +4,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
-import {
-    Device,
-    Value,
-    State,
-    config,
-    ValueTemplate,
-} from '../src/index';
+import { Device, Value, State, config, ValueTemplate } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 
 const response = {
@@ -745,7 +739,7 @@ describe('value', () => {
         await value.report(2);
         await value.report(3);
 
-        expect(value.delta).toEqual("2");
+        expect(value.delta).toEqual('2');
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
@@ -1568,13 +1562,12 @@ describe('value', () => {
                 jsonrpc: '2.0',
                 method: 'POST',
                 params: {
-                     "data": "/2.1/state/cda4d978-39e9-47bf-8497-9813b0f94973",
-                    "url": "/services/2.1/websocket/open/subscription",
+                    data: '/2.1/state/cda4d978-39e9-47bf-8497-9813b0f94973',
+                    url: '/services/2.1/websocket/open/subscription',
                 },
             })
         );
         sendRpcResponse(server);
-        console.log(server.messages);
 
         await p1;
         await p2;

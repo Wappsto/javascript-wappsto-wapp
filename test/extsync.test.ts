@@ -50,7 +50,6 @@ describe('ExtSync stream', () => {
         after();
     });
 
-
     it('can signal that the background is ready', async () => {
         await server.connected;
 
@@ -95,14 +94,16 @@ describe('ExtSync stream', () => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         fromForeground((msg) => {});
 
-        await expect(server).toReceiveMessage(expect.objectContaining({
-            jsonrpc: '2.0',
-            method: 'POST',
-            params: {
-                "data": "/2.1/extsync/request",
-                 "url": "/services/2.1/websocket/open/subscription"
-            },
-        }));
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    data: '/2.1/extsync/request',
+                    url: '/services/2.1/websocket/open/subscription',
+                },
+            })
+        );
 
         sendRpcResponse(server, 1);
 

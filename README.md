@@ -413,6 +413,12 @@ network.onConnectionChange((network, status) => {
 });
 ```
 
+If you have a created your own device, you can set it online/offline by calling `setConnectionStatus` on the device, if you have added a `CONNECTION_STATUS` value before hand.
+
+```javascript
+await device.setConnectionStatus(true);
+```
+
 ### Changing the period and delta of a value
 
 To change the delta and period of a value you can call `setDelta` or

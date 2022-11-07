@@ -346,7 +346,6 @@ describe('network', () => {
     });
 
     it('can find a network by name', async () => {
-        console.log('***************************************');
         mockedAxios.get
             .mockResolvedValueOnce({ data: [] })
             .mockResolvedValueOnce({ data: [response] });
@@ -390,7 +389,6 @@ describe('network', () => {
                 },
             },
         });
-        console.log('wait for network');
         const network = await r;
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);

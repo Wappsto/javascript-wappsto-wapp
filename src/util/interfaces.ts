@@ -147,6 +147,7 @@ export interface IDeviceFunc {
     ): IDevice[];
     findAllByProduct(product: string, usage: string): IDevice[];
     findById(id: string): IDevice;
+    setConnectionStatus(state: boolean | number): Promise<boolean>;
 }
 
 export interface IPermissionModelFunc {

@@ -184,6 +184,10 @@ export const IDeviceFunc = t.iface([], {
         t.param('usage', 'string')
     ),
     findById: t.func('IDevice', t.param('id', 'string')),
+    setConnectionStatus: t.func(
+        'boolean',
+        t.param('state', t.union('boolean', 'number'))
+    ),
 });
 
 export const IPermissionModelFunc = t.iface([], {

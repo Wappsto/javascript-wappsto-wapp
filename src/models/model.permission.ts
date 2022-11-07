@@ -124,7 +124,7 @@ export class PermissionModel extends OntologyModel {
             printDebug(
                 `Waiting for permission to access users data: ${message}`
             );
-            console.log('sub to noti');
+
             openStream.subscribeService('/notification', async (event: any) => {
                 if (event.meta_object?.type === 'notification') {
                     const notification = Notification.fromArray([event.data]);

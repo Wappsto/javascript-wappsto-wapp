@@ -16,6 +16,7 @@ import {
     ValueType,
     ValuePermission,
 } from '../util/interfaces';
+import { ValueTemplate } from '../util/value_template';
 
 export class Device extends ConnectionModel implements IDevice {
     static endpoint = '/2.1/device';
@@ -378,6 +379,20 @@ export class Device extends ConnectionModel implements IDevice {
         }
         return res;
     };
+
+    public async setConnectionStatus(
+        state: boolean | number
+    ): Promise<boolean> {
+        Device.validate('setConnectionStatus', [state]);
+        let res = false;
+        const value = this.findValueByType(
+            ValueTemplate.CONNECTION_STATUS.type
+        );
+        if (value.length > 0) {
+            res = await value[0].report(state ? '1' : '0');
+        }
+        return res;
+    }
 
     private static validate(name: string, params: any): void {
         Model.validateMethod('Device', name, params);
