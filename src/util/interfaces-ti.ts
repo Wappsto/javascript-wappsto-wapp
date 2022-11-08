@@ -279,27 +279,32 @@ export const IValueFunc = t.iface([], {
     constructor: t.func('IState', t.param('name', 'string', true)),
     createState: t.func('IState', t.param('parameters', 'IState')),
     report: t.func(
-        'void',
+        'boolean',
         t.param('data', t.union('string', 'number')),
         t.param('timestamp', 'Timestamp')
     ),
     forceReport: t.func(
-        'void',
+        'boolean',
         t.param('data', t.union('string', 'number')),
         t.param('timestamp', 'Timestamp')
     ),
     control: t.func(
-        'void',
+        'boolean',
         t.param('data', t.union('string', 'number')),
         t.param('timestamp', 'Timestamp')
     ),
-    onControl: t.func('void', t.param('callback', 'ValueStreamCallback')),
+    controlWithAck: t.func(
+        'boolean',
+        t.param('data', t.union('string', 'number')),
+        t.param('timestamp', 'Timestamp')
+    ),
+    onControl: t.func('boolean', t.param('callback', 'ValueStreamCallback')),
     onReport: t.func(
-        'void',
+        'boolean',
         t.param('callback', 'ValueStreamCallback'),
         t.param('callOnInit', 'boolean', true)
     ),
-    onRefresh: t.func('void', t.param('callback', 'RefreshStreamCallback')),
+    onRefresh: t.func('boolean', t.param('callback', 'RefreshStreamCallback')),
     getReportLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
     getControlLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
     find: t.func(

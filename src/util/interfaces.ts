@@ -211,12 +211,19 @@ export interface IValueXml extends IValueBase, IValueXmlBase {}
 export interface IValueFunc {
     constructor(name?: string): IState;
     createState(parameters: IState): IState;
-    report(data: string | number, timestamp: Timestamp): void;
-    forceReport(data: string | number, timestamp: Timestamp): void;
-    control(data: string | number, timestamp: Timestamp): void;
-    onControl(callback: ValueStreamCallback): void;
-    onReport(callback: ValueStreamCallback, callOnInit?: boolean): void;
-    onRefresh(callback: RefreshStreamCallback): void;
+    report(data: string | number, timestamp: Timestamp): Promise<boolean>;
+    forceReport(data: string | number, timestamp: Timestamp): Promise<boolean>;
+    control(data: string | number, timestamp: Timestamp): Promise<boolean>;
+    controlWithAck(
+        data: string | number,
+        timestamp: Timestamp
+    ): Promise<boolean>;
+    onControl(callback: ValueStreamCallback): Promise<boolean>;
+    onReport(
+        callback: ValueStreamCallback,
+        callOnInit?: boolean
+    ): Promise<boolean>;
+    onRefresh(callback: RefreshStreamCallback): Promise<boolean>;
     getReportLog(request: ILogRequest): Promise<ILogResponse>;
     getControlLog(request: ILogRequest): Promise<ILogResponse>;
     find(

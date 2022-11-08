@@ -489,6 +489,31 @@ export class Value extends StreamModel implements IValueBase {
         return this.findStateAndUpdate('Control', data, timestamp);
     }
 
+    public controlWithAck(
+        data: string | number,
+        timestamp: Timestamp = undefined
+    ): Promise<boolean> {
+        this.validate('controlWithAck', arguments);
+
+        const promise = new Promise<boolean>((resolve) => {
+            this.findStateAndUpdate('Control', data, timestamp).then((res) => {
+                if(!res) {
+                    resolve(false);
+                }
+            });
+            this.onReport(() => {
+                resolve(true);
+                return true;
+            });
+
+            setTimeout(() => {
+                resolve(false);
+            }, 5000);
+        });
+
+        return promise;
+    }
+
     public onControl(callback: ValueStreamCallback): Promise<boolean> {
         this.validate('onControl', arguments);
         return this.findStateAndCallback('Control', callback);

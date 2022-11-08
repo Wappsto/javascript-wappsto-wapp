@@ -329,6 +329,15 @@ if (!result) {
 }
 ```
 
+If you need to verify that the device send back a report, you can use `controlWithAck` to wait for the incomming report.
+
+```javascript
+const result = await value.controlWithAck('1');
+if (!result || value.getReportData() !== '1') {
+	console.warn('Device failed to verify the control');
+}
+```
+
 And to get the last controlled data and timestamp.
 
 ```javascript
