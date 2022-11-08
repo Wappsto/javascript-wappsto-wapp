@@ -81,31 +81,32 @@ export function fromBackground(callback: RequestHandler): Promise<boolean> {
     return handleRequest('background', callback);
 }
 
-export function onWebHook(handler: RequestHandler): void {
+export function onWebHook(handler: RequestHandler): Promise<boolean> {
     Model.validateMethod('Stream', 'onWebHook', arguments);
-    openStream.onRequest(handler, false);
+    return openStream.onRequest(handler, false);
 }
 
-export function cancelOnWebHook(handler: RequestHandler): void {
+export function cancelOnWebHook(handler: RequestHandler): Promise<boolean> {
     Model.validateMethod('Stream', 'onWebHook', arguments);
-    openStream.cancelRequest(handler, false);
+    return openStream.cancelRequest(handler, false);
 }
 
-function cancelFrom(type: string): void {
+async function cancelFrom(type: string): Promise<boolean> {
     if (request_handlers[type]) {
         delete request_handlers[type];
         if (Object.keys(request_handlers).length === 0) {
-            openStream.cancelRequest(_handleRequest, true);
+            return openStream.cancelRequest(_handleRequest, true);
         }
     }
+    return true;
 }
 
-export function cancelFromBackground(): void {
-    cancelFrom('background');
+export function cancelFromBackground(): Promise<boolean> {
+    return cancelFrom('background');
 }
 
-export function cancelFromForeground(): void {
-    cancelFrom('foreground');
+export function cancelFromForeground(): Promise<boolean> {
+    return cancelFrom('foreground');
 }
 
 function handleIsBackgroundStarted(message: any): undefined {

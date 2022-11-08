@@ -413,8 +413,7 @@ describe('value', () => {
 
     it('can send a controlWithAck', async () => {
         const fun = jest.fn();
-        mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -484,8 +483,7 @@ describe('value', () => {
 
     it('can send a controlWithAck that fails', async () => {
         const fun = jest.fn();
-        mockedAxios.patch
-            .mockRejectedValueOnce({ data: [] });
+        mockedAxios.patch.mockRejectedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';

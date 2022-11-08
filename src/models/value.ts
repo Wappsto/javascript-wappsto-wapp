@@ -497,7 +497,7 @@ export class Value extends StreamModel implements IValueBase {
 
         const promise = new Promise<boolean>((resolve) => {
             this.findStateAndUpdate('Control', data, timestamp).then((res) => {
-                if(!res) {
+                if (!res) {
                     resolve(false);
                 }
             });
