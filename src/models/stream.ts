@@ -44,7 +44,7 @@ export class Stream extends Model {
     backoff = 1;
     waiting: any = [];
     onRequestHandlers: Record<number, RequestHandler[]> = { 0: [], 1: [] };
-    queue: any[] = [];
+    onRequestEvents: Record<number, any[]> = { 0: [], 1: [] };
     rpc_response: Record<number, any> = {};
     reconnect_timer: any = undefined;
 
@@ -78,7 +78,7 @@ export class Stream extends Model {
         this.services = {};
         this.subscriptions = [];
         this.onRequestHandlers = { 0: [], 1: [] };
-        this.queue = [];
+        this.onRequestEvents = { 0: [], 1: [] };
         this.waiting = [];
         this.backoff = 1;
         Object.values(this.rpc_response).forEach((resolve: any) => {
@@ -209,7 +209,6 @@ export class Stream extends Model {
 
     public async unsubscribe(model: IStreamModel): Promise<boolean> {
         this.validate('subscribe', arguments);
-
         if (this.models[model.path()]) {
             const index = this.models[model.path()].indexOf(model);
             if (index !== -1) {
@@ -364,32 +363,22 @@ export class Stream extends Model {
         }
     }
 
-    private onRequestHandler = async (event: any): Promise<boolean> => {
-        try {
-            let res;
-            const handlers =
-                this.onRequestHandlers[Number(event.uri === 'extsync/')];
-            for (let i = 0; i < handlers.length; i++) {
-                let p;
-                try {
-                    p = handlers[i](event.body);
-                } catch (err: any) {
-                    if (!(err instanceof IgnoreError)) {
-                        printError(err);
-                        this.sendResponse(event, 400, { error: err.message });
-                        continue;
-                    }
-                }
+    private async runRequestHandlers(type: number) {
+        if (this.onRequestEvents[type].length === 0) {
+            return;
+        }
 
+        const event = this.onRequestEvents[type][0];
+        try {
+            const handlers = this.onRequestHandlers[type];
+            for (let i = 0; i < handlers.length; i++) {
                 try {
-                    res = await p;
+                    const res = await handlers[i](event.body);
                     this.sendResponse(event, 200, res);
                 } catch (err: any) {
                     if (!(err instanceof IgnoreError)) {
                         printError(err);
-                        this.sendResponse(event, 400, {
-                            error: err.message,
-                        });
+                        this.sendResponse(event, 400, { error: err.message });
                     }
                 }
             }
@@ -400,6 +389,20 @@ export class Stream extends Model {
             printError('An error happend when calling request handler');
             /* istanbul ignore next */
             printError(toString(e));
+        }
+
+        this.onRequestEvents[type].shift();
+
+        this.runRequestHandlers(type);
+    }
+
+    private onRequestHandler = (event: any): boolean => {
+        const type = Number(event.uri === 'extsync/');
+
+        this.onRequestEvents[type].push(event);
+
+        if (this.onRequestEvents[type].length === 1) {
+            this.runRequestHandlers(type);
         }
         return false;
     };
@@ -470,10 +473,7 @@ export class Stream extends Model {
         }
     }
 
-    private async handleMessage(
-        type: string,
-        event: IStreamEvent
-    ): Promise<void> {
+    private handleMessage(type: string, event: IStreamEvent): void {
         printStream('handleMessage', type, event);
         const paths: string[] = [];
         const services: string[] = [];
@@ -513,31 +513,35 @@ export class Stream extends Model {
         } else {
             services.push(`/${type}`);
         }
+
         printStream('services', services, this.services);
         printStream('paths', paths, this.models);
-        for (let i = 0; i < paths.length; i += 1) {
-            const path = paths[i];
-            for (let j = 0; j < this.models[path]?.length; j += 1) {
-                const model = this.models[path][j];
-                await model.handleStream(event);
-            }
-        }
-        for (let i = 0; i < services.length; i += 1) {
-            const path = services[i];
-            const tmpList = this.services[path];
-            for (let j = 0; j < tmpList?.length; j += 1) {
-                const callback = tmpList[j];
+
+        paths.forEach((path: string) => {
+            this.models[path]?.forEach((model: IStreamModel) => {
+                model.handleStream(event);
+            });
+        });
+
+        services.forEach((service: string) => {
+            const tmpList = this.services[service];
+            tmpList?.forEach((callback: ServiceHandler) => {
                 const p = callback(event);
                 if (p) {
                     if (p === true) {
-                        this.filterCallback(callback, path, true);
+                        this.filterCallback(callback, service, true);
                     } else {
-                        const res = await p;
-                        this.filterCallback(callback, path, res || false);
+                        p.then((res) => {
+                            this.filterCallback(
+                                callback,
+                                service,
+                                res || false
+                            );
+                        });
                     }
                 }
-            }
-        }
+            });
+        });
     }
 
     private async sendMessage(
@@ -580,12 +584,7 @@ export class Stream extends Model {
         return res;
     }
 
-    private async handleQueue(): Promise<void> {
-        if (this.queue.length === 0) {
-            return;
-        }
-        const message = this.queue[0];
-
+    private handleRPCMessage(message: any): boolean {
         if (message.jsonrpc) {
             if (message.result) {
                 if (this.rpc_response[message.id]) {
@@ -602,38 +601,45 @@ export class Stream extends Model {
             } else {
                 printError(`Stream rpc error: ${toString(message.error)}`);
             }
-        } else {
-            let messages: IStreamEvent[] = [];
-            if (message.constructor !== Array) {
-                messages = [message];
-            } else {
-                messages = message;
-            }
+            return true;
+        }
+        return false;
+    }
 
-            for (let i = 0; i < messages.length; i++) {
-                const msg: IStreamEvent = messages[i];
-                if (msg.data?.uri !== 'extsync/wappsto/editor/console') {
-                    printDebug(`Stream message: ${toString(msg)}`);
-                }
-                if (msg.meta_object?.type === 'extsync') {
-                    const newData = msg.extsync || msg.data;
-                    if (newData.request) {
-                        await this.handleMessage('extsync/request', newData);
-                    } else if (
-                        newData.uri !== 'extsync/wappsto/editor/console'
-                    ) {
-                        await this.handleMessage('extsync', newData);
-                    }
-                    continue;
-                }
-                this.checkAndSendTrace(msg);
-                await this.handleMessage('message', msg);
-                clearTrace('ok');
-            }
+    private handleWappstoMessage(message: any) {
+        if (message.data?.uri !== 'extsync/wappsto/editor/console') {
+            printDebug(`Stream message: ${toString(message)}`);
         }
 
-        this.queue.shift();
-        this.handleQueue();
+        if (message.meta_object?.type === 'extsync') {
+            const newData = message.extsync || message.data;
+            if (newData.request) {
+                this.handleMessage('extsync/request', newData);
+            } else if (newData.uri !== 'extsync/wappsto/editor/console') {
+                this.handleMessage('extsync', newData);
+            }
+            return;
+        }
+        this.checkAndSendTrace(message);
+        this.handleMessage('message', message);
+        clearTrace('ok');
+    }
+
+    private async handleStreamMessage(message: any): Promise<void> {
+        if (this.handleRPCMessage(message)) {
+            return;
+        }
+
+        let messages: IStreamEvent[] = [];
+        if (message.constructor !== Array) {
+            messages = [message];
+        } else {
+            messages = message;
+        }
+
+        messages.forEach((msg) => {
+            this.handleWappstoMessage(msg);
+        });
     }
 
     private addListeners(): void {
@@ -649,23 +655,17 @@ export class Stream extends Model {
         };
 
         this.socket.onmessage = (ev: any) => {
-            let message;
             /* istanbul ignore else */
-            if (ev.type === 'message') {
-                try {
-                    message = JSON.parse(ev.data);
-                    this.queue.push(message);
-                    if (this.queue.length === 1) {
-                        this.handleQueue();
-                    }
-                } catch (e) {
-                    /* istanbul ignore next */
-                    printError('Failed to parse stream event');
-                    /* istanbul ignore next */
-                    return;
-                }
-            } else {
+            if (ev.type !== 'message') {
                 printError("Can't handle binary stream data");
+            }
+
+            try {
+                const message = JSON.parse(ev.data);
+                this.handleStreamMessage(message);
+            } catch (e) {
+                /* istanbul ignore next */
+                printError('Failed to parse stream event');
             }
         };
 

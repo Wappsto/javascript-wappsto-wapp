@@ -507,15 +507,19 @@ export class Value extends StreamModel implements IValueBase {
         this.status = '';
         if (!checkList(this.refreshCallbacks, callback)) {
             this.refreshCallbacks.push(callback);
-            return this.onChange(() => {
-                if (this.status === 'update') {
-                    this.reportIsForced = true;
-                    this.status = '';
-                    callback(this, 'user');
-                }
-            });
+            if (this.refreshCallbacks.length === 1) {
+                return this.onChange(async () => {
+                    if (this.status === 'update') {
+                        this.reportIsForced = true;
+                        this.status = '';
+                        for (let i = 0; i < this.refreshCallbacks.length; i++) {
+                            await this.refreshCallbacks[i](this, 'user');
+                        }
+                    }
+                });
+            }
         }
-        return false;
+        return true;
     }
 
     public cancelOnReport(): Promise<boolean> {
@@ -713,5 +717,13 @@ export class Value extends StreamModel implements IValueBase {
     public cancelPeriod(): void {
         clearTimeout(this.periodTimer);
         clearTimeout(this.jitterTimer);
+    }
+
+    public async clearAllCallbacks(): Promise<boolean> {
+        const res = await super.clearAllCallbacks();
+        for (let i = 0; i < this.state.length; i++) {
+            await this.state[i].clearAllCallbacks();
+        }
+        return res;
     }
 }

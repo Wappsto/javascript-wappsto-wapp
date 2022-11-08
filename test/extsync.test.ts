@@ -861,7 +861,7 @@ describe('ExtSync stream', () => {
         const result: Array<number> = [];
 
         fromForeground(async (event) => {
-            if (event.test === 1) {
+            if (event.test === 'correct') {
                 await new Promise((r) => setTimeout(r, 10));
             }
             result.push(event.test);
@@ -881,7 +881,7 @@ describe('ExtSync stream', () => {
                 },
                 request: 'request',
                 uri: 'extsync/',
-                body: '{"type": "foreground","message": {"test": 1}}',
+                body: '{"type": "foreground","message": {"test": "correct"}}',
             },
         });
         server.send({
@@ -894,13 +894,13 @@ describe('ExtSync stream', () => {
                 },
                 request: 'request',
                 uri: 'extsync/',
-                body: '{"type": "foreground","message": {"test": 2}}',
+                body: '{"type": "foreground","message": {"test": "order"}}',
             },
         });
 
         await new Promise((r) => setTimeout(r, 100));
 
-        expect(result).toEqual([1, 2]);
+        expect(result).toEqual(['correct', 'order']);
 
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/extsync/response/bbe306a7-7216-4d7d-8be1-08d94cd2142d',

@@ -192,6 +192,7 @@ export class Model implements IModel {
         const oldModel = this.toJSON();
         Object.assign(this, pick(json, this.attributes().concat(['meta'])));
         const newModel = this.toJSON();
+
         return !isEqual(oldModel, newModel);
     }
 

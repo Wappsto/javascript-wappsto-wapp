@@ -22,16 +22,19 @@ export class ConnectionModel extends StreamModel implements IConnectionModel {
             'onConnectionChange',
             arguments
         );
-        let res = false;
+        let res = true;
         this.currentStatus = this.isOnline();
         if (!checkList(this.connectionCallbacks, callback)) {
             this.connectionCallbacks.push(callback);
-            res = await this.onEvent(() => {
+            res = await this.onEvent(async () => {
                 if (this.isOnline() !== this.currentStatus) {
                     this.currentStatus = this.isOnline();
-                    this.connectionCallbacks.forEach((cb) => {
-                        cb(this, this.isOnline());
-                    });
+                    for (let i = 0; i < this.connectionCallbacks.length; i++) {
+                        await this.connectionCallbacks[i](
+                            this,
+                            this.isOnline()
+                        );
+                    }
                 }
             });
         }

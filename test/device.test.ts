@@ -1311,7 +1311,7 @@ describe('device', () => {
                 type: 'event',
             },
             event: 'update',
-            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
+            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38',
             data: {
                 meta: {
                     id: '60323236-54bf-499e-a438-608a24619c94',
@@ -1329,7 +1329,7 @@ describe('device', () => {
                 type: 'event',
             },
             event: 'update',
-            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
+            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38',
             data: {
                 meta: {
                     id: '60323236-54bf-499e-a438-608a24619c94',
@@ -1347,7 +1347,7 @@ describe('device', () => {
                 type: 'event',
             },
             event: 'update',
-            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/device',
+            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38',
             data: {
                 meta: {
                     id: '60323236-54bf-499e-a438-608a24619c94',

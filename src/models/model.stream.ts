@@ -5,11 +5,22 @@ import { checkList } from '../util/helpers';
 import { PermissionModel } from './model.permission';
 import { IStreamModel, IStreamEvent, StreamCallback } from '../util/interfaces';
 
+export type EventHandler = (event: IStreamEvent) => boolean | void;
+
 interface IStreamCallbacks {
+    [key: string]: any;
     event: StreamCallback[];
     change: StreamCallback[];
     delete: StreamCallback[];
     create: StreamCallback[];
+}
+
+interface IEventQueue {
+    [key: string]: any;
+    event: IStreamEvent[];
+    change: IStreamEvent[];
+    delete: IStreamEvent[];
+    create: IStreamEvent[];
 }
 
 export class StreamModel extends PermissionModel implements IStreamModel {
@@ -19,6 +30,12 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         delete: [],
         create: [],
     } as IStreamCallbacks;
+    eventQueue: IEventQueue = {
+        event: [],
+        create: [],
+        delete: [],
+        change: [],
+    };
 
     public async onEvent(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onEvent', arguments);
@@ -65,36 +82,58 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         return res;
     }
 
+    private async runQueue(
+        type: string,
+        handlers: StreamCallback[],
+        eventHandler?: EventHandler
+    ): Promise<void> {
+        if (this.eventQueue[type].length === 0) {
+            return;
+        }
+
+        if (!eventHandler || eventHandler(this.eventQueue[type][0]) !== false) {
+            for (let i = 0; i < handlers.length; i++) {
+                await handlers[i](this);
+            }
+        }
+
+        if (type === 'change') {
+            for (let i = 0; i < this.streamCallback.event.length; i++) {
+                await this.streamCallback.event[i](this);
+            }
+        }
+
+        this.eventQueue[type].shift();
+
+        this.runQueue(type, handlers, eventHandler);
+    }
+
+    private enqueueEvent(
+        type: string,
+        event: IStreamEvent,
+        eventHandler?: EventHandler
+    ): void {
+        this.eventQueue[type].push(event);
+
+        if (this.eventQueue[type].length === 1) {
+            this.runQueue(type, this.streamCallback[type], eventHandler);
+        }
+    }
+
     async handleStream(event: IStreamEvent): Promise<void> {
         switch (event.event) {
             case 'create':
-                this.parseChildren(event.data);
-                for (let i = 0; i < this.streamCallback.create.length; i++) {
-                    const cb = this.streamCallback.create[i];
-                    await cb(this);
-                }
+                this.enqueueEvent('create', event, (event: IStreamEvent) => {
+                    this.parseChildren(event.data);
+                });
                 break;
             case 'update':
-                if (this.parse(event.data)) {
-                    for (
-                        let i = 0;
-                        i < this.streamCallback.change.length;
-                        i++
-                    ) {
-                        const cb = this.streamCallback.change[i];
-                        await cb(this);
-                    }
-                }
-                for (let i = 0; i < this.streamCallback.event.length; i++) {
-                    const cb = this.streamCallback.event[i];
-                    await cb(this);
-                }
+                this.enqueueEvent('change', event, (event: IStreamEvent) => {
+                    return this.parse(event.data);
+                });
                 break;
             case 'delete':
-                for (let i = 0; i < this.streamCallback.delete.length; i++) {
-                    const cb = this.streamCallback.delete[i];
-                    await cb(this);
-                }
+                this.enqueueEvent('delete', event);
                 break;
             /* istanbul ignore next */
             default:

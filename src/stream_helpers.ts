@@ -39,7 +39,8 @@ export async function signalBackground(msg: any): Promise<void> {
     await openStream.sendEvent('foreground', msg);
 }
 
-async function _handleRequest(event: any) {
+async function _handleRequest(event: any): Promise<boolean> {
+    let res = true;
     let data: any = {};
     try {
         data = JSON.parse(event);
@@ -47,14 +48,15 @@ async function _handleRequest(event: any) {
         /* istanbul ignore next */
         printDebug('Failed to parse event - Foreground/Background handler');
         /* istanbul ignore next */
-        return;
+        return false;
     }
 
     if (request_handlers[data.type]) {
-        return await request_handlers[data.type](data.message);
+        res = await request_handlers[data.type](data.message);
     } else {
         throw new IgnoreError('Wrong request handler');
     }
+    return res;
 }
 
 async function handleRequest(

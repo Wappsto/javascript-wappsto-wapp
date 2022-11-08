@@ -96,7 +96,7 @@ describe('stream', () => {
                 },
             })
         );
-        sendRpcResponse(server, 2);
+        sendRpcResponse(server, 1);
 
         await Promise.all([cancelControlPromise, cancelReportPromise]);
 
@@ -111,6 +111,7 @@ describe('stream', () => {
                 timestamp: 'timestamp2',
             },
         });
+        await new Promise((r) => setTimeout(r, 1));
 
         expect(fun).toHaveBeenCalledTimes(1);
     });
@@ -169,8 +170,22 @@ describe('stream', () => {
             },
         ]);
 
-        value.clearAllCallbacks();
-        value.clearAllCallbacks();
+        const clearPromise1 = value.clearAllCallbacks();
+        const clearPromise2 = value.clearAllCallbacks();
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'DELETE',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/state/cda4d978-39e9-47bf-8497-9813b0f94973',
+                },
+            })
+        );
+        sendRpcResponse(server, 1);
+
+        await Promise.all([clearPromise1, clearPromise2]);
 
         server.send([
             {
@@ -354,11 +369,16 @@ describe('stream', () => {
     });
 
     it('can trigger an onRefresh handler', async () => {
-        const fun = jest.fn();
+        const fun1 = jest.fn();
+        const fun2 = jest.fn();
+        const fun3 = () => {
+            fun2();
+        };
         const value = new Value();
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
 
-        const refreshPromise = value.onRefresh(fun);
+        const refreshPromise1 = value.onRefresh(fun1);
+        const refreshPromise2 = value.onRefresh(fun3);
         await server.connected;
 
         await expect(server).toReceiveMessage(
@@ -373,7 +393,7 @@ describe('stream', () => {
         );
         sendRpcResponse(server);
 
-        await refreshPromise;
+        await Promise.all([refreshPromise1, refreshPromise2]);
 
         server.send({
             meta_object: {
@@ -410,8 +430,10 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(fun).toBeCalledTimes(2);
-        expect(fun).toHaveBeenCalledWith(value, 'user');
+        expect(fun1).toBeCalledTimes(2);
+        expect(fun2).toBeCalledTimes(2);
+
+        expect(fun1).toHaveBeenCalledWith(value, 'user');
 
         const cancelPromise = value.cancelOnRefresh();
 
@@ -442,7 +464,8 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(fun).toBeCalledTimes(2);
+        expect(fun1).toBeCalledTimes(2);
+        expect(fun2).toBeCalledTimes(2);
     });
 
     it('can handle a stream error', async () => {
