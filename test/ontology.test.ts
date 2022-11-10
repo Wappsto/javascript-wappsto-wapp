@@ -336,7 +336,7 @@ describe('Ontology', () => {
             '/2.1/network/f11fa9d7-3b2b-474e-95e4-f086c5606154',
             {
                 params: {
-                    expand: 0,
+                    expand: 3,
                 },
             }
         );
@@ -344,7 +344,7 @@ describe('Ontology', () => {
             '/2.1/device/8a3f67a6-751c-483b-a2ef-ba890948e6e4',
             {
                 params: {
-                    expand: 0,
+                    expand: 2,
                 },
             }
         );

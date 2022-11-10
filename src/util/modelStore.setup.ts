@@ -30,7 +30,7 @@ function loadModel(type: string, id: string): IModel | undefined {
     }
     if (model !== undefined) {
         model.meta.id = id;
-        model.reload();
+        model.reload(true);
     }
     return model;
 }
