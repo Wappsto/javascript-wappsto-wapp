@@ -4,18 +4,18 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { State, config, stopLogging } from '../src/index';
 
-describe('state', () => {
-    const response = {
-        meta: {
-            type: 'state',
-            version: '2.1',
-            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-        },
-        type: 'Report',
-        timestamp: '2021-10-10T10:10:10Z',
-        data: '0',
-    };
+const response = {
+    meta: {
+        type: 'state',
+        version: '2.1',
+        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+    },
+    type: 'Report',
+    timestamp: '2021-10-10T10:10:10Z',
+    data: '0',
+};
 
+describe('state', () => {
     beforeAll(() => {
         stopLogging();
     });
@@ -98,5 +98,41 @@ describe('state', () => {
             params: { expand: 1, verbose: true },
         });
         expect(states[0]?.type).toEqual('Report');
+    });
+
+    it('only sends a small meta when updating', async () => {
+        mockedAxios.get.mockResolvedValue({ data: [{
+            meta: {
+                type: 'state',
+                version: '2.1',
+                id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                iot: true,
+                size: 100
+            },
+            type: 'Report',
+            timestamp: '2021-10-10T10:10:10Z',
+            data: '0',
+        }]});
+        mockedAxios.patch.mockResolvedValue({ data: [response] });
+
+        const states = await State.fetch();
+        await states[0].update();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/b62e285a-5188-4304-85a0-3982dcb575bc',
+            {
+                data: '0',
+                meta: {
+                    id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                    type: 'state',
+                    version: '2.1',
+                },
+                timestamp: '2021-10-10T10:10:10Z',
+                type: 'Report',
+            },
+            {}
+        );
     });
 });
