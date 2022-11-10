@@ -54,7 +54,7 @@ export interface IModel {
     getType(): string;
     getUrl(): string;
     getClass(): string;
-    reload(): void;
+    reload(reloadAll?: boolean): Promise<boolean>;
     removeChild(child: IModel): void;
     setParent(parent?: IModel): void;
 }
@@ -66,6 +66,7 @@ export interface IModelFunc {
         options?: Record<string, any>,
         throwError?: boolean
     ): Promise<Record<string, any>[]>;
+    reload(reloadAll?: boolean): Promise<boolean>;
     setParent(parent?: IModel): void;
     parse(json: Record<string, any>): boolean;
     parseChildren(json: Record<string, any>): boolean;
@@ -473,12 +474,14 @@ export interface IOntologyModel extends IModel {
     createEdge(params: IOntology): Promise<IOntologyEdge>;
     getAllEdges(): Promise<IOntologyEdge[]>;
     deleteBranch(): Promise<void>;
-    deleteEdge(model: IModel): void;
+    deleteEdge(params: IOntology): Promise<void>;
+    removeEdge(edge: IModel): void;
 }
 export interface IOntologyModelFunc {
     createEdge(params: IOntology): Promise<IOntologyEdge>;
     deleteBranch(): Promise<void>;
-    deleteEdge(model: IModel): void;
+    deleteEdge(params: IOntology): Promise<void>;
+    removeEdge(edge: IModel): void;
 }
 export interface IOntologyEdge extends IModel {
     relationship: Relationship;

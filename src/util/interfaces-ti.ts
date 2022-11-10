@@ -59,7 +59,7 @@ export const IModel = t.iface([], {
     getType: t.func('string'),
     getUrl: t.func('string'),
     getClass: t.func('string'),
-    reload: t.func('void'),
+    reload: t.func('boolean', t.param('reloadAll', 'boolean', true)),
     removeChild: t.func('void', t.param('child', 'IModel')),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
 });
@@ -72,6 +72,7 @@ export const IModelFunc = t.iface([], {
         t.param('options', 'any', true),
         t.param('throwError', 'boolean', true)
     ),
+    reload: t.func('boolean', t.param('reloadAll', 'boolean', true)),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
     parse: t.func('boolean', t.param('json', 'any')),
     parseChildren: t.func('boolean', t.param('json', 'any')),
@@ -628,13 +629,15 @@ export const IOntologyModel = t.iface(['IModel'], {
     createEdge: t.func('IOntologyEdge', t.param('params', 'IOntology')),
     getAllEdges: t.func(t.array('IOntologyEdge')),
     deleteBranch: t.func('void'),
-    deleteEdge: t.func('void', t.param('model', 'IModel')),
+    deleteEdge: t.func('void', t.param('params', 'IOntology')),
+    removeEdge: t.func('void', t.param('edge', 'IModel')),
 });
 
 export const IOntologyModelFunc = t.iface([], {
     createEdge: t.func('IOntologyEdge', t.param('params', 'IOntology')),
     deleteBranch: t.func('void'),
-    deleteEdge: t.func('void', t.param('model', 'IModel')),
+    deleteEdge: t.func('void', t.param('params', 'IOntology')),
+    removeEdge: t.func('void', t.param('edge', 'IModel')),
 });
 
 export const IOntologyEdge = t.iface(['IModel'], {

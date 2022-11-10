@@ -16,11 +16,13 @@ import { createCheckers } from 'ts-interface-checker';
 export class Model implements IModel {
     meta: IMeta = { version: '2.1' };
     parent?: IModel;
+    expand: number;
     static checker = createCheckers(interfaceTI);
 
-    constructor(type: string, version = '2.1') {
+    constructor(type: string, expand = 0, version = '2.1') {
         this.meta.type = type;
         this.meta.version = version;
+        this.expand = expand;
     }
 
     public id(): string {
@@ -155,20 +157,30 @@ export class Model implements IModel {
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     ): Promise<void> {}
 
-    public async reload(reloadAll = false): Promise<void> {
+    public async reload(
+        reloadAll?: boolean,
+        defaultExpand = 0
+    ): Promise<boolean> {
+        Model.validateMethod('Model', 'reload', arguments);
+
+        let res = false;
         if (this.meta.id !== undefined) {
             try {
                 const response = await wappsto.get(
                     this.getUrl(),
-                    Model.generateOptions()
+                    Model.generateOptions({
+                        expand: reloadAll ? this.expand : defaultExpand,
+                    })
                 );
                 this.parse(response.data);
                 await this.loadAllChildren(response.data, reloadAll);
+                res = true;
             } catch (e) {
-                /* istanbul ignore next */
                 printHttpError('Model.reload', e);
+                this.meta.id = undefined;
             }
         }
+        return res;
     }
 
     public async delete(): Promise<void> {

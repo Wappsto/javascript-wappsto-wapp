@@ -80,7 +80,7 @@ export class Ontology extends Model implements IOntologyEdge {
         await super.delete();
         if (this.parent) {
             const p = this.parent as IOntologyModel;
-            p.deleteEdge(this);
+            p.removeEdge(this);
         }
     }
 

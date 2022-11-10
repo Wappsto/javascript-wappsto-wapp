@@ -101,7 +101,7 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
-            params: { expand: 2 },
+            params: { expand: 1 },
         });
         expect(values[0]?.name).toEqual('test');
     });
@@ -116,7 +116,7 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
-            params: { expand: 2, verbose: true },
+            params: { expand: 1, verbose: true },
         });
         expect(values[0]?.name).toEqual('test');
     });
@@ -237,7 +237,7 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
             params: {
-                expand: 2,
+                expand: 1,
                 quantity: 1,
                 message: 'Find 1 value with name test',
                 identifier: 'value-1-Find 1 value with name test',
@@ -258,7 +258,7 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
             params: {
-                expand: 2,
+                expand: 1,
                 quantity: 2,
                 message: 'msg',
                 identifier: 'value-2-msg',
@@ -297,7 +297,7 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
             params: {
-                expand: 2,
+                expand: 1,
                 quantity: 1,
                 message: 'Find 1 value with type test',
                 identifier: 'value-1-Find 1 value with type test',
@@ -620,7 +620,7 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
             params: {
-                expand: 2,
+                expand: 1,
                 quantity: 1,
                 message: 'Find 1 value',
                 identifier: 'value-1-Find 1 value',
@@ -643,7 +643,7 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
             params: {
-                expand: 2,
+                expand: 1,
                 quantity: 'all',
                 message: 'Find all value with name test',
                 identifier: 'value-all-Find all value with name test',
@@ -664,7 +664,7 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
             params: {
-                expand: 2,
+                expand: 1,
                 quantity: 'all',
                 message: 'Find all value with type test',
                 identifier: 'value-all-Find all value with type test',
@@ -1567,7 +1567,7 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
-            { params: { expand: 2 } }
+            { params: { expand: 1 } }
         );
         expect(value.getControlData()).toEqual('1');
 
@@ -1613,7 +1613,11 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-            {}
+            {
+                params: {
+                    expand: 0,
+                },
+            }
         );
     });
 
@@ -1653,17 +1657,13 @@ describe('value', () => {
             '/2.1/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             {
                 params: {
-                    expand: 2,
+                    expand: 1,
                 },
             }
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/state/0d362fb9-3c52-4c4c-89aa-19f33cbe2f4f',
-            {
-                params: {
-                    expand: 1,
-                },
-            }
+            {}
         );
     });
 
@@ -1884,7 +1884,7 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
             params: {
-                expand: 2,
+                expand: 1,
                 quantity: 1,
                 message:
                     'Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',

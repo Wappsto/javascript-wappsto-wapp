@@ -66,7 +66,7 @@ export class Value extends StreamModel implements IValueBase {
     jitterTimer?: any;
 
     constructor(name?: string) {
-        super('value');
+        super('value', 1);
         Model.validateMethod('Value', 'constructor', arguments);
         this.name = name || '';
     }
@@ -151,25 +151,15 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     public static fetch = async () => {
-        const params = { expand: 2 };
+        const params = { expand: 1 };
         const url = Value.endpoint;
 
         const data = await Model.fetch(url, params);
         return Value.fromArray(data);
     };
 
-    public async reload(reloadAll = false): Promise<void> {
-        try {
-            const response = await wappsto.get(
-                this.getUrl(),
-                Model.generateOptions({ expand: reloadAll ? 2 : 1 })
-            );
-            this.parse(response.data);
-            await this.loadAllChildren(response.data, false);
-        } catch (e) {
-            /* istanbul ignore next */
-            printHttpError('Value.reload', e);
-        }
+    public async reload(reloadAll = false): Promise<boolean> {
+        return super.reload(false, 1);
     }
 
     public async loadAllChildren(
@@ -633,7 +623,7 @@ export class Value extends StreamModel implements IValueBase {
         }
 
         const query: Record<string, any> = {
-            expand: 2,
+            expand: 1,
         };
         for (const key in params) {
             query[`this_${key}`] = `=${params[key]}`;

@@ -32,7 +32,7 @@ export class Device extends ConnectionModel implements IDevice {
     value: Value[] = [];
 
     constructor(name?: string) {
-        super('device');
+        super('device', 2);
         Model.validateMethod('Device', 'constructor', arguments);
         this.name = name || '';
     }
@@ -306,7 +306,7 @@ export class Device extends ConnectionModel implements IDevice {
         }
 
         const query: Record<string, any> = {
-            expand: 3,
+            expand: 2,
         };
         for (const key in params) {
             query[`this_${key}`] = `=${params[key]}`;
@@ -370,7 +370,7 @@ export class Device extends ConnectionModel implements IDevice {
     };
 
     public static fetch = async () => {
-        const params = { expand: 3 };
+        const params = { expand: 2 };
         const url = Device.endpoint;
         const data = await Model.fetch(url, params);
         const res = Device.fromArray(data);

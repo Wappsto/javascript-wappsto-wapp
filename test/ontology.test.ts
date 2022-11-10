@@ -334,11 +334,19 @@ describe('Ontology', () => {
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/network/f11fa9d7-3b2b-474e-95e4-f086c5606154',
-            {}
+            {
+                params: {
+                    expand: 0,
+                },
+            }
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/device/8a3f67a6-751c-483b-a2ef-ba890948e6e4',
-            {}
+            {
+                params: {
+                    expand: 0,
+                },
+            }
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/value/75d7d198-7f91-45e2-9b79-754073d7e758',
@@ -350,11 +358,19 @@ describe('Ontology', () => {
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/state/311b2c2d-54de-4e00-a850-f6712c4622bd',
-            {}
+            {
+                params: {
+                    expand: 0,
+                },
+            }
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/data/97e0dd7c-8e22-4263-82f9-d26102643465',
-            {}
+            {
+                params: {
+                    expand: 0,
+                },
+            }
         );
 
         expect(edges[0].relationship).toEqual('state');
@@ -471,6 +487,61 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
 
         await edge1.delete();
+        expect(network.ontology.length).toBe(0);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(
+            '/2.1/ontology/75f43647-bf73-44df-a04e-4d04e47cd0fc',
+            {}
+        );
+    });
+
+    it('can remove an edge using the child', async () => {
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [],
+        });
+        mockedAxios.post.mockResolvedValueOnce({
+            data: {
+                meta: {
+                    id: '75f43647-bf73-44df-a04e-4d04e47cd0fc',
+                    type: 'ontology',
+                    version: '2.1',
+                },
+                relationship: 'child',
+                to: {
+                    state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
+                },
+            },
+        });
+        mockedAxios.delete.mockResolvedValueOnce({
+            data: {},
+        });
+
+        const network = new Network('Ontology Network');
+        network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
+
+        const state1 = new State();
+        state1.meta.id = 'f0a9683f-da8b-4fe6-9925-2e6768ddedeb';
+
+        addModel(state1);
+
+        await network.createEdge({
+            relationship: 'child',
+            to: state1,
+        });
+
+        expect(network.ontology.length).toBe(1);
+        expect(network.ontology[0].models.length).toBe(1);
+
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+
+        await network.deleteEdge({
+            relationship: 'child',
+            to: state1,
+        });
+
         expect(network.ontology.length).toBe(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(

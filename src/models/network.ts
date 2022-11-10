@@ -37,7 +37,7 @@ export class Network extends ConnectionModel implements INetwork {
     }
 
     constructor(name?: string) {
-        super('network');
+        super('network', 3);
         Model.validateMethod('Network', 'constructor', arguments);
         this.name = name || '';
     }
@@ -199,7 +199,7 @@ export class Network extends ConnectionModel implements INetwork {
         }
 
         const query: Record<string, any> = {
-            expand: 4,
+            expand: 3,
         };
         for (const key in params) {
             query[`this_${key}`] = `=${params[key]}`;
@@ -244,7 +244,7 @@ export class Network extends ConnectionModel implements INetwork {
 
     static fetch = async (name = '', params: Record<string, any> = {}) => {
         Network.validate('fetch', [name, params]);
-        Object.assign(params, { expand: 4 });
+        Object.assign(params, { expand: 3 });
         if (name !== '') {
             Object.assign(params, {
                 'this_name=': name,

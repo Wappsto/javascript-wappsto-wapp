@@ -276,7 +276,7 @@ describe('network', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
-            params: { expand: 4, 'this_name=': 'Wapp Network' },
+            params: { expand: 3, 'this_name=': 'Wapp Network' },
         });
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.1/value/c5a73d64-b398-434e-a236-df15342339d5',
@@ -340,7 +340,7 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
-            params: { expand: 4, verbose: true },
+            params: { expand: 3, verbose: true },
         });
         expect(networks[0]?.name).toEqual('test');
     });
@@ -395,7 +395,7 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
-                expand: 4,
+                expand: 3,
                 quantity: 1,
                 message: 'Find 1 network with name test',
                 identifier: 'network-1-Find 1 network with name test',
@@ -608,7 +608,7 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
-                expand: 4,
+                expand: 3,
                 'this_name=': 'Network Name',
             },
         });
@@ -719,7 +719,7 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
-                expand: 4,
+                expand: 3,
                 quantity: 'all',
                 message: 'Find all network with name test',
                 identifier: 'network-all-Find all network with name test',
@@ -783,7 +783,7 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
-                expand: 4,
+                expand: 3,
                 quantity: 1,
                 message: 'Find 1 network',
                 identifier: 'network-1-Find 1 network',
@@ -988,7 +988,7 @@ describe('network', () => {
         const network = await createNetwork({ name: 'Network Name' });
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
-            params: { expand: 4, 'this_name=': 'Network Name' },
+            params: { expand: 3, 'this_name=': 'Network Name' },
         });
 
         expect(network.id()).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
@@ -1000,7 +1000,7 @@ describe('network', () => {
             '/2.1/value/c5a73d64-b398-434e-a236-df15342339d5',
             {
                 params: {
-                    expand: 2,
+                    expand: 1,
                 },
             }
         );
@@ -1070,7 +1070,7 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
-                expand: 4,
+                expand: 3,
                 quantity: 1,
                 message:
                     'Find network with id b62e285a-5188-4304-85a0-3982dcb575bc',

@@ -80,9 +80,7 @@ describe('state', () => {
         const states = await State.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
-            params: { expand: 1 },
-        });
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {});
         expect(states[0]?.type).toEqual('Report');
     });
 
@@ -95,24 +93,28 @@ describe('state', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
-            params: { expand: 1, verbose: true },
+            params: { verbose: true },
         });
         expect(states[0]?.type).toEqual('Report');
     });
 
     it('only sends a small meta when updating', async () => {
-        mockedAxios.get.mockResolvedValue({ data: [{
-            meta: {
-                type: 'state',
-                version: '2.1',
-                id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-                iot: true,
-                size: 100
-            },
-            type: 'Report',
-            timestamp: '2021-10-10T10:10:10Z',
-            data: '0',
-        }]});
+        mockedAxios.get.mockResolvedValue({
+            data: [
+                {
+                    meta: {
+                        type: 'state',
+                        version: '2.1',
+                        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        iot: true,
+                        size: 100,
+                    },
+                    type: 'Report',
+                    timestamp: '2021-10-10T10:10:10Z',
+                    data: '0',
+                },
+            ],
+        });
         mockedAxios.patch.mockResolvedValue({ data: [response] });
 
         const states = await State.fetch();

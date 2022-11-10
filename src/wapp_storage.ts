@@ -78,7 +78,7 @@ export class WappStorage {
         });
     }
 
-    reload(): Promise<void> {
+    reload(): Promise<boolean> {
         return this.data.reload();
     }
 

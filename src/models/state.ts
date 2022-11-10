@@ -31,15 +31,14 @@ export class State extends StreamModel implements IState {
 
     static findById = async (id: string) => {
         State.validate('findById', [id]);
-        const res = await Model.fetch(`${State.endpoint}/${id}`, { expand: 1 });
+        const res = await Model.fetch(`${State.endpoint}/${id}`);
         return State.fromArray(res)[0];
     };
 
     public static fetch = async () => {
-        const params = { expand: 1 };
         const url = State.endpoint;
 
-        const data = await Model.fetch(url, params);
+        const data = await Model.fetch(url);
         return State.fromArray(data);
     };
 }
