@@ -537,6 +537,45 @@ describe('value', () => {
         );
     });
 
+    it('can send a controlWithAck that timeout', async () => {
+        config({ackTimeout: 1});
+        const fun = jest.fn();
+        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        let state = new State('Control');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+        state = new State('Report');
+        state.meta.id = 'f1ada7da-7192-487d-93d5-221a00bdc23c';
+        value.state.push(state);
+
+        const controlPromise = value.controlWithAck(10);
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        const res1 = await controlPromise;
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(res1).toBe(false);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Control',
+                data: '10',
+            }),
+            {}
+        );
+    });
+
     it('can get log data', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({

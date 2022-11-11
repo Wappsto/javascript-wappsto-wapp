@@ -3,21 +3,30 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import {
+    createNetwork,
     Network,
+    Device,
+    Value,
     State,
     stopLogging,
     createNode,
     getAllNodes,
+    ValueTemplate,
 } from '../src/index';
 import { addModel } from '../src/util/modelStore';
+import { before, after, newWServer, sendRpcResponse } from './util/stream';
 
 describe('Ontology', () => {
     beforeAll(() => {
-        stopLogging();
+        before();
+    });
+
+    beforeEach(() => {
+        newWServer(true);
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        after();
     });
 
     it('can create a new edge', async () => {
@@ -881,5 +890,270 @@ describe('Ontology', () => {
             '/2.1/data/09af28b3-0e84-4230-ab96-88990cfa04b8/ontology',
             { params: { expand: 1, path: '*', all_edge: true } }
         );
+    });
+
+    it('can load all models from the store', async () => {
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'device',
+                            version: '2.1',
+                            id: '4d3e1192-bde3-4f39-8c84-45d02965ab4e',
+                        },
+                        name: 'Device Test',
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.1',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.1',
+                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                        },
+                    },
+                ],
+            });
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        type: 'network',
+                        version: '2.1',
+                        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        connection: {
+                            online: true,
+                            timestamp: '',
+                        },
+                    },
+                    name: 'Network Name',
+                    device: [
+                        {
+                            meta: {
+                                id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                                version: '2.1',
+                                type: 'device',
+                            },
+                            name: 'Device Name',
+                            product: 'Device Product',
+                            value: [
+                                {
+                                    meta: {
+                                        id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                                        version: '2.1',
+                                        type: 'value',
+                                    },
+                                    name: 'Value Name',
+                                    permission: 'w',
+                                    type: 'temperature',
+                                    number: {
+                                        min: 0,
+                                        max: 100,
+                                        step: 1,
+                                        unit: 'c',
+                                    },
+                                    state: [
+                                        {
+                                            meta: {
+                                                id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                                version: '2.1',
+                                                type: 'state',
+                                            },
+                                            type: 'Control',
+                                            timestamp: '',
+                                            data: '1',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        type: 'network',
+                        version: '2.1',
+                        id: 'c7053fdc-ace2-4cb5-8e61-06fc1d5846f0',
+                        connection: {
+                            online: true,
+                            timestamp: '',
+                        },
+                    },
+                    name: 'Network Name',
+                    device: [
+                        {
+                            meta: {
+                                id: '3c40baca-a2e9-4e55-b7df-9331045c0a52',
+                                version: '2.1',
+                                type: 'device',
+                            },
+                            name: 'Device Name',
+                            product: 'Device Product',
+                            value: [
+                                {
+                                    meta: {
+                                        id: 'f90fa9aa-05e4-434b-99a8-b5790649d2e7',
+                                        version: '2.1',
+                                        type: 'value',
+                                    },
+                                    name: 'Value Name',
+                                    permission: 'w',
+                                    type: 'temperature',
+                                    number: {
+                                        min: 0,
+                                        max: 100,
+                                        step: 1,
+                                        unit: 'c',
+                                    },
+                                    state: [
+                                        {
+                                            meta: {
+                                                id: '3b91ff17-514e-4098-a7de-df1c16b6e95b',
+                                                version: '2.1',
+                                                type: 'state',
+                                            },
+                                            type: 'Control',
+                                            timestamp: '',
+                                            data: '1',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: 'd1f5623e-522d-4557-b20d-5629e0f232c5',
+                        version: '2.1',
+                        type: 'device',
+                    },
+                    name: 'Device Name',
+                    product: 'Device Product',
+                    value: [
+                        {
+                            meta: {
+                                id: '4f302dae-1d0b-4278-b195-0cb4794f4123',
+                                version: '2.1',
+                                type: 'value',
+                            },
+                            name: 'Value Name',
+                            permission: 'w',
+                            type: 'temperature',
+                            number: { min: 0, max: 100, step: 1, unit: 'c' },
+                            state: [
+                                {
+                                    meta: {
+                                        id: '8b58846a-6c89-4b19-a183-eeee995f337d',
+                                        version: '2.1',
+                                        type: 'state',
+                                    },
+                                    type: 'Control',
+                                    timestamp: '',
+                                    data: '1',
+                                },
+                            ],
+                        },
+                    ],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: '7199388e-c90b-4780-83da-ce430d190d9c',
+                        version: '2.1',
+                        type: 'value',
+                    },
+                    name: 'Value Name',
+                    permission: 'w',
+                    type: 'temperature',
+                    number: { min: 0, max: 100, step: 1, unit: 'c' },
+                    state: [
+                        {
+                            meta: {
+                                id: 'f8ee4c57-afb2-4d30-b5c0-9d276aee4992',
+                                version: '2.1',
+                                type: 'state',
+                            },
+                            type: 'Control',
+                            timestamp: '',
+                            data: '1',
+                        },
+                    ],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: 'd98e784e-0bb3-4693-899c-1071483b857e',
+                        type: 'ontology',
+                        version: '2.1',
+                    },
+                    relationship: 'state',
+                    to: {
+                        state: [
+                            'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                            '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                            '3b91ff17-514e-4098-a7de-df1c16b6e95b',
+                            'f8ee4c57-afb2-4d30-b5c0-9d276aee4992',
+                            '8b58846a-6c89-4b19-a183-eeee995f337d',
+                        ],
+                        value: [
+                            'c5a73d64-b398-434e-a236-df15342339d5',
+                            'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                            'f90fa9aa-05e4-434b-99a8-b5790649d2e7',
+                            '4f302dae-1d0b-4278-b195-0cb4794f4123',
+                            '7199388e-c90b-4780-83da-ce430d190d9c',
+                        ],
+                        device: [
+                            'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                            '4d3e1192-bde3-4f39-8c84-45d02965ab4e',
+                            '3c40baca-a2e9-4e55-b7df-9331045c0a52',
+                            'd1f5623e-522d-4557-b20d-5629e0f232c5',
+                        ],
+                        network: [
+                            'b62e285a-5188-4304-85a0-3982dcb575bc',
+                            'c7053fdc-ace2-4cb5-8e61-06fc1d5846f0',
+                        ],
+                    },
+                },
+            });
+
+        const network = await createNetwork({ name: 'Ontology 1' });
+        const device = await network.createDevice({ name: 'Ontology 2' });
+        const value = await device.createValue(
+            'Ontology 3',
+            'r',
+            ValueTemplate.NUMBER
+        );
+        const network2 = await Network.findAllByName('Ontology 4');
+        const device2 = await Device.findAllByName('Ontology 5');
+        const value2 = await Value.findAllByName('Ontology 6');
+
+        const edges = await network.getAllEdges();
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(edges[0].models.length).toBe(16);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(5);
     });
 });

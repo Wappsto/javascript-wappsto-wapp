@@ -4,10 +4,13 @@ import { Value } from '../models/value';
 import { State } from '../models/state';
 import { OntologyNode } from '../models/ontology.node';
 import { IModel } from './interfaces';
+import { printDebug } from './debug';
 import { setModelCreateCallback } from './modelStore';
 
 function loadModel(type: string, id: string): IModel | undefined {
     let model: IModel | undefined;
+
+    printDebug(`ModelStore is loading a ${type} with id ${id}`);
 
     switch (type) {
         case 'network':

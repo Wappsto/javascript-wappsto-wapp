@@ -61,6 +61,7 @@ export const IModel = t.iface([], {
     getClass: t.func('string'),
     reload: t.func('boolean', t.param('reloadAll', 'boolean', true)),
     removeChild: t.func('void', t.param('child', 'IModel')),
+    addChildrenToStore: t.func('void'),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
 });
 

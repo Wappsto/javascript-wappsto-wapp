@@ -141,6 +141,13 @@ export class Value extends StreamModel implements IValueBase {
         this.permission = this.tmp_permission;
     }
 
+    public addChildrenToStore(): void {
+        super.addChildrenToStore();
+        this.state.forEach((sta: IModel) => {
+            sta.addChildrenToStore();
+        });
+    }
+
     public setParent(parent?: IModel): void {
         super.setParent(parent);
         this.state.forEach((state) => {
@@ -498,7 +505,7 @@ export class Value extends StreamModel implements IValueBase {
 
             setTimeout(() => {
                 resolve(false);
-            }, 5000);
+            }, _config.ackTimeout * 1000);
         });
 
         return promise;
@@ -635,7 +642,11 @@ export class Value extends StreamModel implements IValueBase {
             usage,
             query
         );
-        return Value.fromArray(data);
+        const values = Value.fromArray(data);
+        values.forEach((value) => {
+            value.addChildrenToStore();
+        });
+        return values;
     };
 
     static findByName = (

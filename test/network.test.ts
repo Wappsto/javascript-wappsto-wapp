@@ -1083,4 +1083,13 @@ describe('network', () => {
         expect(network.toJSON).toBeDefined();
         expect(network.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
+
+    it('will clear the id, when failing to talk to backend', async () => {
+        mockedAxios.get.mockRejectedValueOnce([]);
+        const network = new Network();
+        network.meta.id = '744be12b-85a5-4ef0-8ca1-00856a748049';
+        await network.reload();
+
+        expect(network.meta.id).toBe(undefined);
+    });
 });

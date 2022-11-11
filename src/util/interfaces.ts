@@ -9,6 +9,7 @@ export interface IConfig {
     stream?: boolean;
     validation?: ValidationType;
     reconnectCount?: number;
+    ackTimeout?: number;
     jitterMin?: number;
     jitterMax?: number;
 }
@@ -56,6 +57,7 @@ export interface IModel {
     getClass(): string;
     reload(reloadAll?: boolean): Promise<boolean>;
     removeChild(child: IModel): void;
+    addChildrenToStore(): void;
     setParent(parent?: IModel): void;
 }
 

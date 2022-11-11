@@ -61,6 +61,10 @@ export class Model implements IModel {
         return [];
     }
 
+    public addChildrenToStore(): void {
+        addModel(this);
+    }
+
     public setParent(parent?: IModel): void {
         Model.validateMethod('Model', 'setParent', arguments);
         this.parent = parent;
@@ -176,8 +180,8 @@ export class Model implements IModel {
                 await this.loadAllChildren(response.data, reloadAll);
                 res = true;
             } catch (e) {
-                printHttpError('Model.reload', e);
                 this.meta.id = undefined;
+                printHttpError('Model.reload', e);
             }
         }
         return res;

@@ -14,6 +14,7 @@ export async function createNetwork(params: INetwork): Promise<Network> {
     const networks = await Network.fetch(params.name);
     if (networks.length !== 0) {
         printDebug(`Using existing network with id ${networks[0].id()}`);
+        networks[0].addChildrenToStore();
         return networks[0];
     }
 
@@ -44,6 +45,13 @@ export class Network extends ConnectionModel implements INetwork {
 
     attributes(): string[] {
         return ['name', 'description'];
+    }
+
+    public addChildrenToStore(): void {
+        super.addChildrenToStore();
+        this.device.forEach((dev: IModel) => {
+            dev.addChildrenToStore();
+        });
     }
 
     public findDeviceByName(name: string): Device[] {
@@ -212,7 +220,11 @@ export class Network extends ConnectionModel implements INetwork {
             query
         );
 
-        return Network.fromArray(data);
+        const networks = Network.fromArray(data);
+        networks.forEach((network) => {
+            network.addChildrenToStore();
+        });
+        return networks;
     };
 
     static findByName = (

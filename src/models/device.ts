@@ -54,6 +54,13 @@ export class Device extends ConnectionModel implements IDevice {
         ];
     }
 
+    public addChildrenToStore(): void {
+        super.addChildrenToStore();
+        this.value.forEach((val: IModel) => {
+            val.addChildrenToStore();
+        });
+    }
+
     public findValueByName(name: string): Value[] {
         this.validate('findValueByName', arguments);
         return this.value.filter((val) => val.name === name);
@@ -178,6 +185,7 @@ export class Device extends ConnectionModel implements IDevice {
         }
 
         await value.created();
+
         return value;
     }
 
@@ -318,7 +326,11 @@ export class Device extends ConnectionModel implements IDevice {
             usage,
             query
         );
-        return Device.fromArray(data);
+        const devices = Device.fromArray(data);
+        devices.forEach((device) => {
+            device.addChildrenToStore();
+        });
+        return devices;
     };
 
     public static findByName(
