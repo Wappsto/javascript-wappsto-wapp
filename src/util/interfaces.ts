@@ -103,6 +103,7 @@ export interface INetworkFunc {
     ): INetwork[];
     findAllByName(name: string, usage: string): IDevice[];
     findById(id: string): INetwork;
+    fetchById(id: string): INetwork;
     fetch(name: string, options: Record<string, any>): IDevice;
 }
 
@@ -151,6 +152,7 @@ export interface IDeviceFunc {
     ): IDevice[];
     findAllByProduct(product: string, usage: string): IDevice[];
     findById(id: string): IDevice;
+    fetchById(id: string): IDevice;
     setConnectionStatus(state: boolean | number): Promise<boolean>;
 }
 
@@ -247,6 +249,7 @@ export interface IValueFunc {
     findAllByName(name: string, usage: string): ValueType[];
     findAllByType(type: string, usage: string): ValueType[];
     findById(id: string): ValueType;
+    fetchById(id: string): ValueType;
     addEvent(
         level: EventLogLevel,
         message: string,
@@ -267,6 +270,7 @@ export interface IState {
 export interface IStateFunc {
     constructor(type?: StateType): IState;
     findById(id: string): IState;
+    fetchById(id: string): IState;
 }
 
 export type EventLogLevel =

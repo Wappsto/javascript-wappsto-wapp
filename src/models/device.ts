@@ -57,7 +57,9 @@ export class Device extends ConnectionModel implements IDevice {
     public addChildrenToStore(): void {
         super.addChildrenToStore();
         this.value.forEach((val: IModel) => {
-            val.addChildrenToStore();
+            if (val.addChildrenToStore) {
+                val.addChildrenToStore();
+            }
         });
     }
 
@@ -97,7 +99,7 @@ export class Device extends ConnectionModel implements IDevice {
                     if (data) {
                         newValue = new Value();
                     } else {
-                        newValue = await Value.findById(id);
+                        newValue = await Value.fetchById(id);
                     }
                 }
 
@@ -114,7 +116,7 @@ export class Device extends ConnectionModel implements IDevice {
             if (typeof this.value[i] === 'string') {
                 // This is needed to convert a value type into string
                 const id: string = this.value[i] as unknown as string;
-                this.value[i] = await Value.findById(id);
+                this.value[i] = await Value.fetchById(id);
                 this.value[i].parent = this;
             }
             this.value[i].created();
@@ -327,6 +329,9 @@ export class Device extends ConnectionModel implements IDevice {
             query
         );
         const devices = Device.fromArray(data);
+        for (let i = 0; i < devices.length; i++) {
+            await devices[i].loadAllChildren(null);
+        }
         devices.forEach((device) => {
             device.addChildrenToStore();
         });
@@ -379,6 +384,18 @@ export class Device extends ConnectionModel implements IDevice {
             `Find device with id ${id}`
         );
         return devices[0];
+    };
+
+    public static fetchById = async (id: string) => {
+        Device.validate('fetchById', [id]);
+        const data = await Model.fetch(`${Device.endpoint}/${id}`, {
+            expand: 2,
+        });
+        const res = Device.fromArray(data);
+        for (let i = 0; i < res.length; i++) {
+            await res[i].loadAllChildren(null);
+        }
+        return res[0];
     };
 
     public static fetch = async () => {

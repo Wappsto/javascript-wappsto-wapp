@@ -144,7 +144,9 @@ export class Value extends StreamModel implements IValueBase {
     public addChildrenToStore(): void {
         super.addChildrenToStore();
         this.state.forEach((sta: IModel) => {
-            sta.addChildrenToStore();
+            if (sta.addChildrenToStore) {
+                sta.addChildrenToStore();
+            }
         });
     }
 
@@ -157,12 +159,28 @@ export class Value extends StreamModel implements IValueBase {
         });
     }
 
+    public static fetchById = async (id: string) => {
+        Value.validate('fetchById', [id]);
+        const data = await Model.fetch(`${Value.endpoint}/${id}`, {
+            expand: 1,
+        });
+        const res = Value.fromArray(data);
+        for (let i = 0; i < res.length; i++) {
+            await res[i].loadAllChildren(null);
+        }
+        return res[0];
+    };
+
     public static fetch = async () => {
         const params = { expand: 1 };
         const url = Value.endpoint;
 
         const data = await Model.fetch(url, params);
-        return Value.fromArray(data);
+        const values = Value.fromArray(data);
+        for (let i = 0; i < values.length; i++) {
+            await values[i].loadAllChildren(null);
+        }
+        return values;
     };
 
     public async reload(reloadAll = false): Promise<boolean> {
@@ -195,7 +213,7 @@ export class Value extends StreamModel implements IValueBase {
                     if (data) {
                         newState = new State();
                     } else {
-                        newState = await State.findById(id);
+                        newState = await State.fetchById(id);
                     }
                 }
 
@@ -566,7 +584,6 @@ export class Value extends StreamModel implements IValueBase {
             data[key] = value;
             await wappsto.patch(this.getUrl(), data, Model.generateOptions());
         } catch (e) {
-            /* istanbul ignore next */
             printHttpError('Value.changeAttribute', e);
         }
     }
@@ -643,8 +660,13 @@ export class Value extends StreamModel implements IValueBase {
             query
         );
         const values = Value.fromArray(data);
+        for (let i = 0; i < values.length; i++) {
+            await values[i].loadAllChildren(null);
+        }
         values.forEach((value) => {
-            value.addChildrenToStore();
+            if (value.addChildrenToStore) {
+                value.addChildrenToStore();
+            }
         });
         return values;
     };

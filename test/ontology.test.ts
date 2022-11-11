@@ -8,13 +8,12 @@ import {
     Device,
     Value,
     State,
-    stopLogging,
     createNode,
     getAllNodes,
     ValueTemplate,
 } from '../src/index';
 import { addModel } from '../src/util/modelStore';
-import { before, after, newWServer, sendRpcResponse } from './util/stream';
+import { before, after, newWServer } from './util/stream';
 
 describe('Ontology', () => {
     beforeAll(() => {
@@ -1032,11 +1031,57 @@ describe('Ontology', () => {
                                             timestamp: '',
                                             data: '1',
                                         },
+                                        '6e6e868f-9cd6-4a7c-a324-b5e3225ac849',
                                     ],
                                 },
+                                'f2b19d60-87db-4a4f-9226-8dafa91f36be',
                             ],
                         },
+                        '008dddc7-24b7-4be6-a9c8-4b197d845a1f',
                     ],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: '008dddc7-24b7-4be6-a9c8-4b197d845a1f',
+                        version: '2.1',
+                        type: 'device',
+                    },
+                    name: 'Device Name',
+                    product: 'Device Product',
+                    value: [],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: 'f2b19d60-87db-4a4f-9226-8dafa91f36be',
+                        version: '2.1',
+                        type: 'value',
+                    },
+                    name: 'Value Name',
+                    permission: 'w',
+                    type: 'temperature',
+                    number: {
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                        unit: 'c',
+                    },
+                    state: [],
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: '6e6e868f-9cd6-4a7c-a324-b5e3225ac849',
+                        version: '2.1',
+                        type: 'state',
+                    },
+                    type: 'Control',
+                    timestamp: '',
+                    data: '1',
                 },
             })
             .mockResolvedValueOnce({
@@ -1115,6 +1160,7 @@ describe('Ontology', () => {
                             '3b91ff17-514e-4098-a7de-df1c16b6e95b',
                             'f8ee4c57-afb2-4d30-b5c0-9d276aee4992',
                             '8b58846a-6c89-4b19-a183-eeee995f337d',
+                            '6e6e868f-9cd6-4a7c-a324-b5e3225ac849',
                         ],
                         value: [
                             'c5a73d64-b398-434e-a236-df15342339d5',
@@ -1122,12 +1168,14 @@ describe('Ontology', () => {
                             'f90fa9aa-05e4-434b-99a8-b5790649d2e7',
                             '4f302dae-1d0b-4278-b195-0cb4794f4123',
                             '7199388e-c90b-4780-83da-ce430d190d9c',
+                            'f2b19d60-87db-4a4f-9226-8dafa91f36be',
                         ],
                         device: [
                             'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
                             '4d3e1192-bde3-4f39-8c84-45d02965ab4e',
                             '3c40baca-a2e9-4e55-b7df-9331045c0a52',
                             'd1f5623e-522d-4557-b20d-5629e0f232c5',
+                            '008dddc7-24b7-4be6-a9c8-4b197d845a1f',
                         ],
                         network: [
                             'b62e285a-5188-4304-85a0-3982dcb575bc',
@@ -1139,21 +1187,17 @@ describe('Ontology', () => {
 
         const network = await createNetwork({ name: 'Ontology 1' });
         const device = await network.createDevice({ name: 'Ontology 2' });
-        const value = await device.createValue(
-            'Ontology 3',
-            'r',
-            ValueTemplate.NUMBER
-        );
-        const network2 = await Network.findAllByName('Ontology 4');
-        const device2 = await Device.findAllByName('Ontology 5');
-        const value2 = await Value.findAllByName('Ontology 6');
+        await device.createValue('Ontology 3', 'r', ValueTemplate.NUMBER);
+        await Network.findAllByName('Ontology 4');
+        await Device.findAllByName('Ontology 5');
+        await Value.findAllByName('Ontology 6');
 
         const edges = await network.getAllEdges();
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(edges[0].models.length).toBe(16);
+        expect(edges[0].models.length).toBe(19);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(8);
     });
 });

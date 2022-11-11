@@ -15,6 +15,7 @@ export const IConfig = t.iface([], {
     stream: t.opt('boolean'),
     validation: t.opt('ValidationType'),
     reconnectCount: t.opt('number'),
+    ackTimeout: t.opt('number'),
     jitterMin: t.opt('number'),
     jitterMax: t.opt('number'),
 });
@@ -117,6 +118,7 @@ export const INetworkFunc = t.iface([], {
         t.param('usage', 'string')
     ),
     findById: t.func('INetwork', t.param('id', 'string')),
+    fetchById: t.func('INetwork', t.param('id', 'string')),
     fetch: t.func(
         'IDevice',
         t.param('name', 'string'),
@@ -187,6 +189,7 @@ export const IDeviceFunc = t.iface([], {
         t.param('usage', 'string')
     ),
     findById: t.func('IDevice', t.param('id', 'string')),
+    fetchById: t.func('IDevice', t.param('id', 'string')),
     setConnectionStatus: t.func(
         'boolean',
         t.param('state', t.union('boolean', 'number'))
@@ -338,6 +341,7 @@ export const IValueFunc = t.iface([], {
         t.param('usage', 'string')
     ),
     findById: t.func('ValueType', t.param('id', 'string')),
+    fetchById: t.func('ValueType', t.param('id', 'string')),
     addEvent: t.func(
         'IEventLog',
         t.param('level', 'EventLogLevel'),
@@ -364,6 +368,7 @@ export const IState = t.iface([], {
 export const IStateFunc = t.iface([], {
     constructor: t.func('IState', t.param('type', 'StateType', true)),
     findById: t.func('IState', t.param('id', 'string')),
+    fetchById: t.func('IState', t.param('id', 'string')),
 });
 
 export const EventLogLevel = t.union(

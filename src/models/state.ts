@@ -29,10 +29,11 @@ export class State extends StreamModel implements IState {
         Model.validateMethod('State', name, params);
     }
 
-    static findById = async (id: string) => {
-        State.validate('findById', [id]);
-        const res = await Model.fetch(`${State.endpoint}/${id}`);
-        return State.fromArray(res)[0];
+    public static fetchById = async (id: string) => {
+        State.validate('fetchById', [id]);
+        const data = await Model.fetch(`${State.endpoint}/${id}`, {});
+        const res = State.fromArray(data);
+        return res[0];
     };
 
     public static fetch = async () => {

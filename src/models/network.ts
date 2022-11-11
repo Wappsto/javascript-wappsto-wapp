@@ -50,7 +50,9 @@ export class Network extends ConnectionModel implements INetwork {
     public addChildrenToStore(): void {
         super.addChildrenToStore();
         this.device.forEach((dev: IModel) => {
-            dev.addChildrenToStore();
+            if (dev.addChildrenToStore) {
+                dev.addChildrenToStore();
+            }
         });
     }
 
@@ -108,7 +110,7 @@ export class Network extends ConnectionModel implements INetwork {
                     if (data) {
                         newDevice = new Device();
                     } else {
-                        newDevice = await Device.findById(id);
+                        newDevice = await Device.fetchById(id);
                     }
                 }
 
@@ -124,12 +126,9 @@ export class Network extends ConnectionModel implements INetwork {
         for (let i = 0; i < this.device.length; i++) {
             if (typeof this.device[i] === 'string') {
                 const id: string = this.device[i] as unknown as string;
-                this.device[i] = await Device.findById(id);
+                this.device[i] = await Device.fetchById(id);
             } else if (i >= 3) {
-                this.device[i] = await Device.findById(
-                    /* istanbul ignore next */
-                    this.device[i].meta.id || ''
-                );
+                this.device[i] = await Device.fetchById(this.device[i].id());
             }
             if (this.device[i]) {
                 this.device[i].parent = this;
@@ -148,8 +147,7 @@ export class Network extends ConnectionModel implements INetwork {
         let device = new Device();
         const devices = this.findDeviceByName(params.name);
         if (devices.length !== 0) {
-            /* istanbul ignore next */
-            printDebug(`Using existing device with id ${devices[0]?.id()}`);
+            printDebug(`Using existing device with id ${devices[0].id()}`);
             device = devices[0];
         }
 
@@ -221,6 +219,10 @@ export class Network extends ConnectionModel implements INetwork {
         );
 
         const networks = Network.fromArray(data);
+        for (let i = 0; i < networks.length; i++) {
+            await networks[i].loadAllChildren(null);
+        }
+
         networks.forEach((network) => {
             network.addChildrenToStore();
         });

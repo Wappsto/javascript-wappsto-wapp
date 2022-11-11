@@ -538,8 +538,7 @@ describe('value', () => {
     });
 
     it('can send a controlWithAck that timeout', async () => {
-        config({ackTimeout: 1});
-        const fun = jest.fn();
+        config({ ackTimeout: 1 });
         mockedAxios.patch.mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
