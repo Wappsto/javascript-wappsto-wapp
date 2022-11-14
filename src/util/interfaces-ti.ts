@@ -72,7 +72,8 @@ export const IModelFunc = t.iface([], {
         t.array('any'),
         t.param('endpoint', 'string'),
         t.param('options', 'any', true),
-        t.param('throwError', 'boolean', true)
+        t.param('throwError', 'boolean', true),
+        t.param('go_internal', 'boolean', true)
     ),
     reload: t.func('boolean', t.param('reloadAll', 'boolean', true)),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
@@ -600,23 +601,26 @@ export const RequestHandler = t.func(
     t.param('event', 'any')
 );
 
-export const StreamCallback = t.func('void', t.param('model', 'IStreamModel'));
+export const StreamCallback = t.func(
+    t.union('void', 'void'),
+    t.param('model', 'IStreamModel')
+);
 
 export const ValueStreamCallback = t.func(
-    'void',
+    t.union('void', 'boolean', 'void'),
     t.param('value', 'IValueBase'),
     t.param('data', 'string'),
     t.param('timestamp', 'string')
 );
 
 export const RefreshStreamCallback = t.func(
-    'void',
+    t.union('void', 'void'),
     t.param('value', 'IValueBase'),
     t.param('origin', t.union(t.lit('user'), t.lit('period')))
 );
 
 export const ConnectionCallback = t.func(
-    'void',
+    t.union('void', 'void'),
     t.param('value', 'IConnectionModel'),
     t.param('connection', 'boolean')
 );

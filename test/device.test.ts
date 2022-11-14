@@ -110,7 +110,7 @@ describe('device', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
-            params: { expand: 2 },
+            params: { go_internal: true, expand: 2 },
         });
         expect(devices[0]?.name).toEqual('test');
     });
@@ -124,7 +124,7 @@ describe('device', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
-            params: { expand: 2, verbose: true },
+            params: { expand: 2, go_internal: true, verbose: true },
         });
         expect(devices[0]?.name).toEqual('test');
     });
@@ -158,6 +158,7 @@ describe('device', () => {
             params: {
                 expand: 2,
                 quantity: 1,
+                go_internal: true,
                 message: 'Find 1 device with name test',
                 identifier: 'device-1-Find 1 device with name test',
                 this_name: '=test',
@@ -167,6 +168,7 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: {
                 expand: 2,
+                go_internal: true,
                 id: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
                 identifier: 'device-1-Find 1 device with name test',
                 message: 'Find 1 device with name test',
@@ -190,6 +192,7 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
             params: {
                 expand: 2,
+                go_internal: true,
                 this_product: '=test',
                 identifier: 'device-1-Find 1 device with product test',
                 message: 'Find 1 device with product test',
@@ -1110,6 +1113,7 @@ describe('device', () => {
             params: {
                 expand: 2,
                 quantity: 'all',
+                go_internal: true,
                 message: 'Find all device with name test',
                 identifier: 'device-all-Find all device with name test',
                 this_name: '=test',
@@ -1137,6 +1141,7 @@ describe('device', () => {
             params: {
                 expand: 2,
                 quantity: 'all',
+                go_internal: true,
                 message: 'Find all device with product test',
                 identifier: 'device-all-Find all device with product test',
                 this_product: '=test',
@@ -1164,6 +1169,7 @@ describe('device', () => {
             params: {
                 expand: 2,
                 quantity: 1,
+                go_internal: true,
                 message: 'Find 1 device',
                 identifier: 'device-1-Find 1 device',
                 this_name: '=test',
@@ -1399,6 +1405,7 @@ describe('device', () => {
             params: {
                 expand: 2,
                 quantity: 1,
+                go_internal: true,
                 message:
                     'Find device with id b62e285a-5188-4304-85a0-3982dcb575bc',
                 identifier:

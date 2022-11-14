@@ -80,7 +80,9 @@ describe('state', () => {
         const states = await State.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {});
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
+            params: { go_internal: true },
+        });
         expect(states[0]?.type).toEqual('Report');
     });
 
@@ -93,7 +95,7 @@ describe('state', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
-            params: { verbose: true },
+            params: { verbose: true, go_internal: true },
         });
         expect(states[0]?.type).toEqual('Report');
     });

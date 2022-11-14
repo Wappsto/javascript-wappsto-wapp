@@ -60,6 +60,7 @@ describe('WappStorage', () => {
             params: {
                 'this_data_meta.id': 'wapp_storage_test',
                 expand: 1,
+                go_internal: true,
             },
         });
     });
@@ -166,6 +167,7 @@ describe('WappStorage', () => {
             params: {
                 'this_data_meta.id': 'wapp_storage_default',
                 expand: 1,
+                go_internal: true,
             },
         });
 

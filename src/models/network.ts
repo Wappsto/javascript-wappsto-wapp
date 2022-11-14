@@ -50,7 +50,7 @@ export class Network extends ConnectionModel implements INetwork {
     public addChildrenToStore(): void {
         super.addChildrenToStore();
         this.device.forEach((dev: IModel) => {
-            if (dev.addChildrenToStore) {
+            if (dev?.addChildrenToStore) {
                 dev.addChildrenToStore();
             }
         });
@@ -123,14 +123,19 @@ export class Network extends ConnectionModel implements INetwork {
                 }
             }
         }
+
         for (let i = 0; i < this.device.length; i++) {
             if (typeof this.device[i] === 'string') {
-                const id: string = this.device[i] as unknown as string;
-                this.device[i] = await Device.fetchById(id);
-            } else if (i >= 3) {
-                this.device[i] = await Device.fetchById(this.device[i].id());
+                const devices = await this.fetchMissingDevices(i);
+                devices.forEach((val: any, index: number) => {
+                    this.device[i + index] = val;
+                });
+                break;
             }
-            if (this.device[i]) {
+        }
+
+        for (let i = 0; i < this.device.length; i++) {
+            if (typeof this.device[i] === 'object') {
                 this.device[i].parent = this;
                 if (reloadAll) {
                     await this.device[i].reload(true);
@@ -219,12 +224,28 @@ export class Network extends ConnectionModel implements INetwork {
         );
 
         const networks = Network.fromArray(data);
-        for (let i = 0; i < networks.length; i++) {
-            await networks[i].loadAllChildren(null);
-        }
+        const poms: any[] = [];
 
+        networks.forEach((net, index) => {
+            if (net.loadAllChildren) {
+                poms.push(net.loadAllChildren(null));
+            } else {
+                poms.push(
+                    new Promise<void>((resolve) => {
+                        const id = net as unknown as string;
+                        Network.fetchById(id).then((network) => {
+                            networks[index] = network;
+                            resolve();
+                        });
+                    })
+                );
+            }
+        });
+        await Promise.all(poms);
         networks.forEach((network) => {
-            network.addChildrenToStore();
+            if (network?.addChildrenToStore) {
+                network.addChildrenToStore();
+            }
         });
         return networks;
     };
@@ -256,6 +277,18 @@ export class Network extends ConnectionModel implements INetwork {
         return networks[0];
     };
 
+    public static fetchById = async (id: string) => {
+        Network.validate('fetchById', [id]);
+        const data = await Model.fetch(`${Network.endpoint}/${id}`, {
+            expand: 3,
+        });
+        const networks = Network.fromArray(data);
+        for (let i = 0; i < networks.length; i++) {
+            await networks[i].loadAllChildren(null);
+        }
+        return networks[0];
+    };
+
     static fetch = async (name = '', params: Record<string, any> = {}) => {
         Network.validate('fetch', [name, params]);
         Object.assign(params, { expand: 3 });
@@ -265,12 +298,28 @@ export class Network extends ConnectionModel implements INetwork {
             });
         }
         const data = await Model.fetch(Network.endpoint, params);
-        const res = Network.fromArray(data);
-        for (let i = 0; i < res.length; i++) {
-            await res[i].loadAllChildren(null);
-        }
-        return res;
+        const networks = Network.fromArray(data);
+        const poms: any[] = [];
+        networks.forEach((net) => {
+            poms.push(net.loadAllChildren(null));
+        });
+        await Promise.all(poms);
+        return networks;
     };
+
+    private async fetchMissingDevices(offset: number): Promise<Device[]> {
+        const data = await Model.fetch(`${this.url()}/${this.id()}/device`, {
+            expand: 2,
+            offset: offset,
+        });
+        const devices = Device.fromArray(data);
+        const poms: any[] = [];
+        devices.forEach((dev) => {
+            poms.push(dev.loadAllChildren(null));
+        });
+        await Promise.all(poms);
+        return devices;
+    }
 
     private static validate(name: string, params: any): void {
         Model.validateMethod('Network', name, params);

@@ -14,6 +14,7 @@ import {
 } from '../src/index';
 import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
+import { ems_reply } from './util/response';
 
 describe('Ontology', () => {
     beforeAll(() => {
@@ -337,6 +338,7 @@ describe('Ontology', () => {
             {
                 params: {
                     expand: 1,
+                    go_internal: true,
                 },
             }
         );
@@ -674,6 +676,7 @@ describe('Ontology', () => {
             {
                 params: {
                     expand: 1,
+                    go_internal: true,
                 },
             }
         );
@@ -682,6 +685,7 @@ describe('Ontology', () => {
             {
                 params: {
                     expand: 1,
+                    go_internal: true,
                 },
             }
         );
@@ -877,7 +881,7 @@ describe('Ontology', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(5);
         expect(mockedAxios.get).toHaveBeenLastCalledWith(
             '/2.1/data/09af28b3-0e84-4230-ab96-88990cfa04b8/ontology',
-            { params: { expand: 1, path: '*' } }
+            { params: { expand: 1, go_internal: true, path: '*' } }
         );
 
         const leafs = await node1.transverse('*', true);
@@ -887,7 +891,14 @@ describe('Ontology', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(6);
         expect(mockedAxios.get).toHaveBeenLastCalledWith(
             '/2.1/data/09af28b3-0e84-4230-ab96-88990cfa04b8/ontology',
-            { params: { expand: 1, path: '*', all_edge: true } }
+            {
+                params: {
+                    expand: 1,
+                    go_internal: true,
+                    path: '*',
+                    all_edge: true,
+                },
+            }
         );
     });
 
@@ -1199,5 +1210,55 @@ describe('Ontology', () => {
         expect(edges[0].models.length).toBe(19);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.get).toHaveBeenCalledTimes(8);
+    });
+
+    it('can load the EMS network', async () => {
+        mockedAxios.get.mockResolvedValueOnce(ems_reply);
+
+        await Network.findAllByName('Shelly');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+            params: {
+                expand: 3,
+                go_internal: true,
+                identifier: 'network-all-Find all network with name Shelly',
+                message: 'Find all network with name Shelly',
+                method: ['retrieve', 'update'],
+                quantity: 'all',
+                this_name: '=Shelly',
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/network/c0b441a4-6800-46cc-8904-2ce145f4af20/device',
+            {
+                params: {
+                    expand: 2,
+                    go_internal: true,
+                    offset: 7,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/network/6d300174-4d86-4abb-b4c6-f231eca2f3ce',
+            {
+                params: {
+                    expand: 3,
+                    go_internal: true,
+                },
+            }
+        );
+
+        expect(mockedAxios.get).toHaveBeenLastCalledWith(
+            '/2.1/device/4fb107fc-facb-4bda-8950-acf6e07901f2/value',
+            {
+                params: {
+                    expand: 1,
+                    go_internal: true,
+                    offset: 2,
+                },
+            }
+        );
     });
 });

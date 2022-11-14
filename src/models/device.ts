@@ -57,7 +57,7 @@ export class Device extends ConnectionModel implements IDevice {
     public addChildrenToStore(): void {
         super.addChildrenToStore();
         this.value.forEach((val: IModel) => {
-            if (val.addChildrenToStore) {
+            if (val?.addChildrenToStore) {
                 val.addChildrenToStore();
             }
         });
@@ -114,16 +114,22 @@ export class Device extends ConnectionModel implements IDevice {
         }
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'string') {
-                // This is needed to convert a value type into string
-                const id: string = this.value[i] as unknown as string;
-                this.value[i] = await Value.fetchById(id);
-                this.value[i].parent = this;
+                const values = await this.fetchMissingValues(i);
+                values.forEach((val: any, index: number) => {
+                    this.value[i + index] = val;
+                });
+                break;
             }
-            this.value[i].created();
-            if (reloadAll) {
-                await this.value[i].reload(true);
-            } else {
-                await this.value[i].loadAllChildren(null, reloadAll);
+        }
+
+        for (let i = 0; i < this.value.length; i++) {
+            if (typeof this.value[i] === 'object') {
+                this.value[i].created();
+                if (reloadAll) {
+                    await this.value[i].reload(true);
+                } else {
+                    await this.value[i].loadAllChildren(null, reloadAll);
+                }
             }
         }
     }
@@ -179,12 +185,14 @@ export class Device extends ConnectionModel implements IDevice {
             }
         }
 
+        const poms: any[] = [];
         if (['r', 'rw', 'wr'].includes(params.permission)) {
-            await value.createState({ type: 'Report' });
+            poms.push(value.createState({ type: 'Report' }));
         }
         if (['w', 'rw', 'wr'].includes(params.permission)) {
-            await value.createState({ type: 'Control' });
+            poms.push(value.createState({ type: 'Control' }));
         }
+        await Promise.all(poms);
 
         await value.created();
 
@@ -329,11 +337,15 @@ export class Device extends ConnectionModel implements IDevice {
             query
         );
         const devices = Device.fromArray(data);
-        for (let i = 0; i < devices.length; i++) {
-            await devices[i].loadAllChildren(null);
-        }
+        const poms: any[] = [];
+        devices.forEach((dev) => {
+            poms.push(dev.loadAllChildren(null));
+        });
+        await Promise.all(poms);
         devices.forEach((device) => {
-            device.addChildrenToStore();
+            if (device?.addChildrenToStore) {
+                device.addChildrenToStore();
+            }
         });
         return devices;
     };
@@ -402,11 +414,13 @@ export class Device extends ConnectionModel implements IDevice {
         const params = { expand: 2 };
         const url = Device.endpoint;
         const data = await Model.fetch(url, params);
-        const res = Device.fromArray(data);
-        for (let i = 0; i < res.length; i++) {
-            await res[i].loadAllChildren(null);
-        }
-        return res;
+        const devices = Device.fromArray(data);
+        const poms: any[] = [];
+        devices.forEach((dev) => {
+            poms.push(dev.loadAllChildren(null));
+        });
+        await Promise.all(poms);
+        return devices;
     };
 
     public async setConnectionStatus(
@@ -421,6 +435,20 @@ export class Device extends ConnectionModel implements IDevice {
             res = await value[0].report(state ? '1' : '0');
         }
         return res;
+    }
+
+    private async fetchMissingValues(offset: number): Promise<Value[]> {
+        const data = await Model.fetch(`${this.url()}/${this.id()}/value`, {
+            expand: 1,
+            offset: offset,
+        });
+        const values = Value.fromArray(data);
+        const poms: any[] = [];
+        values.forEach((val) => {
+            poms.push(val.loadAllChildren(null));
+        });
+        await Promise.all(poms);
+        return values;
     }
 
     private static validate(name: string, params: any): void {

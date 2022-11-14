@@ -5,15 +5,8 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { createNetwork, Network, Device, Value, config } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
+import { simpleNetworkResponse, emptyResponse } from './util/response';
 
-const response = {
-    meta: {
-        type: 'network',
-        version: '2.1',
-        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-    },
-    name: 'test',
-};
 const responseOffline = {
     meta: {
         type: 'network',
@@ -175,7 +168,7 @@ describe('network', () => {
     });
 
     it('can create a network on wappsto', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: response });
+        mockedAxios.post.mockResolvedValueOnce(simpleNetworkResponse);
 
         const network = new Network('test');
         await network.create();
@@ -200,14 +193,11 @@ describe('network', () => {
     });
 
     it('can update a network on wappsto', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: response });
-        mockedAxios.put.mockResolvedValueOnce({ data: response });
+        mockedAxios.post.mockResolvedValueOnce(simpleNetworkResponse);
+        mockedAxios.put.mockResolvedValueOnce(simpleNetworkResponse);
 
         const network = new Network('test');
         await network.create();
-
-        const oldName = response.name;
-        response.name = 'new name';
 
         network.name = 'new name';
         await network.update();
@@ -217,18 +207,23 @@ describe('network', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith(
             `/2.1/network/${network.meta.id}`,
-            response,
+            {
+                meta: {
+                    id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                    type: 'network',
+                    version: '2.1',
+                },
+                name: 'new name',
+            },
             {}
         );
-
-        response.name = oldName;
     });
 
     it('can request access to create new network', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        mockedAxios.get.mockResolvedValueOnce(emptyResponse);
         mockedAxios.post
             .mockRejectedValueOnce({ code: 400013 })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(emptyResponse);
 
         const p = createNetwork({ name: 'Network Name' });
         await server.connected;
@@ -256,8 +251,8 @@ describe('network', () => {
 
     it('can create a new network from wappsto', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [responseFull] });
-        mockedAxios.post.mockResolvedValueOnce({ data: [] });
-        mockedAxios.put.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce(emptyResponse);
+        mockedAxios.put.mockResolvedValueOnce(emptyResponse);
 
         const network = await createNetwork({ name: 'Wapp Network' });
         const device = await network.createDevice({ name: 'Device Name' });
@@ -276,7 +271,11 @@ describe('network', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
-            params: { expand: 3, 'this_name=': 'Wapp Network' },
+            params: {
+                expand: 3,
+                go_internal: true,
+                'this_name=': 'Wapp Network',
+            },
         });
         expect(mockedAxios.put).toHaveBeenCalledWith(
             '/2.1/value/c5a73d64-b398-434e-a236-df15342339d5',
@@ -331,7 +330,7 @@ describe('network', () => {
     });
 
     it('can create a new network from wappsto with verbose', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce(simpleNetworkResponse);
 
         config({ verbose: true });
         const networks = await Network.fetch();
@@ -340,15 +339,15 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
-            params: { expand: 3, verbose: true },
+            params: { expand: 3, go_internal: true, verbose: true },
         });
         expect(networks[0]?.name).toEqual('test');
     });
 
     it('can find a network by name', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [response] });
+            .mockResolvedValueOnce(emptyResponse)
+            .mockResolvedValueOnce(simpleNetworkResponse);
 
         const r = Network.findByName('test');
         await server.connected;
@@ -397,6 +396,7 @@ describe('network', () => {
             params: {
                 expand: 3,
                 quantity: 1,
+                go_internal: true,
                 message: 'Find 1 network with name test',
                 identifier: 'network-1-Find 1 network with name test',
                 this_name: '=test',
@@ -494,15 +494,6 @@ describe('network', () => {
                     },
                     name: 'device 2',
                 },
-            })
-            .mockResolvedValueOnce({
-                data: {
-                    meta: {
-                        id: 'b3fb2261-e6d9-48c4-97a2-71bf299736b8',
-                        version: '2.1',
-                    },
-                    name: 'device 3',
-                },
             });
 
         const device = new Device();
@@ -516,7 +507,7 @@ describe('network', () => {
         await network.reload();
 
         //expect(mockedAxios.get).toHaveBeenCalledWith('');
-        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
 
         expect(network.name).toEqual('network');
         expect(network.device.length).toEqual(4);
@@ -584,7 +575,7 @@ describe('network', () => {
     });
 
     it('can create a new network', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        mockedAxios.get.mockResolvedValueOnce(emptyResponse);
         mockedAxios.post.mockResolvedValueOnce({
             data: [
                 {
@@ -609,6 +600,7 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
                 expand: 3,
+                go_internal: true,
                 'this_name=': 'Network Name',
             },
         });
@@ -690,7 +682,7 @@ describe('network', () => {
 
     it('can find all network by name', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce(emptyResponse)
             .mockResolvedValueOnce({ data: response2Networks });
         const r = Network.findAllByName('test');
         await server.connected;
@@ -721,6 +713,7 @@ describe('network', () => {
             params: {
                 expand: 3,
                 quantity: 'all',
+                go_internal: true,
                 message: 'Find all network with name test',
                 identifier: 'network-all-Find all network with name test',
                 this_name: '=test',
@@ -737,7 +730,7 @@ describe('network', () => {
 
     it('can use custom find', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce(emptyResponse)
             .mockResolvedValueOnce({ data: response2Networks });
         const r = Network.find({ name: 'test' });
         await server.connected;
@@ -785,6 +778,7 @@ describe('network', () => {
             params: {
                 expand: 3,
                 quantity: 1,
+                go_internal: true,
                 message: 'Find 1 network',
                 identifier: 'network-1-Find 1 network',
                 this_name: '=test',
@@ -797,7 +791,7 @@ describe('network', () => {
     });
 
     it('can delete a network', async () => {
-        mockedAxios.delete.mockResolvedValueOnce({ data: [] });
+        mockedAxios.delete.mockResolvedValueOnce(emptyResponse);
 
         const network = new Network('network');
         network.meta.id = 'f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02';
@@ -816,43 +810,46 @@ describe('network', () => {
     it('can load all missing object using lazy loading', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [responseHalf] })
-            .mockResolvedValueOnce({ data: { type: 'Control' } })
-            .mockResolvedValueOnce({ data: { name: 'Value Name 2' } })
-            .mockResolvedValueOnce({ data: { name: 'Device Name 2' } })
-            .mockResolvedValueOnce({ data: { name: 'Device Name 3' } })
             .mockResolvedValueOnce({
-                data: {
-                    meta: {
-                        id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
-                        version: '2.1',
-                        type: 'device',
-                    },
-                    name: 'Device Name 4',
-                    product: 'Device Product',
-                    value: [
-                        {
-                            meta: {
-                                id: 'c5a73d64-b398-434e-a236-df15342339d5',
-                                version: '2.1',
-                                type: 'value',
-                            },
-                            name: 'Value Name',
-                            state: [
-                                {
-                                    meta: {
-                                        id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
-                                        version: '2.1',
-                                        type: 'state',
-                                    },
-                                    type: 'Control',
-                                },
-                            ],
+                data: [
+                    { name: 'Device Name 2' },
+                    { name: 'Device Name 3' },
+                    {
+                        meta: {
+                            id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
+                            version: '2.1',
+                            type: 'device',
                         },
-                    ],
-                },
-            });
+                        name: 'Device Name 4',
+                        product: 'Device Product',
+                        value: [
+                            {
+                                meta: {
+                                    id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                                    version: '2.1',
+                                    type: 'value',
+                                },
+                                name: 'Value Name',
+                                state: [
+                                    {
+                                        meta: {
+                                            id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
+                                            version: '2.1',
+                                            type: 'state',
+                                        },
+                                        type: 'Control',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({ data: [{ name: 'Value Name 2' }] })
+            .mockResolvedValueOnce({ data: { type: 'Control' } });
 
         const networks = await Network.fetch();
+
         const device1 = networks[0].device[0];
         const device2 = networks[0].device[1];
         const device3 = networks[0].device[2];
@@ -861,6 +858,23 @@ describe('network', () => {
         const value2 = device1.value[1];
         const state1 = value1.state[0];
         const state2 = value1.state[1];
+
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+            params: { expand: 3, go_internal: true },
+        });
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/network/b62e285a-5188-4304-85a0-3982dcb575bc/device',
+            { params: { expand: 2, go_internal: true, offset: 1 } }
+        );
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/device/e65ec3eb-04f1-4253-bd1b-b989b1204b81/value',
+            { params: { expand: 1, go_internal: true, offset: 1 } }
+        );
+        expect(mockedAxios.get).toHaveBeenLastCalledWith(
+            '/2.1/state/9ee509d7-07ce-4e71-9016-340d53867af4',
+            { params: { expand: 0 } }
+        );
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
 
         expect(device1.name).toEqual('Device Name');
         expect(device2.name).toEqual('Device Name 2');
@@ -874,14 +888,12 @@ describe('network', () => {
         expect(state2.type).toEqual('Control');
 
         expect(device4.value[0].state[0].toJSON).toBeDefined();
-
-        expect(mockedAxios.get).toHaveBeenCalledTimes(6);
     });
 
     it('can delete a device and make sure that it is not valid', async () => {
-        mockedAxios.delete.mockResolvedValueOnce({ data: [] });
+        mockedAxios.delete.mockResolvedValueOnce(emptyResponse);
         mockedAxios.post
-            .mockResolvedValueOnce({ data: [response] })
+            .mockResolvedValueOnce(simpleNetworkResponse)
             .mockResolvedValueOnce({
                 data: [
                     {
@@ -981,14 +993,18 @@ describe('network', () => {
     it('reload all the data from the server', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [responseFull] })
-            .mockResolvedValueOnce({ data: [response] })
+            .mockResolvedValueOnce(simpleNetworkResponse)
             .mockResolvedValueOnce({ data: [responseFull.device[0]] })
             .mockResolvedValueOnce({ data: [responseFull.device[0].value[0]] });
 
         const network = await createNetwork({ name: 'Network Name' });
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
-            params: { expand: 3, 'this_name=': 'Network Name' },
+            params: {
+                expand: 3,
+                go_internal: true,
+                'this_name=': 'Network Name',
+            },
         });
 
         expect(network.id()).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
@@ -1014,7 +1030,7 @@ describe('network', () => {
     it('can check if network is online', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: [responseFull] })
-            .mockResolvedValueOnce({ data: [response] })
+            .mockResolvedValueOnce(simpleNetworkResponse)
             .mockResolvedValueOnce({ data: [responseOffline] });
 
         const network = await createNetwork({ name: 'test name' });
@@ -1031,7 +1047,7 @@ describe('network', () => {
 
     it('can find network by id', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce(emptyResponse)
             .mockResolvedValueOnce({ data: [responseFull] });
 
         const r = Network.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
@@ -1072,6 +1088,7 @@ describe('network', () => {
             params: {
                 expand: 3,
                 quantity: 1,
+                go_internal: true,
                 message:
                     'Find network with id b62e285a-5188-4304-85a0-3982dcb575bc',
                 identifier:

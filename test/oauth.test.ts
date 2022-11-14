@@ -57,7 +57,7 @@ describe('oauth', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/oauth_connect/test',
-            {}
+            { params: { go_internal: true } }
         );
         expect(requestUrl).toBe('https://wappsto.com/oauth');
     });
@@ -96,7 +96,7 @@ describe('oauth', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/oauth_connect/test',
-            {}
+            { params: { go_internal: true } }
         );
         expect(token.oauth_token).toBe('oauth test token');
     });
@@ -109,7 +109,7 @@ describe('oauth', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/oauth_connect/test',
-            {}
+            { params: { go_internal: true } }
         );
         expect(token.oauth_token).toBe('oauth test token');
     });
@@ -150,7 +150,7 @@ describe('oauth', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/oauth_connect/test',
-            {}
+            { params: { go_internal: true } }
         );
     });
 
@@ -183,7 +183,7 @@ describe('oauth', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/oauth_connect/test',
-            {}
+            { params: { go_internal: true } }
         );
         expect(requestUrl).toBe(undefined);
     });

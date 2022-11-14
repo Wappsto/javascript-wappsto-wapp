@@ -66,7 +66,8 @@ export interface IModelFunc {
     fetch(
         endpoint: string,
         options?: Record<string, any>,
-        throwError?: boolean
+        throwError?: boolean,
+        go_internal?: boolean
     ): Promise<Record<string, any>[]>;
     reload(reloadAll?: boolean): Promise<boolean>;
     setParent(parent?: IModel): void;
@@ -453,20 +454,20 @@ export type ServiceHandler = (
     event: any
 ) => Promise<boolean | undefined> | boolean | undefined;
 export type RequestHandler = (event: any) => Promise<any> | any;
-export type StreamCallback = (model: IStreamModel) => void;
+export type StreamCallback = (model: IStreamModel) => Promise<void> | void;
 export type ValueStreamCallback = (
     value: IValueBase,
     data: string,
     timestamp: string
-) => void;
+) => Promise<void> | boolean | void;
 export type RefreshStreamCallback = (
     value: IValueBase,
     origin: 'user' | 'period'
-) => void;
+) => Promise<void> | void;
 export type ConnectionCallback = (
     value: IConnectionModel,
     connection: boolean
-) => void;
+) => Promise<void> | void;
 
 export type Relationship = string;
 export interface IOntology {

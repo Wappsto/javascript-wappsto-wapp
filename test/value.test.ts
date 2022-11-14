@@ -101,7 +101,7 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
-            params: { expand: 1 },
+            params: { go_internal: true, expand: 1 },
         });
         expect(values[0]?.name).toEqual('test');
     });
@@ -116,7 +116,7 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
-            params: { expand: 1, verbose: true },
+            params: { expand: 1, go_internal: true, verbose: true },
         });
         expect(values[0]?.name).toEqual('test');
     });
@@ -239,6 +239,7 @@ describe('value', () => {
             params: {
                 expand: 1,
                 quantity: 1,
+                go_internal: true,
                 message: 'Find 1 value with name test',
                 identifier: 'value-1-Find 1 value with name test',
                 this_name: '=test',
@@ -260,6 +261,7 @@ describe('value', () => {
             params: {
                 expand: 1,
                 quantity: 2,
+                go_internal: true,
                 message: 'msg',
                 identifier: 'value-2-msg',
                 this_name: '=test',
@@ -299,6 +301,7 @@ describe('value', () => {
             params: {
                 expand: 1,
                 quantity: 1,
+                go_internal: true,
                 message: 'Find 1 value with type test',
                 identifier: 'value-1-Find 1 value with type test',
                 this_type: '=test',
@@ -660,6 +663,7 @@ describe('value', () => {
             params: {
                 expand: 1,
                 quantity: 1,
+                go_internal: true,
                 message: 'Find 1 value',
                 identifier: 'value-1-Find 1 value',
                 this_name: '=test',
@@ -683,6 +687,7 @@ describe('value', () => {
             params: {
                 expand: 1,
                 quantity: 'all',
+                go_internal: true,
                 message: 'Find all value with name test',
                 identifier: 'value-all-Find all value with name test',
                 this_name: '=test',
@@ -704,6 +709,7 @@ describe('value', () => {
             params: {
                 expand: 1,
                 quantity: 'all',
+                go_internal: true,
                 message: 'Find all value with type test',
                 identifier: 'value-all-Find all value with type test',
                 this_type: '=test',
@@ -1701,7 +1707,11 @@ describe('value', () => {
         );
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/state/0d362fb9-3c52-4c4c-89aa-19f33cbe2f4f',
-            {}
+            {
+                params: {
+                    go_internal: true,
+                },
+            }
         );
     });
 
@@ -1924,6 +1934,7 @@ describe('value', () => {
             params: {
                 expand: 1,
                 quantity: 1,
+                go_internal: true,
                 message:
                     'Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',
                 identifier:

@@ -234,12 +234,23 @@ export class Model implements IModel {
     public static fetch = async (
         endpoint: string,
         params?: Record<string, any>,
-        throwError?: boolean
+        throwError?: boolean,
+        go_internal?: boolean
     ): Promise<Record<string, any>[]> => {
-        Model.validateMethod('Model', 'fetch', [endpoint, params, throwError]);
+        Model.validateMethod('Model', 'fetch', [
+            endpoint,
+            params,
+            throwError,
+            go_internal,
+        ]);
         let res: any[] = [];
         try {
-            const query = Model.generateOptions(params);
+            const query = Model.generateOptions(
+                Object.assign(
+                    params || {},
+                    go_internal === false ? {} : { go_internal: true }
+                )
+            );
             const response = await wappsto.get(endpoint, query);
 
             if (response.data) {
@@ -265,7 +276,7 @@ export class Model implements IModel {
     ): T[] {
         const obj = plainToClass(this, json);
         obj.forEach((o: T) => {
-            if (o) {
+            if (o && typeof o !== 'string') {
                 const o2 = o as unknown as IModel;
                 o2.setParent(parent);
                 addModel(o2);

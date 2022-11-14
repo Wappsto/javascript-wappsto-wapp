@@ -144,7 +144,7 @@ export class Value extends StreamModel implements IValueBase {
     public addChildrenToStore(): void {
         super.addChildrenToStore();
         this.state.forEach((sta: IModel) => {
-            if (sta.addChildrenToStore) {
+            if (sta?.addChildrenToStore) {
                 sta.addChildrenToStore();
             }
         });
@@ -164,11 +164,13 @@ export class Value extends StreamModel implements IValueBase {
         const data = await Model.fetch(`${Value.endpoint}/${id}`, {
             expand: 1,
         });
-        const res = Value.fromArray(data);
-        for (let i = 0; i < res.length; i++) {
-            await res[i].loadAllChildren(null);
-        }
-        return res[0];
+        const values = Value.fromArray(data);
+        const poms: any[] = [];
+        values.forEach((val) => {
+            poms.push(val.loadAllChildren(null));
+        });
+        await Promise.all(poms);
+        return values[0];
     };
 
     public static fetch = async () => {
@@ -177,9 +179,11 @@ export class Value extends StreamModel implements IValueBase {
 
         const data = await Model.fetch(url, params);
         const values = Value.fromArray(data);
-        for (let i = 0; i < values.length; i++) {
-            await values[i].loadAllChildren(null);
-        }
+        const poms: any[] = [];
+        values.forEach((val) => {
+            poms.push(val.loadAllChildren(null));
+        });
+        await Promise.all(poms);
         return values;
     };
 
@@ -608,7 +612,9 @@ export class Value extends StreamModel implements IValueBase {
         if (state) {
             const response = await Model.fetch(
                 `/2.1/log/${state.id()}/state`,
-                request
+                request,
+                false,
+                false
             );
             return response[0] as ILogResponse;
         }
@@ -660,11 +666,13 @@ export class Value extends StreamModel implements IValueBase {
             query
         );
         const values = Value.fromArray(data);
-        for (let i = 0; i < values.length; i++) {
-            await values[i].loadAllChildren(null);
-        }
+        const poms: any[] = [];
+        values.forEach((val) => {
+            poms.push(val.loadAllChildren(null));
+        });
+        await Promise.all(poms);
         values.forEach((value) => {
-            if (value.addChildrenToStore) {
+            if (value?.addChildrenToStore) {
                 value.addChildrenToStore();
             }
         });
@@ -769,9 +777,11 @@ export class Value extends StreamModel implements IValueBase {
 
     public async clearAllCallbacks(): Promise<boolean> {
         const res = await super.clearAllCallbacks();
-        for (let i = 0; i < this.state.length; i++) {
-            await this.state[i].clearAllCallbacks();
-        }
+        const poms: any[] = [];
+        this.state.forEach((sta) => {
+            poms.push(sta.clearAllCallbacks());
+        });
+        await Promise.all(poms);
         return res;
     }
 }
