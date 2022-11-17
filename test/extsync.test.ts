@@ -17,6 +17,7 @@ import {
     waitForBackground,
 } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
+import { signalRequest } from './util/response';
 
 const rpcExtSyncRequest = expect.objectContaining({
     jsonrpc: '2.0',
@@ -24,6 +25,14 @@ const rpcExtSyncRequest = expect.objectContaining({
     params: {
         url: '/services/2.1/websocket/open/subscription',
         data: '/2.1/extsync/request',
+    },
+});
+const rpcExtSync = expect.objectContaining({
+    jsonrpc: '2.0',
+    method: 'POST',
+    params: {
+        url: '/services/2.1/websocket/open/subscription',
+        data: '/2.1/extsync',
     },
 });
 const rpcExtSyncDelete = expect.objectContaining({
@@ -257,6 +266,7 @@ describe('ExtSync stream', () => {
         await server.connected;
 
         await expect(server).toReceiveMessage(rpcExtSyncRequest);
+        await expect(server).toReceiveMessage(rpcExtSync);
         sendRpcResponse(server);
 
         await Promise.all([backgroundPromise, foregroundPromise]);
@@ -490,6 +500,7 @@ describe('ExtSync stream', () => {
         await server.connected;
 
         await expect(server).toReceiveMessage(rpcExtSyncRequest);
+        await expect(server).toReceiveMessage(rpcExtSync);
         sendRpcResponse(server);
 
         await Promise.all([backgroundPromise, foregroundPromise]);
@@ -691,48 +702,8 @@ describe('ExtSync stream', () => {
             .mockResolvedValueOnce({ data: res })
             .mockResolvedValueOnce({ data: res });
 
-        const backgroundPromise = fromBackground(funB);
         signalForeground(msg);
-
-        const foregroundPromise = fromForeground(funF);
         signalBackground(msg);
-
-        await server.connected;
-
-        await expect(server).toReceiveMessage(rpcExtSyncRequest);
-        sendRpcResponse(server);
-
-        await Promise.all([backgroundPromise, foregroundPromise]);
-
-        server.send({
-            meta_object: {
-                type: 'extsync',
-            },
-            extsync: {
-                meta: {
-                    id: '6718413a-4d78-4110-af0d-9291ab76196e',
-                },
-                request: 'request',
-                uri: 'extsync/',
-                body: '{"type": "background","message": {"signal": "foreground"}}',
-            },
-        });
-        server.send({
-            meta_object: {
-                type: 'extsync',
-            },
-            extsync: {
-                meta: {
-                    id: '632bfbc6-64f6-4bff-9121-5b656c6e5ea1',
-                },
-                request: 'request',
-                uri: 'extsync/',
-                body: '{"type": "foreground","message": {"signal": "background"}}',
-            },
-        });
-
-        await new Promise((r) => setTimeout(r, 1));
-
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
             message: {
                 test: 'test signal',
@@ -745,10 +716,28 @@ describe('ExtSync stream', () => {
             },
             type: 'foreground',
         });
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+
+        const backgroundPromise = fromBackground(funB);
+        const foregroundPromise = fromForeground(funF);
+
+        await server.connected;
+
+        await expect(server).toReceiveMessage(rpcExtSyncRequest);
+        await expect(server).toReceiveMessage(rpcExtSync);
+        sendRpcResponse(server);
+
+        await Promise.all([backgroundPromise, foregroundPromise]);
+
+        server.send(signalRequest('foreground'));
+        server.send(signalRequest('background'));
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(funB).toHaveBeenCalledWith({ signal: 'foreground' });
-        expect(funF).toHaveBeenCalledWith({ signal: 'background' });
+        expect(funB).toHaveBeenCalledWith({ signal: 'background' });
+        expect(funF).toHaveBeenCalledWith({ signal: 'foreground' });
+
         expect(funF).toHaveBeenCalledTimes(1);
         expect(funB).toHaveBeenCalledTimes(1);
     });

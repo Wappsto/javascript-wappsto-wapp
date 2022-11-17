@@ -2744,4 +2744,71 @@ const simpleNetworkResponse = {
     },
 };
 
-export { ems_reply, simpleNetworkResponse, emptyResponse };
+const signalRequest = (type: string) => {
+    return {
+        meta: {
+            id: '92ddd1d3-9885-4d98-8574-6f2eefa8fc32',
+            type: 'eventstream',
+            version: '2.1',
+        },
+        event: 'extsync',
+        meta_object: {
+            type: 'extsync',
+            version: '2.1',
+            id: '92ddd1d3-9885-4d98-8574-6f2eefa8fc32',
+            owner: '5ee72329-3ca4-4670-a927-c14c3488d0f7',
+        },
+        data: {
+            meta: {
+                type: 'extsync',
+                version: '2.1',
+                id: '92ddd1d3-9885-4d98-8574-6f2eefa8fc32',
+                owner: '5ee72329-3ca4-4670-a927-c14c3488d0f7',
+            },
+            request: false,
+            method: 'POST',
+            uri: 'extsync/',
+            headers: {
+                CONTENT_LENGTH: '40',
+                CONTENT_TYPE: 'application/json',
+                HTTP_VERSION: 'HTTP/1.1',
+                HTTP_HOST: 'wappsto.com',
+                HTTP_X_REQUEST_ID: '26e954bb60db323b4b1bcbc7e6fd405a',
+                HTTP_X_REAL_IP: '217.198.212.74',
+                HTTP_X_FORWARDED_FOR: '217.198.212.74',
+                HTTP_X_FORWARDED_HOST: 'wappsto.com',
+                HTTP_X_FORWARDED_PORT: '443',
+                HTTP_X_FORWARDED_PROTO: 'https',
+                HTTP_X_FORWARDED_SCHEME: 'https',
+                HTTP_X_ORIGINAL_URI: '/services/2.1/extsync',
+                HTTP_X_SCHEME: 'https',
+                HTTP_COOKIE:
+                    'sessionID=209054f5-8a26-46e5-86ea-386ae9feabd0; sessionID=8e5e0e07-c708-4574-a507-ea2ba2f14064; sessionID=82b99db5-c086-44e3-9fde-cbe3373b15a5; CookieConsent=true; i18next=en; LEGACYSESSID=32a2hto085jqfq929imuak20a9; PHPSESSID=1719g25am6t8ib4gpr63q190rc; XSRF-TOKEN=1EBQYUoLU_sSuTTgTgD3stCwlMFYhl-ZFuKpzhuzNrs; sessionID=8e5e0e07-c708-4574-a507-ea2ba2f14064; io=C8ySNEZnFVjSAF2fAAD2',
+                HTTP_ACCEPT_LANGUAGE: 'en-US,en;q=0.9,da;q=0.8,nb;q=0.7',
+                HTTP_ACCEPT_ENCODING: 'gzip, deflate, br',
+                HTTP_REFERER: 'http://localhost:3000/?name=Developers+t',
+                HTTP_SEC_FETCH_DEST: 'empty',
+                HTTP_SEC_FETCH_MODE: 'cors',
+                HTTP_SEC_FETCH_SITE: 'same-origin',
+                HTTP_ORIGIN: 'http://localhost:3000',
+                HTTP_SEC_CH_UA_PLATFORM: '"Linux"',
+                HTTP_ACCEPT: 'application/json, text/plain, */*',
+                HTTP_USER_AGENT:
+                    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
+                HTTP_SEC_CH_UA_MOBILE: '?0',
+                HTTP_X_XSRF_TOKEN:
+                    '1EBQYUoLU_sSuTTgTgD3stCwlMFYhl-ZFuKpzhuzNrs',
+                HTTP_DNT: '1',
+                HTTP_SEC_CH_UA:
+                    '"Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"',
+                HTTP_CACHE_CONTROL: 'no-cache',
+                HTTP_PRAGMA: 'no-cache',
+            },
+            body: `{"type":"${type}","message":{"signal":"${type}"}}`,
+        },
+        path: '/extsync/direct',
+        timestamp: '2022-11-16T08:53:15.156826Z',
+    };
+};
+
+export { ems_reply, simpleNetworkResponse, emptyResponse, signalRequest };

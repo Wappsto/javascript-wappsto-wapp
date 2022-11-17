@@ -27,7 +27,7 @@ export function newWServer(autoReply?: boolean) {
     server = new WS('ws://localhost:12345', { jsonProtocol: true });
     answered = 0;
     clearTimeout(autoTimer);
-    if (autoReply) {
+    if (autoReply === true) {
         autoTimer = setInterval(() => {
             if (server.messages.length > answered) {
                 answered = sendRpcResponse(server, answered);

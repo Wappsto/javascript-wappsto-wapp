@@ -42,13 +42,17 @@ export async function signalBackground(msg: any): Promise<void> {
 async function _handleRequest(event: any): Promise<boolean> {
     let res = true;
     let data: any = {};
-    try {
-        data = JSON.parse(event);
-    } catch (e) {
-        /* istanbul ignore next */
-        printDebug('Failed to parse event - Foreground/Background handler');
-        /* istanbul ignore next */
-        return false;
+    if (typeof event === 'string') {
+        try {
+            data = JSON.parse(event);
+        } catch (e) {
+            /* istanbul ignore next */
+            printDebug('Failed to parse event - Foreground/Background handler');
+            /* istanbul ignore next */
+            return false;
+        }
+    } else {
+        data = event;
     }
 
     if (request_handlers[data.type]) {
@@ -64,10 +68,14 @@ async function handleRequest(
     callback: RequestHandler
 ): Promise<boolean> {
     let res = true;
+    const allProms = [];
     request_handlers[type] = callback;
     if (Object.keys(request_handlers).length === 1) {
-        res = await openStream.onRequest(_handleRequest, true);
+        allProms.push(openStream.onRequest(_handleRequest, true));
     }
+    allProms.push(openStream.subscribeInternal(type, _handleRequest));
+    const allRes = await Promise.all(allProms);
+    res = allRes[0];
     return res;
 }
 

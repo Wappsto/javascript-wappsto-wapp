@@ -479,13 +479,14 @@ export interface IOntology {
 }
 export interface IOntologyModel extends IModel {
     createEdge(params: IOntology): Promise<IOntologyEdge>;
-    getAllEdges(): Promise<IOntologyEdge[]>;
+    getAllEdges(force?: boolean): Promise<IOntologyEdge[]>;
     deleteBranch(): Promise<void>;
     deleteEdge(params: IOntology): Promise<void>;
     removeEdge(edge: IModel): void;
 }
 export interface IOntologyModelFunc {
     createEdge(params: IOntology): Promise<IOntologyEdge>;
+    getAllEdges(force?: boolean): Promise<IOntologyEdge[]>;
     deleteBranch(): Promise<void>;
     deleteEdge(params: IOntology): Promise<void>;
     removeEdge(edge: IModel): void;

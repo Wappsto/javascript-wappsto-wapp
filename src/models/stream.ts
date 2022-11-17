@@ -228,7 +228,12 @@ export class Stream extends Model {
         return this.subscribeService('extsync', async (event) => {
             let res: boolean | undefined = false;
             try {
-                const body = JSON.parse(event.body);
+                let body;
+                if (typeof event.body === 'string') {
+                    body = JSON.parse(event.body);
+                } else {
+                    body = event.body;
+                }
                 if (body.type === type) {
                     res = await handler(body);
                 }
@@ -477,11 +482,7 @@ export class Stream extends Model {
         printStream('handleMessage', type, event);
         const paths: string[] = [];
         const services: string[] = [];
-        if (type === 'message') {
-            if (!event.path) {
-                /* istanbul ignore next */
-                return;
-            }
+        if (type === 'message' && event.path) {
             const items: string[] = event.path
                 .split('/')
                 .filter((s) => s.length > 0);
@@ -579,6 +580,7 @@ export class Stream extends Model {
         } catch (e) {
             /* istanbul ignore next */
             printError(`Failed to send message on WebSocket: ${e}`);
+            /* istanbul ignore next */
             delete this.rpc_response[hash.id];
         }
         return res;
@@ -657,6 +659,7 @@ export class Stream extends Model {
         this.socket.onmessage = (ev: any) => {
             /* istanbul ignore else */
             if (ev.type !== 'message') {
+                /* istanbul ignore next */
                 printError("Can't handle binary stream data");
             }
 
