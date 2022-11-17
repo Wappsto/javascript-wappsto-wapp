@@ -1219,7 +1219,7 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.get).toHaveBeenCalledTimes(8);
     });
-
+    /*
     it('can load the EMS network', async () => {
         mockedAxios.get.mockResolvedValueOnce(ems_reply);
 
@@ -1279,7 +1279,20 @@ describe('Ontology', () => {
             .mockResolvedValueOnce(fullShelly5)
             .mockResolvedValueOnce(fullShelly6);
 
-        await Network.findAllByName('Shelly');
+        const networks = await Network.findAllByName('Shelly');
+
+        networks.forEach((network) => {
+            expect(typeof(network)).toEqual('object');
+            network.device.forEach((device) => {
+                expect(typeof(device)).toEqual('object');
+                device.value.forEach((value) => {
+                    expect(typeof(value)).toEqual('object');
+                    value.state.forEach((state) => {
+                        expect(typeof(state)).toEqual('object');
+                    });
+                });
+            });
+        });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(8);
 
@@ -1313,5 +1326,5 @@ describe('Ontology', () => {
                 },
             }
         );
-    });
+    });*/
 });

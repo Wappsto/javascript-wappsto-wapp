@@ -310,25 +310,26 @@ export class Network extends ConnectionModel implements INetwork {
             offset: offset,
         });
         const devices = Device.fromArray(data);
+        const poms: any[] = [];
 
-        for (let i = 0; i < devices.length; i++) {
-            if (typeof devices[i] === 'string') {
-                await this.fetchMissingDevices(i + offset);
+        devices.forEach((dev: any, index: number) => {
+            this.device[offset + index] = dev;
+        });
+
+        for (let i = 0; i < this.device.length; i++) {
+            if (typeof this.device[i] === 'string') {
+                poms.push(this.fetchMissingDevices(i));
                 break;
             }
         }
 
-        const poms: any[] = [];
         devices.forEach((dev) => {
             if (typeof dev === 'object') {
                 poms.push(dev.loadAllChildren(null));
             }
         });
-        await Promise.all(poms);
 
-        devices.forEach((dev: any, index: number) => {
-            this.device[offset + index] = dev;
-        });
+        await Promise.all(poms);
     }
 
     private static validate(name: string, params: any): void {

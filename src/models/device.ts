@@ -440,25 +440,25 @@ export class Device extends ConnectionModel implements IDevice {
             offset: offset,
         });
         const values = Value.fromArray(data);
+        const poms: any[] = [];
+
+        values.forEach((val: any, index: number) => {
+            this.value[offset + index] = val;
+        });
 
         for (let i = 0; i < values.length; i++) {
             if (typeof values[i] === 'string') {
-                await this.fetchMissingValues(i + offset);
+                poms.push(this.fetchMissingValues(i + offset));
                 break;
             }
         }
 
-        const poms: any[] = [];
         values.forEach((val) => {
             if (typeof val === 'object') {
                 poms.push(val.loadAllChildren(null));
             }
         });
         await Promise.all(poms);
-
-        values.forEach((val: any, index: number) => {
-            this.value[offset + index] = val;
-        });
     }
 
     private static validate(name: string, params: any): void {
