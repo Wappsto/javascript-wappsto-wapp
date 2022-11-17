@@ -114,10 +114,7 @@ export class Device extends ConnectionModel implements IDevice {
         }
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'string') {
-                const values = await this.fetchMissingValues(i);
-                values.forEach((val: any, index: number) => {
-                    this.value[i + index] = val;
-                });
+                await this.fetchMissingValues(i);
                 break;
             }
         }
@@ -437,18 +434,31 @@ export class Device extends ConnectionModel implements IDevice {
         return res;
     }
 
-    private async fetchMissingValues(offset: number): Promise<Value[]> {
+    private async fetchMissingValues(offset: number): Promise<void> {
         const data = await Model.fetch(`${this.url()}/${this.id()}/value`, {
             expand: 1,
             offset: offset,
         });
         const values = Value.fromArray(data);
+
+        for (let i = 0; i < values.length; i++) {
+            if (typeof values[i] === 'string') {
+                await this.fetchMissingValues(i + offset);
+                break;
+            }
+        }
+
         const poms: any[] = [];
         values.forEach((val) => {
-            poms.push(val.loadAllChildren(null));
+            if (typeof val === 'object') {
+                poms.push(val.loadAllChildren(null));
+            }
         });
         await Promise.all(poms);
-        return values;
+
+        values.forEach((val: any, index: number) => {
+            this.value[offset + index] = val;
+        });
     }
 
     private static validate(name: string, params: any): void {

@@ -126,10 +126,7 @@ export class Network extends ConnectionModel implements INetwork {
 
         for (let i = 0; i < this.device.length; i++) {
             if (typeof this.device[i] === 'string') {
-                const devices = await this.fetchMissingDevices(i);
-                devices.forEach((val: any, index: number) => {
-                    this.device[i + index] = val;
-                });
+                await this.fetchMissingDevices(i);
                 break;
             }
         }
@@ -307,18 +304,31 @@ export class Network extends ConnectionModel implements INetwork {
         return networks;
     };
 
-    private async fetchMissingDevices(offset: number): Promise<Device[]> {
+    private async fetchMissingDevices(offset: number): Promise<void> {
         const data = await Model.fetch(`${this.url()}/${this.id()}/device`, {
             expand: 2,
             offset: offset,
         });
         const devices = Device.fromArray(data);
+
+        for (let i = 0; i < devices.length; i++) {
+            if (typeof devices[i] === 'string') {
+                await this.fetchMissingDevices(i + offset);
+                break;
+            }
+        }
+
         const poms: any[] = [];
         devices.forEach((dev) => {
-            poms.push(dev.loadAllChildren(null));
+            if (typeof dev === 'object') {
+                poms.push(dev.loadAllChildren(null));
+            }
         });
         await Promise.all(poms);
-        return devices;
+
+        devices.forEach((dev: any, index: number) => {
+            this.device[offset + index] = dev;
+        });
     }
 
     private static validate(name: string, params: any): void {

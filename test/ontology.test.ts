@@ -14,7 +14,15 @@ import {
 } from '../src/index';
 import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
-import { ems_reply } from './util/response';
+import {
+    ems_reply,
+    fullShelly1,
+    fullShelly2,
+    fullShelly3,
+    fullShelly4,
+    fullShelly5,
+    fullShelly6,
+} from './util/response';
 
 describe('Ontology', () => {
     beforeAll(() => {
@@ -1257,6 +1265,51 @@ describe('Ontology', () => {
                     expand: 1,
                     go_internal: true,
                     offset: 2,
+                },
+            }
+        );
+    });
+
+    it('can load a full Shelly network', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce(fullShelly1)
+            .mockResolvedValueOnce(fullShelly2)
+            .mockResolvedValueOnce(fullShelly3)
+            .mockResolvedValueOnce(fullShelly4)
+            .mockResolvedValueOnce(fullShelly5)
+            .mockResolvedValueOnce(fullShelly6);
+
+        await Network.findAllByName('Shelly');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(8);
+
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+            params: {
+                expand: 3,
+                go_internal: true,
+                identifier: 'network-all-Find all network with name Shelly',
+                message: 'Find all network with name Shelly',
+                method: ['retrieve', 'update'],
+                quantity: 'all',
+                this_name: '=Shelly',
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/network/e6d15b11-1141-4ff9-9374-1348581ae3d7',
+            {
+                params: {
+                    expand: 3,
+                    go_internal: true,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/network/e6d15b11-1141-4ff9-9374-1348581ae3d7/device',
+            {
+                params: {
+                    expand: 2,
+                    go_internal: true,
+                    offset: 5,
                 },
             }
         );
