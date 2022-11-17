@@ -99,8 +99,10 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
     }
 
-    public async getAllEdges(): Promise<IOntologyEdge[]> {
-        if (!this.ontologyLoaded) {
+    public async getAllEdges(force?: boolean): Promise<IOntologyEdge[]> {
+        Model.validateMethod('OntologyModel', 'getAllEdges', arguments);
+
+        if (!this.ontologyLoaded || force) {
             this.ontologyLoaded = true;
             this.ontology = await Ontology.fetch(`${this.getUrl()}/ontology`);
             this.ontology.forEach((o) => {

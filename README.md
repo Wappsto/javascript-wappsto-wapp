@@ -620,12 +620,7 @@ await Wappsto.sendSMS('Simple SMS from your Wapp');
 ### Ontology
 
 To build a relationship graph of your data, you need to define the
-ontology. To create a node in the graph, you call the `createNode`
-function.
-
-```javascript
-const startNode = await Wappsto.createNode('start node');
-```
+ontology. 
 
 To add a relationship between two objects, you call `createEdge` with
 the relationship that you want to define.
@@ -646,6 +641,14 @@ const fullEdge = await startNode.createEdge({
 });
 ```
 
+If you need a virtual object to create an edge to or from, you can 
+create a new node. To create a node in the graph, you call the `createNode`
+function.
+
+```javascript
+const startNode = await Wappsto.createNode('start node');
+```
+
 When you have created your ontology, you can `transverse` the graph
 and find 'leafs' in the graph. You need to define a path to
 follow. There are 3 special charaters in the path, that have special
@@ -662,6 +665,19 @@ can set 'getAll' to true when callling `transverse`.
 
 ```javascript
 const allNodes = node.transverse('*.contains|child.*', true);
+```
+
+To load all the ontology edges from an object, you can call `getAllEdges`.
+
+```javascript
+const edges = await node.getAllEdges();
+```
+
+The edges are only loaded once, so if you need to refresh the edges from 
+the backend, you need to force an update by calling `getAllEdges` with true.
+
+```javascript
+const edges = await node.getAllEdges(true);
 ```
 
 To remove an edge, you can just call `delete` on the edge, but if you
