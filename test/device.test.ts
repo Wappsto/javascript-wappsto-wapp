@@ -255,10 +255,10 @@ describe('device', () => {
 
         expect(device.name).toEqual('device');
         expect(device.value.length).toEqual(4);
-        expect(device.value[0].name).toEqual('value 4');
-        expect(device.value[1].name).toEqual('value 1');
-        expect(device.value[2].name).toEqual('value 2');
-        expect(device.value[3].name).toEqual('value 3');
+        expect(device.value[0].name).toEqual('value 1');
+        expect(device.value[1].name).toEqual('value 2');
+        expect(device.value[2].name).toEqual('value 3');
+        expect(device.value[3].name).toEqual('value 4');
     });
 
     const templateHelperStart = () => {

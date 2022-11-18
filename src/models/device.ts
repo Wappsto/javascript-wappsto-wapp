@@ -77,58 +77,65 @@ export class Device extends ConnectionModel implements IDevice {
         json: Record<string, any> | null,
         reloadAll = false
     ): Promise<void> {
-        if (json?.value) {
-            for (let i = 0; i < json.value.length; i++) {
-                let id: string;
-                let data: Record<string, any> | undefined = undefined;
-                let newValue: Value | undefined = undefined;
-
-                if (typeof json.value[i] === 'string') {
-                    id = json.value[i] as string;
-                } else {
-                    id = json.value[i].meta.id;
-                    data = json.value[i];
-                }
-
-                const val = this.value.find((val) => val.meta.id === id);
-                if (val) {
-                    if (data) {
-                        val.parse(data);
-                    }
-                } else {
-                    if (data) {
-                        newValue = new Value();
-                    } else {
-                        newValue = await Value.fetchById(id);
-                    }
-                }
-
-                if (newValue) {
-                    if (data) {
-                        newValue.parse(data);
-                    }
-                    newValue.parent = this;
-                    this.value.push(newValue);
-                }
+        const proms: any[] = [];
+        let values: any | undefined;
+        if (json) {
+            if (json.value !== undefined) {
+                values = json.value;
+            } else if (json[0]) {
+                values = json[0]['value'];
             }
-        }
-        for (let i = 0; i < this.value.length; i++) {
-            if (typeof this.value[i] === 'string') {
-                await this.fetchMissingValues(i);
-                break;
+
+            if (values !== undefined) {
+                const oldValues = this.value;
+                this.value = [];
+
+                for (let i = 0; i < values.length; i++) {
+                    let id: string;
+                    let data: Record<string, any> | undefined = undefined;
+                    let newValue: Value | undefined = undefined;
+
+                    if (typeof values[i] === 'string') {
+                        id = values[i] as string;
+                    } else {
+                        id = values[i].meta.id;
+                        data = values[i];
+                    }
+
+                    const val = oldValues.find((val) => val.meta.id === id);
+                    if (val) {
+                        this.value.push(val);
+                        if (data) {
+                            val.parse(data);
+                        }
+                    } else {
+                        if (data) {
+                            newValue = new Value();
+                            newValue.parse(data);
+                            newValue.parent = this;
+                            this.value.push(newValue);
+                            proms.push(newValue.loadAllChildren(null, false));
+                        } else {
+                            this.value.push(values[i]);
+                        }
+                    }
+                }
             }
         }
 
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'object') {
-                this.value[i].created();
-                if (reloadAll) {
-                    await this.value[i].reload(true);
-                } else {
-                    await this.value[i].loadAllChildren(null, reloadAll);
+                this.value[i].parent = this;
+                if (values === undefined) {
+                    proms.push(this.value[i].loadAllChildren(null, false));
                 }
+            } else if (typeof this.value[i] === 'string') {
+                await this.fetchMissingValues(i);
+                break;
             }
         }
+
+        await Promise.all(proms);
     }
 
     private async _createValue(params: ValueType): Promise<Value> {
@@ -446,9 +453,9 @@ export class Device extends ConnectionModel implements IDevice {
             this.value[offset + index] = val;
         });
 
-        for (let i = 0; i < values.length; i++) {
-            if (typeof values[i] === 'string') {
-                poms.push(this.fetchMissingValues(i + offset));
+        for (let i = 0; i < this.value.length; i++) {
+            if (typeof this.value[i] === 'string') {
+                poms.push(this.fetchMissingValues(i));
                 break;
             }
         }

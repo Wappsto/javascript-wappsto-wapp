@@ -52,28 +52,30 @@ export class Ontology extends Model implements IOntologyEdge {
     }
 
     private addModel(to: IOntologyModel): boolean {
+        let res = false;
         if (this.models.find((o) => compareModels(o, to)) === undefined) {
             this.models.push(to);
-            return true;
+            res = true;
         }
-        return false;
+        return res;
     }
 
-    public fetchModels(): void {
+    public async fetchModels(): Promise<void> {
+        const proms: any[] = [];
         Object.keys(this.to).forEach((type: string) => {
             this.to[type].forEach((id: string) => {
-                const m = getModel(type, id);
-                if (m) {
-                    this.addModel(m as IOntologyModel);
-                }
+                proms.push(
+                    new Promise(async (resolve: any) => {
+                        const m = await getModel(type, id);
+                        if (m) {
+                            this.addModel(m as IOntologyModel);
+                        }
+                        resolve();
+                    })
+                );
             });
         });
-    }
-
-    public parse(json: Record<string, any>): boolean {
-        const res = super.parse(json);
-        this.fetchModels();
-        return res;
+        await Promise.all(proms);
     }
 
     public async delete(): Promise<void> {
@@ -106,9 +108,11 @@ export class Ontology extends Model implements IOntologyEdge {
         const data = await Model.fetch(endpoint, params);
         const res = Ontology.fromArray(data);
 
+        const proms: any[] = [];
         res.forEach((o) => {
-            o.fetchModels();
+            proms.push(o.fetchModels());
         });
+        await Promise.all(proms);
 
         return res;
     };

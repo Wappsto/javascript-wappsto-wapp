@@ -88,59 +88,64 @@ export class Network extends ConnectionModel implements INetwork {
         json: Record<string, any> | null,
         reloadAll = false
     ): Promise<void> {
-        if (json?.device) {
-            for (let i = 0; i < json.device.length; i++) {
-                let id: string;
-                let data: Record<string, any> | undefined = undefined;
-                let newDevice: Device | undefined = undefined;
-
-                if (typeof json.device[i] === 'string') {
-                    id = json.device[i] as string;
-                } else {
-                    id = json.device[i].meta.id;
-                    data = json.device[i];
-                }
-
-                const dev = this.device.find((dev) => dev.meta.id === id);
-                if (dev) {
-                    if (data) {
-                        dev.parse(data);
-                    }
-                } else {
-                    if (data) {
-                        newDevice = new Device();
-                    } else {
-                        newDevice = await Device.fetchById(id);
-                    }
-                }
-
-                if (newDevice) {
-                    if (data) {
-                        newDevice.parse(data);
-                    }
-                    newDevice.parent = this;
-                    this.device.push(newDevice);
-                }
+        const proms: any[] = [];
+        let devices: any | undefined;
+        if (json) {
+            if (json.device !== undefined) {
+                devices = json.device;
+            } else if (json[0]) {
+                devices = json[0]['device'];
             }
-        }
 
-        for (let i = 0; i < this.device.length; i++) {
-            if (typeof this.device[i] === 'string') {
-                await this.fetchMissingDevices(i);
-                break;
+            if (devices !== undefined) {
+                const oldDevices = this.device;
+                this.device = [];
+                for (let i = 0; i < devices.length; i++) {
+                    let id: string;
+                    let data: Record<string, any> | undefined = undefined;
+                    let newDevice: Device | undefined = undefined;
+
+                    if (typeof devices[i] === 'string') {
+                        id = devices[i] as string;
+                    } else {
+                        id = devices[i].meta.id;
+                        data = devices[i];
+                    }
+
+                    const dev = oldDevices.find((dev) => dev.meta.id === id);
+                    if (dev) {
+                        this.device.push(dev);
+                        if (data) {
+                            dev.parse(data);
+                        }
+                    } else {
+                        if (data) {
+                            newDevice = new Device();
+                            newDevice.parse(data);
+                            newDevice.parent = this;
+                            this.device.push(newDevice);
+                            proms.push(newDevice.loadAllChildren(null, false));
+                        } else {
+                            this.device.push(devices[i]);
+                        }
+                    }
+                }
             }
         }
 
         for (let i = 0; i < this.device.length; i++) {
             if (typeof this.device[i] === 'object') {
                 this.device[i].parent = this;
-                if (reloadAll) {
-                    await this.device[i].reload(true);
-                } else {
-                    await this.device[i].loadAllChildren(null, reloadAll);
+                if (devices === undefined) {
+                    proms.push(this.device[i].loadAllChildren(null, false));
                 }
+            } else if (typeof this.device[i] === 'string') {
+                await this.fetchMissingDevices(i);
+                break;
             }
         }
+
+        await Promise.all(proms);
     }
 
     public async createDevice(params: IDevice): Promise<Device> {

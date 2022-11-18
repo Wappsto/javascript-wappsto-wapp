@@ -14,15 +14,7 @@ import {
 } from '../src/index';
 import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
-import {
-    ems_reply,
-    fullShelly1,
-    fullShelly2,
-    fullShelly3,
-    fullShelly4,
-    fullShelly5,
-    fullShelly6,
-} from './util/response';
+import { responses } from './util/response';
 
 describe('Ontology', () => {
     beforeAll(() => {
@@ -321,7 +313,6 @@ describe('Ontology', () => {
                     },
                 },
             })
-
             .mockResolvedValueOnce({
                 data: {
                     meta: {
@@ -337,11 +328,12 @@ describe('Ontology', () => {
 
         const edges = await network.getAllEdges();
 
-        await new Promise((r) => setTimeout(r, 1));
-
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(6);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
             {
                 params: {
@@ -350,31 +342,8 @@ describe('Ontology', () => {
                 },
             }
         );
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.1/network/f11fa9d7-3b2b-474e-95e4-f086c5606154',
-            {
-                params: {
-                    expand: 3,
-                },
-            }
-        );
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.1/device/8a3f67a6-751c-483b-a2ef-ba890948e6e4',
-            {
-                params: {
-                    expand: 2,
-                },
-            }
-        );
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.1/value/75d7d198-7f91-45e2-9b79-754073d7e758',
-            {
-                params: {
-                    expand: 1,
-                },
-            }
-        );
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/311b2c2d-54de-4e00-a850-f6712c4622bd',
             {
                 params: {
@@ -382,7 +351,35 @@ describe('Ontology', () => {
                 },
             }
         );
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/network/f11fa9d7-3b2b-474e-95e4-f086c5606154',
+            {
+                params: {
+                    expand: 3,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            4,
+            '/2.1/device/8a3f67a6-751c-483b-a2ef-ba890948e6e4',
+            {
+                params: {
+                    expand: 2,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            5,
+            '/2.1/value/75d7d198-7f91-45e2-9b79-754073d7e758',
+            {
+                params: {
+                    expand: 1,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            6,
             '/2.1/data/97e0dd7c-8e22-4263-82f9-d26102643465',
             {
                 params: {
@@ -1213,8 +1210,6 @@ describe('Ontology', () => {
 
         const edges = await network.getAllEdges();
 
-        await new Promise((r) => setTimeout(r, 1));
-
         expect(edges[0].models.length).toBe(19);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.get).toHaveBeenCalledTimes(8);
@@ -1272,12 +1267,21 @@ describe('Ontology', () => {
 
     it('can load a full Shelly network', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce(fullShelly1)
-            .mockResolvedValueOnce(fullShelly2)
-            .mockResolvedValueOnce(fullShelly3)
-            .mockResolvedValueOnce(fullShelly4)
-            .mockResolvedValueOnce(fullShelly5)
-            .mockResolvedValueOnce(fullShelly6);
+            .mockResolvedValueOnce(responses.fullShelly1)
+            .mockResolvedValueOnce(responses.fullShelly2)
+            .mockResolvedValueOnce(responses.fullShelly3)
+            .mockResolvedValueOnce(responses.fullShelly4)
+            .mockResolvedValueOnce(responses.fullShelly5)
+            .mockResolvedValueOnce(responses.fullShelly6)
+            .mockResolvedValueOnce(responses.fullShelly7)
+            .mockResolvedValueOnce(responses.fullShelly8)
+            .mockResolvedValueOnce(responses.fullShelly9)
+            .mockResolvedValueOnce(responses.fullShelly10)
+            .mockResolvedValueOnce(responses.fullShelly11)
+            .mockResolvedValueOnce(responses.fullShelly12)
+            .mockResolvedValueOnce(responses.fullShelly13)
+            .mockResolvedValueOnce(responses.fullShelly14);
+
 
         const networks = await Network.findAllByName('Shelly');
 

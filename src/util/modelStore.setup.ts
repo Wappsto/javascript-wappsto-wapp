@@ -7,7 +7,10 @@ import { IModel } from './interfaces';
 import { printDebug } from './debug';
 import { setModelCreateCallback } from './modelStore';
 
-function loadModel(type: string, id: string): IModel | undefined {
+async function loadModel(
+    type: string,
+    id: string
+): Promise<IModel | undefined> {
     let model: IModel | undefined;
 
     printDebug(`ModelStore is loading a ${type} with id ${id}`);
@@ -33,7 +36,7 @@ function loadModel(type: string, id: string): IModel | undefined {
     }
     if (model !== undefined) {
         model.meta.id = id;
-        model.reload(true);
+        await model.reload(true);
     }
     return model;
 }
