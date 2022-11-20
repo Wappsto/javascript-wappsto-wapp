@@ -23,11 +23,10 @@ export class OAuth extends Model {
         OAuth.validate('getToken', arguments);
         return new Promise<Record<string, any>>(async (resolve, reject) => {
             try {
-                const data = await Model.fetch(
-                    `/2.1/oauth_connect/${this.name}`,
-                    {},
-                    true
-                );
+                const data = await Model.fetch({
+                    endpoint: `/2.1/oauth_connect/${this.name}`,
+                    throw_error: true,
+                });
 
                 const oauth = data[0];
                 if (oauth?.params?.oauth_token) {

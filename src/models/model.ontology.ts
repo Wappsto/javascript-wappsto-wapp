@@ -104,7 +104,9 @@ export class OntologyModel extends Model implements IOntologyModel {
 
         if (!this.ontologyLoaded || force) {
             this.ontologyLoaded = true;
-            this.ontology = await Ontology.fetch(`${this.getUrl()}/ontology`);
+            this.ontology = await Ontology.fetch({
+                endpoint: `${this.getUrl()}/ontology`,
+            });
             this.ontology.forEach((o) => {
                 o.setParent(this);
             });
@@ -123,7 +125,10 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
 
         const models: IOntologyModel[] = [];
-        const leafs = await Ontology.fetch(`${this.getUrl()}/ontology`, params);
+        const leafs = await Ontology.fetch({
+            endpoint: `${this.getUrl()}/ontology`,
+            params,
+        });
 
         leafs.forEach((leaf: IOntologyEdge) => {
             models.push(...leaf.models);

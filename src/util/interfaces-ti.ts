@@ -54,6 +54,14 @@ export const IMeta = t.iface([], {
     historical: t.opt('boolean'),
 });
 
+export const FetchRequest = t.iface([], {
+    endpoint: 'string',
+    params: t.opt('any'),
+    body: t.opt('any'),
+    throw_error: t.opt('boolean'),
+    go_internal: t.opt('boolean'),
+});
+
 export const IModel = t.iface([], {
     meta: 'IMeta',
     id: t.func('string'),
@@ -68,13 +76,7 @@ export const IModel = t.iface([], {
 
 export const IModelFunc = t.iface([], {
     create: t.func('void', t.param('parameters', 'any')),
-    fetch: t.func(
-        t.array('any'),
-        t.param('endpoint', 'string'),
-        t.param('options', 'any', true),
-        t.param('throwError', 'boolean', true),
-        t.param('go_internal', 'boolean', true)
-    ),
+    fetch: t.func(t.array('any'), t.param('parameters', 'FetchRequest')),
     reload: t.func('boolean', t.param('reloadAll', 'boolean', true)),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
     parse: t.func('boolean', t.param('json', 'any')),
@@ -120,11 +122,7 @@ export const INetworkFunc = t.iface([], {
     ),
     findById: t.func('INetwork', t.param('id', 'string')),
     fetchById: t.func('INetwork', t.param('id', 'string')),
-    fetch: t.func(
-        'IDevice',
-        t.param('name', 'string'),
-        t.param('options', 'any')
-    ),
+    fetchByName: t.func('IDevice', t.param('name', 'string')),
 });
 
 export const IDevice = t.iface([], {
@@ -673,8 +671,7 @@ export const IOntologyEdgeFunc = t.iface([], {
     getAllEdges: t.func(t.array('IOntologyEdge')),
     fetch: t.func(
         t.array('IOntologyEdge'),
-        t.param('endpoint', 'string'),
-        t.param('options', 'any')
+        t.param('parameters', 'FetchRequest')
     ),
 });
 
@@ -699,6 +696,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IConfigFunc,
     IConnection,
     IMeta,
+    FetchRequest,
     IModel,
     IModelFunc,
     INetwork,

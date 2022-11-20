@@ -161,8 +161,11 @@ export class Value extends StreamModel implements IValueBase {
 
     public static fetchById = async (id: string) => {
         Value.validate('fetchById', [id]);
-        const data = await Model.fetch(`${Value.endpoint}/${id}`, {
-            expand: 1,
+        const data = await Model.fetch({
+            endpoint: `${Value.endpoint}/${id}`,
+            params: {
+                expand: 1,
+            },
         });
         const values = Value.fromArray(data);
         const poms: any[] = [];
@@ -177,7 +180,7 @@ export class Value extends StreamModel implements IValueBase {
         const params = { expand: 1 };
         const url = Value.endpoint;
 
-        const data = await Model.fetch(url, params);
+        const data = await Model.fetch({ endpoint: url, params });
         const values = Value.fromArray(data);
         const poms: any[] = [];
         values.forEach((val) => {
@@ -610,12 +613,11 @@ export class Value extends StreamModel implements IValueBase {
     ): Promise<ILogResponse> {
         const state = this.findState(type);
         if (state) {
-            const response = await Model.fetch(
-                `/2.1/log/${state.id()}/state`,
-                request,
-                false,
-                false
-            );
+            const response = await Model.fetch({
+                endpoint: `/2.1/log/${state.id()}/state`,
+                params: request,
+                go_internal: false,
+            });
             return response[0] as ILogResponse;
         }
         return {

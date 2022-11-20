@@ -57,9 +57,12 @@ export class Data extends StreamModel {
     }
 
     public static findByDataId = async (id: string) => {
-        const json: any[] = await Model.fetch(Data.endpoint, {
-            'this_data_meta.id': id,
-            expand: 1,
+        const json: any[] = await Model.fetch({
+            endpoint: Data.endpoint,
+            params: {
+                'this_data_meta.id': id,
+                expand: 1,
+            },
         });
 
         const res: Data[] = [];

@@ -49,6 +49,14 @@ export interface IMeta {
     historical?: boolean;
 }
 
+export interface FetchRequest {
+    endpoint: string;
+    params?: Record<string, any>;
+    body?: Record<string, any>;
+    throw_error?: boolean;
+    go_internal?: boolean;
+}
+
 export interface IModel {
     meta: IMeta;
     id(): string;
@@ -63,12 +71,7 @@ export interface IModel {
 
 export interface IModelFunc {
     create(parameters: Record<string, any>): Promise<void>;
-    fetch(
-        endpoint: string,
-        options?: Record<string, any>,
-        throwError?: boolean,
-        go_internal?: boolean
-    ): Promise<Record<string, any>[]>;
+    fetch(parameters: FetchRequest): Promise<Record<string, any>[]>;
     reload(reloadAll?: boolean): Promise<boolean>;
     setParent(parent?: IModel): void;
     parse(json: Record<string, any>): boolean;
@@ -105,7 +108,7 @@ export interface INetworkFunc {
     findAllByName(name: string, usage: string): IDevice[];
     findById(id: string): INetwork;
     fetchById(id: string): INetwork;
-    fetch(name: string, options: Record<string, any>): IDevice;
+    fetchByName(name: string): IDevice;
 }
 
 export interface IDevice {
@@ -504,10 +507,7 @@ export interface IOntologyEdgeFunc {
     removeTo(to: IModel): boolean;
     deleteEdges(): Promise<void>;
     getAllEdges(): Promise<IOntologyEdge[]>;
-    fetch(
-        endpoint: string,
-        options: Record<string, any>
-    ): Promise<IOntologyEdge[]>;
+    fetch(parameters: FetchRequest): Promise<IOntologyEdge[]>;
 }
 export type IOntologyNode = IOntologyModel;
 export interface IOntologyNodeFunc extends IOntologyModelFunc {

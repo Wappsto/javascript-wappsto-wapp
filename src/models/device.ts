@@ -404,8 +404,11 @@ export class Device extends ConnectionModel implements IDevice {
 
     public static fetchById = async (id: string) => {
         Device.validate('fetchById', [id]);
-        const data = await Model.fetch(`${Device.endpoint}/${id}`, {
-            expand: 2,
+        const data = await Model.fetch({
+            endpoint: `${Device.endpoint}/${id}`,
+            params: {
+                expand: 2,
+            },
         });
         const res = Device.fromArray(data);
         for (let i = 0; i < res.length; i++) {
@@ -417,7 +420,7 @@ export class Device extends ConnectionModel implements IDevice {
     public static fetch = async () => {
         const params = { expand: 2 };
         const url = Device.endpoint;
-        const data = await Model.fetch(url, params);
+        const data = await Model.fetch({ endpoint: url, params });
         const devices = Device.fromArray(data);
         const poms: any[] = [];
         devices.forEach((dev) => {
@@ -442,9 +445,12 @@ export class Device extends ConnectionModel implements IDevice {
     }
 
     private async fetchMissingValues(offset: number): Promise<void> {
-        const data = await Model.fetch(`${this.url()}/${this.id()}/value`, {
-            expand: 1,
-            offset: offset,
+        const data = await Model.fetch({
+            endpoint: `${this.url()}/${this.id()}/value`,
+            params: {
+                expand: 1,
+                offset: offset,
+            },
         });
         const values = Value.fromArray(data);
         const poms: any[] = [];

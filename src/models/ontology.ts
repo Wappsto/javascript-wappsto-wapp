@@ -3,6 +3,7 @@ import {
     Relationship,
     IOntologyModel,
     IOntologyEdge,
+    FetchRequest,
 } from '../util/interfaces';
 import { compareModels } from '../util/helpers';
 import { getModel } from '../util/modelStore';
@@ -97,15 +98,16 @@ export class Ontology extends Model implements IOntologyEdge {
         await this.delete();
     }
 
-    static fetch = async (
-        endpoint: string,
-        params: Record<string, any> = {}
-    ): Promise<Ontology[]> => {
-        Ontology.validate('fetch', [endpoint, params]);
+    static fetch = async (parameters: FetchRequest): Promise<Ontology[]> => {
+        Ontology.validate('fetch', [parameters]);
 
-        params['expand'] = 1;
-
-        const data = await Model.fetch(endpoint, params);
+        const params = parameters;
+        if (!params.params) {
+            params.params = { expand: 1 };
+        } else {
+            params.params['expand'] = 1;
+        }
+        const data = await Model.fetch(params);
         const res = Ontology.fromArray(data);
 
         const proms: any[] = [];

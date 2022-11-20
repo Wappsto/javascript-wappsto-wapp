@@ -31,9 +31,12 @@ export async function createNode(name: string): Promise<OntologyNode> {
 }
 
 export async function getAllNodes(): Promise<OntologyNode[]> {
-    const json: any[] = await Model.fetch(Data.endpoint, {
-        'this_data_meta.type': 'ontology_node',
-        expand: 1,
+    const json: any[] = await Model.fetch({
+        endpoint: Data.endpoint,
+        params: {
+            'this_data_meta.type': 'ontology_node',
+            expand: 1,
+        },
     });
 
     const res: OntologyNode[] = [];
@@ -48,9 +51,12 @@ export async function getAllNodes(): Promise<OntologyNode[]> {
 export async function findNode(name: string): Promise<OntologyNode> {
     Model.validateMethod('OntologyNode', 'findNode', arguments);
 
-    const json: any[] = await Model.fetch(Data.endpoint, {
-        'this_data_meta.id': `ontology_node_${name}`,
-        expand: 1,
+    const json: any[] = await Model.fetch({
+        endpoint: Data.endpoint,
+        params: {
+            'this_data_meta.id': `ontology_node_${name}`,
+            expand: 1,
+        },
     });
 
     const res: OntologyNode[] = [];

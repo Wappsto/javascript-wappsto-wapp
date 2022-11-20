@@ -8,7 +8,7 @@ import { printHttpError } from '../util/http_wrapper';
 import { printError } from '../util/debug';
 import { _config } from '../util/config';
 import { getTraceId } from '../util/trace';
-import { IMeta, IModel } from '../util/interfaces';
+import { IMeta, IModel, FetchRequest } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { addModel } from '../util/modelStore';
 import { createCheckers } from 'ts-interface-checker';
@@ -232,26 +232,18 @@ export class Model implements IModel {
     }
 
     public static fetch = async (
-        endpoint: string,
-        params?: Record<string, any>,
-        throwError?: boolean,
-        go_internal?: boolean
+        params: FetchRequest
     ): Promise<Record<string, any>[]> => {
-        Model.validateMethod('Model', 'fetch', [
-            endpoint,
-            params,
-            throwError,
-            go_internal,
-        ]);
+        Model.validateMethod('Model', 'fetch', [params]);
         let res: any[] = [];
         try {
             const query = Model.generateOptions(
                 Object.assign(
-                    params || {},
-                    go_internal === false ? {} : { go_internal: true }
+                    params.params || {},
+                    params.go_internal === false ? {} : { go_internal: true }
                 )
             );
-            const response = await wappsto.get(endpoint, query);
+            const response = await wappsto.get(params.endpoint, query);
 
             if (response.data) {
                 if (Array.isArray(response.data)) {
@@ -262,7 +254,7 @@ export class Model implements IModel {
             }
         } catch (e) {
             const msg = printHttpError('Model.fetch', e);
-            if (throwError) {
+            if (params.throw_error) {
                 throw msg;
             }
         }

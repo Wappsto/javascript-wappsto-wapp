@@ -11,7 +11,7 @@ import { IModel, INetwork, IDevice } from '../util/interfaces';
 export async function createNetwork(params: INetwork): Promise<Network> {
     Model.validateMethod('Network', 'createNetwork', arguments);
 
-    const networks = await Network.fetch(params.name);
+    const networks = await Network.fetchByName(params.name);
     if (networks.length !== 0) {
         printDebug(`Using existing network with id ${networks[0].id()}`);
         networks[0].addChildrenToStore();
@@ -281,8 +281,11 @@ export class Network extends ConnectionModel implements INetwork {
 
     public static fetchById = async (id: string) => {
         Network.validate('fetchById', [id]);
-        const data = await Model.fetch(`${Network.endpoint}/${id}`, {
-            expand: 3,
+        const data = await Model.fetch({
+            endpoint: `${Network.endpoint}/${id}`,
+            params: {
+                expand: 3,
+            },
         });
         const networks = Network.fromArray(data);
         for (let i = 0; i < networks.length; i++) {
@@ -291,15 +294,15 @@ export class Network extends ConnectionModel implements INetwork {
         return networks[0];
     };
 
-    static fetch = async (name = '', params: Record<string, any> = {}) => {
-        Network.validate('fetch', [name, params]);
-        Object.assign(params, { expand: 3 });
+    static fetchByName = async (name = '') => {
+        Network.validate('fetchByName', [name]);
+        const params = { expand: 3 };
         if (name !== '') {
             Object.assign(params, {
                 'this_name=': name,
             });
         }
-        const data = await Model.fetch(Network.endpoint, params);
+        const data = await Model.fetch({ endpoint: Network.endpoint, params });
         const networks = Network.fromArray(data);
         const poms: any[] = [];
         networks.forEach((net) => {
@@ -310,9 +313,12 @@ export class Network extends ConnectionModel implements INetwork {
     };
 
     private async fetchMissingDevices(offset: number): Promise<void> {
-        const data = await Model.fetch(`${this.url()}/${this.id()}/device`, {
-            expand: 2,
-            offset: offset,
+        const data = await Model.fetch({
+            endpoint: `${this.url()}/${this.id()}/device`,
+            params: {
+                expand: 2,
+                offset: offset,
+            },
         });
         const devices = Device.fromArray(data);
         const poms: any[] = [];

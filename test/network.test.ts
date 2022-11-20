@@ -280,7 +280,7 @@ describe('network', () => {
         mockedAxios.get.mockResolvedValueOnce(simpleNetworkResponse);
 
         config({ verbose: true });
-        const networks = await Network.fetch();
+        const networks = await Network.fetchByName();
         config({ verbose: false });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
@@ -358,7 +358,7 @@ describe('network', () => {
     it('can find device by name', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [fullNetworkResponse] });
 
-        const networks = await Network.fetch();
+        const networks = await Network.fetchByName();
         const device = networks[0].findDeviceByName('Device Name');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
@@ -369,7 +369,7 @@ describe('network', () => {
     it('can find device by product', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [fullNetworkResponse] });
 
-        const networks = await Network.fetch();
+        const networks = await Network.fetchByName();
         const device = networks[0].findDeviceByProduct('Device Product');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
@@ -380,7 +380,7 @@ describe('network', () => {
     it('can find value by name', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [fullNetworkResponse] });
 
-        const networks = await Network.fetch();
+        const networks = await Network.fetchByName();
         const value = networks[0]?.findValueByName('Value Name');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
@@ -795,7 +795,7 @@ describe('network', () => {
                 ],
             });
 
-        const networks = await Network.fetch();
+        const networks = await Network.fetchByName();
 
         const device1 = networks[0].device[0];
         const device2 = networks[0].device[1];

@@ -107,7 +107,7 @@ export class PermissionModel extends OntologyModel {
                 identifier: id,
                 method: ['retrieve', 'update'],
             });
-            const result = await Model.fetch(endpoint, newParams);
+            const result = await Model.fetch({ endpoint, params: newParams });
 
             if (result.length === 0) {
                 printDebug(`Requesting new access to users data: ${message}`);
@@ -152,7 +152,10 @@ export class PermissionModel extends OntologyModel {
                         printDebug(
                             `Got permission to ${toString(newParams.id)}`
                         );
-                        const result = await Model.fetch(endpoint, newParams);
+                        const result = await Model.fetch({
+                            endpoint,
+                            params: newParams,
+                        });
                         resolve(result);
                         return true;
                     }

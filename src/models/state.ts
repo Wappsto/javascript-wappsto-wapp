@@ -31,7 +31,7 @@ export class State extends StreamModel implements IState {
 
     public static fetchById = async (id: string) => {
         State.validate('fetchById', [id]);
-        const data = await Model.fetch(`${State.endpoint}/${id}`, {});
+        const data = await Model.fetch({ endpoint: `${State.endpoint}/${id}` });
         const res = State.fromArray(data);
         return res[0];
     };
@@ -39,7 +39,7 @@ export class State extends StreamModel implements IState {
     public static fetch = async () => {
         const url = State.endpoint;
 
-        const data = await Model.fetch(url);
+        const data = await Model.fetch({ endpoint: url });
         return State.fromArray(data);
     };
 }
