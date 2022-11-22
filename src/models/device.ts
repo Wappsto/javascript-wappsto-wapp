@@ -17,7 +17,11 @@ import {
     ValueType,
     ValuePermission,
 } from '../util/interfaces';
-import { generateFilterRequest, convertFilterToJson, convertFilterToString } from '../util/helpers';
+import {
+    generateFilterRequest,
+    convertFilterToJson,
+    convertFilterToString,
+} from '../util/helpers';
 import { ValueTemplate } from '../util/value_template';
 
 export class Device extends ConnectionModel implements IDevice {

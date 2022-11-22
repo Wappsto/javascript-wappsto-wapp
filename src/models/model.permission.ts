@@ -81,8 +81,11 @@ export class PermissionModel extends OntologyModel {
         });
     }
 
-    private static convertFromFetch(endpoint: string, data: Record<string, any>[]) {
-       if (data.length === 1 && data[0]?.meta?.type === 'fetch') {
+    private static convertFromFetch(
+        endpoint: string,
+        data: Record<string, any>[]
+    ) {
+        if (data.length === 1 && data[0]?.meta?.type === 'fetch') {
             const arr = endpoint.split('/');
             if (arr.length) {
                 const service = arr[arr.length - 1];
@@ -130,7 +133,7 @@ export class PermissionModel extends OntologyModel {
                 printDebug(`Requesting new access to users data: ${message}`);
             } else {
                 const data = PermissionModel.convertFromFetch(endpoint, result);
-                if(quantity === 'all' || data.length >= quantity) {
+                if (quantity === 'all' || data.length >= quantity) {
                     printDebug(
                         `Found permission notification - returning old result: ${toString(
                             result
@@ -181,7 +184,10 @@ export class PermissionModel extends OntologyModel {
                             params: newParams,
                             body: body,
                         });
-                        const data = PermissionModel.convertFromFetch(endpoint, result);
+                        const data = PermissionModel.convertFromFetch(
+                            endpoint,
+                            result
+                        );
                         resolve(data);
                         return true;
                     }
