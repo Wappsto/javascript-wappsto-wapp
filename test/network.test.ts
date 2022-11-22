@@ -1096,7 +1096,7 @@ describe('network', () => {
         });
 
         const networks = await Network.findByFilter({
-            value: { type: 'energy' },
+            value: { type: 'energy', number: { max: 1 } },
         });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
@@ -1105,8 +1105,10 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.1/network',
             {
-                filter: { attribute: ['value_type=energy'] },
-                return: '{network  { meta{id version} name description device  { meta{id version} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}}}',
+                filter: {
+                    attribute: ['value_type=energy', 'value_number.max=1'],
+                },
+                return: '{network  { meta{id version} name description device  { meta{id version} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy","this_number.max=1"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}}}',
             },
             {
                 params: {

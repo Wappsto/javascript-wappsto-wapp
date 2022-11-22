@@ -24,16 +24,13 @@ export class State extends StreamModel implements IState {
 
     public static getFilter(filter?: Filter): string[] {
         State.validate('getFilter', [filter]);
-        return convertFilterToJson('state', State.attributes, filter?.state);
+        return convertFilterToJson('state', State.attributes);
     }
 
     public static getFilterResult(filter?: Filter): string {
         State.validate('getFilterResult', [filter]);
         const fields = [Model.getFilterResult()].concat(State.attributes);
-        const strFilter = convertFilterToString(
-            State.attributes,
-            filter?.state
-        );
+        const strFilter = convertFilterToString(State.attributes);
 
         return `state ${strFilter} { ${fields.join(' ')} }`;
     }

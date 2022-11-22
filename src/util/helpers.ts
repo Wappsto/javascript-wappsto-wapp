@@ -109,36 +109,48 @@ export function compareDates(
     return d1 >= d2;
 }
 
+function attributesToFilter(
+    type: string,
+    filter: Record<string, any>,
+    attributes: string[]
+) {
+    const strFilter: string[] = [];
+    attributes.forEach((att) => {
+        if (att in filter) {
+            if (typeof filter[att] === 'object') {
+                for (const [k, v] of Object.entries(filter[att])) {
+                    strFilter.push(`${type}_${att}.${k}=${v}`);
+                }
+            } else {
+                strFilter.push(`${type}_${att}=${filter[att]}`);
+            }
+        }
+    });
+    return strFilter;
+}
+
 export function convertFilterToJson(
     type: string,
     attributes: string[],
     filter?: Record<string, any>
 ): string[] {
-    const strFilter: string[] = [];
-    if (filter) {
-        attributes.forEach((att) => {
-            if (att in filter) {
-                strFilter.push(`${type}_${att}=${filter[att]}`);
-            }
-        });
+    if (!filter) {
+        return [];
     }
-    return strFilter;
+    return attributesToFilter(type, filter, attributes);
 }
 
 export function convertFilterToString(
     attributes: string[],
     filter?: Record<string, any>
 ): string {
-    const strFilter: string[] = [];
     if (filter) {
-        attributes.forEach((att) => {
-            if (att in filter) {
-                strFilter.push(`"this_${att}=${filter[att]}"`);
-            }
-        });
-    }
-    if (strFilter.length) {
-        return `(attribute: [${strFilter.join(',')}])`;
+        const strFilter = attributesToFilter('this', filter, attributes);
+        if (strFilter.length) {
+            return `(attribute: [${strFilter
+                .map((str) => `"${str}"`)
+                .join(',')}])`;
+        }
     }
     return '';
 }

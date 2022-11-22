@@ -17,6 +17,7 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     -   [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
     -   [Reporting events for value](#reporting-events-for-value)
     -   [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
+    	- 	[Using filters to request access to an exsisting object from the user](#using-filters-to-request-access-to-an-exsisting-object-from-the-user)
     -   [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
     -   [Retrive object by ID](#retrive-object-by-id)
     -   [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
@@ -292,6 +293,71 @@ let oneValue = await Wappsto.Value.findByType('Type name');
 let multipleValues = await Wappsto.Value.findByType('Type name', 3);
 let allValues = await Wappsto.Value.findAllByType('Type name');
 ```
+
+#### Using filters to request access to an exsisting object from the user
+
+It is also possible to use more advanced filters to get more control
+over the specific objects that are requested. It is possible to
+combine any keys in the filter, to narrow down the returned objects. A
+filter have 3 main entry points `network`, `device` and `value`. You
+can see the posible filters below.
+
+```javascript
+const filter = {
+	network: {
+		name: '',
+		description: ''
+	},
+	device: {
+		name: '',
+	    product: '',
+	    serial: '',
+	    description: '',
+	    protocol: '',
+	    communication: '',
+	    version: '',
+	    manufacturer: ''
+	},
+	value: {
+		name: '',
+    	permission: '',
+    	type: '',
+    	description: ''
+    	period: '',
+    	delta: '',
+    	number: {
+    		min: '',
+		    max: '',
+		    step: '',
+		    unit: '',
+		    si_conversion: ''
+		},
+		string: {
+			max: '',
+		    encoding: '',
+		},
+		blob: {
+			max: '',
+		    encoding: '',
+		},
+		xml: {
+			xsd: '',
+    		namespace: ''
+		}
+	}
+}
+```
+
+When you have defined the filter, you can use it in the function
+`findByFilter` and `findAllByFilter` on `Network`, `Device` and
+`Value`.
+
+```javascript
+let oneValue = await Wappsto.Value.findByFilter({value: { type: 'energy' }});
+let multipleValues = await Wappsto.Value.findByFilter({value: { type: 'energy' }}, 3);
+let allValues = await Wappsto.Value.findAllByFilter({value: { type: 'energy' }});
+```
+
 
 ### To find a child from an exsisting object
 
@@ -620,7 +686,7 @@ await Wappsto.sendSMS('Simple SMS from your Wapp');
 ### Ontology
 
 To build a relationship graph of your data, you need to define the
-ontology. 
+ontology.
 
 To add a relationship between two objects, you call `createEdge` with
 the relationship that you want to define.
@@ -641,7 +707,7 @@ const fullEdge = await startNode.createEdge({
 });
 ```
 
-If you need a virtual object to create an edge to or from, you can 
+If you need a virtual object to create an edge to or from, you can
 create a new node. To create a node in the graph, you call the `createNode`
 function.
 
@@ -673,7 +739,7 @@ To load all the ontology edges from an object, you can call `getAllEdges`.
 const edges = await node.getAllEdges();
 ```
 
-The edges are only loaded once, so if you need to refresh the edges from 
+The edges are only loaded once, so if you need to refresh the edges from
 the backend, you need to force an update by calling `getAllEdges` with true.
 
 ```javascript

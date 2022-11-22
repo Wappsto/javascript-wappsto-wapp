@@ -556,5 +556,4 @@ export interface Filter {
     network?: Record<string, any>;
     device?: Record<string, any>;
     value?: Record<string, any>;
-    state?: Record<string, any>;
 }
