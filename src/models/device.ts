@@ -169,8 +169,6 @@ export class Device extends ConnectionModel implements IDevice {
     }
 
     private async _createValue(params: ValueType): Promise<Value> {
-        let oldDelta;
-        let oldPeriod = 0;
         let oldType;
 
         let value = new Value();
@@ -178,12 +176,6 @@ export class Device extends ConnectionModel implements IDevice {
         if (values.length !== 0) {
             printDebug(`Using existing value with id ${values[0].id()}`);
             value = values[0];
-            oldDelta = params.delta;
-            params.delta = value.delta;
-            if (params.period) {
-                oldPeriod = Number(params.period);
-            }
-            params.period = value.period;
             oldType = value.getValueType();
         }
 
@@ -197,11 +189,8 @@ export class Device extends ConnectionModel implements IDevice {
         value.parse(params);
         const newJson = value.toJSON();
 
-        if (value.delta === undefined) {
-            value.delta = oldDelta;
-        }
         if (value.period === undefined) {
-            value.period = oldPeriod.toString();
+            value.period = '0';
         }
 
         value.parent = this;
