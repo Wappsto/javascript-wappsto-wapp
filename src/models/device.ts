@@ -176,6 +176,7 @@ export class Device extends ConnectionModel implements IDevice {
         if (values.length !== 0) {
             printDebug(`Using existing value with id ${values[0].id()}`);
             value = values[0];
+
             oldType = value.getValueType();
         }
 
@@ -228,14 +229,14 @@ export class Device extends ConnectionModel implements IDevice {
         valueTemplate: ValueType,
         period: number | string = 0,
         delta: number | 'inf' = 0,
-        disableLog = false
+        disableLog?: boolean
     ): Promise<Value> {
         this.validate('createValue', arguments);
 
         valueTemplate.name = name;
         valueTemplate.permission = permission;
         valueTemplate.period = period;
-        valueTemplate.delta = delta.toString();
+        valueTemplate.delta = delta?.toString();
         valueTemplate.disableLog = disableLog;
 
         return this._createValue(valueTemplate);

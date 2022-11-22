@@ -1547,4 +1547,30 @@ describe('device', () => {
 
         expect(networks.length).toEqual(22);
     });
+
+    it('can change the period and delta from createValue', async () => {
+        templateHelperStart();
+        const d = new Device();
+        d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
+
+        let value = await d.createValue(
+            'ChangePeriodAndDelta',
+            'rw',
+            ValueTemplate.NUMBER,
+            '10',
+            10
+        );
+        templateHelperDone();
+
+        value = await d.createValue(
+            'ChangePeriodAndDelta',
+            'rw',
+            ValueTemplate.NUMBER,
+            20,
+            20
+        );
+
+        expect(value.delta).toBe('20');
+        expect(value.period).toBe(20);
+    });
 });
