@@ -3,6 +3,7 @@ import { IEventLog, EventLogLevel } from '../util/interfaces';
 
 export class EventLog extends Model implements IEventLog {
     static endpoint = '/2.1/eventlog';
+    static attributes = ['message', 'level', 'info', 'type'];
     message = '';
     level: EventLogLevel = 'info';
     info?: Record<string, any>;
@@ -13,7 +14,7 @@ export class EventLog extends Model implements IEventLog {
         super('eventlog');
     }
 
-    attributes(): string[] {
-        return ['message', 'level', 'info', 'type'];
+    getAttributes(): string[] {
+        return EventLog.attributes;
     }
 }

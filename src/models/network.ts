@@ -6,7 +6,12 @@ import { Model } from './model';
 import { Device } from './device';
 import { Value } from './value';
 import { printDebug } from '../util/debug';
-import { IModel, INetwork, IDevice } from '../util/interfaces';
+import {
+    generateFilterRequest,
+    convertFilterToJson,
+    convertFilterToString,
+} from '../util/helpers';
+import { IModel, INetwork, IDevice, Filter } from '../util/interfaces';
 
 export async function createNetwork(params: INetwork): Promise<Network> {
     Model.validateMethod('Network', 'createNetwork', arguments);
@@ -28,6 +33,7 @@ export async function createNetwork(params: INetwork): Promise<Network> {
 
 export class Network extends ConnectionModel implements INetwork {
     static endpoint = '/2.1/network';
+    static attributes = ['name', 'description'];
     name: string;
     description?: string;
     @Type(() => Device)
@@ -43,8 +49,33 @@ export class Network extends ConnectionModel implements INetwork {
         this.name = name || '';
     }
 
-    attributes(): string[] {
-        return ['name', 'description'];
+    getAttributes(): string[] {
+        return Network.attributes;
+    }
+
+    public static getFilter(filter?: Filter): string[] {
+        Network.validate('getFilter', [filter]);
+        return convertFilterToJson(
+            'network',
+            Network.attributes,
+            filter?.network
+        ).concat(Device.getFilter(filter));
+    }
+
+    public static getFilterResult(filter?: Filter): string {
+        Network.validate('getFilterResult', [filter]);
+        const fields = [Model.getFilterResult()]
+            .concat(Network.attributes)
+            .join(' ');
+
+        const strFilter = convertFilterToString(
+            Network.attributes,
+            filter?.network
+        );
+
+        return `network ${strFilter} { ${fields} ${Device.getFilterResult(
+            filter
+        )}}`;
     }
 
     public addChildrenToStore(): void {
@@ -204,7 +235,8 @@ export class Network extends ConnectionModel implements INetwork {
     static find = async (
         params: Record<string, any>,
         quantity: number | 'all' = 1,
-        usage = ''
+        usage = '',
+        filterRequest?: Record<string, any>
     ) => {
         Network.validate('find', [params, quantity, usage]);
         if (usage === '') {
@@ -214,15 +246,18 @@ export class Network extends ConnectionModel implements INetwork {
         const query: Record<string, any> = {
             expand: 3,
         };
-        for (const key in params) {
-            query[`this_${key}`] = `=${params[key]}`;
+        if (!filterRequest) {
+            for (const key in params) {
+                query[`this_${key}`] = `=${params[key]}`;
+            }
         }
 
         const data = await PermissionModel.request(
             Network.endpoint,
             quantity,
             usage,
-            query
+            query,
+            filterRequest
         );
 
         const networks = Network.fromArray(data);
@@ -231,7 +266,7 @@ export class Network extends ConnectionModel implements INetwork {
         networks.forEach((net, index) => {
             if (net.loadAllChildren) {
                 poms.push(net.loadAllChildren(null));
-            } else {
+            } else if (typeof net === 'string') {
                 poms.push(
                     new Promise<void>((resolve) => {
                         const id = net as unknown as string;
@@ -244,11 +279,13 @@ export class Network extends ConnectionModel implements INetwork {
             }
         });
         await Promise.all(poms);
+
         networks.forEach((network) => {
             if (network?.addChildrenToStore) {
                 network.addChildrenToStore();
             }
         });
+
         return networks;
     };
 
@@ -277,6 +314,27 @@ export class Network extends ConnectionModel implements INetwork {
             `Find network with id ${id}`
         );
         return networks[0];
+    };
+
+    static findByFilter = async (
+        filter: Filter,
+        quantity: number | 'all' = 1,
+        usage = ''
+    ) => {
+        Network.validate('findByFilter', [filter, quantity, usage]);
+        if (usage === '') {
+            usage = `Find ${quantity} network using filter`;
+        }
+        const filterRequest = generateFilterRequest(
+            Network.getFilter(filter),
+            Network.getFilterResult(filter)
+        );
+        return await Network.find({}, quantity, usage, filterRequest);
+    };
+
+    static findAllByFilter = async (filter: Filter, usage = '') => {
+        Network.validate('findAllByFilter', [filter, usage]);
+        return Network.findByFilter(filter, 'all', usage);
     };
 
     public static fetchById = async (id: string) => {

@@ -46,6 +46,7 @@ export function notify(
 
 export class SendNotification extends PermissionModel {
     static endpoint = '/2.1/notification';
+    static attributes = ['custom'];
     custom: any = { message: '', level: '', data: undefined };
 
     constructor(message: string, level?: EventLogLevel, data?: any) {
@@ -55,7 +56,7 @@ export class SendNotification extends PermissionModel {
         this.custom.data = data;
     }
 
-    attributes(): string[] {
-        return ['custom'];
+    getAttributes(): string[] {
+        return SendNotification.attributes;
     }
 }

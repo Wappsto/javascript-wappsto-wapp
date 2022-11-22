@@ -14,9 +14,13 @@ import {
     randomIntFromInterval,
     isPositiveInteger,
     compareDates,
+    generateFilterRequest,
+    convertFilterToJson,
+    convertFilterToString,
 } from '../util/helpers';
 import { printDebug } from '../util/debug';
 import {
+    Filter,
     Timestamp,
     IModel,
     IValueBase,
@@ -35,7 +39,18 @@ import {
 
 export class Value extends StreamModel implements IValueBase {
     static endpoint = '/2.1/value';
-
+    static attributes = [
+        'name',
+        'permission',
+        'type',
+        'period',
+        'delta',
+        'number',
+        'string',
+        'blob',
+        'xml',
+        'status',
+    ];
     name: string;
     description?: string;
     permission: ValuePermission = 'r';
@@ -75,19 +90,33 @@ export class Value extends StreamModel implements IValueBase {
         return this.state;
     }
 
-    attributes(): string[] {
-        return [
-            'name',
-            'permission',
-            'type',
-            'period',
-            'delta',
-            'number',
-            'string',
-            'blob',
-            'xml',
-            'status',
-        ];
+    getAttributes(): string[] {
+        return Value.attributes;
+    }
+
+    public static getFilter(filter?: Filter): string[] {
+        Value.validate('getFilter', [filter]);
+        return convertFilterToJson(
+            'value',
+            Value.attributes,
+            filter?.value
+        ).concat(State.getFilter(filter));
+    }
+
+    public static getFilterResult(filter?: Filter): string {
+        Value.validate('getFilterResult', [filter]);
+        const fields = [Model.getFilterResult()]
+            .concat(Value.attributes)
+            .join(' ');
+
+        const strFilter = convertFilterToString(
+            Value.attributes,
+            filter?.value
+        );
+
+        return `value ${strFilter} { ${fields} ${State.getFilterResult(
+            filter
+        )}}`;
     }
 
     public getValueType(): string {
@@ -647,7 +676,8 @@ export class Value extends StreamModel implements IValueBase {
     static find = async (
         params: Record<string, any>,
         quantity: number | 'all' = 1,
-        usage = ''
+        usage = '',
+        filterRequest?: Record<string, any>
     ) => {
         Value.validate('find', [params, quantity, usage]);
         if (usage === '') {
@@ -657,22 +687,40 @@ export class Value extends StreamModel implements IValueBase {
         const query: Record<string, any> = {
             expand: 1,
         };
-        for (const key in params) {
-            query[`this_${key}`] = `=${params[key]}`;
+        if (!filterRequest) {
+            for (const key in params) {
+                query[`this_${key}`] = `=${params[key]}`;
+            }
         }
 
         const data = await PermissionModel.request(
             Value.endpoint,
             quantity,
             usage,
-            query
+            query,
+            filterRequest
         );
+
         const values = Value.fromArray(data);
         const poms: any[] = [];
-        values.forEach((val) => {
-            poms.push(val.loadAllChildren(null));
+
+        values.forEach((val, index) => {
+            if (val.loadAllChildren) {
+                poms.push(val.loadAllChildren(null));
+            } else if (typeof val === 'string') {
+                poms.push(
+                    new Promise<void>((resolve) => {
+                        const id = val as unknown as string;
+                        Value.fetchById(id).then((value) => {
+                            values[index] = value;
+                            resolve();
+                        });
+                    })
+                );
+            }
         });
         await Promise.all(poms);
+
         values.forEach((value) => {
             if (value?.addChildrenToStore) {
                 value.addChildrenToStore();
@@ -723,6 +771,27 @@ export class Value extends StreamModel implements IValueBase {
             `Find value with id ${id}`
         );
         return values[0];
+    };
+
+    static findByFilter = async (
+        filter: Filter,
+        quantity: number | 'all' = 1,
+        usage = ''
+    ) => {
+        Value.validate('findByFilter', [filter, quantity, usage]);
+        if (usage === '') {
+            usage = `Find ${quantity} value using filter`;
+        }
+        const filterRequest = generateFilterRequest(
+            Value.getFilter(filter),
+            Value.getFilterResult(filter)
+        );
+        return await Value.find({}, quantity, usage, filterRequest);
+    };
+
+    static findAllByFilter = async (filter: Filter, usage = '') => {
+        Value.validate('findAllByFilter', [filter, usage]);
+        return Value.findByFilter(filter, 'all', usage);
     };
 
     private static validate(name: string, params: any): void {

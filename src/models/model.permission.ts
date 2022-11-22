@@ -81,17 +81,30 @@ export class PermissionModel extends OntologyModel {
         });
     }
 
+    private static convertFromFetch(endpoint: string, data: Record<string, any>[]) {
+       if (data.length === 1 && data[0]?.meta?.type === 'fetch') {
+            const arr = endpoint.split('/');
+            if (arr.length) {
+                const service = arr[arr.length - 1];
+                data = data[0].data[service];
+            }
+        }
+        return data;
+    }
+
     public static request(
         endpoint: string,
         quantity: number | 'all',
         message: string,
-        params?: Record<string, any>
+        params?: Record<string, any>,
+        body?: Record<string, any>
     ): Promise<Record<string, any>[]> {
         Model.validateMethod('PermissionModel', 'request', [
             endpoint,
             quantity,
             message,
             params,
+            body,
         ]);
         return new Promise<Record<string, any>[]>(async (resolve) => {
             const newParams = params || {};
@@ -107,18 +120,29 @@ export class PermissionModel extends OntologyModel {
                 identifier: id,
                 method: ['retrieve', 'update'],
             });
-            const result = await Model.fetch({ endpoint, params: newParams });
+            const result = await Model.fetch({
+                endpoint,
+                params: newParams,
+                body: body,
+            });
 
             if (result.length === 0) {
                 printDebug(`Requesting new access to users data: ${message}`);
             } else {
-                printDebug(
-                    `Found permission notification - returning old result: ${toString(
-                        result
-                    )}`
-                );
-                resolve(result);
-                return;
+                const data = PermissionModel.convertFromFetch(endpoint, result);
+                if(quantity === 'all' || data.length >= quantity) {
+                    printDebug(
+                        `Found permission notification - returning old result: ${toString(
+                            result
+                        )}`
+                    );
+                    if (quantity === 'all') {
+                        resolve(data);
+                    } else {
+                        resolve(data.slice(0, quantity));
+                    }
+                    return;
+                }
             }
 
             printDebug(
@@ -155,8 +179,10 @@ export class PermissionModel extends OntologyModel {
                         const result = await Model.fetch({
                             endpoint,
                             params: newParams,
+                            body: body,
                         });
-                        resolve(result);
+                        const data = PermissionModel.convertFromFetch(endpoint, result);
+                        resolve(data);
                         return true;
                     }
                 }

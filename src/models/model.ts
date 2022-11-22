@@ -8,7 +8,7 @@ import { printHttpError } from '../util/http_wrapper';
 import { printError } from '../util/debug';
 import { _config } from '../util/config';
 import { getTraceId } from '../util/trace';
-import { IMeta, IModel, FetchRequest } from '../util/interfaces';
+import { IMeta, IModel, FetchRequest, Filter } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { addModel } from '../util/modelStore';
 import { createCheckers } from 'ts-interface-checker';
@@ -17,6 +17,7 @@ export class Model implements IModel {
     meta: IMeta = { version: '2.1' };
     parent?: IModel;
     expand: number;
+    attributes: string[] = [];
     static checker = createCheckers(interfaceTI);
 
     constructor(type: string, expand = 0, version = '2.1') {
@@ -57,7 +58,7 @@ export class Model implements IModel {
     public removeChild(_: IModel): void {}
 
     /* istanbul ignore next */
-    public attributes(): string[] {
+    public getAttributes(): string[] {
         return [];
     }
 
@@ -75,6 +76,10 @@ export class Model implements IModel {
 
     /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     public restore(): void {}
+
+    public static getFilterResult(filter?: Filter): string {
+        return 'meta{id version}';
+    }
 
     protected validate(name: string, params: any): void {
         Model.validateMethod(this.getType(), name, params);
@@ -206,7 +211,7 @@ export class Model implements IModel {
             json = json[0];
         }
         const oldModel = this.toJSON();
-        Object.assign(this, pick(json, this.attributes().concat(['meta'])));
+        Object.assign(this, pick(json, this.getAttributes().concat(['meta'])));
         const newModel = this.toJSON();
 
         addModel(this);
@@ -227,7 +232,7 @@ export class Model implements IModel {
 
         return Object.assign(
             { meta: meta },
-            this.removeUndefined(pick(this, this.attributes()))
+            this.removeUndefined(pick(this, this.getAttributes()))
         );
     }
 
@@ -240,10 +245,20 @@ export class Model implements IModel {
             const query = Model.generateOptions(
                 Object.assign(
                     params.params || {},
-                    params.go_internal === false ? {} : { go_internal: true }
+                    params.go_internal === false ? {} : { go_internal: true },
+                    params.body !== undefined ? { fetch: true } : {}
                 )
             );
-            const response = await wappsto.get(params.endpoint, query);
+            let response;
+            if (params.body) {
+                response = await wappsto.post(
+                    params.endpoint,
+                    params.body,
+                    query
+                );
+            } else {
+                response = await wappsto.get(params.endpoint, query);
+            }
 
             if (response.data) {
                 if (Array.isArray(response.data)) {
@@ -266,7 +281,7 @@ export class Model implements IModel {
         json: Record<string, any>[],
         parent?: IModel
     ): T[] {
-        const obj = plainToClass(this, json);
+        const obj = plainToClass(this, json) || [];
         obj.forEach((o: T) => {
             if (o && typeof o !== 'string') {
                 const o2 = o as unknown as IModel;

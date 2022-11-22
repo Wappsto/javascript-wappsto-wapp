@@ -10,10 +10,15 @@ fs.readdir(directoryPath, function (err, files) {
         return console.log('Unable to scan directory: ' + err);
     }
     files.forEach(function (file) {
-        data[file.split('.')[0]] = fs.readFileSync(
+        const jsonString = fs.readFileSync(
             path.join(directoryPath, file),
             'utf8'
         );
+        try {
+            data[file.split('.')[0]] = JSON.parse(jsonString);
+        } catch (e) {
+            console.log('Loading test json', e);
+        }
     });
 });
 

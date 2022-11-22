@@ -10,6 +10,7 @@ import { getModel } from '../util/modelStore';
 
 export class Ontology extends Model implements IOntologyEdge {
     static endpoint = '/2.1/ontology';
+    static attributes = ['name', 'description', 'relationship', 'data', 'to'];
     name?: string;
     description?: string;
     data?: any;
@@ -34,8 +35,8 @@ export class Ontology extends Model implements IOntologyEdge {
         }
     }
 
-    attributes(): string[] {
-        return ['name', 'description', 'relationship', 'data', 'to'];
+    getAttributes(): string[] {
+        return Ontology.attributes;
     }
 
     public toJSON(): Record<string, any> {

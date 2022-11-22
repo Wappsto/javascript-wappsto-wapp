@@ -6,6 +6,7 @@ import { Model } from './model';
 import { Value } from './value';
 import { printDebug } from '../util/debug';
 import {
+    Filter,
     IModel,
     IDevice,
     IValueBase,
@@ -16,10 +17,21 @@ import {
     ValueType,
     ValuePermission,
 } from '../util/interfaces';
+import { generateFilterRequest, convertFilterToJson, convertFilterToString } from '../util/helpers';
 import { ValueTemplate } from '../util/value_template';
 
 export class Device extends ConnectionModel implements IDevice {
     static endpoint = '/2.1/device';
+    static attributes = [
+        'name',
+        'product',
+        'serial',
+        'description',
+        'protocol',
+        'communication',
+        'version',
+        'manufacturer',
+    ];
     name: string;
     product?: string;
     serial?: string;
@@ -41,17 +53,31 @@ export class Device extends ConnectionModel implements IDevice {
         return this.value;
     }
 
-    attributes(): string[] {
-        return [
-            'name',
-            'product',
-            'serial',
-            'description',
-            'protocol',
-            'communication',
-            'version',
-            'manufacturer',
-        ];
+    getAttributes(): string[] {
+        return Device.attributes;
+    }
+
+    public static getFilter(filter?: Filter): string[] {
+        Device.validate('getFilter', [filter]);
+        return convertFilterToJson(
+            'device',
+            Device.attributes,
+            filter?.device
+        ).concat(Value.getFilter(filter));
+    }
+
+    public static getFilterResult(filter?: Filter): string {
+        Device.validate('getFilterResult', [filter]);
+        const fields = [Model.getFilterResult()].concat(Device.attributes);
+
+        const strFilter = convertFilterToString(
+            Device.attributes,
+            filter?.device
+        );
+
+        return `device ${strFilter} { ${fields.join(
+            ' '
+        )} ${Value.getFilterResult(filter)}}`;
     }
 
     public addChildrenToStore(): void {
@@ -319,7 +345,8 @@ export class Device extends ConnectionModel implements IDevice {
     public static find = async (
         params: Record<string, any>,
         quantity: number | 'all' = 1,
-        usage = ''
+        usage = '',
+        filterRequest?: Record<string, any>
     ) => {
         Device.validate('find', [params, quantity, usage]);
 
@@ -330,22 +357,40 @@ export class Device extends ConnectionModel implements IDevice {
         const query: Record<string, any> = {
             expand: 2,
         };
-        for (const key in params) {
-            query[`this_${key}`] = `=${params[key]}`;
+        if (!filterRequest) {
+            for (const key in params) {
+                query[`this_${key}`] = `=${params[key]}`;
+            }
         }
 
         const data = await PermissionModel.request(
             Device.endpoint,
             quantity,
             usage,
-            query
+            query,
+            filterRequest
         );
+
         const devices = Device.fromArray(data);
         const poms: any[] = [];
-        devices.forEach((dev) => {
-            poms.push(dev.loadAllChildren(null));
+
+        devices.forEach((dev, index) => {
+            if (dev.loadAllChildren) {
+                poms.push(dev.loadAllChildren(null));
+            } else if (typeof dev === 'string') {
+                poms.push(
+                    new Promise<void>((resolve) => {
+                        const id = dev as unknown as string;
+                        Device.fetchById(id).then((device) => {
+                            devices[index] = device;
+                            resolve();
+                        });
+                    })
+                );
+            }
         });
         await Promise.all(poms);
+
         devices.forEach((device) => {
             if (device?.addChildrenToStore) {
                 device.addChildrenToStore();
@@ -400,6 +445,27 @@ export class Device extends ConnectionModel implements IDevice {
             `Find device with id ${id}`
         );
         return devices[0];
+    };
+
+    static findByFilter = async (
+        filter: Filter,
+        quantity: number | 'all' = 1,
+        usage = ''
+    ) => {
+        Device.validate('findByFilter', [filter, quantity, usage]);
+        if (usage === '') {
+            usage = `Find ${quantity} device using filter`;
+        }
+        const filterRequest = generateFilterRequest(
+            Device.getFilter(filter),
+            Device.getFilterResult(filter)
+        );
+        return await Device.find({}, quantity, usage, filterRequest);
+    };
+
+    static findAllByFilter = async (filter: Filter, usage = '') => {
+        Device.validate('findAllByFilter', [filter, usage]);
+        return Device.findByFilter(filter, 'all', usage);
     };
 
     public static fetchById = async (id: string) => {

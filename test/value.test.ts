@@ -6,6 +6,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Device, Value, State, config, ValueTemplate } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
+import { responses } from './util/response';
 
 const response = {
     meta: {
@@ -252,7 +253,7 @@ describe('value', () => {
     });
 
     it('can find a value by name and extra parameters', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce({ data: [response, response] });
 
         const value = await Value.findByName('test', 2, 'msg');
 
@@ -1945,5 +1946,73 @@ describe('value', () => {
         });
         expect(value.toJSON).toBeDefined();
         expect(value.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+    });
+
+    it('can find using filter', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+            data: responses['fetch_value'],
+        });
+
+        const values = await Value.findByFilter({
+            value: { type: 'energy' },
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/value',
+            {
+                filter: { attribute: ['value_type=energy'] },
+                return: '{value (attribute: ["this_type=energy"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}',
+            },
+            {
+                params: {
+                    expand: 1,
+                    fetch: true,
+                    go_internal: true,
+                    identifier: 'value-1-Find 1 value using filter',
+                    message: 'Find 1 value using filter',
+                    method: ['retrieve', 'update'],
+                    quantity: 1,
+                },
+            }
+        );
+
+        expect(values.length).toEqual(1);
+    });
+
+    it('can find all using filter', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+            data: responses['fetch_value'],
+        });
+
+        const values = await Value.findAllByFilter({
+            value: { type: 'energy' },
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/value',
+            {
+                filter: { attribute: ['value_type=energy'] },
+                return: '{value (attribute: ["this_type=energy"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}',
+            },
+            {
+                params: {
+                    expand: 1,
+                    fetch: true,
+                    go_internal: true,
+                    identifier: 'value-all-Find all value using filter',
+                    message: 'Find all value using filter',
+                    method: ['retrieve', 'update'],
+                    quantity: 'all',
+                },
+            }
+        );
+
+        expect(values.length).toEqual(32);
     });
 });

@@ -12,6 +12,7 @@ interface IDataMeta {
 
 export class Data extends StreamModel {
     static endpoint = '/2.1/data';
+    static attributes = ['meta', 'data_meta', 'data'];
     data_meta: IDataMeta = {};
     data: any = {};
     oldKeys: Array<string> = [];
@@ -28,8 +29,8 @@ export class Data extends StreamModel {
         return Data.endpoint;
     }
 
-    attributes(): string[] {
-        return ['meta', 'data_meta', 'data'];
+    getAttributes(): string[] {
+        return Data.attributes;
     }
 
     set(name: string, item: any): void {
@@ -81,7 +82,7 @@ export class Data extends StreamModel {
         }
 
         const oldModel = this.toJSON();
-        Object.assign(this, pick(json, this.attributes()));
+        Object.assign(this, pick(json, this.getAttributes()));
 
         if (this.data_meta.version !== 1) {
             this.data_meta.version = 1;

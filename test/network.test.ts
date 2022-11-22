@@ -10,6 +10,7 @@ import {
     emptyResponse,
     fullNetworkResponse,
     fullNetworkResponseUpdated,
+    responses,
 } from './util/response';
 
 const responseOffline = {
@@ -1087,5 +1088,73 @@ describe('network', () => {
         expect(network.device[1].id()).toEqual(
             'b30f8960-a8bf-46c8-b0c8-d0a7659fd1c1'
         );
+    });
+
+    it('can find using filter', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+            data: responses['fetch_network'],
+        });
+
+        const networks = await Network.findByFilter({
+            value: { type: 'energy' },
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/network',
+            {
+                filter: { attribute: ['value_type=energy'] },
+                return: '{network  { meta{id version} name description device  { meta{id version} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}}}',
+            },
+            {
+                params: {
+                    expand: 3,
+                    fetch: true,
+                    go_internal: true,
+                    identifier: 'network-1-Find 1 network using filter',
+                    message: 'Find 1 network using filter',
+                    method: ['retrieve', 'update'],
+                    quantity: 1,
+                },
+            }
+        );
+
+        expect(networks.length).toEqual(1);
+    });
+
+    it('can find all using filter', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+            data: responses['fetch_network'],
+        });
+
+        const networks = await Network.findAllByFilter({
+            value: { type: 'energy' },
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/network',
+            {
+                filter: { attribute: ['value_type=energy'] },
+                return: '{network  { meta{id version} name description device  { meta{id version} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}}}',
+            },
+            {
+                params: {
+                    expand: 3,
+                    fetch: true,
+                    go_internal: true,
+                    identifier: 'network-all-Find all network using filter',
+                    message: 'Find all network using filter',
+                    method: ['retrieve', 'update'],
+                    quantity: 'all',
+                },
+            }
+        );
+
+        expect(networks.length).toEqual(11);
     });
 });

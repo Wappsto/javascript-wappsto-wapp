@@ -83,6 +83,7 @@ export interface IModelFunc {
 }
 
 export interface INetwork {
+    [key: string]: any;
     name: string;
     description?: string;
 }
@@ -98,20 +99,30 @@ export interface INetworkFunc {
     find(
         options: Record<string, any>,
         quantity: number | 'all',
-        usage: string
+        usage: string,
+        filter?: Record<string, any>
     ): Promise<INetwork[]>;
     findByName(
         name: string,
         quantity: number | 'all',
         usage: string
-    ): INetwork[];
-    findAllByName(name: string, usage: string): IDevice[];
-    findById(id: string): INetwork;
-    fetchById(id: string): INetwork;
-    fetchByName(name: string): IDevice;
+    ): Promise<INetwork[]>;
+    findAllByName(name: string, usage: string): Promise<INetwork[]>;
+    findById(id: string): Promise<INetwork>;
+    findByFilter(
+        filter: Filter,
+        quantity: number | 'all',
+        usage: string
+    ): Promise<INetwork[]>;
+    findAllByFilter(filter: Filter, usage: string): Promise<INetwork[]>;
+    fetchById(id: string): Promise<INetwork>;
+    fetchByName(name: string): Promise<IDevice>;
+    getFilter(filter?: Filter): string[];
+    getFilterResult(filter?: Filter): string;
 }
 
 export interface IDevice {
+    [key: string]: any;
     name: string;
     product?: string;
     serial?: string;
@@ -156,8 +167,16 @@ export interface IDeviceFunc {
     ): IDevice[];
     findAllByProduct(product: string, usage: string): IDevice[];
     findById(id: string): IDevice;
+    findByFilter(
+        filter: Filter,
+        quantity: number | 'all',
+        usage: string
+    ): Promise<IDevice[]>;
+    findAllByFilter(filter: Filter, usage: string): Promise<IDevice[]>;
     fetchById(id: string): IDevice;
     setConnectionStatus(state: boolean | number): Promise<boolean>;
+    getFilter(filter?: Filter): string[];
+    getFilterResult(filter?: Filter): string;
 }
 
 export interface IPermissionModelFunc {
@@ -165,7 +184,8 @@ export interface IPermissionModelFunc {
         endpoint: string,
         quantity: number | 'all',
         message: string,
-        options?: Record<string, any>
+        options?: Record<string, any>,
+        body?: Record<string, any>
     ): Promise<Record<string, any>[]>;
 }
 
@@ -253,18 +273,27 @@ export interface IValueFunc {
     findAllByName(name: string, usage: string): ValueType[];
     findAllByType(type: string, usage: string): ValueType[];
     findById(id: string): ValueType;
+    findByFilter(
+        filter: Filter,
+        quantity: number | 'all',
+        usage: string
+    ): Promise<ValueType[]>;
+    findAllByFilter(filter: Filter, usage: string): Promise<ValueType[]>;
     fetchById(id: string): ValueType;
     addEvent(
         level: EventLogLevel,
         message: string,
         info?: Record<string, any>
     ): Promise<IEventLog>;
+    getFilter(filter?: Filter): string[];
+    getFilterResult(filter?: Filter): string;
 }
 
 export type StateType = 'Report' | 'Control';
 export type StateStatus = 'Send' | 'Pending' | 'Failed';
 
 export interface IState {
+    [key: string]: any;
     type: StateType;
     status?: StateStatus;
     data?: string;
@@ -275,6 +304,8 @@ export interface IStateFunc {
     constructor(type?: StateType): IState;
     findById(id: string): IState;
     fetchById(id: string): IState;
+    getFilter(filter?: Filter): string[];
+    getFilterResult(filter?: Filter): string;
 }
 
 export type EventLogLevel =
@@ -519,4 +550,11 @@ export interface IMail {
     body: string;
     subject: string;
     from: string;
+}
+
+export interface Filter {
+    network?: Record<string, any>;
+    device?: Record<string, any>;
+    value?: Record<string, any>;
+    state?: Record<string, any>;
 }

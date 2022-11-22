@@ -1,0 +1,1405 @@
+{
+  "meta": {
+    "type": "fetch",
+    "version": "2.1"
+  },
+  "data": {
+    "network": [
+      {
+        "meta": {
+          "id": "31e23082-bb79-45a2-a328-a378859926cb",
+          "version": "2.1"
+        },
+        "name": "E-INFO",
+        "device": [
+          {
+            "communication": "WIFI",
+            "description": "E. Meter",
+            "manufacturer": "Seluxit A/S",
+            "meta": {
+              "id": "7a193748-5c27-45ee-38eb-c412f8a50cee",
+              "version": "2.1"
+            },
+            "name": "Meter",
+            "product": "",
+            "protocol": "JSONRPC over SSL",
+            "serial": "0000000005",
+            "version": "0.0.9",
+            "value": [
+              {
+                "meta": {
+                  "id": "e0d2db6d-ee7e-415e-8183-ca9409dc75ac",
+                  "version": "2.1"
+                },
+                "name": "Positive active energy (A+) total (1.8.0)",
+                "number": {
+                  "max": 1000000,
+                  "min": -1000000,
+                  "step": 0.0001,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "not_available",
+                    "meta": {
+                      "id": "9cafd6e4-a8f6-46f0-8431-945682d4ef47",
+                      "version": "2.1"
+                    },
+                    "timestamp": "not_available",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "meta": {
+                  "id": "4c1a13b9-aa5d-4da2-15d8-5429127577cf",
+                  "version": "2.1"
+                },
+                "name": "Negative active energy (A+) total (2.8.0)",
+                "number": {
+                  "max": 1000000,
+                  "min": -1000000,
+                  "step": 0.0001,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "not_available",
+                    "meta": {
+                      "id": "affebc04-3553-43ed-1e43-c61b0c6946a5",
+                      "version": "2.1"
+                    },
+                    "timestamp": "not_available",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "2a07f479-4638-4f64-812d-a8f83d41bc5a",
+          "version": "2.1"
+        },
+        "name": "E-INFO",
+        "device": [
+          {
+            "communication": "WIFI",
+            "description": "E. Meter",
+            "manufacturer": "Seluxit A/S",
+            "meta": {
+              "id": "015a2d83-abbf-4952-b312-49292dfd82fc",
+              "version": "2.1"
+            },
+            "name": "Meter",
+            "product": "",
+            "protocol": "JSONRPC over SSL",
+            "serial": "0000000002",
+            "version": "0.0.12",
+            "value": [
+              {
+                "meta": {
+                  "id": "2f3d5a3f-7cb5-4325-b708-f530475a5032",
+                  "version": "2.1"
+                },
+                "name": "Positive active energy (A+) total (1.8.0)",
+                "number": {
+                  "max": 1000000,
+                  "min": -1000000,
+                  "step": 0.0001,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "not_available",
+                    "meta": {
+                      "id": "a47fcbb3-4cb7-4567-85c6-c0ef8c0296d1",
+                      "version": "2.1"
+                    },
+                    "timestamp": "not_available",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "meta": {
+                  "id": "d6ed8b3f-46a6-4637-0aa4-f2eacbf20420",
+                  "version": "2.1"
+                },
+                "name": "Negative active energy (A+) total (2.8.0)",
+                "number": {
+                  "max": 1000000,
+                  "min": -1000000,
+                  "step": 0.0001,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "not_available",
+                    "meta": {
+                      "id": "908a688f-03ff-4871-0633-7c507cae2c8b",
+                      "version": "2.1"
+                    },
+                    "timestamp": "not_available",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "meta": {
+                  "id": "fba67bf8-4cff-45a5-a382-b0cd8ceddaf8",
+                  "version": "2.1"
+                },
+                "name": "Positive active energy (A+) in tariff T1 (1.8.1)",
+                "number": {
+                  "max": 1000000,
+                  "min": -1000000,
+                  "step": 0.0001,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "not_available",
+                    "meta": {
+                      "id": "b3691868-de17-4989-a550-f86206ae956f",
+                      "version": "2.1"
+                    },
+                    "timestamp": "not_available",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "meta": {
+                  "id": "65aa3462-aabd-4734-982d-594db4b39551",
+                  "version": "2.1"
+                },
+                "name": "Positive active energy (A+) in tariff T2 (1.8.2)",
+                "number": {
+                  "max": 1000000,
+                  "min": -1000000,
+                  "step": 0.0001,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "not_available",
+                    "meta": {
+                      "id": "40b51dd8-6fc4-4c5d-a50e-d0cbc8cdde63",
+                      "version": "2.1"
+                    },
+                    "timestamp": "not_available",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "c56d643d-e530-4d92-81ac-da5ff7d824bc",
+          "version": "2.1"
+        },
+        "name": "E-INFO",
+        "device": [
+          {
+            "communication": "WIFI",
+            "description": "E. Meter",
+            "manufacturer": "Seluxit A/S",
+            "meta": {
+              "id": "4880e76f-7424-4853-bfde-afd6993dd36a",
+              "version": "2.1"
+            },
+            "name": "Meter",
+            "product": "",
+            "protocol": "JSONRPC over SSL",
+            "serial": "0000000004",
+            "version": "0.0.12",
+            "value": [
+              {
+                "meta": {
+                  "id": "58a96487-6a63-46ba-99a6-d47b18b03114",
+                  "version": "2.1"
+                },
+                "name": "Positive active energy (A+) total (1.8.0)",
+                "number": {
+                  "max": 1000000,
+                  "min": -1000000,
+                  "step": 0.0001,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "not_available",
+                    "meta": {
+                      "id": "e0a65eab-8e85-4dbd-3cf3-cd881d371599",
+                      "version": "2.1"
+                    },
+                    "timestamp": "not_available",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "meta": {
+                  "id": "aad4d8c1-1737-4510-aaa9-fbd309195262",
+                  "version": "2.1"
+                },
+                "name": "Negative active energy (A+) total (2.8.0)",
+                "number": {
+                  "max": 1000000,
+                  "min": -1000000,
+                  "step": 0.0001,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "not_available",
+                    "meta": {
+                      "id": "45cf9c34-2fe3-47c3-3e53-c0d685ee3c55",
+                      "version": "2.1"
+                    },
+                    "timestamp": "not_available",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Location data added through Wappsto user interface.",
+            "manufacturer": "Wappsto",
+            "meta": {
+              "id": "bdd3dd8f-4b2f-45f3-9238-d27a99d27fac",
+              "version": "2.1"
+            },
+            "name": "Location",
+            "product": "Generic Location",
+            "version": "1.0.0",
+            "value": []
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "1b913afc-b2e9-4ca4-9427-7ef7919898e3",
+          "version": "2.1"
+        },
+        "name": "S0 Meter",
+        "device": [
+          {
+            "communication": "WIFI",
+            "description": "S0 Meter Reader",
+            "manufacturer": "Seluxit A/S",
+            "meta": {
+              "id": "302f9084-a5fd-4cfc-1719-7cfcff06f7e1",
+              "version": "2.1"
+            },
+            "name": "Meter",
+            "product": "",
+            "protocol": "JSONRPC over SSL",
+            "serial": "0000000001",
+            "version": "devel_7",
+            "value": [
+              {
+                "meta": {
+                  "id": "2c3faaf6-f437-421d-1c20-9a6ed7ee127d",
+                  "version": "2.1"
+                },
+                "name": "Total consumption",
+                "number": {
+                  "max": 1000000,
+                  "min": 0,
+                  "step": 0.1,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "1068.5",
+                    "meta": {
+                      "id": "dd0e6ddb-54a9-41dc-aeab-6f5298c80e09",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-22T08:22:29.461871Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "4ec279e3-d738-475f-ac53-15412fa47993",
+          "version": "2.1"
+        },
+        "name": "BLE Scanner",
+        "device": [
+          {
+            "communication": "WIFI",
+            "description": "",
+            "manufacturer": "Seluxit A/S",
+            "meta": {
+              "id": "e5a7f2c5-b2b0-47c3-0b83-1c066e5c6993",
+              "version": "2.1"
+            },
+            "name": "BLE Scanner",
+            "product": "",
+            "protocol": "JSONRPC over SSL",
+            "serial": "0000000001",
+            "version": "0.0.1",
+            "value": [
+              {
+                "delta": "0.100000",
+                "meta": {
+                  "id": "dfebaf67-8f20-43dd-061d-448dcf417233",
+                  "version": "2.1"
+                },
+                "name": "Total consumption",
+                "number": {
+                  "max": 1000000,
+                  "min": 0,
+                  "step": 0.1,
+                  "unit": "kWh"
+                },
+                "period": "0",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "not_available",
+                    "meta": {
+                      "id": "035369b2-2ec4-432f-9c20-651c29de5147",
+                      "version": "2.1"
+                    },
+                    "timestamp": "not_available",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "description": "Data ingestion via the 'data fetcher v0.0.1' wapp from Eloverblik.",
+        "meta": {
+          "id": "ab994454-c551-4804-a47f-b583b90a8ff4",
+          "version": "2.1"
+        },
+        "name": "Eloverblik",
+        "device": [
+          {
+            "description": "Data from energy meter.",
+            "manufacturer": "Eloverblik",
+            "meta": {
+              "id": "8e661e81-1f6d-4484-95e2-d71f27d4d261",
+              "version": "2.1"
+            },
+            "name": "Meter",
+            "product": "Data fetcher",
+            "serial": "571313104402682249",
+            "version": "0.0.1",
+            "value": [
+              {
+                "meta": {
+                  "id": "ea0d0009-a278-4685-979f-f0efb1c4a586",
+                  "version": "2.1"
+                },
+                "name": "Energy",
+                "number": {
+                  "max": 1e+18,
+                  "meaningful_zero": true,
+                  "min": -1e+17,
+                  "si_conversion": "[J] = 3600000 * [kWh]",
+                  "step": 0.1,
+                  "unit": "kWh"
+                },
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0.17",
+                    "meta": {
+                      "id": "a94f74aa-0128-4621-a1ee-ddcd1d8aa421",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2021-07-03T21:00:00.000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "c0b441a4-6800-46cc-8904-2ce145f4af20",
+          "version": "2.1"
+        },
+        "name": "Shelly",
+        "device": [
+          {
+            "communication": "WiFi",
+            "description": "Shelly Duo",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "82e8b626-aa1e-43a8-ba07-8fd6cb945779",
+              "version": "2.1"
+            },
+            "name": "GU10 1",
+            "product": "SHBDUO-1",
+            "protocol": "WAPP-JS",
+            "serial": "e8db84aa2a74",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "44d1e07b-7401-44af-b77b-457c33b5eafb",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "1h",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0.26666666666666666",
+                    "meta": {
+                      "id": "201790bc-e50f-42b2-ac58-92918cb98475",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-05-05T08:00:00.009000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly Color Bulb",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "b87ff375-c71c-43d5-a8f6-097653b12154",
+              "version": "2.1"
+            },
+            "name": "Color 1",
+            "product": "SHCB-1",
+            "protocol": "WAPP-JS",
+            "serial": "98cdac2ba147",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "fe2fe738-ee14-4078-9776-e81f0fe53741",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "1h",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0",
+                    "meta": {
+                      "id": "5eeeb4c5-6d3b-4d39-97e0-4902a5901347",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-05-05T08:00:00.009000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly  Button 2",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "90982f75-11a8-475e-ba7f-e7d44a1fb598",
+              "version": "2.1"
+            },
+            "name": "Button",
+            "product": "SHBTN-2",
+            "protocol": "WAPP-JS",
+            "serial": "98cdac2c2432",
+            "version": "1.0.0",
+            "value": []
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly Motion",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "5b24d041-bc9d-4d57-8e2a-a2ce8f10396d",
+              "version": "2.1"
+            },
+            "name": "Motion sensor",
+            "product": "SHMOS-01",
+            "protocol": "WAPP-JS",
+            "serial": "60a423d7f462",
+            "version": "1.0.0",
+            "value": []
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly H&T",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "1778751e-2024-491b-9b4b-65b59bc65ff8",
+              "version": "2.1"
+            },
+            "name": "HT",
+            "product": "SHHT-1",
+            "protocol": "WAPP-JS",
+            "serial": "02d89b",
+            "version": "1.0.0",
+            "value": []
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly Plug S",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "a090cc81-4049-4e71-bfc0-c1bbe89b6f1e",
+              "version": "2.1"
+            },
+            "name": "Desk socket",
+            "product": "SHPLG-S",
+            "protocol": "WAPP-JS",
+            "serial": "e868e76eda84",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "6829e42a-7ecc-4e2f-827f-138937bb7593",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "3600",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0",
+                    "meta": {
+                      "id": "6ea0a7cb-fa33-4ecd-9bef-df5f1a1c32e6",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-10-24T10:00:00.001000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly Plug S",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "4fb107fc-facb-4bda-8950-acf6e07901f2",
+              "version": "2.1"
+            },
+            "name": "Daniel's Annex heating from seluxit@gmail.com",
+            "product": "SHPLG-S",
+            "protocol": "WAPP-JS",
+            "serial": "6e83a6",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "c14bc58c-9197-4028-b45c-a8f21514b2f4",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "1h",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0",
+                    "meta": {
+                      "id": "f4b9ca4d-5c6f-4a5f-a822-d74c059f38a3",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-10-02T14:11:06.756000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly Door 2",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "dd54d565-b8fd-468d-829d-a0e7c00f5c04",
+              "version": "2.1"
+            },
+            "name": "EingangKontakt from smartgr@outlook.de",
+            "product": "SHDW-2",
+            "protocol": "WAPP-JS",
+            "serial": "6c466b",
+            "version": "1.0.0",
+            "value": []
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly EM",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "967ce598-330d-4a9a-8c02-0ab603485efa",
+              "version": "2.1"
+            },
+            "name": "EM",
+            "product": "SHEM",
+            "protocol": "WAPP-JS",
+            "serial": "c45bbe7824c5",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "840e10c4-28c7-48cb-b337-b5765b822d20",
+                  "version": "2.1"
+                },
+                "name": "Total energy 1",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "1h",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "35.3",
+                    "meta": {
+                      "id": "1258ee04-afb2-4044-896e-8b4afb74e6e6",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-05-05T08:00:00.009000Z",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "52595ac1-852a-4454-a93b-0f51f421950d",
+                  "version": "2.1"
+                },
+                "name": "Total returned energy 1",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "1h",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0",
+                    "meta": {
+                      "id": "68967df9-4656-4a04-aaf8-958e9b984f56",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-05-05T08:00:00.009000Z",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "e2825f67-3b69-4c1c-8206-f725ff9ddbe7",
+                  "version": "2.1"
+                },
+                "name": "Total energy 2",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "1h",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0",
+                    "meta": {
+                      "id": "a20ce5a5-b159-4ab2-8e7c-b39f6bc5dcc1",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-05-05T08:00:00.009000Z",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "b0d42b02-7412-468c-b468-ec8023024526",
+                  "version": "2.1"
+                },
+                "name": "Total returned energy 2",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "1h",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0",
+                    "meta": {
+                      "id": "89e836fb-5ffa-495b-8fe3-86bbb2f67997",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-05-05T08:00:00.009000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly 1PM",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "a48541d8-5926-46b9-986a-64cb23a21445",
+              "version": "2.1"
+            },
+            "name": "1PM",
+            "product": "SHSW-PM",
+            "protocol": "WAPP-JS",
+            "serial": "e89f6d84a5f8",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "d41317ce-0465-43bd-aa27-83ba24d742f3",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "3600",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0",
+                    "meta": {
+                      "id": "4f4d4514-baed-40cf-98d8-bf0d9b312514",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-02T14:51:57.736000Z",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "5959ea41-96cb-45df-93d0-f84bfe242f5b",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "3600",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0",
+                    "meta": {
+                      "id": "c9c9bd28-631c-4f21-b6d2-04852dc4a322",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-02T14:51:57.742000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly 1PM",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "4d323f88-41ac-4d5c-86d8-0f00817aea5a",
+              "version": "2.1"
+            },
+            "name": "1PM",
+            "product": "SHSW-PM",
+            "protocol": "WAPP-JS",
+            "serial": "e89f6d84a5f8",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "239e3292-7979-4a36-a104-122ed26798bf",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "3600",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0",
+                    "meta": {
+                      "id": "4cd5a977-2411-4b24-87b1-7176dcfc01a6",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-02T14:51:57.702000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "8eb97d13-5ad7-4f7a-a306-86aa73273e17",
+          "version": "2.1"
+        },
+        "name": "Coffee Analyze",
+        "device": [
+          {
+            "description": "This device has all the analyzed data from the coffee wapp",
+            "manufacturer": "Seluxit A/S",
+            "meta": {
+              "id": "a36f1706-fd2b-408d-acbe-73036d9c2c43",
+              "version": "2.1"
+            },
+            "name": "Coffee Analyze",
+            "product": "SLX Coffee Analyzer",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "0",
+                "meta": {
+                  "id": "6b85e022-56da-465c-acad-e14a0c86712d",
+                  "version": "2.1"
+                },
+                "name": "Start Energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.1,
+                  "unit": "Wh"
+                },
+                "period": "0",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "140361.433333333",
+                    "meta": {
+                      "id": "0be35e8a-ad62-404c-8c3e-0b4c8639cd16",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-22T00:16:14.183000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "e1421595-4237-47cb-a825-123b0ed39768",
+          "version": "2.1"
+        },
+        "name": "S0 Meter",
+        "device": [
+          {
+            "communication": "WIFI",
+            "description": "S0 Meter Reader",
+            "manufacturer": "Seluxit A/S",
+            "meta": {
+              "id": "ed2a6f08-21af-4415-8a52-6361c233887e",
+              "version": "2.1"
+            },
+            "name": "Meter",
+            "product": "",
+            "protocol": "JSONRPC over SSL",
+            "serial": "0000000deadbeef42",
+            "version": "0.1.0",
+            "value": [
+              {
+                "delta": "0.100000",
+                "meta": {
+                  "id": "1d59f37f-0a4a-4f66-0d4d-3529f55954ae",
+                  "version": "2.1"
+                },
+                "name": "Total consumption",
+                "number": {
+                  "max": 1000000,
+                  "min": 0,
+                  "step": 0.1,
+                  "unit": "kWh"
+                },
+                "period": "0",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0.0",
+                    "meta": {
+                      "id": "a646911b-3ed6-4094-10cf-7a45eacd6a1a",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-03T10:49:18.101504Z",
+                    "type": "Report"
+                  }
+                ]
+              },
+              {
+                "delta": "0.000000",
+                "meta": {
+                  "id": "e5d53b23-17a4-449d-336a-9207349e7325",
+                  "version": "2.1"
+                },
+                "name": "Load curve",
+                "number": {
+                  "max": 1000000,
+                  "min": 0,
+                  "step": 0.1,
+                  "unit": "kWh"
+                },
+                "period": "900",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "NA",
+                    "meta": {
+                      "id": "9bb16a90-1646-4d57-2caf-59b6c4d40867",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-03T10:49:18.104131Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "39d0470a-480c-49bc-8740-010c3317fea7",
+          "version": "2.1"
+        },
+        "name": "EMS Configurator",
+        "device": [
+          {
+            "communication": "wappsto",
+            "manufacturer": "Seluxit A/S",
+            "meta": {
+              "id": "eac18dcd-b3d6-480c-869d-01607300ee03",
+              "version": "2.1"
+            },
+            "name": "dfsgdfg",
+            "product": "EMS Room",
+            "protocol": "wappsto-wapp",
+            "serial": "EMS-3",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "0",
+                "meta": {
+                  "id": "beebef17-53e6-4c07-96fb-6b8236d12315",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.1,
+                  "unit": "Wh"
+                },
+                "period": "0",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "35.3",
+                    "meta": {
+                      "id": "23b0a56c-a84a-41d4-befa-a69033b95b3c",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-18T16:00:00.000000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "wappsto",
+            "manufacturer": "Seluxit A/S",
+            "meta": {
+              "id": "a48f07f7-8124-4f09-8887-9ad1cd98b8d7",
+              "version": "2.1"
+            },
+            "name": "aasd",
+            "product": "EMS Room",
+            "protocol": "wappsto-wapp",
+            "serial": "EMS-6",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "0",
+                "meta": {
+                  "id": "07a751f9-cbff-4045-bd76-17ada2544f66",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.1,
+                  "unit": "Wh"
+                },
+                "period": "0",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "",
+                    "meta": {
+                      "id": "59cde604-995c-422e-b43f-c11dc4101d5a",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-18T15:14:14.397000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "6d300174-4d86-4abb-b4c6-f231eca2f3ce",
+          "version": "2.1"
+        },
+        "name": "Shelly",
+        "device": [
+          {
+            "communication": "WiFi",
+            "description": "Shelly Plug S",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "92394d34-11ad-4bec-a301-0f6c9b4307dd",
+              "version": "2.1"
+            },
+            "name": "Coffee machine",
+            "product": "SHPLG-S",
+            "protocol": "WAPP-JS",
+            "serial": "881a68",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "afb16d89-29b7-4d2f-87c6-85445b8af52e",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "3600",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "140640.25",
+                    "meta": {
+                      "id": "de8fc959-29bf-4e57-9bfe-164ef6754a8b",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-22T08:22:30.119000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly Plug S",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "971a0a24-fff5-486c-bba3-d126f9728aea",
+              "version": "2.1"
+            },
+            "name": "Bar refrigerator",
+            "product": "SHPLG-S",
+            "protocol": "WAPP-JS",
+            "serial": "ef4673",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "57e7747b-4075-474f-9f44-e44a8785be34",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "3600",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "23204.383333333335",
+                    "meta": {
+                      "id": "f017db0f-773d-4f0f-a871-283d399df43f",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-22T08:00:00.022000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly Plug S",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "95bbecb8-e852-4597-96b4-0b26ecafda95",
+              "version": "2.1"
+            },
+            "name": "Printer socket",
+            "product": "SHPLG-S",
+            "protocol": "WAPP-JS",
+            "serial": "c1af7e",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "a5088517-f7a1-4786-9fc5-86610df37b3c",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "3600",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "17784.083333333332",
+                    "meta": {
+                      "id": "d5f0014a-0833-4ee6-8a90-1f5ce1910c22",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-22T08:00:00.022000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly Duo",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "ee094d48-0725-4467-b17f-3708c72ee702",
+              "version": "2.1"
+            },
+            "name": "Printer light",
+            "product": "SHBDUO-1",
+            "protocol": "WAPP-JS",
+            "serial": "e8db84aa62e7",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "868bf5bf-d320-4ef9-9e88-46d8a49d217e",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "3600",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "0.05",
+                    "meta": {
+                      "id": "b5c4a9e5-32ed-4db8-9150-927262a1ade1",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-22T08:00:00.022000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "communication": "WiFi",
+            "description": "Shelly Plug S",
+            "manufacturer": "Allterco",
+            "meta": {
+              "id": "a7c66193-16f5-424d-b474-87dfd04c995d",
+              "version": "2.1"
+            },
+            "name": "Soldering iron socket",
+            "product": "SHPLG-S",
+            "protocol": "WAPP-JS",
+            "serial": "bc72ff",
+            "version": "1.0.0",
+            "value": [
+              {
+                "delta": "50",
+                "meta": {
+                  "id": "f12f428a-8762-47ac-ac2f-1e766ef856e0",
+                  "version": "2.1"
+                },
+                "name": "Total energy",
+                "number": {
+                  "max": 100000,
+                  "min": 0,
+                  "step": 0.01,
+                  "unit": "Wh"
+                },
+                "period": "3600",
+                "permission": "r",
+                "type": "energy",
+                "state": [
+                  {
+                    "data": "29887.033333333333",
+                    "meta": {
+                      "id": "9dac4af2-1e7b-4525-ba15-e85be04ede50",
+                      "version": "2.1"
+                    },
+                    "timestamp": "2022-11-22T08:00:00.022000Z",
+                    "type": "Report"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

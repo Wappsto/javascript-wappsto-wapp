@@ -1,0 +1,888 @@
+{
+  "meta": {
+    "type": "fetch",
+    "version": "2.1"
+  },
+  "data": {
+    "value": [
+      {
+        "meta": {
+          "id": "e0d2db6d-ee7e-415e-8183-ca9409dc75ac",
+          "version": "2.1"
+        },
+        "name": "Positive active energy (A+) total (1.8.0)",
+        "number": {
+          "max": 1000000,
+          "min": -1000000,
+          "step": 0.0001,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "not_available",
+            "meta": {
+              "id": "9cafd6e4-a8f6-46f0-8431-945682d4ef47",
+              "version": "2.1"
+            },
+            "timestamp": "not_available",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "4c1a13b9-aa5d-4da2-15d8-5429127577cf",
+          "version": "2.1"
+        },
+        "name": "Negative active energy (A+) total (2.8.0)",
+        "number": {
+          "max": 1000000,
+          "min": -1000000,
+          "step": 0.0001,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "not_available",
+            "meta": {
+              "id": "affebc04-3553-43ed-1e43-c61b0c6946a5",
+              "version": "2.1"
+            },
+            "timestamp": "not_available",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "2f3d5a3f-7cb5-4325-b708-f530475a5032",
+          "version": "2.1"
+        },
+        "name": "Positive active energy (A+) total (1.8.0)",
+        "number": {
+          "max": 1000000,
+          "min": -1000000,
+          "step": 0.0001,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "not_available",
+            "meta": {
+              "id": "a47fcbb3-4cb7-4567-85c6-c0ef8c0296d1",
+              "version": "2.1"
+            },
+            "timestamp": "not_available",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "d6ed8b3f-46a6-4637-0aa4-f2eacbf20420",
+          "version": "2.1"
+        },
+        "name": "Negative active energy (A+) total (2.8.0)",
+        "number": {
+          "max": 1000000,
+          "min": -1000000,
+          "step": 0.0001,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "not_available",
+            "meta": {
+              "id": "908a688f-03ff-4871-0633-7c507cae2c8b",
+              "version": "2.1"
+            },
+            "timestamp": "not_available",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "fba67bf8-4cff-45a5-a382-b0cd8ceddaf8",
+          "version": "2.1"
+        },
+        "name": "Positive active energy (A+) in tariff T1 (1.8.1)",
+        "number": {
+          "max": 1000000,
+          "min": -1000000,
+          "step": 0.0001,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "not_available",
+            "meta": {
+              "id": "b3691868-de17-4989-a550-f86206ae956f",
+              "version": "2.1"
+            },
+            "timestamp": "not_available",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "65aa3462-aabd-4734-982d-594db4b39551",
+          "version": "2.1"
+        },
+        "name": "Positive active energy (A+) in tariff T2 (1.8.2)",
+        "number": {
+          "max": 1000000,
+          "min": -1000000,
+          "step": 0.0001,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "not_available",
+            "meta": {
+              "id": "40b51dd8-6fc4-4c5d-a50e-d0cbc8cdde63",
+              "version": "2.1"
+            },
+            "timestamp": "not_available",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "58a96487-6a63-46ba-99a6-d47b18b03114",
+          "version": "2.1"
+        },
+        "name": "Positive active energy (A+) total (1.8.0)",
+        "number": {
+          "max": 1000000,
+          "min": -1000000,
+          "step": 0.0001,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "not_available",
+            "meta": {
+              "id": "e0a65eab-8e85-4dbd-3cf3-cd881d371599",
+              "version": "2.1"
+            },
+            "timestamp": "not_available",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "aad4d8c1-1737-4510-aaa9-fbd309195262",
+          "version": "2.1"
+        },
+        "name": "Negative active energy (A+) total (2.8.0)",
+        "number": {
+          "max": 1000000,
+          "min": -1000000,
+          "step": 0.0001,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "not_available",
+            "meta": {
+              "id": "45cf9c34-2fe3-47c3-3e53-c0d685ee3c55",
+              "version": "2.1"
+            },
+            "timestamp": "not_available",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "2c3faaf6-f437-421d-1c20-9a6ed7ee127d",
+          "version": "2.1"
+        },
+        "name": "Total consumption",
+        "number": {
+          "max": 1000000,
+          "min": 0,
+          "step": 0.1,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "1079.2",
+            "meta": {
+              "id": "dd0e6ddb-54a9-41dc-aeab-6f5298c80e09",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-22T10:42:59.564924Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "0.100000",
+        "meta": {
+          "id": "dfebaf67-8f20-43dd-061d-448dcf417233",
+          "version": "2.1"
+        },
+        "name": "Total consumption",
+        "number": {
+          "max": 1000000,
+          "min": 0,
+          "step": 0.1,
+          "unit": "kWh"
+        },
+        "period": "0",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "not_available",
+            "meta": {
+              "id": "035369b2-2ec4-432f-9c20-651c29de5147",
+              "version": "2.1"
+            },
+            "timestamp": "not_available",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "meta": {
+          "id": "ea0d0009-a278-4685-979f-f0efb1c4a586",
+          "version": "2.1"
+        },
+        "name": "Energy",
+        "number": {
+          "max": 1e+18,
+          "meaningful_zero": true,
+          "min": -1e+17,
+          "si_conversion": "[J] = 3600000 * [kWh]",
+          "step": 0.1,
+          "unit": "kWh"
+        },
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0.17",
+            "meta": {
+              "id": "a94f74aa-0128-4621-a1ee-ddcd1d8aa421",
+              "version": "2.1"
+            },
+            "timestamp": "2021-07-03T21:00:00.000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "44d1e07b-7401-44af-b77b-457c33b5eafb",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "1h",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0.26666666666666666",
+            "meta": {
+              "id": "201790bc-e50f-42b2-ac58-92918cb98475",
+              "version": "2.1"
+            },
+            "timestamp": "2022-05-05T08:00:00.009000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "fe2fe738-ee14-4078-9776-e81f0fe53741",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "1h",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0",
+            "meta": {
+              "id": "5eeeb4c5-6d3b-4d39-97e0-4902a5901347",
+              "version": "2.1"
+            },
+            "timestamp": "2022-05-05T08:00:00.009000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "6829e42a-7ecc-4e2f-827f-138937bb7593",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "3600",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0",
+            "meta": {
+              "id": "6ea0a7cb-fa33-4ecd-9bef-df5f1a1c32e6",
+              "version": "2.1"
+            },
+            "timestamp": "2022-10-24T10:00:00.001000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "c14bc58c-9197-4028-b45c-a8f21514b2f4",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "1h",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0",
+            "meta": {
+              "id": "f4b9ca4d-5c6f-4a5f-a822-d74c059f38a3",
+              "version": "2.1"
+            },
+            "timestamp": "2022-10-02T14:11:06.756000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "840e10c4-28c7-48cb-b337-b5765b822d20",
+          "version": "2.1"
+        },
+        "name": "Total energy 1",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "1h",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "35.3",
+            "meta": {
+              "id": "1258ee04-afb2-4044-896e-8b4afb74e6e6",
+              "version": "2.1"
+            },
+            "timestamp": "2022-05-05T08:00:00.009000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "52595ac1-852a-4454-a93b-0f51f421950d",
+          "version": "2.1"
+        },
+        "name": "Total returned energy 1",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "1h",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0",
+            "meta": {
+              "id": "68967df9-4656-4a04-aaf8-958e9b984f56",
+              "version": "2.1"
+            },
+            "timestamp": "2022-05-05T08:00:00.009000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "e2825f67-3b69-4c1c-8206-f725ff9ddbe7",
+          "version": "2.1"
+        },
+        "name": "Total energy 2",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "1h",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0",
+            "meta": {
+              "id": "a20ce5a5-b159-4ab2-8e7c-b39f6bc5dcc1",
+              "version": "2.1"
+            },
+            "timestamp": "2022-05-05T08:00:00.009000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "b0d42b02-7412-468c-b468-ec8023024526",
+          "version": "2.1"
+        },
+        "name": "Total returned energy 2",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "1h",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0",
+            "meta": {
+              "id": "89e836fb-5ffa-495b-8fe3-86bbb2f67997",
+              "version": "2.1"
+            },
+            "timestamp": "2022-05-05T08:00:00.009000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "d41317ce-0465-43bd-aa27-83ba24d742f3",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "3600",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0",
+            "meta": {
+              "id": "4f4d4514-baed-40cf-98d8-bf0d9b312514",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-02T14:51:57.736000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "5959ea41-96cb-45df-93d0-f84bfe242f5b",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "3600",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0",
+            "meta": {
+              "id": "c9c9bd28-631c-4f21-b6d2-04852dc4a322",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-02T14:51:57.742000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "239e3292-7979-4a36-a104-122ed26798bf",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "3600",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0",
+            "meta": {
+              "id": "4cd5a977-2411-4b24-87b1-7176dcfc01a6",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-02T14:51:57.702000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "0",
+        "meta": {
+          "id": "6b85e022-56da-465c-acad-e14a0c86712d",
+          "version": "2.1"
+        },
+        "name": "Start Energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.1,
+          "unit": "Wh"
+        },
+        "period": "0",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "140361.433333333",
+            "meta": {
+              "id": "0be35e8a-ad62-404c-8c3e-0b4c8639cd16",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-22T00:16:14.183000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "0.100000",
+        "meta": {
+          "id": "1d59f37f-0a4a-4f66-0d4d-3529f55954ae",
+          "version": "2.1"
+        },
+        "name": "Total consumption",
+        "number": {
+          "max": 1000000,
+          "min": 0,
+          "step": 0.1,
+          "unit": "kWh"
+        },
+        "period": "0",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0.0",
+            "meta": {
+              "id": "a646911b-3ed6-4094-10cf-7a45eacd6a1a",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-03T10:49:18.101504Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "0.000000",
+        "meta": {
+          "id": "e5d53b23-17a4-449d-336a-9207349e7325",
+          "version": "2.1"
+        },
+        "name": "Load curve",
+        "number": {
+          "max": 1000000,
+          "min": 0,
+          "step": 0.1,
+          "unit": "kWh"
+        },
+        "period": "900",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "NA",
+            "meta": {
+              "id": "9bb16a90-1646-4d57-2caf-59b6c4d40867",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-03T10:49:18.104131Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "0",
+        "meta": {
+          "id": "beebef17-53e6-4c07-96fb-6b8236d12315",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.1,
+          "unit": "Wh"
+        },
+        "period": "0",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "35.3",
+            "meta": {
+              "id": "23b0a56c-a84a-41d4-befa-a69033b95b3c",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-18T16:00:00.000000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "0",
+        "meta": {
+          "id": "07a751f9-cbff-4045-bd76-17ada2544f66",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.1,
+          "unit": "Wh"
+        },
+        "period": "0",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "",
+            "meta": {
+              "id": "59cde604-995c-422e-b43f-c11dc4101d5a",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-18T15:14:14.397000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "afb16d89-29b7-4d2f-87c6-85445b8af52e",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "3600",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "140752.95",
+            "meta": {
+              "id": "de8fc959-29bf-4e57-9bfe-164ef6754a8b",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-22T10:00:00.012000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "57e7747b-4075-474f-9f44-e44a8785be34",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "3600",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "23204.383333333335",
+            "meta": {
+              "id": "f017db0f-773d-4f0f-a871-283d399df43f",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-22T10:00:00.012000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "a5088517-f7a1-4786-9fc5-86610df37b3c",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "3600",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "17784.083333333332",
+            "meta": {
+              "id": "d5f0014a-0833-4ee6-8a90-1f5ce1910c22",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-22T10:00:00.012000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "868bf5bf-d320-4ef9-9e88-46d8a49d217e",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "3600",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "0.05",
+            "meta": {
+              "id": "b5c4a9e5-32ed-4db8-9150-927262a1ade1",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-22T10:00:00.012000Z",
+            "type": "Report"
+          }
+        ]
+      },
+      {
+        "delta": "50",
+        "meta": {
+          "id": "f12f428a-8762-47ac-ac2f-1e766ef856e0",
+          "version": "2.1"
+        },
+        "name": "Total energy",
+        "number": {
+          "max": 100000,
+          "min": 0,
+          "step": 0.01,
+          "unit": "Wh"
+        },
+        "period": "3600",
+        "permission": "r",
+        "type": "energy",
+        "state": [
+          {
+            "data": "29894.533333333333",
+            "meta": {
+              "id": "9dac4af2-1e7b-4525-ba15-e85be04ede50",
+              "version": "2.1"
+            },
+            "timestamp": "2022-11-22T10:00:00.012000Z",
+            "type": "Report"
+          }
+        ]
+      }
+    ]
+  }
+}

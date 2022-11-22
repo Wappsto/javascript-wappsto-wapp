@@ -108,3 +108,44 @@ export function compareDates(
 
     return d1 >= d2;
 }
+
+export function convertFilterToJson(
+    type: string,
+    attributes: string[],
+    filter?: Record<string, any>
+): string[] {
+    const strFilter: string[] = [];
+    if (filter) {
+        attributes.forEach((att) => {
+            if (att in filter) {
+                strFilter.push(`${type}_${att}=${filter[att]}`);
+            }
+        });
+    }
+    return strFilter;
+}
+
+export function convertFilterToString(
+    attributes: string[],
+    filter?: Record<string, any>
+): string {
+    const strFilter: string[] = [];
+    if (filter) {
+        attributes.forEach((att) => {
+            if (att in filter) {
+                strFilter.push(`"this_${att}=${filter[att]}"`);
+            }
+        });
+    }
+    if (strFilter.length) {
+        return `(attribute: [${strFilter.join(',')}])`;
+    }
+    return '';
+}
+
+export function generateFilterRequest(
+    request: Record<string, any>,
+    result: string
+) {
+    return { filter: { attribute: request }, return: `{${result}}` };
+}

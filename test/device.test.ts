@@ -5,6 +5,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { Device, Value, ValueTemplate, config } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
+import { responses } from './util/response';
 
 describe('device', () => {
     let server: WS;
@@ -1463,5 +1464,73 @@ describe('device', () => {
             }),
             {}
         );
+    });
+
+    it('can find using filter', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+            data: responses['fetch_device'],
+        });
+
+        const networks = await Device.findByFilter({
+            value: { type: 'energy' },
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/device',
+            {
+                filter: { attribute: ['value_type=energy'] },
+                return: '{device  { meta{id version} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}}',
+            },
+            {
+                params: {
+                    expand: 2,
+                    fetch: true,
+                    go_internal: true,
+                    identifier: 'device-1-Find 1 device using filter',
+                    message: 'Find 1 device using filter',
+                    method: ['retrieve', 'update'],
+                    quantity: 1,
+                },
+            }
+        );
+
+        expect(networks.length).toEqual(1);
+    });
+
+    it('can find all using filter', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+            data: responses['fetch_device'],
+        });
+
+        const networks = await Device.findAllByFilter({
+            value: { type: 'energy' },
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/device',
+            {
+                filter: { attribute: ['value_type=energy'] },
+                return: '{device  { meta{id version} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}}',
+            },
+            {
+                params: {
+                    expand: 2,
+                    fetch: true,
+                    go_internal: true,
+                    identifier: 'device-all-Find all device using filter',
+                    message: 'Find all device using filter',
+                    method: ['retrieve', 'update'],
+                    quantity: 'all',
+                },
+            }
+        );
+
+        expect(networks.length).toEqual(22);
     });
 });
