@@ -328,7 +328,12 @@ export class Network extends ConnectionModel implements INetwork {
         quantity: number | 'all' = 1,
         usage = ''
     ) => {
-        Network.validate('findByFilter', [filter, omit_filter, quantity, usage]);
+        Network.validate('findByFilter', [
+            filter,
+            omit_filter,
+            quantity,
+            usage,
+        ]);
         if (usage === '') {
             usage = `Find ${quantity} network using filter`;
         }

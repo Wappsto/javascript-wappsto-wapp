@@ -353,11 +353,20 @@ When you have defined the filter, you can use it in the function
 `Value`.
 
 ```javascript
-let oneValue = await Wappsto.Value.findByFilter({value: { type: 'energy' }});
-let multipleValues = await Wappsto.Value.findByFilter({value: { type: 'energy' }}, 3);
-let allValues = await Wappsto.Value.findAllByFilter({value: { type: 'energy' }});
+const filter = { value: { type: 'energy' }};
+let oneValue = await Wappsto.Value.findByFilter(filter);
+let allValues = await Wappsto.Value.findAllByFilter(filter);
 ```
 
+It is also possible to use the filter to omit objects by giving a second filter to the `findByFilter` and `findAllByFilter`.
+
+```javascript
+const filter = { value: { type: 'energy' }};
+const omit_filter = { device: { name: 'Wrong' }};
+let oneValue = await Wappsto.Device.findByFilter(filter, omit_filter);
+let multipleValues = await Wappsto.Value.findByFilter(filter, omit_filter, 3);
+let allValues = await Wappsto.Value.findAllByFilter(filter, omit_filter);
+```
 
 ### To find a child from an exsisting object
 

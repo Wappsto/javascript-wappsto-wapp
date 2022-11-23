@@ -138,10 +138,14 @@ export function convertFilterToJson(
 ): string[] {
     let strFilter: string[] = [];
     if (filter) {
-        strFilter = strFilter.concat(attributesToFilter(type, '=', filter, attributes));
+        strFilter = strFilter.concat(
+            attributesToFilter(type, '=', filter, attributes)
+        );
     }
     if (omit_filter) {
-        strFilter = strFilter.concat(attributesToFilter(type, '!=', omit_filter, attributes));
+        strFilter = strFilter.concat(
+            attributesToFilter(type, '!=', omit_filter, attributes)
+        );
     }
     return strFilter;
 }
@@ -153,7 +157,9 @@ export function convertFilterToString(
 ): string {
     let strFilter: string[] = [];
     if (filter) {
-        strFilter = strFilter.concat(attributesToFilter('this', '=', filter, attributes));
+        strFilter = strFilter.concat(
+            attributesToFilter('this', '=', filter, attributes)
+        );
     }
     if (omit_filter) {
         strFilter = strFilter.concat(
