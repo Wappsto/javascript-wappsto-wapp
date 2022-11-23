@@ -94,29 +94,32 @@ export class Value extends StreamModel implements IValueBase {
         return Value.attributes;
     }
 
-    public static getFilter(filter?: Filter): string[] {
-        Value.validate('getFilter', [filter]);
+    public static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
+        Value.validate('getFilter', [filter, omit_filter]);
         return convertFilterToJson(
             'value',
             Value.attributes,
-            filter?.value
-        ).concat(State.getFilter(filter));
+            filter?.value,
+            omit_filter?.value
+        ).concat(State.getFilter());
     }
 
-    public static getFilterResult(filter?: Filter): string {
-        Value.validate('getFilterResult', [filter]);
+    public static getFilterResult(
+        filter?: Filter,
+        omit_filter?: Filter
+    ): string {
+        Value.validate('getFilterResult', [filter, omit_filter]);
         const fields = [Model.getFilterResult()]
             .concat(Value.attributes)
             .join(' ');
 
         const strFilter = convertFilterToString(
             Value.attributes,
-            filter?.value
+            filter?.value,
+            omit_filter?.value
         );
 
-        return `value ${strFilter} { ${fields} ${State.getFilterResult(
-            filter
-        )}}`;
+        return `value ${strFilter} { ${fields} ${State.getFilterResult()}}`;
     }
 
     public getValueType(): string {
@@ -775,23 +778,28 @@ export class Value extends StreamModel implements IValueBase {
 
     static findByFilter = async (
         filter: Filter,
+        omit_filter: Filter = {},
         quantity: number | 'all' = 1,
         usage = ''
     ) => {
-        Value.validate('findByFilter', [filter, quantity, usage]);
+        Value.validate('findByFilter', [filter, omit_filter, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value using filter`;
         }
         const filterRequest = generateFilterRequest(
-            Value.getFilter(filter),
-            Value.getFilterResult(filter)
+            Value.getFilter(filter, omit_filter),
+            Value.getFilterResult(filter, omit_filter)
         );
         return await Value.find({}, quantity, usage, filterRequest);
     };
 
-    static findAllByFilter = async (filter: Filter, usage = '') => {
-        Value.validate('findAllByFilter', [filter, usage]);
-        return Value.findByFilter(filter, 'all', usage);
+    static findAllByFilter = async (
+        filter: Filter,
+        omit_filter: Filter = {},
+        usage = ''
+    ) => {
+        Value.validate('findAllByFilter', [filter, omit_filter, usage]);
+        return Value.findByFilter(filter, omit_filter, 'all', usage);
     };
 
     private static validate(name: string, params: any): void {

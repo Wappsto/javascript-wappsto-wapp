@@ -111,6 +111,7 @@ export function compareDates(
 
 function attributesToFilter(
     type: string,
+    operator: string,
     filter: Record<string, any>,
     attributes: string[]
 ) {
@@ -119,10 +120,10 @@ function attributesToFilter(
         if (att in filter) {
             if (typeof filter[att] === 'object') {
                 for (const [k, v] of Object.entries(filter[att])) {
-                    strFilter.push(`${type}_${att}.${k}=${v}`);
+                    strFilter.push(`${type}_${att}.${k}${operator}${v}`);
                 }
             } else {
-                strFilter.push(`${type}_${att}=${filter[att]}`);
+                strFilter.push(`${type}_${att}${operator}${filter[att]}`);
             }
         }
     });
@@ -132,25 +133,35 @@ function attributesToFilter(
 export function convertFilterToJson(
     type: string,
     attributes: string[],
-    filter?: Record<string, any>
+    filter?: Record<string, any>,
+    omit_filter?: Record<string, any>
 ): string[] {
-    if (!filter) {
-        return [];
+    let strFilter: string[] = [];
+    if (filter) {
+        strFilter = strFilter.concat(attributesToFilter(type, '=', filter, attributes));
     }
-    return attributesToFilter(type, filter, attributes);
+    if (omit_filter) {
+        strFilter = strFilter.concat(attributesToFilter(type, '!=', omit_filter, attributes));
+    }
+    return strFilter;
 }
 
 export function convertFilterToString(
     attributes: string[],
-    filter?: Record<string, any>
+    filter?: Record<string, any>,
+    omit_filter?: Record<string, any>
 ): string {
+    let strFilter: string[] = [];
     if (filter) {
-        const strFilter = attributesToFilter('this', filter, attributes);
-        if (strFilter.length) {
-            return `(attribute: [${strFilter
-                .map((str) => `"${str}"`)
-                .join(',')}])`;
-        }
+        strFilter = strFilter.concat(attributesToFilter('this', '=', filter, attributes));
+    }
+    if (omit_filter) {
+        strFilter = strFilter.concat(
+            attributesToFilter('this', '!=', omit_filter, attributes)
+        );
+    }
+    if (strFilter.length > 0) {
+        return `(attribute: [${strFilter.map((str) => `"${str}"`).join(',')}])`;
     }
     return '';
 }

@@ -1,7 +1,7 @@
 import { Model } from './model';
 import { StreamModel } from './model.stream';
 import { convertFilterToJson, convertFilterToString } from '../util/helpers';
-import { IState, StateStatus, StateType, Filter } from '../util/interfaces';
+import { IState, StateStatus, StateType } from '../util/interfaces';
 
 export class State extends StreamModel implements IState {
     static endpoint = '/2.1/state';
@@ -22,13 +22,11 @@ export class State extends StreamModel implements IState {
         return State.attributes;
     }
 
-    public static getFilter(filter?: Filter): string[] {
-        State.validate('getFilter', [filter]);
+    public static getFilter(): string[] {
         return convertFilterToJson('state', State.attributes);
     }
 
-    public static getFilterResult(filter?: Filter): string {
-        State.validate('getFilterResult', [filter]);
+    public static getFilterResult(): string {
         const fields = [Model.getFilterResult()].concat(State.attributes);
         const strFilter = convertFilterToString(State.attributes);
 

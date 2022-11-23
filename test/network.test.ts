@@ -1159,4 +1159,38 @@ describe('network', () => {
 
         expect(networks.length).toEqual(11);
     });
+
+    it('can find all using omit filter', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+            data: responses['fetch_network'],
+        });
+
+        const networks = await Network.findAllByFilter({device: {name: 'test'}}, {
+            value: { type: 'energy' },
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/network',
+            {
+                filter: { attribute: ['device_name=test', 'value_type!=energy'] },
+                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_name=test"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type!=energy"]) { meta{id type version connection name_by_user} name permission type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+            },
+            {
+                params: {
+                    expand: 3,
+                    fetch: true,
+                    go_internal: true,
+                    identifier: 'network-all-Find all network using filter',
+                    message: 'Find all network using filter',
+                    method: ['retrieve', 'update'],
+                    quantity: 'all',
+                },
+            }
+        );
+
+        expect(networks.length).toEqual(11);
+    });
 });

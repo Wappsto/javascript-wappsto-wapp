@@ -61,27 +61,32 @@ export class Device extends ConnectionModel implements IDevice {
         return Device.attributes;
     }
 
-    public static getFilter(filter?: Filter): string[] {
-        Device.validate('getFilter', [filter]);
+    public static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
+        Device.validate('getFilter', [filter, omit_filter]);
         return convertFilterToJson(
             'device',
             Device.attributes,
-            filter?.device
-        ).concat(Value.getFilter(filter));
+            filter?.device,
+            omit_filter?.device
+        ).concat(Value.getFilter(filter, omit_filter));
     }
 
-    public static getFilterResult(filter?: Filter): string {
-        Device.validate('getFilterResult', [filter]);
+    public static getFilterResult(
+        filter?: Filter,
+        omit_filter?: Filter
+    ): string {
+        Device.validate('getFilterResult', [filter, omit_filter]);
         const fields = [Model.getFilterResult()].concat(Device.attributes);
 
         const strFilter = convertFilterToString(
             Device.attributes,
-            filter?.device
+            filter?.device,
+            omit_filter?.device
         );
 
         return `device ${strFilter} { ${fields.join(
             ' '
-        )} ${Value.getFilterResult(filter)}}`;
+        )} ${Value.getFilterResult(filter, omit_filter)}}`;
     }
 
     public addChildrenToStore(): void {
@@ -443,23 +448,28 @@ export class Device extends ConnectionModel implements IDevice {
 
     static findByFilter = async (
         filter: Filter,
+        omit_filter: Filter = {},
         quantity: number | 'all' = 1,
         usage = ''
     ) => {
-        Device.validate('findByFilter', [filter, quantity, usage]);
+        Device.validate('findByFilter', [filter, omit_filter, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} device using filter`;
         }
         const filterRequest = generateFilterRequest(
-            Device.getFilter(filter),
-            Device.getFilterResult(filter)
+            Device.getFilter(filter, omit_filter),
+            Device.getFilterResult(filter, omit_filter)
         );
         return await Device.find({}, quantity, usage, filterRequest);
     };
 
-    static findAllByFilter = async (filter: Filter, usage = '') => {
-        Device.validate('findAllByFilter', [filter, usage]);
-        return Device.findByFilter(filter, 'all', usage);
+    static findAllByFilter = async (
+        filter: Filter,
+        omit_filter: Filter = {},
+        usage = ''
+    ) => {
+        Device.validate('findAllByFilter', [filter, omit_filter, usage]);
+        return Device.findByFilter(filter, omit_filter, 'all', usage);
     };
 
     public static fetchById = async (id: string) => {

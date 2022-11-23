@@ -53,28 +53,34 @@ export class Network extends ConnectionModel implements INetwork {
         return Network.attributes;
     }
 
-    public static getFilter(filter?: Filter): string[] {
-        Network.validate('getFilter', [filter]);
+    public static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
+        Network.validate('getFilter', [filter, omit_filter]);
         return convertFilterToJson(
             'network',
             Network.attributes,
-            filter?.network
-        ).concat(Device.getFilter(filter));
+            filter?.network,
+            omit_filter?.network
+        ).concat(Device.getFilter(filter, omit_filter));
     }
 
-    public static getFilterResult(filter?: Filter): string {
-        Network.validate('getFilterResult', [filter]);
+    public static getFilterResult(
+        filter?: Filter,
+        omit_filter?: Filter
+    ): string {
+        Network.validate('getFilterResult', [filter, omit_filter]);
         const fields = [Model.getFilterResult()]
             .concat(Network.attributes)
             .join(' ');
 
         const strFilter = convertFilterToString(
             Network.attributes,
-            filter?.network
+            filter?.network,
+            omit_filter?.network
         );
 
         return `network ${strFilter} { ${fields} ${Device.getFilterResult(
-            filter
+            filter,
+            omit_filter
         )}}`;
     }
 
@@ -318,23 +324,28 @@ export class Network extends ConnectionModel implements INetwork {
 
     static findByFilter = async (
         filter: Filter,
+        omit_filter: Filter = {},
         quantity: number | 'all' = 1,
         usage = ''
     ) => {
-        Network.validate('findByFilter', [filter, quantity, usage]);
+        Network.validate('findByFilter', [filter, omit_filter, quantity, usage]);
         if (usage === '') {
             usage = `Find ${quantity} network using filter`;
         }
         const filterRequest = generateFilterRequest(
-            Network.getFilter(filter),
-            Network.getFilterResult(filter)
+            Network.getFilter(filter, omit_filter),
+            Network.getFilterResult(filter, omit_filter)
         );
         return await Network.find({}, quantity, usage, filterRequest);
     };
 
-    static findAllByFilter = async (filter: Filter, usage = '') => {
-        Network.validate('findAllByFilter', [filter, usage]);
-        return Network.findByFilter(filter, 'all', usage);
+    static findAllByFilter = async (
+        filter: Filter,
+        omit_filter: Filter = {},
+        usage = ''
+    ) => {
+        Network.validate('findAllByFilter', [filter, omit_filter, usage]);
+        return Network.findByFilter(filter, omit_filter, 'all', usage);
     };
 
     public static fetchById = async (id: string) => {

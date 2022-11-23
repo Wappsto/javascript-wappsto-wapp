@@ -109,7 +109,7 @@ export const INetworkFunc = t.iface([], {
         t.param('options', 'any'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string'),
-        t.param('filter', 'any', true)
+        t.param('filterRequest', 'any', true)
     ),
     findByName: t.func(
         t.array('INetwork'),
@@ -126,18 +126,28 @@ export const INetworkFunc = t.iface([], {
     findByFilter: t.func(
         t.array('INetwork'),
         t.param('filter', 'Filter'),
+        t.param('omit_filter', 'Filter'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string')
     ),
     findAllByFilter: t.func(
         t.array('INetwork'),
         t.param('filter', 'Filter'),
+        t.param('omit_filter', 'Filter'),
         t.param('usage', 'string')
     ),
     fetchById: t.func('INetwork', t.param('id', 'string')),
     fetchByName: t.func('IDevice', t.param('name', 'string')),
-    getFilter: t.func(t.array('string'), t.param('filter', 'Filter', true)),
-    getFilterResult: t.func('string', t.param('filter', 'Filter', true)),
+    getFilter: t.func(
+        t.array('string'),
+        t.param('filter', 'Filter', true),
+        t.param('omit_filter', 'Filter', true)
+    ),
+    getFilterResult: t.func(
+        'string',
+        t.param('filter', 'Filter', true),
+        t.param('omit_filter', 'Filter', true)
+    ),
 });
 
 export const IDevice = t.iface([], {
@@ -207,12 +217,14 @@ export const IDeviceFunc = t.iface([], {
     findByFilter: t.func(
         t.array('IDevice'),
         t.param('filter', 'Filter'),
+        t.param('omit_filter', 'Filter'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string')
     ),
     findAllByFilter: t.func(
         t.array('IDevice'),
         t.param('filter', 'Filter'),
+        t.param('omit_filter', 'Filter'),
         t.param('usage', 'string')
     ),
     fetchById: t.func('IDevice', t.param('id', 'string')),
@@ -373,12 +385,14 @@ export const IValueFunc = t.iface([], {
     findByFilter: t.func(
         t.array('ValueType'),
         t.param('filter', 'Filter'),
+        t.param('omit_filter', 'Filter'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('usage', 'string')
     ),
     findAllByFilter: t.func(
         t.array('ValueType'),
         t.param('filter', 'Filter'),
+        t.param('omit_filter', 'Filter'),
         t.param('usage', 'string')
     ),
     fetchById: t.func('ValueType', t.param('id', 'string')),
@@ -388,8 +402,16 @@ export const IValueFunc = t.iface([], {
         t.param('message', 'string'),
         t.param('info', 'any', true)
     ),
-    getFilter: t.func(t.array('string'), t.param('filter', 'Filter', true)),
-    getFilterResult: t.func('string', t.param('filter', 'Filter', true)),
+    getFilter: t.func(
+        t.array('string'),
+        t.param('filter', 'Filter', true),
+        t.param('omit_filter', 'Filter', true)
+    ),
+    getFilterResult: t.func(
+        'string',
+        t.param('filter', 'Filter', true),
+        t.param('omit_filter', 'Filter', true)
+    ),
 });
 
 export const StateType = t.union(t.lit('Report'), t.lit('Control'));
@@ -412,8 +434,6 @@ export const IStateFunc = t.iface([], {
     constructor: t.func('IState', t.param('type', 'StateType', true)),
     findById: t.func('IState', t.param('id', 'string')),
     fetchById: t.func('IState', t.param('id', 'string')),
-    getFilter: t.func(t.array('string'), t.param('filter', 'Filter', true)),
-    getFilterResult: t.func('string', t.param('filter', 'Filter', true)),
 });
 
 export const EventLogLevel = t.union(
@@ -739,7 +759,6 @@ export const Filter = t.iface([], {
     network: t.opt('any'),
     device: t.opt('any'),
     value: t.opt('any'),
-    state: t.opt('any'),
 });
 
 const exportedTypeSuite: t.ITypeSuite = {

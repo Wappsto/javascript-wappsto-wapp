@@ -100,7 +100,7 @@ export interface INetworkFunc {
         options: Record<string, any>,
         quantity: number | 'all',
         usage: string,
-        filter?: Record<string, any>
+        filterRequest?: Record<string, any>
     ): Promise<INetwork[]>;
     findByName(
         name: string,
@@ -111,14 +111,19 @@ export interface INetworkFunc {
     findById(id: string): Promise<INetwork>;
     findByFilter(
         filter: Filter,
+        omit_filter: Filter,
         quantity: number | 'all',
         usage: string
     ): Promise<INetwork[]>;
-    findAllByFilter(filter: Filter, usage: string): Promise<INetwork[]>;
+    findAllByFilter(
+        filter: Filter,
+        omit_filter: Filter,
+        usage: string
+    ): Promise<INetwork[]>;
     fetchById(id: string): Promise<INetwork>;
     fetchByName(name: string): Promise<IDevice>;
-    getFilter(filter?: Filter): string[];
-    getFilterResult(filter?: Filter): string;
+    getFilter(filter?: Filter, omit_filter?: Filter): string[];
+    getFilterResult(filter?: Filter, omit_filter?: Filter): string;
 }
 
 export interface IDevice {
@@ -169,10 +174,15 @@ export interface IDeviceFunc {
     findById(id: string): IDevice;
     findByFilter(
         filter: Filter,
+        omit_filter: Filter,
         quantity: number | 'all',
         usage: string
     ): Promise<IDevice[]>;
-    findAllByFilter(filter: Filter, usage: string): Promise<IDevice[]>;
+    findAllByFilter(
+        filter: Filter,
+        omit_filter: Filter,
+        usage: string
+    ): Promise<IDevice[]>;
     fetchById(id: string): IDevice;
     setConnectionStatus(state: boolean | number): Promise<boolean>;
     getFilter(filter?: Filter): string[];
@@ -275,18 +285,23 @@ export interface IValueFunc {
     findById(id: string): ValueType;
     findByFilter(
         filter: Filter,
+        omit_filter: Filter,
         quantity: number | 'all',
         usage: string
     ): Promise<ValueType[]>;
-    findAllByFilter(filter: Filter, usage: string): Promise<ValueType[]>;
+    findAllByFilter(
+        filter: Filter,
+        omit_filter: Filter,
+        usage: string
+    ): Promise<ValueType[]>;
     fetchById(id: string): ValueType;
     addEvent(
         level: EventLogLevel,
         message: string,
         info?: Record<string, any>
     ): Promise<IEventLog>;
-    getFilter(filter?: Filter): string[];
-    getFilterResult(filter?: Filter): string;
+    getFilter(filter?: Filter, omit_filter?: Filter): string[];
+    getFilterResult(filter?: Filter, omit_filter?: Filter): string;
 }
 
 export type StateType = 'Report' | 'Control';
@@ -304,8 +319,6 @@ export interface IStateFunc {
     constructor(type?: StateType): IState;
     findById(id: string): IState;
     fetchById(id: string): IState;
-    getFilter(filter?: Filter): string[];
-    getFilterResult(filter?: Filter): string;
 }
 
 export type EventLogLevel =
