@@ -1496,7 +1496,7 @@ describe('device', () => {
             '/2.1/device',
             {
                 filter: { attribute: ['value_type=energy'] },
-                return: '{device  { meta{id version} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}}',
+                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
             },
             {
                 params: {
@@ -1530,7 +1530,7 @@ describe('device', () => {
             '/2.1/device',
             {
                 filter: { attribute: ['value_type=energy'] },
-                return: '{device  { meta{id version} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id version} name permission type period delta number string blob xml status state  { meta{id version} data type timestamp }}}}',
+                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
             },
             {
                 params: {

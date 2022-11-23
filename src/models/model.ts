@@ -78,7 +78,7 @@ export class Model implements IModel {
     public restore(): void {}
 
     public static getFilterResult(filter?: Filter): string {
-        return 'meta{id version}';
+        return 'meta{id type version connection name_by_user}';
     }
 
     protected validate(name: string, params: any): void {
@@ -313,7 +313,9 @@ export class Model implements IModel {
                     throw e;
                 }
             } else {
-                printError(`Failed to find functions for ${type}`);
+                printError(
+                    `Failed to find functions for ${type} when looking for ${name}`
+                );
             }
         }
     }
