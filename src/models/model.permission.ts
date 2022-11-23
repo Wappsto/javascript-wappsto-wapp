@@ -165,7 +165,8 @@ export class PermissionModel extends OntologyModel {
                         (notification[0].base?.code === 1100004 ||
                             notification[0].base?.code === 1100013) &&
                         //notification[0].base?.identifier === id &&
-                        (ids.length > 0 && (quantity === 'all' || ids.length >= quantity))
+                        ids.length > 0 &&
+                        (quantity === 'all' || ids.length >= quantity)
                     ) {
                         if (quantity === 'all') {
                             Object.assign(newParams, {
