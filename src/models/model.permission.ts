@@ -129,14 +129,14 @@ export class PermissionModel extends OntologyModel {
                 body: body,
             });
 
-            if (result.length === 0) {
+            const data = PermissionModel.convertFromFetch(endpoint, result);
+            if (data.length === 0) {
                 printDebug(`Requesting new access to users data: ${message}`);
             } else {
-                const data = PermissionModel.convertFromFetch(endpoint, result);
                 if (quantity === 'all' || data.length >= quantity) {
                     printDebug(
                         `Found permission notification - returning old result: ${toString(
-                            result
+                            data
                         )}`
                     );
                     if (quantity === 'all') {
@@ -165,7 +165,7 @@ export class PermissionModel extends OntologyModel {
                         (notification[0].base?.code === 1100004 ||
                             notification[0].base?.code === 1100013) &&
                         //notification[0].base?.identifier === id &&
-                        (quantity === 'all' || ids.length >= quantity)
+                        (ids.length > 0 && (quantity === 'all' || ids.length >= quantity))
                     ) {
                         if (quantity === 'all') {
                             Object.assign(newParams, {
