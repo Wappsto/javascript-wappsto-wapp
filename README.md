@@ -12,32 +12,32 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
     -   [Node](#node)
     -   [Browser](#browser)
 -   [Usage](#usage)
-    -   [Create a new IoT Device](#create-a-new-iot-device)
-    -   [To report a change in the value](#to-report-a-change-in-the-value)
-    -   [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
-    -   [Reporting events for value](#reporting-events-for-value)
-    -   [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
-    	- 	[Using filters to request access to an exsisting object from the user](#using-filters-to-request-access-to-an-exsisting-object-from-the-user)
-    -   [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
-    -   [Retrive object by ID](#retrive-object-by-id)
-    -   [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
-    -   [To reload a model from the server](#to-reload-a-model-from-the-server)
-    -   [Listing for changes on values](#listing-for-changes-on-values)
-    -   [Sending an update event to a device](#sending-an-update-event-to-a-device)
-    -   [Check if a device is online](#check-if-a-device-is-online)
-    -   [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
-    -   [Waiting for the background to be ready](#waiting-for-the-background-to-be-ready)
-    -   [Web Hook](#web-hook)
-    -   [Wapp Storage](#wapp-storage)
-    -   [OAuth](#oauth)
-    -   [Notification](#notification)
-    -   [Ontology](#ontology)
-    -   [Background logging](#background-logging)
-    -   [Raw requests](#raw-requests)
-    -   [Config](#config)
-        -   [Enable verbose responses from wappsto](#enable-verbose-responses-from-wappsto)
-        -   [Validation](#validation)
-        -   [Stream Reconnect Count](#stream-reconnect-count)
+-   [Create a new IoT Device](#create-a-new-iot-device)
+-   [To report a change in the value](#to-report-a-change-in-the-value)
+-   [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
+-   [Reporting events for value](#reporting-events-for-value)
+-   [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
+    -   [Using filters to request access to an exsisting object from the user](#using-filters-to-request-access-to-an-exsisting-object-from-the-user)
+-   [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
+-   [Retrive object by ID](#retrive-object-by-id)
+-   [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
+-   [To reload a model from the server](#to-reload-a-model-from-the-server)
+-   [Listing for changes on values](#listing-for-changes-on-values)
+-   [Sending an update event to a device](#sending-an-update-event-to-a-device)
+-   [Check if a device is online](#check-if-a-device-is-online)
+-   [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
+-   [Waiting for the background to be ready](#waiting-for-the-background-to-be-ready)
+-   [Web Hook](#web-hook)
+-   [Wapp Storage](#wapp-storage)
+-   [OAuth](#oauth)
+-   [Notification](#notification)
+-   [Ontology](#ontology)
+-   [Background logging](#background-logging)
+-   [Raw requests](#raw-requests)
+-   [Config](#config)
+    -   [Enable verbose responses from wappsto](#enable-verbose-responses-from-wappsto)
+    -   [Validation](#validation)
+    -   [Stream Reconnect Count](#stream-reconnect-count)
 
 ## Install
 
@@ -87,7 +87,7 @@ an Network with the same name, the exsisting network will be returned.
 
 ```javascript
 let network = await Wappsto.createNetwork({
-	name: 'new network name',
+    name: 'new network name',
 });
 ```
 
@@ -97,14 +97,14 @@ with the given name, the existing device will be returned.
 
 ```javascript
 let device = await network.createDevice({
-	name: 'Device Name',
-	product: 'Great Product',
-	serial: 'SG123456',
-	description: 'My great new device',
-	protocol: 'WAPP-JS',
-	communication: 'wapp',
-	version: '1.0.0',
-	manufacturer: 'My Self',
+    name: 'Device Name',
+    product: 'Great Product',
+    serial: 'SG123456',
+    description: 'My great new device',
+    protocol: 'WAPP-JS',
+    communication: 'wapp',
+    version: '1.0.0',
+    manufacturer: 'My Self',
 });
 ```
 
@@ -120,9 +120,9 @@ The list of avaible value templates can be seen in the
 
 ```javascript
 let value = await device.createValue(
-	'Temperature',
-	'r',
-	Wappsto.ValueTemplate.TEMPERATURE_CELSIUS
+    'Temperature',
+    'r',
+    Wappsto.ValueTemplate.TEMPERATURE_CELSIUS
 );
 ```
 
@@ -138,11 +138,11 @@ temperature value.
 
 ```javascript
 let value = await device.createValue(
-	'Temperature',
-	'r',
-	Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
-	3600,
-	'2'
+    'Temperature',
+    'r',
+    Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
+    3600,
+    '2'
 );
 ```
 
@@ -153,12 +153,12 @@ of the createValue funciton.
 
 ```javascript
 let value = await device.createValue(
-	'Temperature',
-	'r',
-	Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
-	3600,
-	'2',
-	true
+    'Temperature',
+    'r',
+    Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
+    3600,
+    '2',
+    true
 );
 ```
 
@@ -167,17 +167,17 @@ and xml values. To create a custom number value:
 
 ```javascript
 let value = await device.createNumberValue({
-	name: 'Value Name',
-	permission: 'rw',
-	type: 'Counter',
-	period: '1h',
-	delta: '1',
-	min: 0,
-	max: 10,
-	step: 1,
-	unit: 'count',
-	si_conversion: 'c',
-	disableLog: false,
+    name: 'Value Name',
+    permission: 'rw',
+    type: 'Counter',
+    period: '1h',
+    delta: '1',
+    min: 0,
+    max: 10,
+    step: 1,
+    unit: 'count',
+    si_conversion: 'c',
+    disableLog: false,
 });
 ```
 
@@ -185,11 +185,11 @@ To create a custom string value:
 
 ```javascript
 let value = await device.createStringValue({
-	name: 'Value Name',
-	permission: 'rw',
-	type: 'debug',
-	max: 10,
-	encoding: 'debug string',
+    name: 'Value Name',
+    permission: 'rw',
+    type: 'debug',
+    max: 10,
+    encoding: 'debug string',
 });
 ```
 
@@ -216,7 +216,7 @@ To receive request to refresh the value, register a callback on
 
 ```javascript
 value.onRefresh((value) => {
-	value.report(1);
+    value.report(1);
 });
 ```
 
@@ -304,47 +304,47 @@ can see the posible filters below.
 
 ```javascript
 const filter = {
-	network: {
-		name: '',
-		description: ''
-	},
-	device: {
-		name: '',
-	    product: '',
-	    serial: '',
-	    description: '',
-	    protocol: '',
-	    communication: '',
-	    version: '',
-	    manufacturer: ''
-	},
-	value: {
-		name: '',
-    	permission: '',
-    	type: '',
-    	description: ''
-    	period: '',
-    	delta: '',
-    	number: {
-    		min: '',
-		    max: '',
-		    step: '',
-		    unit: '',
-		    si_conversion: ''
-		},
-		string: {
-			max: '',
-		    encoding: '',
-		},
-		blob: {
-			max: '',
-		    encoding: '',
-		},
-		xml: {
-			xsd: '',
-    		namespace: ''
-		}
-	}
+    network: {
+        name: '',
+        description: ''
+    },
+    device: {
+        name: '',
+        product: '',
+        serial: '',
+        description: '',
+        protocol: '',
+        communication: '',
+        version: '',
+        manufacturer: ''
+    },
+    value: {
+        name: '',
+        permission: '',
+        type: '',
+        description: '',
+        period: '',
+        delta: '',
+        number: {
+            min: '',
+            max: '',
+            step: '',
+            unit: '',
+            si_conversion: ''
+        },
+        string: {
+            max: '',
+            encoding: '',
+        },
+        blob: {
+            max: '',
+            encoding: '',
+        },
+        xml: {
+            xsd: '',
+            namespace: ''
+        }
+    }
 }
 ```
 
@@ -418,7 +418,7 @@ function on the value.
 ```javascript
 const result = await value.control('1');
 if (!result) {
-	console.warn('Failed to send control to device');
+    console.warn('Failed to send control to device');
 }
 ```
 
@@ -428,7 +428,7 @@ If you need to verify that the device send back a report, you can use
 ```javascript
 const result = await value.controlWithAck('1');
 if (!result || value.getReportData() !== '1') {
-	console.warn('Device failed to verify the control');
+    console.warn('Device failed to verify the control');
 }
 ```
 
@@ -446,11 +446,11 @@ value changes.
 
 ```javascript
 value.onReport((value, data, timestamp) => {
-	console.log(`${value.name} changed it's report value to ${data}`);
+    console.log(`${value.name} changed it's report value to ${data}`);
 });
 
 value.onControl((value, data, timestamp) => {
-	console.log(`Request to change ${value.name} to ${data}`);
+    console.log(`Request to change ${value.name} to ${data}`);
 });
 ```
 
@@ -502,10 +502,10 @@ It is possible to check if a network or device is online by calling
 
 ```javascript
 if (network.isOnline()) {
-	console.log('Network is online');
+    console.log('Network is online');
 }
 if (device.isOnline()) {
-	console.log('Device is online');
+    console.log('Device is online');
 }
 ```
 
@@ -514,9 +514,9 @@ connection status changes.
 
 ```javascript
 network.onConnectionChange((network, status) => {
-	console.log(
-		`Network ${network.name} is now ${status ? 'online' : 'offline'}`
-	);
+    console.log(
+        `Network ${network.name} is now ${status ? 'online' : 'offline'}`
+    );
 });
 ```
 
@@ -548,13 +548,13 @@ to the sender of the event.
 
 ```javascript
 Wappsto.fromBackground((msg) => {
-	console.log('Message from the background: ' + msg);
-	return 'Hello back';
+console.log('Message from the background: ' + msg);
+return 'Hello back';
 });
 
 Wappsto.fromForeground((msg) => {
-	console.log('Message from the foreground: ' + msg);
-	return 'Hello front';
+    console.log('Message from the foreground: ' + msg);
+    return 'Hello front';
 });
 
 let backgroundResult = await Wappsto.sendToBackground('hello');
@@ -589,7 +589,7 @@ wait for the background to be ready and have registered the
 ```javascript
 const result = await Wappsto.waitForBackground();
 if (result) {
-	console.log('The background is now ready');
+    console.log('The background is now ready');
 }
 ```
 
@@ -607,7 +607,7 @@ can be registered.
 
 ```javascript
 Wappsto.onWebHook((event) => {
-	console.log('Web Hook event', event);
+    console.log('Web Hook event', event);
 });
 ```
 
@@ -638,7 +638,7 @@ notified when the storage is updated.
 let storage = await Wappsto.wappStorage();
 //Signal when storage is changed
 storage.onChange(() => {
-	console.log('Storage is updated');
+    console.log('Storage is updated');
 });
 await storage.set('key', 'item');
 let data = storage.get('key');
@@ -657,12 +657,12 @@ that the user needs to visit, in order to generate the OAuth Token.
 
 ```javascript
 try {
-	let token = await Wappsto.OAuth.getToken('oauth name', (url) => {
-		console.log(`Please visit ${url} to generate the OAuth token`);
-	});
-	console.log('OAuth Token', token);
+    let token = await Wappsto.OAuth.getToken('oauth name', (url) => {
+        console.log(`Please visit ${url} to generate the OAuth token`);
+    });
+    console.log('OAuth Token', token);
 } catch (e) {
-	console.log('Failed to get OAuth token', e);
+    console.log('Failed to get OAuth token', e);
 }
 ```
 
@@ -679,9 +679,9 @@ You can also send an email to your self by calling `sendMail`.
 
 ```javascript
 await Wappsto.sendMail({
-	subject: 'Mail with information',
-	body: '<h1>Hello from the Wapp</h1><p>Here is some more information</p>',
-	from: 'My New Wapp',
+    subject: 'Mail with information',
+    body: '<h1>Hello from the Wapp</h1><p>Here is some more information</p>',
+    from: 'My New Wapp',
 });
 ```
 
@@ -708,11 +708,11 @@ You can also supply more information about the edge.
 
 ```javascript
 const fullEdge = await startNode.createEdge({
-	relationship: 'child',
-	to: endNode,
-	name: 'My Edge',
-	description: 'This is my first edge',
-	data: { msg: 'My own data for this edge' },
+    relationship: 'child',
+    to: endNode,
+    name: 'My Edge',
+    description: 'This is my first edge',
+    data: { msg: 'My own data for this edge' },
 });
 ```
 
@@ -756,7 +756,7 @@ const edges = await node.getAllEdges(true);
 ```
 
 To remove an edge, you can just call `delete` on the edge, but if you
- want to remove the whole branch, you can call `deleteBranch`.
+want to remove the whole branch, you can call `deleteBranch`.
 This will remove all edges and nodes under this node or edge.
 
 ```javascript
@@ -794,7 +794,7 @@ The default validation is 'normal'.
 
 ```javascript
 Wappsto.config({
-	validation: 'none',
+    validation: 'none',
 });
 ```
 
@@ -805,7 +805,7 @@ to reconnect in case of connection errors.
 
 ```javascript
 Wappsto.config({
-	reconnectCount: 3,
+    reconnectCount: 3,
 });
 ```
 
@@ -816,8 +816,8 @@ library is doing by enabling debug options.
 
 ```javascript
 Wappsto.config({
-	debug: true,
-	requests: true,
-	stream: true,
+    debug: true,
+    requests: true,
+    stream: true,
 });
 ```
