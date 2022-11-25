@@ -3,10 +3,13 @@ import { printDebug, printWarning } from './util/debug';
 import { isBrowser, toString } from './util/helpers';
 
 const defaultConsole = Object.assign({}, console);
+let stopExtSync = false;
 
 function newFunc(name: string) {
     return function (...args: any[]) {
-        sendExtsync(name, arguments);
+        if(!stopExtSync) {
+            sendExtsync(name, arguments);
+        }
         defaultConsole.log(...args);
     };
 }
@@ -22,6 +25,8 @@ function sendExtsync(key: string, ...args: any[]): any {
     try {
         return wappsto.post('/2.1/extsync/wappsto/editor/console', data);
     } catch (e: any) {
+        /* istanbul ignore next */
+        stopExtSync = true;
         /* istanbul ignore next */
         printDebug(e);
     }
