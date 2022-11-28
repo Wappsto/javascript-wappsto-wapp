@@ -293,6 +293,36 @@ describe('Ontology', () => {
                         version: '2.1',
                         id: 'f11fa9d7-3b2b-474e-95e4-f086c5606154',
                     },
+                    device: [
+                        {
+                            meta: {
+                                type: 'device',
+                                version: '2.1',
+                                id: '8a3f67a6-751c-483b-a2ef-ba890948e6e4',
+                            },
+                            value: [
+                                {
+                                    meta: {
+                                        type: 'value',
+                                        version: '2.1',
+                                        id: '75d7d198-7f91-45e2-9b79-754073d7e758',
+                                    },
+                                    state: [
+                                        {
+                                            meta: {
+                                                type: 'state',
+                                                version: '2.1',
+                                                id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
+                                            },
+                                            type: 'Report',
+                                            timestamp: '2021-10-10T10:10:10Z',
+                                            data: '0',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
                 },
             })
             .mockResolvedValueOnce({
@@ -302,6 +332,27 @@ describe('Ontology', () => {
                         version: '2.1',
                         id: '8a3f67a6-751c-483b-a2ef-ba890948e6e4',
                     },
+                    value: [
+                        {
+                            meta: {
+                                type: 'value',
+                                version: '2.1',
+                                id: '75d7d198-7f91-45e2-9b79-754073d7e758',
+                            },
+                            state: [
+                                {
+                                    meta: {
+                                        type: 'state',
+                                        version: '2.1',
+                                        id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
+                                    },
+                                    type: 'Report',
+                                    timestamp: '2021-10-10T10:10:10Z',
+                                    data: '0',
+                                },
+                            ],
+                        },
+                    ],
                 },
             })
             .mockResolvedValueOnce({
@@ -311,6 +362,18 @@ describe('Ontology', () => {
                         version: '2.1',
                         id: '75d7d198-7f91-45e2-9b79-754073d7e758',
                     },
+                    state: [
+                        {
+                            meta: {
+                                type: 'state',
+                                version: '2.1',
+                                id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
+                            },
+                            type: 'Report',
+                            timestamp: '2021-10-10T10:10:10Z',
+                            data: '0',
+                        },
+                    ],
                 },
             })
             .mockResolvedValueOnce({
@@ -401,15 +464,36 @@ describe('Ontology', () => {
         expect(edges[1].models[0].id()).toEqual(
             'f11fa9d7-3b2b-474e-95e4-f086c5606154'
         );
+        const netChild = edges[1].models[0] as Network;
+        expect(netChild.device[0].id()).toEqual(
+            '8a3f67a6-751c-483b-a2ef-ba890948e6e4'
+        );
+        expect(netChild.device[0].value[0].id()).toEqual(
+            '75d7d198-7f91-45e2-9b79-754073d7e758'
+        );
+        expect(netChild.device[0].value[0].state[0].id()).toEqual(
+            '311b2c2d-54de-4e00-a850-f6712c4622bd'
+        );
 
         expect(edges[2].models.length).toBe(1);
         expect(edges[2].models[0].id()).toEqual(
             '8a3f67a6-751c-483b-a2ef-ba890948e6e4'
         );
+        const devChild = edges[2].models[0] as Device;
+        expect(devChild.value[0].id()).toEqual(
+            '75d7d198-7f91-45e2-9b79-754073d7e758'
+        );
+        expect(devChild.value[0].state[0].id()).toEqual(
+            '311b2c2d-54de-4e00-a850-f6712c4622bd'
+        );
 
         expect(edges[3].models.length).toBe(1);
         expect(edges[3].models[0].id()).toEqual(
             '75d7d198-7f91-45e2-9b79-754073d7e758'
+        );
+        const valChild = edges[3].models[0] as Value;
+        expect(valChild.state[0].id()).toEqual(
+            '311b2c2d-54de-4e00-a850-f6712c4622bd'
         );
 
         expect(edges[4].models.length).toBe(1);

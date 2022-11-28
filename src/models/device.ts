@@ -149,7 +149,7 @@ export class Device extends ConnectionModel implements IDevice {
                             newValue.parse(data);
                             newValue.parent = this;
                             this.value.push(newValue);
-                            proms.push(newValue.loadAllChildren(null, false));
+                            proms.push(newValue.loadAllChildren(data, false));
                         } else {
                             this.value.push(values[i]);
                         }

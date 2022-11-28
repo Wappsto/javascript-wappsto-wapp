@@ -7,7 +7,7 @@ let stopExtSync = false;
 
 function newFunc(name: string) {
     return function (...args: any[]) {
-        if(!stopExtSync) {
+        if (!stopExtSync) {
             sendExtsync(name, arguments);
         }
         defaultConsole.log(...args);

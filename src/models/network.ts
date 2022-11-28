@@ -161,7 +161,7 @@ export class Network extends ConnectionModel implements INetwork {
                             newDevice.parse(data);
                             newDevice.parent = this;
                             this.device.push(newDevice);
-                            proms.push(newDevice.loadAllChildren(null, false));
+                            proms.push(newDevice.loadAllChildren(data, false));
                         } else {
                             this.device.push(devices[i]);
                         }
