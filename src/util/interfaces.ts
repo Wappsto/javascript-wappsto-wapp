@@ -566,7 +566,45 @@ export interface IMail {
 }
 
 export interface Filter {
-    network?: Record<string, any>;
-    device?: Record<string, any>;
-    value?: Record<string, any>;
+    network?: {
+        name?: string | string[];
+        description?: string | string[];
+    };
+    device?: {
+        name?: string | string[];
+        product?: string | string[];
+        serial?: string | string[];
+        description?: string | string[];
+        protocol?: string | string[];
+        communication?: string | string[];
+        version?: string | string[];
+        manufacturer?: string | string[];
+    };
+    value?: {
+        name?: string | string[];
+        permission?: string | string[];
+        type?: string | string[];
+        description?: string | string[];
+        period?: string | string[];
+        delta?: string | string[];
+        number?: {
+            min?: number | number[] | string | string[];
+            max?: number | number[] | string | string[];
+            step?: number | number[] | string | string[];
+            unit?: string | string[];
+            si_conversion?: string | string[];
+        };
+        string?: {
+            max?: number | number[] | string | string[];
+            encoding?: string | string[];
+        };
+        blob?: {
+            max?: number | number[] | string | string[];
+            encoding?: string | string[];
+        };
+        xml?: {
+            xsd?: string | string[];
+            namespace?: string | string[];
+        };
+    };
 }

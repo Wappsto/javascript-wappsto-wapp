@@ -298,9 +298,10 @@ let allValues = await Wappsto.Value.findAllByType('Type name');
 
 It is also possible to use more advanced filters to get more control
 over the specific objects that are requested. It is possible to
-combine any keys in the filter, to narrow down the returned objects. A
-filter have 3 main entry points `network`, `device` and `value`. You
-can see the posible filters below.
+combine any keys in the filter, to narrow down the returned objects. 
+If you need to find multiple of the same type, you can use an Array 
+with the values. A filter have 3 main entry points `network`, `device` 
+and `value`. You can see the posible filters below.
 
 ```javascript
 const filter = {
@@ -310,7 +311,7 @@ const filter = {
     },
     device: {
         name: '',
-        product: '',
+        product: ['',''],
         serial: '',
         description: '',
         protocol: '',

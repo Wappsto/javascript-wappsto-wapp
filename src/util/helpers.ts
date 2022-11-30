@@ -117,14 +117,21 @@ function attributesToFilter(
 ) {
     const strFilter: string[] = [];
     attributes.forEach((att) => {
-        if (att in filter) {
-            if (typeof filter[att] === 'object') {
-                for (const [k, v] of Object.entries(filter[att])) {
-                    strFilter.push(`${type}_${att}.${k}${operator}${v}`);
+        if (Array.isArray(filter[att])) {
+            strFilter.push(
+                `${type}_${att}${operator}[${filter[att].join(',')}]`
+            );
+        } else if (typeof filter[att] === 'object') {
+            for (const [k, v] of Object.entries(filter[att])) {
+                const str = `${type}_${att}.${k}${operator}`;
+                if (Array.isArray(v)) {
+                    strFilter.push(`${str}[${v.join(',')}]`);
+                } else {
+                    strFilter.push(`${str}${v}`);
                 }
-            } else {
-                strFilter.push(`${type}_${att}${operator}${filter[att]}`);
             }
+        } else if (filter[att] !== undefined) {
+            strFilter.push(`${type}_${att}${operator}${filter[att]}`);
         }
     });
     return strFilter;

@@ -756,9 +756,96 @@ export const IMail = t.iface([], {
 });
 
 export const Filter = t.iface([], {
-    network: t.opt('any'),
-    device: t.opt('any'),
-    value: t.opt('any'),
+    network: t.opt(
+        t.iface([], {
+            name: t.opt(t.union('string', t.array('string'))),
+            description: t.opt(t.union('string', t.array('string'))),
+        })
+    ),
+    device: t.opt(
+        t.iface([], {
+            name: t.opt(t.union('string', t.array('string'))),
+            product: t.opt(t.union('string', t.array('string'))),
+            serial: t.opt(t.union('string', t.array('string'))),
+            description: t.opt(t.union('string', t.array('string'))),
+            protocol: t.opt(t.union('string', t.array('string'))),
+            communication: t.opt(t.union('string', t.array('string'))),
+            version: t.opt(t.union('string', t.array('string'))),
+            manufacturer: t.opt(t.union('string', t.array('string'))),
+        })
+    ),
+    value: t.opt(
+        t.iface([], {
+            name: t.opt(t.union('string', t.array('string'))),
+            permission: t.opt(t.union('string', t.array('string'))),
+            type: t.opt(t.union('string', t.array('string'))),
+            description: t.opt(t.union('string', t.array('string'))),
+            period: t.opt(t.union('string', t.array('string'))),
+            delta: t.opt(t.union('string', t.array('string'))),
+            number: t.opt(
+                t.iface([], {
+                    min: t.opt(
+                        t.union(
+                            'number',
+                            t.array('number'),
+                            'string',
+                            t.array('string')
+                        )
+                    ),
+                    max: t.opt(
+                        t.union(
+                            'number',
+                            t.array('number'),
+                            'string',
+                            t.array('string')
+                        )
+                    ),
+                    step: t.opt(
+                        t.union(
+                            'number',
+                            t.array('number'),
+                            'string',
+                            t.array('string')
+                        )
+                    ),
+                    unit: t.opt(t.union('string', t.array('string'))),
+                    si_conversion: t.opt(t.union('string', t.array('string'))),
+                })
+            ),
+            string: t.opt(
+                t.iface([], {
+                    max: t.opt(
+                        t.union(
+                            'number',
+                            t.array('number'),
+                            'string',
+                            t.array('string')
+                        )
+                    ),
+                    encoding: t.opt(t.union('string', t.array('string'))),
+                })
+            ),
+            blob: t.opt(
+                t.iface([], {
+                    max: t.opt(
+                        t.union(
+                            'number',
+                            t.array('number'),
+                            'string',
+                            t.array('string')
+                        )
+                    ),
+                    encoding: t.opt(t.union('string', t.array('string'))),
+                })
+            ),
+            xml: t.opt(
+                t.iface([], {
+                    xsd: t.opt(t.union('string', t.array('string'))),
+                    namespace: t.opt(t.union('string', t.array('string'))),
+                })
+            ),
+        })
+    ),
 });
 
 const exportedTypeSuite: t.ITypeSuite = {

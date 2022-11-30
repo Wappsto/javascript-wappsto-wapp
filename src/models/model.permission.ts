@@ -34,7 +34,9 @@ export class PermissionModel extends OntologyModel {
                 }
 
                 if (data.code === 400008 || data.code === 400013) {
-                    printDebug('Requesting permission to add data to user');
+                    printDebug(
+                        `Requesting permission to add ${this.getType()} to user`
+                    );
                     openStream.subscribeService(
                         '/notification',
                         async (event: any) => {
@@ -49,18 +51,17 @@ export class PermissionModel extends OntologyModel {
                                 if (notification[0].base?.code === 1100013) {
                                     try {
                                         printDebug(
-                                            'Got permission to create data under users account'
+                                            `Got permission to create ${this.getType()} under users account`
                                         );
                                         await this._create({
-                                            identifier:
-                                                'request access to save data under users account',
+                                            identifier: `request access to save ${this.getType()} under users account`,
                                         });
                                         resolve();
                                         return true;
                                     } catch (e) {
                                         /* istanbul ignore next */
                                         printError(
-                                            'Failed to get permission to save data under users account'
+                                            `Failed to get permission to save ${this.getType()} under users account`
                                         );
                                         /* istanbul ignore next */
                                         printDebug(toString(e));
