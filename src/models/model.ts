@@ -18,6 +18,7 @@ export class Model implements IModel {
     parent?: IModel;
     expand: number;
     attributes: string[] = [];
+    updateQueue: Record<string, any> = [];
     static checker = createCheckers(interfaceTI);
 
     constructor(type: string, expand = 0, version = '2.1') {
@@ -130,31 +131,46 @@ export class Model implements IModel {
         try {
             await this._create(params);
         } catch (e) {
-            /* istanbul ignore next */
             printHttpError('Model.create', e);
         }
     }
 
+    private async _update(): Promise<void> {
+        if (!this.updateQueue.length) {
+            return;
+        }
+
+        const event = this.updateQueue.shift();
+        try {
+            let func;
+            if (this.usePutForUpdate()) {
+                func = wappsto.put;
+            } else {
+                func = wappsto.patch;
+            }
+            const response = await func(
+                this.getUrl(),
+                event.data,
+                Model.generateOptions()
+            );
+            this.parse(response?.data);
+            event.resolve(true);
+        } catch (e) {
+            printHttpError('Model.update', e);
+            event.resolve(false);
+        }
+
+        this._update();
+    }
+
     public async update(): Promise<boolean> {
         if (this.meta.id !== undefined) {
-            try {
-                let func;
-                if (this.usePutForUpdate()) {
-                    func = wappsto.put;
-                } else {
-                    func = wappsto.patch;
+            return new Promise<boolean>((resolve) => {
+                this.updateQueue.push({ data: this.toJSON(), resolve });
+                if (this.updateQueue.length === 1) {
+                    this._update();
                 }
-                const response = await func(
-                    this.getUrl(),
-                    this.toJSON(),
-                    Model.generateOptions()
-                );
-                this.parse(response?.data);
-                return true;
-            } catch (e) {
-                /* istanbul ignore next */
-                printHttpError('Model.update', e);
-            }
+            });
         }
         return false;
     }
@@ -197,7 +213,6 @@ export class Model implements IModel {
             try {
                 await wappsto.delete(this.getUrl(), Model.generateOptions());
             } catch (e) {
-                /* istanbul ignore next */
                 printHttpError('Model.delete', e);
             }
             this.parent?.removeChild(this);
