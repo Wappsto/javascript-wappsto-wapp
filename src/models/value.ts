@@ -35,6 +35,7 @@ import {
     ILogResponse,
     RefreshStreamCallback,
     ValueStreamCallback,
+    LogValues,
 } from '../util/interfaces';
 
 export class Value extends StreamModel implements IValueBase {
@@ -395,6 +396,10 @@ export class Value extends StreamModel implements IValueBase {
     public async createState(params: IState) {
         this.validate('createState', arguments);
 
+        if (params.data === undefined) {
+            delete params.data;
+        }
+
         let create = false;
         let state = this.findState(params.type);
         if (!state) {
@@ -472,12 +477,16 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     public report(
-        data: string | number,
+        data: string | number | LogValues,
         timestamp: Timestamp = undefined
     ): Promise<boolean> {
         this.validate('report', arguments);
 
-        return this.sendReport(data, timestamp, false);
+        if (typeof data === 'object') {
+            return this.sendLogReport(data);
+        } else {
+            return this.sendReport(data, timestamp, false);
+        }
     }
 
     public forceReport(
@@ -533,6 +542,38 @@ export class Value extends StreamModel implements IValueBase {
 
         this.reportIsForced = false;
         return this.findStateAndUpdate('Report', data, timestamp);
+    }
+
+    private async sendLogReport(data: LogValues) {
+        const state = this.findState('Report');
+        if (!state) {
+            return false;
+        }
+
+        const id = state.meta.id;
+        const lastData = data.pop();
+        if (lastData) {
+            await this.report(lastData.data, lastData.timestamp);
+        }
+
+        if (data.length === 0) {
+            return true;
+        }
+
+        let offset = 0;
+        do {
+            const tmpData = data.slice(offset, offset + 50000);
+            const csvStr = tmpData.reduce((p, c) => {
+                return `${p}${id},${c.data},${c.timestamp}\n`;
+            }, 'state_id,data,timestamp\n');
+
+            await wappsto.post('/log_zip', csvStr, {
+                headers: { 'Content-type': 'text/csv' },
+            });
+            offset += 50000;
+        } while (offset < data.length);
+
+        return true;
     }
 
     public control(
@@ -645,6 +686,13 @@ export class Value extends StreamModel implements IValueBase {
     ): Promise<ILogResponse> {
         const state = this.findState(type);
         if (state) {
+            const params = request;
+            if (typeof params.start === 'object') {
+                params.start = params.start.toISOString();
+            }
+            if (typeof params.end === 'object') {
+                params.end = params.end.toISOString();
+            }
             const response = await Model.fetch({
                 endpoint: `/2.1/log/${state.id()}/state`,
                 params: request,

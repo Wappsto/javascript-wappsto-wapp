@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
-export type Timestamp = string | number | undefined;
+export type Timestamp = string | number | undefined | Date;
 export type ValidationType = 'none' | 'normal';
 export interface IConfig {
     verbose?: boolean;
@@ -138,14 +138,24 @@ export interface IDevice {
     manufacturer?: string;
 }
 
+export interface ICreateValue {
+    name: string;
+    permission: ValuePermission;
+    template: ValueType;
+    period?: number | string;
+    delta?: number | 'inf';
+    disableLog?: boolean;
+    initialState?: string | number;
+}
+
 export interface IDeviceFunc {
     constructor(name?: string): void;
     findValueByName(name: string): ValueType[];
     findValueByType(type: string): ValueType[];
     createValue(
-        name: string,
-        permission: ValuePermission,
-        valueTemplate: ValueType,
+        name: string | ICreateValue,
+        permission?: ValuePermission,
+        valueTemplate?: ValueType,
         period?: number | string,
         delta?: number | 'inf',
         disableLog?: boolean
@@ -199,6 +209,12 @@ export interface IPermissionModelFunc {
     ): Promise<Record<string, any>[]>;
 }
 
+export interface LogValue {
+    timestamp: Timestamp;
+    data: string | number;
+}
+
+export type LogValues = LogValue[];
 export type ValuePermission = 'r' | 'w' | 'rw' | 'wr';
 
 export type ValueType =
@@ -216,6 +232,7 @@ export interface IValueBase {
     period?: number | string;
     delta?: string;
     disableLog?: boolean;
+    initialState?: string | number;
 }
 
 export interface IValueNumberBase {
@@ -250,12 +267,15 @@ export interface IValueXml extends IValueBase, IValueXmlBase {}
 export interface IValueFunc {
     constructor(name?: string): IState;
     createState(parameters: IState): IState;
-    report(data: string | number, timestamp: Timestamp): Promise<boolean>;
-    forceReport(data: string | number, timestamp: Timestamp): Promise<boolean>;
-    control(data: string | number, timestamp: Timestamp): Promise<boolean>;
+    report(
+        data: string | number | LogValues,
+        timestamp?: Timestamp
+    ): Promise<boolean>;
+    forceReport(data: string | number, timestamp?: Timestamp): Promise<boolean>;
+    control(data: string | number, timestamp?: Timestamp): Promise<boolean>;
     controlWithAck(
         data: string | number,
-        timestamp: Timestamp
+        timestamp?: Timestamp
     ): Promise<boolean>;
     onControl(callback: ValueStreamCallback): Promise<boolean>;
     onReport(
@@ -316,7 +336,7 @@ export interface IState {
 }
 
 export interface IStateFunc {
-    constructor(type?: StateType): IState;
+    constructor(type?: StateType, data?: string): IState;
     findById(id: string): IState;
     fetchById(id: string): IState;
 }
@@ -419,8 +439,8 @@ export type LogGroupBy =
     | 'doy';
 
 export interface ILogRequest {
-    start?: Date;
-    end?: Date;
+    start?: Date | string;
+    end?: Date | string;
     limit?: number;
     offset?: number;
     operation?: LogOperation;

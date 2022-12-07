@@ -6,16 +6,17 @@ import { IState, StateStatus, StateType } from '../util/interfaces';
 export class State extends StreamModel implements IState {
     static endpoint = '/2.1/state';
     static attributes = ['data', 'type', 'timestamp'];
-    data = '';
+    data = 'NA';
     status?: StateStatus;
     type: 'Report' | 'Control' = 'Report';
     timestamp: string = new Date().toISOString();
     status_payment?: string;
 
-    constructor(type?: StateType) {
+    constructor(type?: StateType, data?: string) {
         super('state');
         Model.validateMethod('State', 'constructor', arguments);
         this.type = type || 'Report';
+        this.data = data || 'NA';
     }
 
     getAttributes(): string[] {

@@ -46,7 +46,7 @@ describe('state', () => {
                     version: '2.1',
                 },
                 type: 'Report',
-                data: '',
+                data: 'NA',
             }),
             {}
         );

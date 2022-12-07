@@ -162,15 +162,25 @@ export const IDevice = t.iface([], {
     manufacturer: t.opt('string'),
 });
 
+export const ICreateValue = t.iface([], {
+    name: 'string',
+    permission: 'ValuePermission',
+    template: 'ValueType',
+    period: t.opt(t.union('number', 'string')),
+    delta: t.opt(t.union('number', t.lit('inf'))),
+    disableLog: t.opt('boolean'),
+    initialState: t.opt(t.union('string', 'number')),
+});
+
 export const IDeviceFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string', true)),
     findValueByName: t.func(t.array('ValueType'), t.param('name', 'string')),
     findValueByType: t.func(t.array('ValueType'), t.param('type', 'string')),
     createValue: t.func(
         'ValueType',
-        t.param('name', 'string'),
-        t.param('permission', 'ValuePermission'),
-        t.param('valueTemplate', 'ValueType'),
+        t.param('name', t.union('string', 'ICreateValue')),
+        t.param('permission', 'ValuePermission', true),
+        t.param('valueTemplate', 'ValueType', true),
         t.param('period', t.union('number', 'string'), true),
         t.param('delta', t.union('number', t.lit('inf')), true),
         t.param('disableLog', 'boolean', true)
@@ -247,6 +257,13 @@ export const IPermissionModelFunc = t.iface([], {
     ),
 });
 
+export const LogValue = t.iface([], {
+    timestamp: t.union('string', 'Date'),
+    data: t.union('string', 'number'),
+});
+
+export const LogValues = t.array('LogValue');
+
 export const ValuePermission = t.union(
     t.lit('r'),
     t.lit('w'),
@@ -290,6 +307,7 @@ export const IValueBase = t.iface([], {
     period: t.opt(t.union('number', 'string')),
     delta: t.opt('string'),
     disableLog: t.opt('boolean'),
+    initialState: t.opt(t.union('string', 'number')),
 });
 
 export const IValueNumberBase = t.iface([], {
@@ -326,23 +344,23 @@ export const IValueFunc = t.iface([], {
     createState: t.func('IState', t.param('parameters', 'IState')),
     report: t.func(
         'boolean',
-        t.param('data', t.union('string', 'number')),
-        t.param('timestamp', 'Timestamp')
+        t.param('data', t.union('string', 'number', 'LogValues')),
+        t.param('timestamp', 'Timestamp', true)
     ),
     forceReport: t.func(
         'boolean',
         t.param('data', t.union('string', 'number')),
-        t.param('timestamp', 'Timestamp')
+        t.param('timestamp', 'Timestamp', true)
     ),
     control: t.func(
         'boolean',
         t.param('data', t.union('string', 'number')),
-        t.param('timestamp', 'Timestamp')
+        t.param('timestamp', 'Timestamp', true)
     ),
     controlWithAck: t.func(
         'boolean',
         t.param('data', t.union('string', 'number')),
-        t.param('timestamp', 'Timestamp')
+        t.param('timestamp', 'Timestamp', true)
     ),
     onControl: t.func('boolean', t.param('callback', 'ValueStreamCallback')),
     onReport: t.func(
@@ -431,7 +449,11 @@ export const IState = t.iface([], {
 });
 
 export const IStateFunc = t.iface([], {
-    constructor: t.func('IState', t.param('type', 'StateType', true)),
+    constructor: t.func(
+        'IState',
+        t.param('type', 'StateType', true),
+        t.param('data', 'string', true)
+    ),
     findById: t.func('IState', t.param('id', 'string')),
     fetchById: t.func('IState', t.param('id', 'string')),
 });
@@ -546,8 +568,8 @@ export const LogGroupBy = t.union(
 );
 
 export const ILogRequest = t.iface([], {
-    start: t.opt('Date'),
-    end: t.opt('Date'),
+    start: t.opt(t.union('Date', 'string')),
+    end: t.opt(t.union('Date', 'string')),
     limit: t.opt('number'),
     offset: t.opt('number'),
     operation: t.opt('LogOperation'),
@@ -861,8 +883,11 @@ const exportedTypeSuite: t.ITypeSuite = {
     INetwork,
     INetworkFunc,
     IDevice,
+    ICreateValue,
     IDeviceFunc,
     IPermissionModelFunc,
+    LogValue,
+    LogValues,
     ValuePermission,
     ValueType,
     IValueBase,

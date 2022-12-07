@@ -311,7 +311,7 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: '',
+                data: 'NA',
                 type: 'Report',
             }),
             {}
@@ -324,7 +324,7 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: '',
+                data: 'NA',
                 type: 'Control',
             }),
             {}
@@ -641,7 +641,7 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: '',
+                data: 'NA',
                 type: 'Report',
             }),
             {}
@@ -654,7 +654,7 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: '',
+                data: 'NA',
                 type: 'Control',
             }),
             {}
@@ -738,7 +738,7 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: '',
+                data: 'NA',
                 type: 'Report',
             }),
             {}
@@ -751,7 +751,7 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: '',
+                data: 'NA',
                 type: 'Control',
             }),
             {}
@@ -832,7 +832,7 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: '',
+                data: 'NA',
                 type: 'Report',
             }),
             {}
@@ -914,7 +914,7 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: '',
+                data: 'NA',
                 type: 'Control',
             }),
             {}
@@ -1231,18 +1231,20 @@ describe('device', () => {
 
         const device = new Device();
         await device.create();
-        const val1 = await device.createValue(
-            'Test Value',
-            'r',
-            ValueTemplate.NUMBER
-        );
+        const val1 = await device.createValue({
+            name: 'Test Value',
+            permission: 'r',
+            template: ValueTemplate.NUMBER,
+            initialState: 10,
+        });
         await val1.delete();
 
-        const val2 = await device.createValue(
-            'Test Value',
-            'r',
-            ValueTemplate.NUMBER
-        );
+        const val2 = await device.createValue({
+            name: 'Test Value',
+            permission: 'r',
+            template: ValueTemplate.NUMBER,
+            initialState: '20',
+        });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
@@ -1254,6 +1256,61 @@ describe('device', () => {
 
         expect(val1.meta.id).toEqual(undefined);
         expect(val2.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/device',
+            { meta: { type: 'device', version: '2.1' }, name: '' },
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/device/b62e285a-5188-4304-85a0-3982dcb575bc/value',
+            {
+                meta: { type: 'value', version: '2.1' },
+                name: 'Test Value',
+                number: { max: 128, min: -128, step: 0.1, unit: '' },
+                period: '0',
+                permission: 'r',
+                type: 'number',
+                delta: '0',
+            },
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/value/b62e285a-5188-4304-85a0-3982dcb575bc/state',
+            expect.objectContaining({
+                data: '10',
+                meta: { type: 'state', version: '2.1' },
+                type: 'Report',
+            }),
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            4,
+            '/2.1/device/b62e285a-5188-4304-85a0-3982dcb575bc/value',
+            {
+                meta: { type: 'value', version: '2.1' },
+                name: 'Test Value',
+                number: { max: 128, min: -128, step: 0.1, unit: '' },
+                period: '0',
+                permission: 'r',
+                type: 'number',
+                delta: '0',
+            },
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            5,
+            '/2.1/value/b62e285a-5188-4304-85a0-3982dcb575bc/state',
+            expect.objectContaining({
+                data: '20',
+                meta: { type: 'state', version: '2.1' },
+                type: 'Report',
+            }),
+            {}
+        );
     });
 
     it('can handle a value create', async () => {
@@ -1558,13 +1615,13 @@ describe('device', () => {
         const d = new Device();
         d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
 
-        let value = await d.createValue(
-            'ChangePeriodAndDelta',
-            'rw',
-            ValueTemplate.NUMBER,
-            '10',
-            10
-        );
+        let value = await d.createValue({
+            name: 'ChangePeriodAndDelta',
+            permission: 'rw',
+            template: ValueTemplate.NUMBER,
+            period: '10',
+            delta: 10,
+        });
         templateHelperDone();
 
         value = await d.createValue(

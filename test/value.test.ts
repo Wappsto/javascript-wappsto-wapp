@@ -621,21 +621,31 @@ describe('value', () => {
 
         const d = new Date(500000000000);
 
-        const logsR = await value.getReportLog({ limit: 1 });
+        const logsR = await value.getReportLog({ limit: 1, end: d });
         const logsC = await value.getControlLog({ start: d });
+        await value.getControlLog({ end: '2022-02-02T02:02:02Z' });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/log/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7/state',
             {
-                params: { limit: 1 },
+                params: { limit: 1, end: '1985-11-05T00:53:20.000Z' },
             }
         );
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
             '/2.1/log/1b743fa5-85a1-48e9-935c-b98ba27c0ffe/state',
             {
-                params: { start: d },
+                params: { start: '1985-11-05T00:53:20.000Z' },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/log/1b743fa5-85a1-48e9-935c-b98ba27c0ffe/state',
+            {
+                params: { end: '2022-02-02T02:02:02Z' },
             }
         );
 
@@ -1427,11 +1437,11 @@ describe('value', () => {
         expect(value_xml.blob).toBe(undefined);
         expect(value_xml.xml?.xsd).toBe('');
 
-        const value_number2 = await device.createValue(
-            'test',
-            'r',
-            ValueTemplate.NUMBER
-        );
+        const value_number2 = await device.createValue({
+            name: 'test',
+            permission: 'r',
+            template: ValueTemplate.NUMBER,
+        });
         expect(value_number2.number?.max).toBe(128);
 
         expect(value_number).toBe(value_string);
@@ -1937,5 +1947,73 @@ describe('value', () => {
         );
 
         expect(values.length).toEqual(32);
+    });
+
+    it('can send log values to log_zip', async () => {
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const state = new State('Report');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        await value.report([
+            { timestamp: '2022-02-02T02:02:01Z', data: 1 },
+            { timestamp: '2022-02-02T02:02:02Z', data: 2 },
+            { timestamp: '2022-02-02T02:02:03Z', data: 3 },
+            { timestamp: '2022-02-02T02:02:04Z', data: 4 },
+        ]);
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            {
+                data: '4',
+                meta: {
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                    type: 'state',
+                    version: '2.1',
+                },
+                timestamp: '2022-02-02T02:02:04Z',
+                type: 'Report',
+            },
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/log_zip',
+            'state_id,data,timestamp#6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7,1,2022-02-02T02:02:01Z#6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7,2,2022-02-02T02:02:02Z#6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7,3,2022-02-02T02:02:03Z#'
+                .split('#')
+                .join('\n'),
+            { headers: { 'Content-type': 'text/csv' } }
+        );
+
+        await value.report([{ timestamp: '2022-02-02T02:02:01Z', data: 1 }]);
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+    });
+
+    it('can send log values for Control', async () => {
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const state = new State('Control');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        await value.report([
+            { timestamp: '2022-02-02T02:02:01Z', data: 1 },
+            { timestamp: '2022-02-02T02:02:02Z', data: 2 },
+        ]);
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
     });
 });

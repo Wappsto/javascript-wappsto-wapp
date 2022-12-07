@@ -245,7 +245,7 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.1/value/c5a73d64-b398-434e-a236-df15342339d5/state',
             expect.objectContaining({
-                data: '',
+                data: 'NA',
                 meta: { type: 'state', version: '2.1' },
                 type: 'Report',
             }),

@@ -16,6 +16,7 @@ import {
     IValueXml,
     ValueType,
     ValuePermission,
+    ICreateValue,
 } from '../util/interfaces';
 import {
     generateFilterRequest,
@@ -216,10 +217,20 @@ export class Device extends ConnectionModel implements IDevice {
 
         const poms: any[] = [];
         if (['r', 'rw', 'wr'].includes(params.permission)) {
-            poms.push(value.createState({ type: 'Report' }));
+            poms.push(
+                value.createState({
+                    type: 'Report',
+                    data: params.initialState?.toString(),
+                })
+            );
         }
         if (['w', 'rw', 'wr'].includes(params.permission)) {
-            poms.push(value.createState({ type: 'Control' }));
+            poms.push(
+                value.createState({
+                    type: 'Control',
+                    data: params.initialState?.toString(),
+                })
+            );
         }
         await Promise.all(poms);
 
@@ -229,22 +240,41 @@ export class Device extends ConnectionModel implements IDevice {
     }
 
     public createValue(
-        name: string,
-        permission: ValuePermission,
-        valueTemplate: ValueType,
+        name: string | ICreateValue,
+        permission?: ValuePermission,
+        valueTemplate?: ValueType,
         period: number | string = 0,
         delta: number | 'inf' = 0,
         disableLog?: boolean
     ): Promise<Value> {
         this.validate('createValue', arguments);
+        let template = valueTemplate;
 
-        valueTemplate.name = name;
-        valueTemplate.permission = permission;
-        valueTemplate.period = period;
-        valueTemplate.delta = delta?.toString();
-        valueTemplate.disableLog = disableLog;
+        if (typeof name === 'string') {
+            if (template === undefined) {
+                throw new Error(
+                    'Missing parameter valueTemplate in createvalue'
+                );
+            }
+            if (permission === undefined) {
+                throw new Error('Missing parameter permission in createvalue');
+            }
+            template.name = name;
+            template.permission = permission;
+            template.period = period;
+            template.delta = delta?.toString();
+            template.disableLog = disableLog;
+        } else {
+            template = name.template;
+            template.name = name.name;
+            template.permission = name.permission;
+            template.period = name.period || 0;
+            template.delta = name.delta?.toString() || '0';
+            template.disableLog = name.disableLog;
+            template.initialState = name.initialState;
+        }
 
-        return this._createValue(valueTemplate);
+        return this._createValue(template);
     }
 
     private getValueBase(

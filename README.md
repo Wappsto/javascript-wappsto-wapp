@@ -114,16 +114,17 @@ createValue. If a value exsists with the given name, the existing
 value will be returned.
 There will also be created the states nedded based on the
 permission. The only allowed values for permission is 'r', 'w' and
-'rw'.
+'rw'. The state will have 'NA' as the initial data. This can be changed by
+setting the `initialState` when creating the value.
 The list of avaible value templates can be seen in the
 [value_template.ts](../main/src/util/value_template.ts) file.
 
 ```javascript
-let value = await device.createValue(
-    'Temperature',
-    'r',
-    Wappsto.ValueTemplate.TEMPERATURE_CELSIUS
-);
+let value = await device.createValue({
+    name: 'Temperature',
+    permission: 'r',
+    template: Wappsto.ValueTemplate.TEMPERATURE_CELSIUS
+});
 ```
 
 It is also possible to define a period for how often the library
@@ -137,13 +138,13 @@ one hour new temperature value is bigger than 2 [deg.] of previous
 temperature value.
 
 ```javascript
-let value = await device.createValue(
-    'Temperature',
-    'r',
-    Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
-    3600,
-    '2'
-);
+let value = await device.createValue({
+    name: 'Temperature',
+    permission: 'r',
+    template: Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
+    period: 3600,
+    delta: '2'
+});
 ```
 
 It is also possible to define a value where the data is not put into
@@ -152,14 +153,12 @@ the historical log. This is done by setting the `disableLog` to
 of the createValue funciton.
 
 ```javascript
-let value = await device.createValue(
-    'Temperature',
-    'r',
-    Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
-    3600,
-    '2',
-    true
-);
+let value = await device.createValue({
+    name: 'Temperature',
+    permission: 'r',
+    template: Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
+    disableLog: true
+});
 ```
 
 There are some helper functions to create custom number, string, blob
@@ -178,6 +177,7 @@ let value = await device.createNumberValue({
     unit: 'count',
     si_conversion: 'c',
     disableLog: false,
+    initialState: 0,
 });
 ```
 
@@ -185,7 +185,7 @@ To create a custom string value:
 
 ```javascript
 let value = await device.createStringValue({
-    name: 'Value Name',
+    name: 'String Value Name',
     permission: 'rw',
     type: 'debug',
     max: 10,
@@ -193,13 +193,38 @@ let value = await device.createStringValue({
 });
 ```
 
+To create a custom blob value:
+
+```javascript
+let value = await device.createBlobValue({
+    name: 'Blob Value Name',
+    permission: 'r',
+    type: 'binary',
+    max: 10,
+    encoding: 'binary',
+});
+```
+
+To create a custom xml value:
+
+```javascript
+let value = await device.createBlobValue({
+    name: 'XML Value Name',
+    permission: 'rw',
+    type: 'config',
+    namespace: 'seluxit'
+    xsd: 'https://xsd.com/test.xsd',
+});
+```
+
 ### To report a change in the value
 
 To send a new data point to wappsto, just call the `report` function
-on the value.
+on the value. If you omit the timestamp, it will get the curren time as timestamp.
 
 ```javascript
 await value.report('1');
+await value.report('1', '2022-02-02T02:02:02Z');
 ```
 
 And to get the last reported data and timestamp.
@@ -207,6 +232,16 @@ And to get the last reported data and timestamp.
 ```javascript
 let data = value.getReportData();
 let timestamp = value.getReportTimestamp();
+```
+
+If you need to report multiple historical data, you can speficy an array of data, timestamp pairs.
+
+```javascript
+await value.report([
+	{ data: 1, timestamp: '2022-02-02T02:02:01Z' },
+	{ data: 2, timestamp: '2022-02-02T02:02:02Z' },
+	{ data: 3, timestamp: '2022-02-02T02:02:03Z' },
+]);
 ```
 
 ### Listing for requests to refresh the value
@@ -747,6 +782,16 @@ To load all the ontology edges from an object, you can call `getAllEdges`.
 
 ```javascript
 const edges = await node.getAllEdges();
+```
+
+To the models that the edge points to is avaible in the `models` attribute.
+
+```javascript
+edges.forEach((edge) => {
+	edge.models.forEach((model) => {
+		console.log(`The edge points to ${model.name}`);
+	});
+});
 ```
 
 The edges are only loaded once, so if you need to refresh the edges from
