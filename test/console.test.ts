@@ -24,12 +24,14 @@ describe('console', () => {
         expect(mockedAxios.post).not.toHaveBeenCalled();
     });
 
-    it('can send log messages to wappsto', () => {
+    it('can send log messages to wappsto', async () => {
         startLogging();
         console.log('test start');
         console.info('test start');
         console.error('test start');
         console.warn('test start');
+
+        await new Promise((r) => setTimeout(r, 1));
         expect(mockedAxios.post).toHaveBeenCalledTimes(4);
     });
 });

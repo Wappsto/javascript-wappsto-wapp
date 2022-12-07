@@ -1,35 +1,63 @@
 import wappsto from './util/http_wrapper';
-import { printDebug, printWarning } from './util/debug';
+import { printError, printDebug, printWarning } from './util/debug';
 import { isBrowser, toString } from './util/helpers';
 
 const defaultConsole = Object.assign({}, console);
 let stopExtSync = false;
+let debugQueue: any[] = [];
 
-function newFunc(name: string) {
-    return function (...args: any[]) {
-        if (!stopExtSync) {
-            sendExtsync(name, arguments);
-        }
-        defaultConsole.log(...args);
-    };
-}
-
-function sendExtsync(key: string, ...args: any[]): any {
+function generateExtsyncMessage(key: string, ...args: any[]): any {
     const time = new Date().toISOString();
     const data = toString({
         key: key,
         arguments: args[0],
         time: time,
     });
+    return data;
+}
 
+async function sendExtsync(data: any): Promise<any> {
+    let res;
     try {
-        return wappsto.post('/2.1/extsync/wappsto/editor/console', data);
+        res = await wappsto.post('/2.1/extsync/wappsto/editor/console', data);
     } catch (e: any) {
-        /* istanbul ignore next */
-        stopExtSync = true;
-        /* istanbul ignore next */
         printDebug(e);
+        return false;
     }
+    return res;
+}
+
+async function sendDebugQueue() {
+    if (debugQueue.length === 0) {
+        return;
+    }
+
+    const event = debugQueue[0];
+
+    const res = await sendExtsync(event);
+    if (res === false) {
+        stopExtSync = true;
+        printError(
+            `Stopping background logging - discarding ${debugQueue.length} messages`
+        );
+        debugQueue = [];
+        return;
+    }
+
+    debugQueue.shift();
+    sendDebugQueue();
+}
+
+function newFunc(name: string) {
+    return function (...args: any[]) {
+        if (!stopExtSync) {
+            debugQueue.push(generateExtsyncMessage(name, arguments));
+            if (debugQueue.length === 1) {
+                sendDebugQueue();
+            }
+        }
+        defaultConsole.log(...args);
+    };
 }
 
 export function backgroundLogging(): void {
@@ -41,7 +69,7 @@ export function backgroundLogging(): void {
     /* istanbul ignore next */
     process.on('uncaughtException', (err) => {
         defaultConsole.error(err);
-        const req = sendExtsync('error', [err.stack]);
+        const req = sendExtsync(generateExtsyncMessage('error', [err.stack]));
         req.finally(function () {
             process.exit(1);
         });

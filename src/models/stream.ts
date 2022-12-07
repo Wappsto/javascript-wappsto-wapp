@@ -1,3 +1,4 @@
+import WebSocket from 'universal-websocket-client';
 import { Model } from './model';
 import { session, baseUrl } from '../session';
 import { _config } from '../util/config';
@@ -12,8 +13,6 @@ import {
     RequestHandler,
     IStreamModel,
 } from '../util/interfaces';
-/* eslint-disable @typescript-eslint/no-var-requires */
-const WebSocket = require('universal-websocket-client');
 
 export class IgnoreError extends Error {
     constructor(msg: string) {

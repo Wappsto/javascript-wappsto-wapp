@@ -6,6 +6,9 @@
     "main": "dist/wappsto-wapp.cjs.production.min.js",
     "module": "dist/wappsto-wapp.esm.js",
     "typings": "dist/index.d.ts",
+    "include": [
+        "types/*"
+    ],
     "files": [
         "dist/wappsto-wapp.esm.js",
         "dist/wappsto-wapp.cjs.production.min.js",
@@ -93,6 +96,7 @@
         "@types/lodash.omit": "^4.5.7",
         "@types/lodash.pick": "^4.4.7",
         "@types/node": "^18.11.11",
+        "@types/websocket": "^1.0.5",
         "@types/ws": "^8.5.3",
         "browserify": "^17.0.0",
         "dts-cli": "^1.6.0",

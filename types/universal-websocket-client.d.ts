@@ -1,0 +1,1 @@
+declare module 'universal-websocket-client' extends WebSocket;

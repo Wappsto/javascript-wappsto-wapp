@@ -5,7 +5,7 @@ import { plainToClass } from 'class-transformer';
 import { isUUID, replaceAll } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
-import { printError } from '../util/debug';
+import { printError, printDebug } from '../util/debug';
 import { _config } from '../util/config';
 import { getTraceId } from '../util/trace';
 import { IMeta, IModel, FetchRequest, Filter } from '../util/interfaces';
@@ -140,14 +140,10 @@ export class Model implements IModel {
             return;
         }
 
-        const event = this.updateQueue.shift();
+        printDebug(`Processing update queue: ${this.updateQueue.length}`);
+        const event = this.updateQueue[0];
         try {
-            let func;
-            if (this.usePutForUpdate()) {
-                func = wappsto.put;
-            } else {
-                func = wappsto.patch;
-            }
+            const func = this.usePutForUpdate() ? wappsto.put : wappsto.patch;
             const response = await func(
                 this.getUrl(),
                 event.data,
@@ -160,12 +156,17 @@ export class Model implements IModel {
             event.resolve(false);
         }
 
+        this.updateQueue.shift();
+
         this._update();
     }
 
     public async update(): Promise<boolean> {
         if (this.meta.id !== undefined) {
             return new Promise<boolean>((resolve) => {
+                printDebug(
+                    `Adding to update queue: ${this.updateQueue.length}`
+                );
                 this.updateQueue.push({ data: this.toJSON(), resolve });
                 if (this.updateQueue.length === 1) {
                     this._update();
