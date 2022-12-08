@@ -1,5 +1,5 @@
 import wappsto from './util/http_wrapper';
-import { printError, printDebug, printWarning } from './util/debug';
+import { printError, printWarning } from './util/debug';
 import { isBrowser, toString } from './util/helpers';
 
 const defaultConsole = Object.assign({}, console);
@@ -21,8 +21,14 @@ async function sendExtsync(data: any): Promise<any> {
     try {
         res = await wappsto.post('/2.1/extsync/wappsto/editor/console', data);
     } catch (e: any) {
-        printDebug(e);
-        return false;
+        printError(`Failed to send debug message (${e})`, defaultConsole);
+        if (e.response) {
+            if (e.response.data && e.response.data.code === 117000000) {
+                return false;
+            }
+            return e.response;
+        }
+        return null;
     }
     return res;
 }
@@ -73,6 +79,11 @@ export function backgroundLogging(): void {
         req.finally(function () {
             process.exit(1);
         });
+    });
+
+    /* istanbul ignore next */
+    process.on('unhandledRejection', (reason, promise) => {
+        console.warn('Unhandled Rejection at:', promise, 'reason:', reason);
     });
 }
 

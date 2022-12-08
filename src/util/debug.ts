@@ -22,12 +22,12 @@ export function printRequest(
     }
 }
 
-export function printError(message: string | unknown): void {
+export function printError(message: string | unknown, stdout = console): void {
     if (typeof message === 'string') {
-        console.error(`WAPPSTO ERROR: ${message}`);
+        stdout.error(`WAPPSTO ERROR: ${message}`);
     } else {
         const e = message as Error;
-        console.error(`WAPPSTO ERROR: ${e.stack}`);
+        stdout.error(`WAPPSTO ERROR: ${e.stack}`);
     }
 }
 
