@@ -37,6 +37,7 @@ import {
     ValueStreamCallback,
     LogValues,
 } from '../util/interfaces';
+import { addModel } from '../util/modelStore';
 
 export class Value extends StreamModel implements IValueBase {
     static endpoint = '/2.1/value';
@@ -260,6 +261,7 @@ export class Value extends StreamModel implements IValueBase {
                 if (newState) {
                     if (data) {
                         newState.parse(data);
+                        addModel(newState);
                     }
                     newState.parent = this;
                     this.state.push(newState);
@@ -276,6 +278,7 @@ export class Value extends StreamModel implements IValueBase {
                 } else if (reloadAll) {
                     await this.state[i].reload();
                 }
+                addModel(this.state[i]);
             }
         }
     }

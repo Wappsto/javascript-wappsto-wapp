@@ -14,7 +14,7 @@ import {
 } from '../src/index';
 import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
-import { responses } from './util/response';
+import { fullNetworkResponse, responses } from './util/response';
 
 describe('Ontology', () => {
     beforeAll(() => {
@@ -1297,7 +1297,52 @@ describe('Ontology', () => {
         expect(edges[0].models.length).toBe(19);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.get).toHaveBeenCalledTimes(8);
-    }); /*
+    });
+
+    it('can link objects from fetchByName to ontology', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [fullNetworkResponse] })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            id: '8f364a18-34e2-480b-ade5-90f7c146d592',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                        relationship: 'child',
+                        to: {
+                            device: ['e65ec3eb-04f1-4253-bd1b-b989b1204b81'],
+                        },
+                    },
+                ],
+            });
+
+        const networks = await Network.fetchByName('test');
+        const d1 = networks[0].device[0];
+
+        const edges = await networks[0].getAllEdges();
+        const d2 = edges[0].models[0] as Device;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
+            params: { expand: 3, go_internal: true, 'this_name=': 'test' },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/network/b62e285a-5188-4304-85a0-3982dcb575bc/ontology',
+            { params: { expand: 1, go_internal: true } }
+        );
+
+        expect(d1.id()).toEqual(d2.id());
+        expect(d1.toJSON()).toEqual(d2.toJSON());
+
+        d1.name = 'new name';
+        expect(d2.name).toEqual(d1.name);
+    });
+
     /*
     it('can load the EMS network', async () => {
         mockedAxios.get.mockResolvedValueOnce(ems_reply);

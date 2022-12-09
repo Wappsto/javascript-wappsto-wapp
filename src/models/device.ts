@@ -23,6 +23,7 @@ import {
     convertFilterToJson,
     convertFilterToString,
 } from '../util/helpers';
+import { addModel } from '../util/modelStore';
 import { ValueTemplate } from '../util/value_template';
 
 export class Device extends ConnectionModel implements IDevice {
@@ -149,6 +150,7 @@ export class Device extends ConnectionModel implements IDevice {
                             newValue = new Value();
                             newValue.parse(data);
                             newValue.parent = this;
+                            addModel(newValue);
                             this.value.push(newValue);
                             proms.push(newValue.loadAllChildren(data, false));
                         } else {
@@ -162,6 +164,7 @@ export class Device extends ConnectionModel implements IDevice {
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'object') {
                 this.value[i].parent = this;
+                addModel(this.value[i]);
                 if (values === undefined) {
                     proms.push(this.value[i].loadAllChildren(null, false));
                 }

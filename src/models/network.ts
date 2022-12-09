@@ -11,6 +11,7 @@ import {
     convertFilterToJson,
     convertFilterToString,
 } from '../util/helpers';
+import { addModel } from '../util/modelStore';
 import { IModel, INetwork, IDevice, Filter } from '../util/interfaces';
 
 export async function createNetwork(params: INetwork): Promise<Network> {
@@ -160,6 +161,7 @@ export class Network extends ConnectionModel implements INetwork {
                             newDevice = new Device();
                             newDevice.parse(data);
                             newDevice.parent = this;
+                            addModel(newDevice);
                             this.device.push(newDevice);
                             proms.push(newDevice.loadAllChildren(data, false));
                         } else {
@@ -172,6 +174,7 @@ export class Network extends ConnectionModel implements INetwork {
 
         for (let i = 0; i < this.device.length; i++) {
             if (typeof this.device[i] === 'object') {
+                addModel(this.device[i]);
                 this.device[i].parent = this;
                 if (devices === undefined) {
                     proms.push(this.device[i].loadAllChildren(null, false));
@@ -378,6 +381,7 @@ export class Network extends ConnectionModel implements INetwork {
         }
         const data = await Model.fetch({ endpoint: Network.endpoint, params });
         const networks = Network.fromArray(data);
+
         const poms: any[] = [];
         networks.forEach((net) => {
             poms.push(net.loadAllChildren(null));
