@@ -1446,8 +1446,9 @@ describe('Ontology', () => {
                     },
                 ],
             })
-            .mockResolvedValueOnce({ data:[]}).mockResolvedValueOnce({ data:[]}).mockResolvedValueOnce({ data:[]});
-
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
 
         const networks = await Network.fetchByName('EMS Configurator');
         const network = networks[0];
@@ -1473,7 +1474,7 @@ describe('Ontology', () => {
                 });
             });
         });
-        expect(names).toEqual(['testing','','','']);
+        expect(names).toEqual(['testing', '', '', '']);
     });
     /*
     it('can load the EMS network', async () => {
