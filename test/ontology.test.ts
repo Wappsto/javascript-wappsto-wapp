@@ -1319,10 +1319,7 @@ describe('Ontology', () => {
             });
 
         const networks = await Network.fetchByName('test');
-        const d1 = networks[0].device[0];
-
         const edges = await networks[0].getAllEdges();
-        const d2 = edges[0].models[0] as Device;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
@@ -1336,13 +1333,148 @@ describe('Ontology', () => {
             { params: { expand: 1, go_internal: true } }
         );
 
+        const d1 = networks[0].device[0];
+        const d2 = edges[0].models[0] as Device;
+
         expect(d1.id()).toEqual(d2.id());
         expect(d1.toJSON()).toEqual(d2.toJSON());
 
         d1.name = 'new name';
         expect(d2.name).toEqual(d1.name);
+
+        networks.forEach((net) => {
+            net.device.forEach((dev) => {
+                dev.name = 'testing';
+            });
+        });
+
+        const names: string[] = [];
+        networks.forEach((net) => {
+            net.ontology.forEach((edge) => {
+                edge.models.forEach((model) => {
+                    if (model.meta.type === 'device') {
+                        names.push((model as Device).name);
+                    }
+                });
+            });
+        });
+        expect(names).toEqual(['testing']);
     });
 
+    it('can link objects from EMS to ontology', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: responses['ems_network'] })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        from: {
+                            network: ['99061ade-2aa1-445d-83cf-868559770026'],
+                        },
+                        to: {
+                            device: ['74f15b96-ac61-4550-9970-f957a3281f9a'],
+                        },
+                        relationship: 'contains',
+                        meta: {
+                            id: '77cbc4a6-1bba-47b9-b087-155b281bd9af',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        from: {
+                            device: ['74f15b96-ac61-4550-9970-f957a3281f9a'],
+                        },
+                        to: {
+                            device: ['f269650d-d4a8-4745-80f8-5791fadf5e73'],
+                        },
+                        relationship: 'contains',
+                        meta: {
+                            id: '0cbae50e-2131-4ec3-842f-e930d2d32175',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                    },
+                    {
+                        from: {
+                            device: ['74f15b96-ac61-4550-9970-f957a3281f9a'],
+                        },
+                        to: {
+                            device: ['2af6d04a-b833-4b37-a921-e82c8448e4bb'],
+                        },
+                        relationship: 'contains',
+                        meta: {
+                            id: 'b639721f-7413-4ea8-a398-5abaa5fec583',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        from: {
+                            device: ['f269650d-d4a8-4745-80f8-5791fadf5e73'],
+                        },
+                        to: {
+                            device: ['c7fb2303-07a4-4793-b63a-0865ff785633'],
+                        },
+                        relationship: 'contains',
+                        meta: {
+                            id: '626b5a95-4812-4395-977a-21c6055e5509',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                    },
+                    {
+                        from: {
+                            device: ['f269650d-d4a8-4745-80f8-5791fadf5e73'],
+                        },
+                        to: {
+                            device: ['8b388544-76f0-42cb-ba2a-0189ce17ce4e'],
+                        },
+                        relationship: 'contains',
+                        meta: {
+                            id: 'b783fedd-caf8-4c18-b17d-b31fad967fb4',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({ data:[]}).mockResolvedValueOnce({ data:[]}).mockResolvedValueOnce({ data:[]});
+
+
+        const networks = await Network.fetchByName('EMS Configurator');
+        const network = networks[0];
+
+        const poms = [];
+        poms.push(network.getAllEdges(true));
+        network.device.forEach((dev) => {
+            poms.push(dev.getAllEdges(true));
+        });
+        await Promise.all(poms);
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(7);
+
+        network.device.forEach((dev) => {
+            dev.name = 'testing';
+        });
+
+        const names: string[] = [];
+        network.device.forEach((dev) => {
+            dev.ontology.forEach((edge) => {
+                edge.models.forEach((model) => {
+                    names.push((model as Device).name);
+                });
+            });
+        });
+        expect(names).toEqual(['testing','','','']);
+    });
     /*
     it('can load the EMS network', async () => {
         mockedAxios.get.mockResolvedValueOnce(ems_reply);

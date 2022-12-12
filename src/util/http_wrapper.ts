@@ -12,6 +12,7 @@ const axiosInstance = axios.create({
         'X-Session': session,
         'Content-Type': 'application/json',
     },
+    timeout: 60*1000,
 });
 
 async function wrap(func: Methods, url: string, data?: any, config?: any) {
