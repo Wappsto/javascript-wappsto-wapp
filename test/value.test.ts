@@ -1961,13 +1961,15 @@ describe('value', () => {
         state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
 
-        await value.report([
+        const data = [
             { timestamp: '2022-02-02T02:02:01Z', data: 1 },
             { timestamp: '2022-02-02T02:02:02Z', data: 2 },
             { timestamp: '2022-02-02T02:02:03Z', data: 3 },
             { timestamp: '2022-02-02T02:02:04Z', data: 4 },
-        ]);
+        ];
+        await value.report(data);
 
+        expect(data.length).toBe(4);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
 

@@ -553,19 +553,20 @@ export class Value extends StreamModel implements IValueBase {
             return false;
         }
 
-        const id = state.meta.id;
-        const lastData = data.pop();
+        const logData = data.slice(0);
+        const lastData = logData.pop();
         if (lastData) {
             await this.report(lastData.data, lastData.timestamp);
         }
 
-        if (data.length === 0) {
+        if (logData.length === 0) {
             return true;
         }
 
+        const id = state.meta.id;
         let offset = 0;
         do {
-            const tmpData = data.slice(offset, offset + 50000);
+            const tmpData = logData.slice(offset, offset + 50000);
             const csvStr = tmpData.reduce((p, c) => {
                 return `${p}${id},${c.data},${c.timestamp}\n`;
             }, 'state_id,data,timestamp\n');
@@ -574,7 +575,7 @@ export class Value extends StreamModel implements IValueBase {
                 headers: { 'Content-type': 'text/csv' },
             });
             offset += 50000;
-        } while (offset < data.length);
+        } while (offset < logData.length);
 
         return true;
     }
