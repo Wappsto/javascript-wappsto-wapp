@@ -56,7 +56,7 @@ async function sendDebugQueue() {
 
 function newFunc(name: string) {
     return function (...args: any[]) {
-        if (!stopExtSync) {
+        if (process.env.DISABLE_LOG === undefined && !stopExtSync) {
             debugQueue.push(generateExtsyncMessage(name, arguments));
             if (debugQueue.length === 1) {
                 sendDebugQueue();
