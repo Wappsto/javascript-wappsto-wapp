@@ -728,13 +728,29 @@ export class Value extends StreamModel implements IValueBase {
         return this.findStateAndLog('Control', request);
     }
 
+    /*public analyzeEnergy(start: Timestamp, end: Timestamp): any {
+        const report = this.findState('Report');
+        if(!report) {
+            return null;
+        }
+
+
+    }*/
+
     static find = async (
         params: Record<string, any>,
         quantity: number | 'all' = 1,
+        readOnly = false,
         usage = '',
         filterRequest?: Record<string, any>
     ) => {
-        Value.validate('find', [params, quantity, usage]);
+        Value.validate('find', [
+            params,
+            quantity,
+            readOnly,
+            usage,
+            filterRequest,
+        ]);
         if (usage === '') {
             usage = `Find ${quantity} value`;
         }
@@ -753,7 +769,8 @@ export class Value extends StreamModel implements IValueBase {
             quantity,
             usage,
             query,
-            filterRequest
+            filterRequest,
+            readOnly
         );
 
         const values = Value.fromArray(data);
@@ -787,42 +804,45 @@ export class Value extends StreamModel implements IValueBase {
     static findByName = (
         name: string,
         quantity: number | 'all' = 1,
+        readOnly = false,
         usage = ''
     ) => {
-        Value.validate('findByName', [name, quantity, usage]);
+        Value.validate('findByName', [name, quantity, readOnly, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with name ${name}`;
         }
-        return Value.find({ name: name }, quantity, usage);
+        return Value.find({ name: name }, quantity, readOnly, usage);
     };
 
     static findByType = (
         type: string,
         quantity: number | 'all' = 1,
+        readOnly = false,
         usage = ''
     ) => {
-        Value.validate('findByType', [type, quantity, usage]);
+        Value.validate('findByType', [type, quantity, readOnly, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with type ${type}`;
         }
-        return Value.find({ type: type }, quantity, usage);
+        return Value.find({ type: type }, quantity, readOnly, usage);
     };
 
-    static findAllByName = (name: string, usage = '') => {
-        Value.validate('findAllByName', [name, usage]);
-        return Value.findByName(name, 'all', usage);
+    static findAllByName = (name: string, readOnly = false, usage = '') => {
+        Value.validate('findAllByName', [name, readOnly, usage]);
+        return Value.findByName(name, 'all', readOnly, usage);
     };
 
-    static findAllByType = (type: string, usage = '') => {
-        Value.validate('findAllByType', [type, usage]);
-        return Value.findByType(type, 'all', usage);
+    static findAllByType = (type: string, readOnly = false, usage = '') => {
+        Value.validate('findAllByType', [type, readOnly, usage]);
+        return Value.findByType(type, 'all', readOnly, usage);
     };
 
-    static findById = async (id: string) => {
-        Value.validate('findById', [id]);
+    static findById = async (id: string, readOnly = false) => {
+        Value.validate('findById', [id, readOnly]);
         const values = await Value.find(
             { 'meta.id': id },
             1,
+            readOnly,
             `Find value with id ${id}`
         );
         return values[0];
@@ -832,9 +852,16 @@ export class Value extends StreamModel implements IValueBase {
         filter: Filter,
         omit_filter: Filter = {},
         quantity: number | 'all' = 1,
+        readOnly = false,
         usage = ''
     ) => {
-        Value.validate('findByFilter', [filter, omit_filter, quantity, usage]);
+        Value.validate('findByFilter', [
+            filter,
+            omit_filter,
+            quantity,
+            readOnly,
+            usage,
+        ]);
         if (usage === '') {
             usage = `Find ${quantity} value using filter`;
         }
@@ -842,16 +869,22 @@ export class Value extends StreamModel implements IValueBase {
             Value.getFilter(filter, omit_filter),
             Value.getFilterResult(filter, omit_filter)
         );
-        return await Value.find({}, quantity, usage, filterRequest);
+        return await Value.find({}, quantity, readOnly, usage, filterRequest);
     };
 
     static findAllByFilter = async (
         filter: Filter,
         omit_filter: Filter = {},
+        readOnly = false,
         usage = ''
     ) => {
-        Value.validate('findAllByFilter', [filter, omit_filter, usage]);
-        return Value.findByFilter(filter, omit_filter, 'all', usage);
+        Value.validate('findAllByFilter', [
+            filter,
+            omit_filter,
+            readOnly,
+            usage,
+        ]);
+        return Value.findByFilter(filter, omit_filter, 'all', readOnly, usage);
     };
 
     private static validate(name: string, params: any): void {

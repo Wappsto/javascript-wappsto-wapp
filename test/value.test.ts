@@ -255,7 +255,7 @@ describe('value', () => {
     it('can find a value by name and extra parameters', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [response, response] });
 
-        const value = await Value.findByName('test', 2, 'msg');
+        const value = await Value.findByName('test', 2, true, 'msg');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
@@ -266,7 +266,7 @@ describe('value', () => {
                 message: 'msg',
                 identifier: 'value-2-msg',
                 this_name: '=test',
-                method: ['retrieve', 'update'],
+                method: ['retrieve'],
             },
         });
         expect(value[0].meta.id).toEqual(

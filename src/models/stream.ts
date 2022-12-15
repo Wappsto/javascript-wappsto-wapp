@@ -97,7 +97,7 @@ export class Stream extends Model {
             if (isBrowser()) {
                 return Infinity;
             } else {
-                process.exit(-1);
+                process.exit(11);
             }
         }
         return this.backoff * 2 * 1000;

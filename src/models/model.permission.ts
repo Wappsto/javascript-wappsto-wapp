@@ -101,7 +101,8 @@ export class PermissionModel extends OntologyModel {
         quantity: number | 'all',
         message: string,
         params?: Record<string, any>,
-        body?: Record<string, any>
+        body?: Record<string, any>,
+        readOnly?: boolean
     ): Promise<Record<string, any>[]> {
         Model.validateMethod('PermissionModel', 'request', [
             endpoint,
@@ -122,7 +123,8 @@ export class PermissionModel extends OntologyModel {
                 quantity: quantity,
                 message: message,
                 identifier: id,
-                method: ['retrieve', 'update'],
+                method:
+                    readOnly === true ? ['retrieve'] : ['retrieve', 'update'],
             });
             const result = await Model.fetch({
                 endpoint,

@@ -244,10 +244,17 @@ export class Network extends ConnectionModel implements INetwork {
     static find = async (
         params: Record<string, any>,
         quantity: number | 'all' = 1,
+        readOnly = false,
         usage = '',
         filterRequest?: Record<string, any>
     ) => {
-        Network.validate('find', [params, quantity, usage]);
+        Network.validate('find', [
+            params,
+            quantity,
+            readOnly,
+            usage,
+            filterRequest,
+        ]);
         if (usage === '') {
             usage = `Find ${quantity} network`;
         }
@@ -266,7 +273,8 @@ export class Network extends ConnectionModel implements INetwork {
             quantity,
             usage,
             query,
-            filterRequest
+            filterRequest,
+            readOnly
         );
 
         const networks = Network.fromArray(data);
@@ -301,25 +309,27 @@ export class Network extends ConnectionModel implements INetwork {
     static findByName = (
         name: string,
         quantity: number | 'all' = 1,
+        readOnly = false,
         usage = ''
     ) => {
-        Network.validate('findByName', [name, quantity, usage]);
+        Network.validate('findByName', [name, quantity, readOnly, usage]);
         if (usage === '') {
             usage = `Find ${quantity} network with name ${name}`;
         }
-        return Network.find({ name: name }, quantity, usage);
+        return Network.find({ name: name }, quantity, readOnly, usage);
     };
 
-    static findAllByName = (name: string, usage = '') => {
-        Network.validate('findAllByName', [name, usage]);
-        return Network.findByName(name, 'all', usage);
+    static findAllByName = (name: string, readOnly = false, usage = '') => {
+        Network.validate('findAllByName', [name, readOnly, usage]);
+        return Network.findByName(name, 'all', readOnly, usage);
     };
 
-    static findById = async (id: string) => {
-        Network.validate('findById', [id]);
+    static findById = async (id: string, readOnly = false) => {
+        Network.validate('findById', [id, readOnly]);
         const networks = await Network.find(
             { 'meta.id': id },
             1,
+            readOnly,
             `Find network with id ${id}`
         );
         return networks[0];
@@ -329,12 +339,14 @@ export class Network extends ConnectionModel implements INetwork {
         filter: Filter,
         omit_filter: Filter = {},
         quantity: number | 'all' = 1,
+        readOnly = false,
         usage = ''
     ) => {
         Network.validate('findByFilter', [
             filter,
             omit_filter,
             quantity,
+            readOnly,
             usage,
         ]);
         if (usage === '') {
@@ -344,16 +356,28 @@ export class Network extends ConnectionModel implements INetwork {
             Network.getFilter(filter, omit_filter),
             Network.getFilterResult(filter, omit_filter)
         );
-        return await Network.find({}, quantity, usage, filterRequest);
+        return await Network.find({}, quantity, readOnly, usage, filterRequest);
     };
 
     static findAllByFilter = async (
         filter: Filter,
         omit_filter: Filter = {},
+        readOnly = false,
         usage = ''
     ) => {
-        Network.validate('findAllByFilter', [filter, omit_filter, usage]);
-        return Network.findByFilter(filter, omit_filter, 'all', usage);
+        Network.validate('findAllByFilter', [
+            filter,
+            omit_filter,
+            readOnly,
+            usage,
+        ]);
+        return Network.findByFilter(
+            filter,
+            omit_filter,
+            'all',
+            readOnly,
+            usage
+        );
     };
 
     public static fetchById = async (id: string) => {

@@ -4,7 +4,7 @@
 import * as t from 'ts-interface-checker';
 // tslint:disable:object-literal-key-quotes
 
-export const Timestamp = t.union('string', 'number', 'undefined');
+export const Timestamp = t.union('string', 'number', 'undefined', 'Date');
 
 export const ValidationType = t.union(t.lit('none'), t.lit('normal'));
 
@@ -108,6 +108,7 @@ export const INetworkFunc = t.iface([], {
         t.array('INetwork'),
         t.param('options', 'any'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string'),
         t.param('filterRequest', 'any', true)
     ),
@@ -115,25 +116,33 @@ export const INetworkFunc = t.iface([], {
         t.array('INetwork'),
         t.param('name', 'string'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findAllByName: t.func(
         t.array('INetwork'),
         t.param('name', 'string'),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
-    findById: t.func('INetwork', t.param('id', 'string')),
+    findById: t.func(
+        'INetwork',
+        t.param('id', 'string'),
+        t.param('readOnly', 'boolean')
+    ),
     findByFilter: t.func(
         t.array('INetwork'),
         t.param('filter', 'Filter'),
         t.param('omit_filter', 'Filter'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findAllByFilter: t.func(
         t.array('INetwork'),
         t.param('filter', 'Filter'),
         t.param('omit_filter', 'Filter'),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     fetchById: t.func('INetwork', t.param('id', 'string')),
@@ -199,42 +208,53 @@ export const IDeviceFunc = t.iface([], {
         t.array('IDevice'),
         t.param('options', 'any'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findByName: t.func(
         t.array('IDevice'),
         t.param('name', 'string'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findAllByName: t.func(
         t.array('IDevice'),
         t.param('name', 'string'),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findByProduct: t.func(
         t.array('IDevice'),
         t.param('product', 'string'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findAllByProduct: t.func(
         t.array('IDevice'),
         t.param('product', 'string'),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
-    findById: t.func('IDevice', t.param('id', 'string')),
+    findById: t.func(
+        'IDevice',
+        t.param('id', 'string'),
+        t.param('readOnly', 'boolean')
+    ),
     findByFilter: t.func(
         t.array('IDevice'),
         t.param('filter', 'Filter'),
         t.param('omit_filter', 'Filter'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findAllByFilter: t.func(
         t.array('IDevice'),
         t.param('filter', 'Filter'),
         t.param('omit_filter', 'Filter'),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     fetchById: t.func('IDevice', t.param('id', 'string')),
@@ -258,7 +278,7 @@ export const IPermissionModelFunc = t.iface([], {
 });
 
 export const LogValue = t.iface([], {
-    timestamp: t.union('string', 'Date'),
+    timestamp: 'Timestamp',
     data: t.union('string', 'number'),
 });
 
@@ -375,42 +395,53 @@ export const IValueFunc = t.iface([], {
         t.array('ValueType'),
         t.param('options', 'any'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findByName: t.func(
         t.array('ValueType'),
         t.param('name', 'string'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findByType: t.func(
         t.array('ValueType'),
         t.param('type', 'string'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findAllByName: t.func(
         t.array('ValueType'),
         t.param('name', 'string'),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findAllByType: t.func(
         t.array('ValueType'),
         t.param('type', 'string'),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
-    findById: t.func('ValueType', t.param('id', 'string')),
+    findById: t.func(
+        'ValueType',
+        t.param('id', 'string'),
+        t.param('readOnly', 'boolean')
+    ),
     findByFilter: t.func(
         t.array('ValueType'),
         t.param('filter', 'Filter'),
         t.param('omit_filter', 'Filter'),
         t.param('quantity', t.union('number', t.lit('all'))),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     findAllByFilter: t.func(
         t.array('ValueType'),
         t.param('filter', 'Filter'),
         t.param('omit_filter', 'Filter'),
+        t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
     ),
     fetchById: t.func('ValueType', t.param('id', 'string')),

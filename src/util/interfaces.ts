@@ -99,25 +99,33 @@ export interface INetworkFunc {
     find(
         options: Record<string, any>,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string,
         filterRequest?: Record<string, any>
     ): Promise<INetwork[]>;
     findByName(
         name: string,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): Promise<INetwork[]>;
-    findAllByName(name: string, usage: string): Promise<INetwork[]>;
-    findById(id: string): Promise<INetwork>;
+    findAllByName(
+        name: string,
+        readOnly: boolean,
+        usage: string
+    ): Promise<INetwork[]>;
+    findById(id: string, readOnly: boolean): Promise<INetwork>;
     findByFilter(
         filter: Filter,
         omit_filter: Filter,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): Promise<INetwork[]>;
     findAllByFilter(
         filter: Filter,
         omit_filter: Filter,
+        readOnly: boolean,
         usage: string
     ): Promise<INetwork[]>;
     fetchById(id: string): Promise<INetwork>;
@@ -167,30 +175,39 @@ export interface IDeviceFunc {
     find(
         options: Record<string, any>,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): IDevice[];
     findByName(
         name: string,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): IDevice[];
-    findAllByName(name: string, usage: string): IDevice[];
+    findAllByName(name: string, readOnly: boolean, usage: string): IDevice[];
     findByProduct(
         product: string,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): IDevice[];
-    findAllByProduct(product: string, usage: string): IDevice[];
-    findById(id: string): IDevice;
+    findAllByProduct(
+        product: string,
+        readOnly: boolean,
+        usage: string
+    ): IDevice[];
+    findById(id: string, readOnly: boolean): IDevice;
     findByFilter(
         filter: Filter,
         omit_filter: Filter,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): Promise<IDevice[]>;
     findAllByFilter(
         filter: Filter,
         omit_filter: Filter,
+        readOnly: boolean,
         usage: string
     ): Promise<IDevice[]>;
     fetchById(id: string): IDevice;
@@ -288,30 +305,35 @@ export interface IValueFunc {
     find(
         options: Record<string, any>,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): ValueType[];
     findByName(
         name: string,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): ValueType[];
     findByType(
         type: string,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): ValueType[];
-    findAllByName(name: string, usage: string): ValueType[];
-    findAllByType(type: string, usage: string): ValueType[];
-    findById(id: string): ValueType;
+    findAllByName(name: string, readOnly: boolean, usage: string): ValueType[];
+    findAllByType(type: string, readOnly: boolean, usage: string): ValueType[];
+    findById(id: string, readOnly: boolean): ValueType;
     findByFilter(
         filter: Filter,
         omit_filter: Filter,
         quantity: number | 'all',
+        readOnly: boolean,
         usage: string
     ): Promise<ValueType[]>;
     findAllByFilter(
         filter: Filter,
         omit_filter: Filter,
+        readOnly: boolean,
         usage: string
     ): Promise<ValueType[]>;
     fetchById(id: string): ValueType;
