@@ -286,47 +286,58 @@ send. You can request a single object or multiple objects of the same
 type. To request access to multiple objects, you can specify the
 amount after fx. the name `findByName('name', 3)`. You can also
 request access to all the possible objects that matches the request by
-calling `findAllByName`.
+calling `findAllByName`. If you only need read access to the data, 
+you can set the `readOnly` to true.
 
 To request access to a network with a spefict name, use
 `findByName`.
 
 ```javascript
 let oneNetwork = await Wappsto.Network.findByName('Network name');
+let oneReadOnlyNetwork = await Wappsto.Network.findByName('Network name', 1, true);
 let multipleNetworks = await Wappsto.Network.findByName('Network name', 3);
 let allNetworks = await Wappsto.Network.findAllByName('Network name');
+let allReadOnlyNetworks = await Wappsto.Network.findAllByName('Network name', true);
 ```
 
 To request access to a device with a spefict name, use `findByName`.
 
 ```javascript
 let oneDevice = await Wappsto.Device.findByName('Device name');
+let oneReadOnlyDevice = await Wappsto.Device.findByName('Device name', 1, true);
 let multipleDevices = await Wappsto.Device.findByName('Device name', 3);
 let allDevices = await Wappsto.Device.findAllByName('Device name');
+let allReadOnlyDevices = await Wappsto.Device.findAllByName('Device name', true);
 ```
 
 To request access to a device with a spefict product, use `findByProduct`.
 
 ```javascript
 let oneDevice = await Wappsto.Device.findByProduct('Product name');
+let oneReadOnlyDevice = await Wappsto.Device.findByProduct('Product name', 1, true);
 let multipleDevices = await Wappsto.Device.findByProduct('Product name', 3);
 let allDevices = await Wappsto.Device.findAllByProduct('Product name');
+let allReadOnlyDevices = await Wappsto.Device.findAllByProduct('Product name', true);
 ```
 
 To request access to a value with a spefict name, use `findByName`.
 
 ```javascript
 let oneValue = await Wappsto.Value.findByName('Value name');
+let oneReadOnlyValue = await Wappsto.Value.findByName('Value name', 1, true);
 let multipleValues = await Wappsto.Value.findByName('Value name', 3);
 let allValues = await Wappsto.Value.findAllByName('Value name');
+let allReadOnlyValues = await Wappsto.Value.findAllByName('Value name', true);
 ```
 
 To request access to a value with a spefict type, use `findByType`.
 
 ```javascript
 let oneValue = await Wappsto.Value.findByType('Type name');
+let oneReadOnlyValue = await Wappsto.Value.findByType('Type name', 1, true);
 let multipleValues = await Wappsto.Value.findByType('Type name', 3);
 let allValues = await Wappsto.Value.findAllByType('Type name');
+let allReadOnlyValues = await Wappsto.Value.findAllByType('Type name', true);
 ```
 
 #### Using filters to request access to an exsisting object from the user
@@ -401,7 +412,9 @@ const filter = { value: { type: 'energy' }};
 const omit_filter = { device: { name: 'Wrong' }};
 let oneValue = await Wappsto.Device.findByFilter(filter, omit_filter);
 let multipleValues = await Wappsto.Value.findByFilter(filter, omit_filter, 3);
+let multipleReadOnlyValues = await Wappsto.Value.findByFilter(filter, omit_filter, 3, true);
 let allValues = await Wappsto.Value.findAllByFilter(filter, omit_filter);
+let allReadOnlyValues = await Wappsto.Value.findAllByFilter(filter, omit_filter, true);
 ```
 
 ### To find a child from an exsisting object
