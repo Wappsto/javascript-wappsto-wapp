@@ -3,11 +3,12 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 console.log = jest.fn();
+console.error = jest.fn();
 import { startLogging, stopLogging } from '../src/index';
 
 describe('console', () => {
     beforeEach(() => {
-        mockedAxios.post.mockResolvedValue({});
+        jest.clearAllMocks();
     });
 
     it('has startLogging as a warning', () => {
@@ -25,6 +26,11 @@ describe('console', () => {
     });
 
     it('can send log messages to wappsto', async () => {
+        mockedAxios.post
+            .mockResolvedValueOnce({})
+            .mockResolvedValueOnce({})
+            .mockResolvedValueOnce({})
+            .mockResolvedValueOnce({});
         startLogging();
         console.log('test start');
         console.info('test start');
@@ -33,5 +39,33 @@ describe('console', () => {
 
         await new Promise((r) => setTimeout(r, 1));
         expect(mockedAxios.post).toHaveBeenCalledTimes(4);
+    });
+
+    it('will not stop sending messages to wappsto when there is an unknown error', async () => {
+        mockedAxios.post
+            .mockRejectedValueOnce({
+                response: { data: { code: 1234 } },
+            })
+            .mockRejectedValueOnce({});
+        console.log('test 1');
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        console.log('test 2');
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+    });
+
+    it('will stop sending messages to wappsto when there is an session error', async () => {
+        mockedAxios.post.mockRejectedValueOnce({
+            response: { data: { code: 117000000 } },
+        });
+        console.log('test 1');
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        console.log('test 2');
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
     });
 });

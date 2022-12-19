@@ -21,12 +21,17 @@ async function sendExtsync(data: any): Promise<any> {
     try {
         res = await wappsto.post('/2.1/extsync/wappsto/editor/console', data);
     } catch (e: any) {
-        printError(`Failed to send debug message (${e})`, defaultConsole);
         if (e.response) {
+            printError(
+                `Failed to send debug message (${JSON.stringify(e.response)})`,
+                defaultConsole
+            );
             if (e.response.data && e.response.data.code === 117000000) {
                 return false;
             }
             return e.response;
+        } else {
+            printError(`Failed to send debug message`, defaultConsole);
         }
         return null;
     }
