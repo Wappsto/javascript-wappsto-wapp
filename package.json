@@ -1,6 +1,6 @@
 {
     "name": "wappsto-wapp",
-    "version": "0.16.6",
+    "version": "0.17.0",
     "license": "MIT",
     "author": "Seluxit A/S",
     "main": "dist/wappsto-wapp.cjs.production.min.js",
