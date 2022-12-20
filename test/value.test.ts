@@ -6,7 +6,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Device, Value, State, config, ValueTemplate } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
-import { responses } from './util/response';
+import { responses, generateStreamEvent } from './util/response';
 
 const response = {
     meta: {
@@ -220,19 +220,15 @@ describe('value', () => {
 
         const r = Value.findByName('test');
         await server.connected;
-        server.send({
-            meta_object: {
-                type: 'notification',
-            },
-            path: '/notification/',
-            data: {
+        server.send(
+            generateStreamEvent('notification', '', {
                 base: {
                     code: 1100004,
                     identifier: 'value-1-Find 1 value with name test',
                     ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
                 },
-            },
-        });
+            })
+        );
         const value = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
@@ -2003,7 +1999,7 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
     });
 
-    it('can send log values for Control', async () => {
+    it('can not send log values for Control', async () => {
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
         const state = new State('Control');

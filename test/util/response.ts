@@ -268,10 +268,107 @@ const signalRequest = (type: string) => {
     };
 };
 
+const energyDataResponse = {
+    status: 'completed',
+    operation: 'energy_data',
+    version: '1.0',
+    parameter: { start: '2022-01-01T01:01:01Z', end: '2023-01-01T01:01:01Z' },
+    access: { state_id: ['ad2a9baf-b578-4977-bf91-debe1f201e16'] },
+    result: [
+        {
+            id: 'ad2a9baf-b578-4977-bf91-debe1f201e16',
+            data: [
+                { data: 1, timestamp: '2022-01-01T03:00:00.000000Z' },
+                { data: 1, timestamp: '2022-01-01T04:00:00.000000Z' },
+                { data: 1, timestamp: '2022-01-01T05:00:00.000000Z' },
+                { data: 1, timestamp: '2022-01-01T06:00:00.000000Z' },
+                { data: 1, timestamp: '2022-01-01T07:00:00.000000Z' },
+                { data: 1, timestamp: '2022-01-01T08:00:00.000000Z' },
+                { data: 1, timestamp: '2022-01-01T09:00:00.000000Z' },
+                { data: 0, timestamp: '2022-12-15T16:00:00.000000Z' },
+                { data: 0, timestamp: '2022-12-15T17:00:00.000000Z' },
+            ],
+        },
+    ],
+    meta: {
+        type: 'analytics',
+        version: '2.1',
+        id: 'a22c77d2-ef3b-4294-8898-ad05b54c81ce',
+    },
+};
+
+const energySummaryResponse = {
+    status: 'cached',
+    operation: 'energy_summary',
+    version: '1.0',
+    parameter: { start: '2022-01-01T01:01:01Z', end: '2023-01-01T01:01:02Z' },
+    access: { state_id: ['c3c65131-0b02-41cb-b18d-ef78674569aa'] },
+    result: [
+        {
+            id: 'c3c65131-0b02-41cb-b18d-ef78674569aa',
+            total_energy: 7,
+            min_power: 0,
+            max_power: 1,
+            mean_power: 0.7778,
+            median_power: 1,
+            sd_power: 0.441,
+        },
+    ],
+    meta: {
+        id: 'a0381ccd-882e-4482-8b5b-38afa84e0478',
+        type: 'analytics',
+        version: '2.1',
+    },
+};
+
+const energyPieChartResponse = {
+    status: 'completed',
+    operation: 'energy_pie_chart',
+    version: '1.0',
+    parameter: { start: '2022-01-01T01:01:01Z', end: '2023-01-01T01:01:02Z' },
+    access: { state_id: ['c3c65131-0b02-41cb-b18d-ef78674569aa'] },
+    result: [{ id: 'Other', value: 7 }],
+    meta: {
+        id: '8fb0246e-98aa-48d6-be43-415b4bc015d9',
+        type: 'analytics',
+        version: '2.1',
+        owner: 'f770df28-d063-493a-9e51-9eb1c75bfb9c',
+        manufacturer: 'cf8b4e18-6106-47d6-86f0-5d82c880f988',
+        created: '2022-12-20T10:33:32.114546Z',
+        updated: '2022-12-20T10:33:32.114546Z',
+        application: '916d2a44-0981-4786-8001-d1eda497e12b',
+        tag: [],
+        tag_by_user: [],
+        name_by_user: 'energy_pie_chart',
+    },
+};
+
+export function generateStreamEvent(type: string, id: string, data: any): any {
+    return {
+        meta: {
+            id: '3c49a1aa-1a0f-4d00-92bf-4fbd414c02e0',
+            type: 'eventstream',
+            version: '2.1',
+        },
+        event: 'update',
+        meta_object: {
+            type,
+            version: '2.1',
+            id,
+        },
+        data,
+        path: `${type}/${id}`,
+        timestamp: '2022-12-19T10:34:03.287837Z',
+    };
+}
+
 export {
     simpleNetworkResponse,
     emptyResponse,
     signalRequest,
     fullNetworkResponse,
     fullNetworkResponseUpdated,
+    energyDataResponse,
+    energySummaryResponse,
+    energyPieChartResponse,
 };
