@@ -591,9 +591,8 @@ export class Stream extends Model {
                 if (this.rpc_response[message.id]) {
                     this.rpc_response[message.id](message.result.value);
                 }
-                if (message.result.value !== true) {
-                    this.backoff = 1;
-                }
+                this.backoff = 1;
+
                 printDebug(
                     `Stream rpc ${message.id} result: ${toString(
                         message.result.value
