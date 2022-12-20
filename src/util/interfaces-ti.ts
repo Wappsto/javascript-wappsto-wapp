@@ -461,6 +461,21 @@ export const IValueFunc = t.iface([], {
         t.param('filter', 'Filter', true),
         t.param('omit_filter', 'Filter', true)
     ),
+    analyzeEnergy: t.func(
+        'any',
+        t.param('start', 'Timestamp'),
+        t.param('end', 'Timestamp')
+    ),
+    summarizeEnergy: t.func(
+        'any',
+        t.param('start', 'Timestamp'),
+        t.param('end', 'Timestamp')
+    ),
+    energyPieChart: t.func(
+        'any',
+        t.param('start', 'Timestamp'),
+        t.param('end', 'Timestamp')
+    ),
 });
 
 export const StateType = t.union(t.lit('Report'), t.lit('Control'));

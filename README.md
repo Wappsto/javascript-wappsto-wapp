@@ -25,6 +25,8 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
 -   [Listing for changes on values](#listing-for-changes-on-values)
 -   [Sending an update event to a device](#sending-an-update-event-to-a-device)
 -   [Check if a device is online](#check-if-a-device-is-online)
+-   [Changing the period and delta of a value](#changing-the-period-and-delta-of-a-value)
+-   [Analyzing historical data](#analyzing-historical-data)
 -   [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
 -   [Waiting for the background to be ready](#waiting-for-the-background-to-be-ready)
 -   [Web Hook](#web-hook)
@@ -286,7 +288,7 @@ send. You can request a single object or multiple objects of the same
 type. To request access to multiple objects, you can specify the
 amount after fx. the name `findByName('name', 3)`. You can also
 request access to all the possible objects that matches the request by
-calling `findAllByName`. If you only need read access to the data, 
+calling `findAllByName`. If you only need read access to the data,
 you can set the `readOnly` to true.
 
 To request access to a network with a spefict name, use
@@ -344,9 +346,9 @@ let allReadOnlyValues = await Wappsto.Value.findAllByType('Type name', true);
 
 It is also possible to use more advanced filters to get more control
 over the specific objects that are requested. It is possible to
-combine any keys in the filter, to narrow down the returned objects. 
-If you need to find multiple of the same type, you can use an Array 
-with the values. A filter have 3 main entry points `network`, `device` 
+combine any keys in the filter, to narrow down the returned objects.
+If you need to find multiple of the same type, you can use an Array
+with the values. A filter have 3 main entry points `network`, `device`
 and `value`. You can see the posible filters below.
 
 ```javascript
@@ -586,6 +588,19 @@ To change the delta and period of a value you can call `setDelta` or
 value.setPeriod('300');
 
 value.setDelta(2.2);
+```
+
+### Analyzing historical data
+
+It is possible to use the Analyric Backend to analyze the historical
+data of a value.
+
+#### Energy Data
+
+To convert the total energy value into a load curve value, call `analyzeEnergy` with a start and end time on the value that you want to analyze.
+
+```javascript
+const energy_data = await value.analyzeEnergy('2022-01-01T00:00:00Z', '2023-01-01T00:00:00Z');
 ```
 
 ### Sending messages to and from the background

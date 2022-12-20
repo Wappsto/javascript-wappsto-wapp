@@ -5,7 +5,9 @@ import { StreamModel } from './model.stream';
 import { Model } from './model';
 import { State } from './state';
 import { EventLog } from './eventlog';
+import { EnergyData, EnergySummary, EnergyPieChart } from './analytic';
 import { _config } from '../util/config';
+import { openStream } from '../stream_helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import {
@@ -18,7 +20,7 @@ import {
     convertFilterToJson,
     convertFilterToString,
 } from '../util/helpers';
-import { printDebug } from '../util/debug';
+import { printDebug, printWarning } from '../util/debug';
 import {
     Filter,
     Timestamp,
@@ -728,14 +730,59 @@ export class Value extends StreamModel implements IValueBase {
         return this.findStateAndLog('Control', request);
     }
 
-    /*public analyzeEnergy(start: Timestamp, end: Timestamp): any {
+    private async runAnalytics(
+        model: any,
+        start: Timestamp,
+        end: Timestamp
+    ): Promise<any> {
         const report = this.findState('Report');
-        if(!report) {
+        if (!report) {
+            printWarning('Analytics is only available for report values');
             return null;
         }
 
+        return new Promise<any>(async (resolve, reject) => {
+            const analytic = new model([report.id()], start, end);
 
-    }*/
+            await openStream.subscribeService(
+                '/analytics',
+                (event: Record<string, any>): boolean => {
+                    return analytic.handleStreamEvent(event, resolve);
+                }
+            );
+
+            try {
+                await analytic.create();
+            } catch (e: any) {
+                if (e?.data?.response) {
+                    if (e.data.response?.message) {
+                        printWarning(e.data.response.message);
+                    }
+                    reject(e.data.response);
+                } else {
+                    printDebug(
+                        `Unhandled response from analytic: ${JSON.stringify(e)}`
+                    );
+                    reject(e);
+                }
+            }
+        });
+    }
+
+    public analyzeEnergy(start: Timestamp, end: Timestamp): Promise<any> {
+        this.validate('analyzeEnergy', arguments);
+        return this.runAnalytics(EnergyData, start, end);
+    }
+
+    public summarizeEnergy(start: Timestamp, end: Timestamp): Promise<any> {
+        this.validate('summarizeEnergy', arguments);
+        return this.runAnalytics(EnergySummary, start, end);
+    }
+
+    public energyPieChart(start: Timestamp, end: Timestamp): Promise<any> {
+        this.validate('energyPieChart', arguments);
+        return this.runAnalytics(EnergyPieChart, start, end);
+    }
 
     static find = async (
         params: Record<string, any>,

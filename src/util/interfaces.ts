@@ -344,6 +344,9 @@ export interface IValueFunc {
     ): Promise<IEventLog>;
     getFilter(filter?: Filter, omit_filter?: Filter): string[];
     getFilterResult(filter?: Filter, omit_filter?: Filter): string;
+    analyzeEnergy(start: Timestamp, end: Timestamp): Promise<any>;
+    summarizeEnergy(start: Timestamp, end: Timestamp): Promise<any>;
+    energyPieChart(start: Timestamp, end: Timestamp): Promise<any>;
 }
 
 export type StateType = 'Report' | 'Control';
