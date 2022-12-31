@@ -97,7 +97,7 @@
         "@types/lodash.pick": "^4.4.7",
         "@types/node": "^18.11.13",
         "@types/websocket": "^1.0.5",
-        "@types/ws": "^8.5.3",
+        "@types/ws": "^8.5.4",
         "browserify": "^17.0.0",
         "dts-cli": "^1.6.0",
         "husky": "^8.0.2",
