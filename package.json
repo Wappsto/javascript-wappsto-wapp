@@ -100,7 +100,7 @@
         "@types/ws": "^8.5.3",
         "browserify": "^17.0.0",
         "dts-cli": "^1.6.0",
-        "husky": "^8.0.2",
+        "husky": "^8.0.3",
         "jest-websocket-mock": "^2.4.0",
         "size-limit": "^8.1.0",
         "ts-interface-builder": "^0.3.3",
