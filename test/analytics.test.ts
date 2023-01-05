@@ -4,13 +4,14 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 console.warn = jest.fn();
-import { Value, State } from '../src/index';
+import { Value, State, getPowerPriceList } from '../src/index';
 import { before, after, newWServer } from './util/stream';
 import {
     energyDataResponse,
     energySummaryResponse,
     energyPieChartResponse,
     generateStreamEvent,
+    powerPriceListResponse,
 } from './util/response';
 
 describe('analytics', () => {
@@ -158,6 +159,40 @@ describe('analytics', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(data).toEqual(energyPieChartResponse.result);
+    });
+
+    it('can load power price list', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+            data: powerPriceListResponse,
+        });
+
+        const dataPromise = getPowerPriceList('2022-01-01T01:01:01Z', '2022-02-02T02:02:02Z');
+
+        await server.connected;
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    data: '/2.1/analytics',
+                    url: '/services/2.1/websocket/open/subscription',
+                },
+            })
+        );
+        await new Promise((r) => setTimeout(r, 1));
+
+        server.send(
+            generateStreamEvent(
+                'analytics',
+                powerPriceListResponse.meta.id,
+                powerPriceListResponse
+            )
+        );
+
+        const data = await dataPromise;
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(data).toEqual(powerPriceListResponse.result.prices);
     });
 
     it('do not work on control value', async () => {

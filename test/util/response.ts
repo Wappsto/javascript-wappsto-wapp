@@ -332,14 +332,22 @@ const energyPieChartResponse = {
         id: '8fb0246e-98aa-48d6-be43-415b4bc015d9',
         type: 'analytics',
         version: '2.1',
-        owner: 'f770df28-d063-493a-9e51-9eb1c75bfb9c',
-        manufacturer: 'cf8b4e18-6106-47d6-86f0-5d82c880f988',
-        created: '2022-12-20T10:33:32.114546Z',
-        updated: '2022-12-20T10:33:32.114546Z',
-        application: '916d2a44-0981-4786-8001-d1eda497e12b',
-        tag: [],
-        tag_by_user: [],
-        name_by_user: 'energy_pie_chart',
+    },
+};
+
+const powerPriceListResponse = {
+    status: 'completed',
+    operation: 'power_price_list',
+    version: '1.0',
+    parameter: { start: '2022-01-01T01:01:01Z', end: '2023-01-01T01:01:02Z' },
+    access: { state_id: ['c3c65131-0b02-41cb-b18d-ef78674569aa'] },
+    result: {prices: [
+        {price: 1, time: '2022-01-01T01:01:01Z'}
+    ]},
+    meta: {
+        id: '8fb0246e-98aa-48d6-be43-415b4bc015d9',
+        type: 'analytics',
+        version: '2.1',
     },
 };
 
@@ -371,4 +379,5 @@ export {
     energyDataResponse,
     energySummaryResponse,
     energyPieChartResponse,
+    powerPriceListResponse,
 };

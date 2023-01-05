@@ -20,6 +20,7 @@ import {
     convertFilterToJson,
     convertFilterToString,
 } from '../util/helpers';
+import { runAnalyticModel } from '../util/analytics_helpers';
 import { printDebug, printWarning } from '../util/debug';
 import {
     Filter,
@@ -741,32 +742,7 @@ export class Value extends StreamModel implements IValueBase {
             return null;
         }
 
-        return new Promise<any>(async (resolve, reject) => {
-            const analytic = new model([report.id()], start, end);
-
-            await openStream.subscribeService(
-                '/analytics',
-                (event: Record<string, any>): boolean => {
-                    return analytic.handleStreamEvent(event, resolve);
-                }
-            );
-
-            try {
-                await analytic.create();
-            } catch (e: any) {
-                if (e?.data?.response) {
-                    if (e.data.response?.message) {
-                        printWarning(e.data.response.message);
-                    }
-                    reject(e.data.response);
-                } else {
-                    printDebug(
-                        `Unhandled response from analytic: ${JSON.stringify(e)}`
-                    );
-                    reject(e);
-                }
-            }
-        });
+        return runAnalyticModel(model, [report.id()], start, end);
     }
 
     public analyzeEnergy(start: Timestamp, end: Timestamp): Promise<any> {
