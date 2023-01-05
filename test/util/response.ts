@@ -341,9 +341,7 @@ const powerPriceListResponse = {
     version: '1.0',
     parameter: { start: '2022-01-01T01:01:01Z', end: '2023-01-01T01:01:02Z' },
     access: { state_id: ['c3c65131-0b02-41cb-b18d-ef78674569aa'] },
-    result: {prices: [
-        {price: 1, time: '2022-01-01T01:01:01Z'}
-    ]},
+    result: { prices: [{ price: 1, time: '2022-01-01T01:01:01Z' }] },
     meta: {
         id: '8fb0246e-98aa-48d6-be43-415b4bc015d9',
         type: 'analytics',

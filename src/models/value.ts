@@ -7,7 +7,6 @@ import { State } from './state';
 import { EventLog } from './eventlog';
 import { EnergyData, EnergySummary, EnergyPieChart } from './analytic';
 import { _config } from '../util/config';
-import { openStream } from '../stream_helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
 import {

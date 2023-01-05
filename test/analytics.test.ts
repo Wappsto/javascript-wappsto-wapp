@@ -166,7 +166,10 @@ describe('analytics', () => {
             data: powerPriceListResponse,
         });
 
-        const dataPromise = getPowerPriceList('2022-01-01T01:01:01Z', '2022-02-02T02:02:02Z');
+        const dataPromise = getPowerPriceList(
+            '2022-01-01T01:01:01Z',
+            '2022-02-02T02:02:02Z'
+        );
 
         await server.connected;
         await expect(server).toReceiveMessage(
