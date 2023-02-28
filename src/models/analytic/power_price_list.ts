@@ -2,8 +2,14 @@ import { AnalyticsModel } from './model.analytics';
 import { Timestamp } from '../../util/interfaces';
 
 export class PowerPriceList extends AnalyticsModel {
-    constructor(start: Timestamp, end: Timestamp) {
-        super([], start, end);
+    constructor(
+        state_ids: string[],
+        start: Timestamp,
+        end: Timestamp,
+        parameters?: any
+    ) {
+        super(state_ids, start, end, parameters);
+        this.parameter.provider = 'energidataservice';
     }
 
     public getUrl(): string {

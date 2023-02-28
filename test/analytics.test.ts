@@ -168,7 +168,8 @@ describe('analytics', () => {
 
         const dataPromise = getPowerPriceList(
             '2022-01-01T01:01:01Z',
-            '2022-02-02T02:02:02Z'
+            '2022-02-02T02:02:02Z',
+            'DK1'
         );
 
         await server.connected;
@@ -195,6 +196,19 @@ describe('analytics', () => {
         const data = await dataPromise;
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/analytics/1.0/power_price_list',
+            {
+                access: { state_id: [] },
+                parameter: {
+                    start: '2022-01-01T01:01:01Z',
+                    end: '2022-02-02T02:02:02Z',
+                    provider: 'energidataservice',
+                    region: 'DK1',
+                },
+            },
+            {}
+        );
         expect(data).toEqual(powerPriceListResponse.result.prices);
     });
 

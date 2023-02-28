@@ -17,11 +17,17 @@ export class AnalyticsModel extends PermissionModel {
     parameter: any = { start: '', end: '' };
     status = '';
 
-    constructor(state_ids: string[], start: Timestamp, end: Timestamp) {
+    constructor(
+        state_ids: string[],
+        start: Timestamp,
+        end: Timestamp,
+        parameters?: any
+    ) {
         super('analytics');
         this.access.state_id = state_ids;
         this.parameter.start = start;
         this.parameter.end = end;
+        Object.assign(this.parameter, parameters || {});
     }
 
     getAttributes(): string[] {

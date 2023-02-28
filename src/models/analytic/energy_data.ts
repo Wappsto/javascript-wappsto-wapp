@@ -6,6 +6,6 @@ export class EnergyData extends AnalyticsModel {
     }
 
     public getResult() {
-        return this.result[0].data;
+        return this.result[0]?.data;
     }
 }
