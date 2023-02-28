@@ -31,7 +31,7 @@
         "analyze": "size-limit --why",
         "build": "dts build",
         "postbuild": "yarn browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
-        "lint": "dts lint src test",
+        "lint": "dts lint src",
         "lint:fix": "yarn lint --fix",
         "prepare": "yarn build",
         "size": "size-limit",

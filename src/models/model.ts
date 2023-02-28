@@ -17,7 +17,6 @@ export class Model implements IModel {
     meta: IMeta = { version: '2.1' };
     parent?: IModel;
     expand: number;
-    attributes: string[] = [];
     updateQueue: Record<string, any> = [];
     static checker = createCheckers(interfaceTI);
 

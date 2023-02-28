@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { session, baseUrl } from '../session';
 import { printError, printDebug, printRequest } from './debug';
 import { toString } from './helpers';
@@ -15,7 +15,12 @@ const axiosInstance = axios.create({
     timeout: 5 * 60 * 1000,
 });
 
-async function wrap(func: Methods, url: string, data?: any, config?: any) {
+async function wrap(
+    func: Methods,
+    url: string,
+    data?: Record<string, any> | string,
+    config?: Record<string, any>
+) {
     try {
         let response;
         if (config === undefined) {
@@ -44,19 +49,37 @@ async function wrap(func: Methods, url: string, data?: any, config?: any) {
 }
 
 const wrapper = {
-    get: async (url: string, config?: any): Promise<any> => {
+    get: async (
+        url: string,
+        config?: Record<string, any>
+    ): Promise<Record<string, any>> => {
         return wrap('get', url, config);
     },
-    post: async (url: string, data?: any, config?: any): Promise<any> => {
+    post: async (
+        url: string,
+        data?: Record<string, any> | string,
+        config?: Record<string, any>
+    ): Promise<Record<string, any>> => {
         return wrap('post', url, data, config);
     },
-    patch: async (url: string, data?: any, config?: any): Promise<any> => {
+    patch: async (
+        url: string,
+        data?: Record<string, any> | string,
+        config?: Record<string, any>
+    ): Promise<Record<string, any>> => {
         return wrap('patch', url, data, config);
     },
-    put: async (url: string, data?: any, config?: any): Promise<any> => {
+    put: async (
+        url: string,
+        data?: Record<string, any> | string,
+        config?: Record<string, any>
+    ): Promise<Record<string, any>> => {
         return wrap('put', url, data, config);
     },
-    delete: async (url: string, config?: any): Promise<any> => {
+    delete: async (
+        url: string,
+        config?: Record<string, any>
+    ): Promise<Record<string, any>> => {
         return wrap('delete', url, config);
     },
 };
@@ -72,15 +95,24 @@ export function getErrorResponse(error: any): any {
     }
 }
 
-export function getErrorMessage(error: any): string {
+export function getErrorMessage(error: any | Error | AxiosError): string {
     /* istanbul ignore next */
     if (error.errno && error.errno === -111) {
         return `Failed to connect to ${error.address}`;
     }
 
-    if (error.response) {
-        if (error.response.data?.code) {
-            switch (error.response.data.code) {
+    if (error instanceof TypeError) {
+        return error.toString();
+    }
+
+    if (axios.isAxiosError(error) || (error.response && error.response.data)) {
+        const data = error.response.data as {
+            code: number;
+            data?: Record<string, any>;
+            message?: string;
+        };
+        if (data.code) {
+            switch (data.code) {
                 case 507000000:
                     return 'Timeout, waiting for response on extsync request';
                 default:
@@ -90,25 +122,21 @@ export function getErrorMessage(error: any): string {
                             `Failed Request: ${error.request?.method} ${
                                 error.request?.path
                             } ${toString(error.config?.data)} => ${toString(
-                                error.response.data
+                                data
                             )}`
                         );
                     }
-                    return `${error.response.data.message} (${toString(
-                        error.response.data.data
-                    )})`;
+                    return `${data.message} (${toString(data.data)})`;
             }
         } else {
             return `${error.response.statusText} for ${error.config?.url}`;
         }
+
+        printDebug(toString(error));
+        return `Unknown HTTP error: ${error.message} (${error.code})`;
     }
 
-    if (error instanceof TypeError) {
-        return error.toString();
-    }
-
-    printDebug(toString(error));
-    return `Unknown HTTP error: ${error.errno} (${error.code})`;
+    return `Unknown error: ${toString(error)}`;
 }
 
 export function printHttpError(message: string, error: any): string {

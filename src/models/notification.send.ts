@@ -37,7 +37,7 @@ export async function sendSMS(message: string): Promise<boolean> {
 export function notify(
     message: string,
     level?: EventLogLevel,
-    data?: any
+    data?: Record<string, any>
 ): Promise<void> {
     Model.validateMethod('notification', 'notify', arguments);
     const noti = new SendNotification(message, level, data);
@@ -47,9 +47,17 @@ export function notify(
 export class SendNotification extends PermissionModel {
     static endpoint = '/2.1/notification';
     static attributes = ['custom'];
-    custom: any = { message: '', level: '', data: undefined };
+    custom: { message: string; level: string; data?: Record<string, any> } = {
+        message: '',
+        level: '',
+        data: undefined,
+    };
 
-    constructor(message: string, level?: EventLogLevel, data?: any) {
+    constructor(
+        message: string,
+        level?: EventLogLevel,
+        data?: Record<string, any>
+    ) {
         super('notification');
         this.custom.message = message;
         this.custom.level = level || 'info';

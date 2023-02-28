@@ -7,6 +7,11 @@
   },
   "root": true,
   "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "project": ["tsconfig.json"] ,
+    "sourceType": "module"
+  },
   "plugins": [
     "@typescript-eslint",
     "jest"
@@ -14,6 +19,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
+//    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "prettier",
     "plugin:jest/recommended"
   ],

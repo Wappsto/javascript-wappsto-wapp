@@ -541,7 +541,7 @@ export interface IWappStorageFunc {
     onChange(cb: StorageChangeHandler): void;
 }
 
-export type StorageChangeHandler = () => void;
+export type StorageChangeHandler = () => void | Promise<void>;
 export type ServiceHandler = (
     event: any
 ) => Promise<boolean | undefined> | boolean | undefined;

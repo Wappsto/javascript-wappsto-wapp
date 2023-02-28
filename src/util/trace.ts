@@ -1,5 +1,6 @@
 import wappsto from './http_wrapper';
 import { isBrowser } from './helpers';
+import { printError } from './debug';
 
 const url = 'https://tracer.iot.seluxit.com/trace';
 let traceId = '';
@@ -21,7 +22,7 @@ export function clearTrace(status: string): void {
 }
 
 function _trace(parent: string, status: string): void {
-    const params: any = {
+    const params: Record<string, any> = {
         parent: parent,
         name: name,
         id: traceId,
@@ -35,9 +36,13 @@ function _trace(parent: string, status: string): void {
         params['development'] = process.env['development'] || 'true';
     }
 
-    wappsto.get(url, {
-        params: params,
-    });
+    wappsto
+        .get(url, {
+            params: params,
+        })
+        .catch((err) => {
+            printError('Failed to send trace');
+        });
 }
 
 export function trace(parent: string): void {

@@ -10,8 +10,8 @@ export function printDebug(message: string): void {
 export function printRequest(
     func: string,
     url: string,
-    config: Record<string, any>,
-    data: Record<string, any>,
+    config?: Record<string, any>,
+    data?: Record<string, any> | string,
     response?: Record<string, any>
 ) {
     if (_config.requests && !url.includes('/console')) {

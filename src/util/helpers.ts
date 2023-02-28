@@ -116,7 +116,7 @@ function attributesToFilter(
     attributes: string[]
 ) {
     const strFilter: string[] = [];
-    attributes.forEach((att) => {
+    attributes.forEach((att: string) => {
         if (Array.isArray(filter[att])) {
             strFilter.push(
                 `${type}_${att}${operator}[${filter[att].join(',')}]`
@@ -126,8 +126,10 @@ function attributesToFilter(
                 const str = `${type}_${att}.${k}${operator}`;
                 if (Array.isArray(v)) {
                     strFilter.push(`${str}[${v.join(',')}]`);
-                } else {
+                } else if (typeof v === 'string') {
                     strFilter.push(`${str}${v}`);
+                } else if (typeof v === 'number') {
+                    strFilter.push(`${str}${v.toString()}`);
                 }
             }
         } else if (filter[att] !== undefined) {

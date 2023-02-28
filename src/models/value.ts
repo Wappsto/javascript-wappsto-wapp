@@ -741,7 +741,7 @@ export class Value extends StreamModel implements IValueBase {
             return null;
         }
 
-        return runAnalyticModel(model, [report.id()], start, end);
+        return runAnalyticModel(model, [report.id()], start, end, {});
     }
 
     public analyzeEnergy(start: Timestamp, end: Timestamp): Promise<any> {

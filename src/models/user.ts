@@ -27,7 +27,7 @@ export class User extends Model {
     };
 
     public static fetch = async (): Promise<User[]> => {
-        const data: any[] = await Model.fetch({
+        const data: Record<string, any>[] = await Model.fetch({
             endpoint: `${User.endpoint}/me`,
             params: {
                 expand: 1,
@@ -36,9 +36,11 @@ export class User extends Model {
         return User.fromArray(data);
     };
 
+    /* eslint-disable @typescript-eslint/require-await */
     public async create(): Promise<void> {
         printError("User can't be created");
     }
+
     public async update(): Promise<boolean> {
         printError("User can't be updated");
         return false;

@@ -304,7 +304,7 @@ export class Stream extends Model {
             };
             const response = await wappsto.post('/2.1/extsync', data);
             result = response.data;
-        } catch (e) {
+        } catch (e: any) {
             /* istanbul ignore next */
             const errorMsg = getErrorMessage(e);
             printError(
@@ -355,7 +355,7 @@ export class Stream extends Model {
                 `/2.1/extsync/response/${event?.meta?.id}`,
                 data
             );
-        } catch (e) {
+        } catch (e: any) {
             /* istanbul ignore next */
             const errorMsg = getErrorMessage(e);
             /* istanbul ignore next */
