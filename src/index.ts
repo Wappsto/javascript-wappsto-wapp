@@ -11,7 +11,7 @@ export { startLogging, stopLogging } from './console';
 export * from './models';
 export { wappStorage } from './wapp_storage';
 export { default as request } from './util/http_wrapper';
-export { extSyncToken } from './session';
+export { extSyncToken, session } from './session';
 export {
     sendToForeground,
     sendToBackground,
