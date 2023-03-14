@@ -38,7 +38,8 @@
         "start": "dts watch",
         "test": "dts test --coverage",
         "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
-        "prepublish": "yarn build"
+        "prepublish": "yarn build",
+        "postpublish" : "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags"
     },
     "husky": {
         "hooks": {
