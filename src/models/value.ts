@@ -703,6 +703,7 @@ export class Value extends StreamModel implements IValueBase {
                 endpoint: `/2.1/log/${state.id()}/state`,
                 params: request,
                 go_internal: false,
+                throw_error: true,
             });
             return response[0] as ILogResponse;
         }

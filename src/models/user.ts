@@ -21,7 +21,7 @@ export class User extends Model {
         super('user');
     }
 
-    public static me = async (): Promise<User> => {
+    public static me = async (): Promise<User | undefined> => {
         const users = await User.fetch();
         return users[0];
     };

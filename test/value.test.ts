@@ -619,8 +619,14 @@ describe('value', () => {
 
         const logsR = await value.getReportLog({ limit: 1, end: d });
         const logsC = await value.getControlLog({ start: d });
-        await value.getControlLog({ end: '2022-02-02T02:02:02Z' });
+        let failLog = false;
+        try {
+            await value.getControlLog({ end: '2022-02-02T02:02:02Z' });
+        } catch(e) {
+            failLog = true;
+        }
 
+        expect(failLog).toBe(true);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(3);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
