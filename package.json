@@ -39,7 +39,7 @@
         "test": "dts test --coverage",
         "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
         "prepublish": "yarn build",
-        "postpublish" : "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags"
+        "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags"
     },
     "husky": {
         "hooks": {
@@ -96,7 +96,7 @@
         "@types/lodash.isequal": "^4.5.6",
         "@types/lodash.omit": "^4.5.7",
         "@types/lodash.pick": "^4.4.7",
-        "@types/node": "^18.14.2",
+        "@types/node": "^18.15.5",
         "@types/websocket": "^1.0.5",
         "@types/ws": "^8.5.4",
         "browserify": "^17.0.0",
