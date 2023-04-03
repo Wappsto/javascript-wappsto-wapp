@@ -3,6 +3,7 @@ import { session, baseUrl } from '../session';
 import { printError, printDebug, printRequest } from './debug';
 import { toString } from './helpers';
 import { _config } from '../util/config';
+import { VERSION } from './version';
 
 type Methods = 'head' | 'options' | 'put' | 'post' | 'patch' | 'delete' | 'get';
 
@@ -11,6 +12,7 @@ const axiosInstance = axios.create({
     headers: {
         'X-Session': session,
         'Content-Type': 'application/json',
+        'User-Agent': `Wappsto-wapp/${VERSION} (axios/${axios.VERSION})`,
     },
     timeout: 5 * 60 * 1000,
 });

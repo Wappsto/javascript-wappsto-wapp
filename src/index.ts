@@ -27,3 +27,4 @@ export {
 } from './stream_helpers';
 export { getPowerPriceList } from './util/analytics_helpers';
 export * from './util/interfaces';
+export { VERSION } from './util/version';

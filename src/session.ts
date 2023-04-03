@@ -38,15 +38,6 @@ function get(key: string) {
     return result;
 }
 
-//    tmpBaseUrl = process.env.baseUrl && process.env.baseUrl.slice(0, -1);
-
 export const baseUrl: string = get('baseUrl') || '/services';
 export const session: string = get('sessionID') || '';
 export const extSyncToken: string = get('tokenID') || '';
-/*
-if (!isUUID(session)) {
-    console.error("Wappsto: Invalid SESSION - You need to define 'sessionID'");
-}
-if (!isUUID(token)) {
-    console.error("Wappsto: Invalid TOKEN - You need to define 'tokenID'");
-}*/

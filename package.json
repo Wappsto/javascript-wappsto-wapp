@@ -29,6 +29,7 @@
     },
     "scripts": {
         "analyze": "size-limit --why",
+        "prebuild": "node -p \"'export const VERSION = \\'' + require('./package.json').version + '\\';'\" > src/util/version.ts",
         "build": "dts build",
         "postbuild": "yarn browserify dist/wappsto-wapp.cjs.production.min.js --s Wappsto -o dist/wappsto-wapp.js",
         "lint": "dts lint src",
