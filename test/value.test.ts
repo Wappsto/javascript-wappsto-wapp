@@ -1966,7 +1966,7 @@ describe('value', () => {
         const data = [
             { timestamp: '2022-02-02T02:02:01Z', data: 1 },
             { timestamp: '2022-02-02T02:02:02Z', data: 2 },
-            { timestamp: '2022-02-02T02:02:03Z', data: 3 },
+            { timestamp: new Date('2022-02-02T02:02:03Z'), data: 3 },
             { timestamp: '2022-02-02T02:02:04Z', data: 4 },
         ];
         await value.report(data);
@@ -1993,7 +1993,7 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenNthCalledWith(
             1,
             '/log_zip',
-            'state_id,data,timestamp#6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7,1,2022-02-02T02:02:01Z#6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7,2,2022-02-02T02:02:02Z#6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7,3,2022-02-02T02:02:03Z#'
+            'state_id,data,timestamp#6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7,1,2022-02-02T02:02:01Z#6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7,2,2022-02-02T02:02:02Z#6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7,3,2022-02-02T02:02:03.000Z#'
                 .split('#')
                 .join('\n'),
             { headers: { 'Content-type': 'text/csv' } }

@@ -299,6 +299,16 @@ export class Value extends StreamModel implements IValueBase {
         return new Date().toISOString();
     }
 
+    private timestampToString(timestamp: Timestamp): string {
+        if (!timestamp) {
+            return this.getTime();
+        } else if (typeof timestamp === 'string') {
+            return timestamp;
+        } else {
+            return new Date(timestamp).toISOString();
+        }
+    }
+
     private async findStateAndUpdate(
         type: StateType,
         data: string | number,
@@ -310,13 +320,7 @@ export class Value extends StreamModel implements IValueBase {
         }
 
         state.data = data.toString();
-        if (!timestamp) {
-            state.timestamp = this.getTime();
-        } else if (typeof timestamp === 'string') {
-            state.timestamp = timestamp;
-        } else {
-            state.timestamp = new Date(timestamp).toISOString();
-        }
+        state.timestamp = this.timestampToString(timestamp);
 
         if (type !== 'Report' || !this.sendReportWithJitter) {
             return await state.update();
@@ -570,7 +574,9 @@ export class Value extends StreamModel implements IValueBase {
         do {
             const tmpData = logData.slice(offset, offset + 50000);
             const csvStr = tmpData.reduce((p, c) => {
-                return `${p}${id},${c.data},${c.timestamp}\n`;
+                return `${p}${id},${c.data},${this.timestampToString(
+                    c.timestamp
+                )}\n`;
             }, 'state_id,data,timestamp\n');
 
             await wappsto.post('/log_zip', csvStr, {
