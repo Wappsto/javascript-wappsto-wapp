@@ -829,6 +829,14 @@ the backend, you need to force an update by calling `getAllEdges` with true.
 const edges = await node.getAllEdges(true);
 ```
 
+If not all models can be loaded that the edge points to, the failed models are
+stored in `failedModels` on the edge.
+
+```javascript
+const edges = await node.getAllEdges();
+console.log(edges[0].failedModels);
+```
+
 To remove an edge, you can just call `delete` on the edge, but if you
 want to remove the whole branch, you can call `deleteBranch`.
 This will remove all edges and nodes under this node or edge.
