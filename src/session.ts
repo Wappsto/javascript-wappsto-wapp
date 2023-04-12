@@ -3,7 +3,7 @@ import { isBrowser } from './util/helpers';
 /**
  * Reads a cookie with the giving name.
  *
- * @param {name The name of the cookie to read}
+ * @param name The name of the cookie to read
  *
  * @return The content of the cookie if found, else null
  */
@@ -21,7 +21,11 @@ function readCookie(name: string): string {
 }
 
 /**
- * @param {the key to }
+ * Get the key from the sessionStorage ot cookie.
+ *
+ * @param key The key to find
+ *
+ * @returns The value of the key or empty string.
  */
 function get(key: string) {
     let result = '';

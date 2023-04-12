@@ -17,6 +17,7 @@ export class Ontology extends Model implements IOntologyEdge {
     relationship: Relationship = '';
     to: Record<string, string[]> = {};
     models: IOntologyModel[] = [];
+    failedModels: Record<string, string[]> = {};
 
     constructor(
         from?: IOntologyModel,
@@ -62,6 +63,15 @@ export class Ontology extends Model implements IOntologyEdge {
         return res;
     }
 
+    private addFailedModel(type: string, id: string) {
+        if (!this.failedModels[type]) {
+            this.failedModels[type] = [];
+        }
+        if (!this.failedModels[type].includes(id)) {
+            this.failedModels[type].push(id);
+        }
+    }
+
     public async fetchModels(): Promise<void> {
         const proms: any[] = [];
         Object.keys(this.to).forEach((type: string) => {
@@ -71,6 +81,8 @@ export class Ontology extends Model implements IOntologyEdge {
                         const m = await getModel(type, id);
                         if (m) {
                             this.addModel(m as IOntologyModel);
+                        } else if (m === false) {
+                            this.addFailedModel(type, id);
                         }
                         resolve();
                     })
@@ -115,8 +127,8 @@ export class Ontology extends Model implements IOntologyEdge {
         res.forEach((o) => {
             proms.push(o.fetchModels());
         });
-        await Promise.all(proms);
 
+        await Promise.all(proms);
         return res;
     };
 

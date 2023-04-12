@@ -1453,9 +1453,9 @@ describe('Ontology', () => {
         const networks = await Network.fetchByName('EMS Configurator');
         const network = networks[0];
 
-        const poms = [];
+        const poms: Promise<any>[] = [];
         poms.push(network.getAllEdges(true));
-        network.device.forEach((dev) => {
+        network.device.forEach((dev: Device) => {
             poms.push(dev.getAllEdges(true));
         });
         await Promise.all(poms);
@@ -1476,6 +1476,121 @@ describe('Ontology', () => {
         });
         expect(names).toEqual(['testing', '', '', '']);
     });
+
+    it('can handle failing when loading models', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            id: 'd98e784e-0bb3-4693-899c-1071483b857e',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                        name: 'Onto name',
+                        description: 'Onto description',
+                        data: { test: 'data' },
+                        relationship: 'state',
+                        to: {
+                            state: ['0cce27ee-46ad-4296-b61e-7f7765e3edf3','7c7171b7-db9c-4418-8e29-2e76c42597b0'],
+                        },
+                    },
+                    {
+                        meta: {
+                            id: 'aaa56f4e-cb10-42fb-8878-c67e3a14ddb1',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                        name: 'Onto name',
+                        description: 'Onto description',
+                        data: { test: 'data' },
+                        relationship: 'state',
+                        to: {
+                            state: ['1e5eb75f-0912-4858-9ad5-89fb21787768'],
+                        },
+                    },
+                ],
+            })
+            .mockRejectedValueOnce({
+                message: 'Invalid state',
+                code: 123,
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: '7c7171b7-db9c-4418-8e29-2e76c42597b0',
+                        version: '2.1',
+                        type: 'state',
+                    },
+                    type: 'Control',
+                    timestamp: '',
+                    data: '1',
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    meta: {
+                        id: '1e5eb75f-0912-4858-9ad5-89fb21787768',
+                        version: '2.1',
+                        type: 'state',
+                    },
+                    type: 'Control',
+                    timestamp: '',
+                    data: '1',
+                },
+            });
+
+        const network = new Network('Ontology Network');
+        network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
+
+        const edges = await network.getAllEdges();
+
+        expect(edges[0].failedModels['state'][0]).toEqual('0cce27ee-46ad-4296-b61e-7f7765e3edf3');
+        expect(edges[1].failedModels).toEqual({});
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
+            {
+                params: {
+                    expand: 1,
+                    go_internal: true,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/state/0cce27ee-46ad-4296-b61e-7f7765e3edf3',
+            {
+                params: {
+                    expand: 0,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/state/7c7171b7-db9c-4418-8e29-2e76c42597b0',
+            {
+                params: {
+                    expand: 0,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            4,
+            '/2.1/state/1e5eb75f-0912-4858-9ad5-89fb21787768',
+            {
+                params: {
+                    expand: 0,
+                },
+            }
+        );
+    });
+
     /*
     it('can load the EMS network', async () => {
         mockedAxios.get.mockResolvedValueOnce(ems_reply);

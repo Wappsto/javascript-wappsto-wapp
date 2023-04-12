@@ -586,6 +586,7 @@ export interface IOntologyModelFunc {
 export interface IOntologyEdge extends IModel {
     relationship: Relationship;
     models: IOntologyModel[];
+    failedModels: Record<string, string[]>;
     to: Record<string, string[]>;
     name?: string;
     description?: string;

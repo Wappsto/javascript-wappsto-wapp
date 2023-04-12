@@ -20,6 +20,7 @@ export function after() {
 export function before() {
     stopLogging();
     console.error = jest.fn();
+    console.warn = jest.fn();
     openStream.websocketUrl = 'ws://localhost:12345';
 }
 

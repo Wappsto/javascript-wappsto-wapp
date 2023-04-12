@@ -4,14 +4,14 @@ import { Value } from '../models/value';
 import { State } from '../models/state';
 import { OntologyNode } from '../models/ontology.node';
 import { IModel } from './interfaces';
-import { printDebug } from './debug';
+import { printDebug, printWarning } from './debug';
 import { setModelCreateCallback } from './modelStore';
 
 async function loadModel(
     type: string,
     id: string
-): Promise<IModel | undefined> {
-    let model: IModel | undefined;
+): Promise<IModel | false | undefined> {
+    let model: IModel;
 
     printDebug(`ModelStore is loading a ${type} with id ${id}`);
 
@@ -32,11 +32,12 @@ async function loadModel(
             model = new OntologyNode();
             break;
         default:
-            break;
+            return undefined;
     }
-    if (model !== undefined) {
-        model.meta.id = id;
-        await model.reload(true);
+    model.meta.id = id;
+    if (!(await model.reload(true))) {
+        printWarning(`Failed to load ${type} model with id ${id}`);
+        return false;
     }
     return model;
 }

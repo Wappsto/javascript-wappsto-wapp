@@ -1,6 +1,9 @@
 import { IModel } from './interfaces';
 
-type createCallback = (type: string, id: string) => Promise<IModel | undefined>;
+type createCallback = (
+    type: string,
+    id: string
+) => Promise<IModel | false | undefined>;
 
 const models: Record<string, IModel> = {};
 let createModel: createCallback | undefined = undefined;
@@ -18,14 +21,16 @@ export function addModel(model?: IModel): void {
 export async function getModel(
     type: string,
     id: string
-): Promise<IModel | undefined> {
+): Promise<IModel | false | undefined> {
     const model = models[id];
     if (model !== undefined) {
         return model;
     }
     if (createModel !== undefined) {
         const m = await createModel(type, id);
-        addModel(m);
+        if (m) {
+            addModel(m);
+        }
         return m;
     }
     /* istanbul ignore next */
