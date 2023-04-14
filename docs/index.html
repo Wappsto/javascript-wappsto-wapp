@@ -250,11 +250,72 @@ call <code>reload</code> on the model, to get the latest data for that model.</p
 <a id="$sending-an-update-event-to-a-device" class="tsd-anchor"></a><h3><a href="#$sending-an-update-event-to-a-device" style="color:inherit;text-decoration:none">Sending an update event to a device</a></h3><p>To send an event to a device to get a new report data.</p>
 <pre><code class="language-javascript"><span class="hl-5">await</span><span class="hl-0"> </span><span class="hl-3">value</span><span class="hl-0">.</span><span class="hl-4">refresh</span><span class="hl-0">();</span>
 </code></pre>
-<a id="$loading-historical-data" class="tsd-anchor"></a><h3><a href="#$loading-historical-data" style="color:inherit;text-decoration:none">Loading historical data</a></h3><p>It is possible to load historical data for a value. Both report and control
-data can be loaded using <code>getReportLog</code> and <code>getControlLog</code>. Each function takes
-a <code>LogRequest</code> object.</p>
+<a id="$loading-historical-data" class="tsd-anchor"></a><h3><a href="#$loading-historical-data" style="color:inherit;text-decoration:none">Loading historical data</a></h3><p>It is possible to load historical data for a value. Both report and
+control data can be loaded using <code>getReportLog</code> and
+<code>getControlLog</code>. Each function takes a <code>LogRequest</code> object, where you
+can define the parameters for the log service.</p>
 <pre><code class="language-javascript"><span class="hl-2">const</span><span class="hl-0"> </span><span class="hl-11">historicalReportData</span><span class="hl-0"> = </span><span class="hl-5">await</span><span class="hl-0"> </span><span class="hl-3">value</span><span class="hl-0">.</span><span class="hl-4">getReportLog</span><span class="hl-0">({});</span><br/><span class="hl-2">const</span><span class="hl-0"> </span><span class="hl-11">historicalControlData</span><span class="hl-0"> = </span><span class="hl-5">await</span><span class="hl-0"> </span><span class="hl-3">value</span><span class="hl-0">.</span><span class="hl-4">getControlLog</span><span class="hl-0">({});</span>
 </code></pre>
+<p>The <code>LogRequest</code> object is defined like this:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Key</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>Meaning</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>start</td>
+<td>date</td>
+<td>The start time for the log request</td>
+</tr>
+<tr>
+<td>end</td>
+<td>date</td>
+<td>The end time for the log request</td>
+</tr>
+<tr>
+<td>limit</td>
+<td>number</td>
+<td>The maximum number of itmes in the result</td>
+</tr>
+<tr>
+<td>offset</td>
+<td>number</td>
+<td>How many items that should be skiped before returning the result</td>
+</tr>
+<tr>
+<td>operation</td>
+<td>string</td>
+<td>What operation should be performed on the data before returning it</td>
+</tr>
+<tr>
+<td>group_by</td>
+<td>string</td>
+<td>What time interval should the log data be grouped by</td>
+</tr>
+<tr>
+<td>timestamp_format</td>
+<td>string</td>
+<td>The format the timestamp should be converted into</td>
+</tr>
+<tr>
+<td>timezone</td>
+<td>string</td>
+<td>If the timestamp should be converted to a timezone instead of UTZ</td>
+</tr>
+<tr>
+<td>order</td>
+<td>string</td>
+<td>Should the result be ordered ascending or descending</td>
+</tr>
+<tr>
+<td>order_by</td>
+<td>string</td>
+<td>The field that should be used to order by</td>
+</tr>
+</tbody></table>
 <a id="$check-if-a-device-is-online" class="tsd-anchor"></a><h3><a href="#$check-if-a-device-is-online" style="color:inherit;text-decoration:none">Check if a device is online</a></h3><p>It is possible to check if a network or device is online by calling
 <code>isOnline</code>.</p>
 <pre><code class="language-javascript"><span class="hl-5">if</span><span class="hl-0"> (</span><span class="hl-3">network</span><span class="hl-0">.</span><span class="hl-4">isOnline</span><span class="hl-0">()) {</span><br/><span class="hl-0">    </span><span class="hl-3">console</span><span class="hl-0">.</span><span class="hl-4">log</span><span class="hl-0">(</span><span class="hl-1">&#39;Network is online&#39;</span><span class="hl-0">);</span><br/><span class="hl-0">}</span><br/><span class="hl-5">if</span><span class="hl-0"> (</span><span class="hl-3">device</span><span class="hl-0">.</span><span class="hl-4">isOnline</span><span class="hl-0">()) {</span><br/><span class="hl-0">    </span><span class="hl-3">console</span><span class="hl-0">.</span><span class="hl-4">log</span><span class="hl-0">(</span><span class="hl-1">&#39;Device is online&#39;</span><span class="hl-0">);</span><br/><span class="hl-0">}</span>
@@ -502,6 +563,7 @@ library is doing by enabling debug options.</p>
 <li><a href="interfaces/IDeviceFunc.html" class="tsd-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>IDevice<wbr/>Func</span></a></li>
 <li><a href="interfaces/IEventLog.html" class="tsd-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>IEvent<wbr/>Log</span></a></li>
 <li><a href="interfaces/IEventLogFunc.html" class="tsd-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>IEvent<wbr/>Log<wbr/>Func</span></a></li>
+<li><a href="interfaces/ILogData.html" class="tsd-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>ILog<wbr/>Data</span></a></li>
 <li><a href="interfaces/ILogRequest.html" class="tsd-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>ILog<wbr/>Request</span></a></li>
 <li><a href="interfaces/ILogResponse.html" class="tsd-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>ILog<wbr/>Response</span></a></li>
 <li><a href="interfaces/IMail.html" class="tsd-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg><span>IMail</span></a></li>

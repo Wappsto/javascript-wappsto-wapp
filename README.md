@@ -6,6 +6,8 @@
 
 This is a node/js library for easily creating wapps for [Wappsto](https://wappsto.com).
 
+In depth documentation can be found [Documentation](https://wappsto.github.io/javascript-wappsto-wapp/)
+
 ## Table of Contents
 
 -   [Install](#install)
@@ -16,14 +18,15 @@ This is a node/js library for easily creating wapps for [Wappsto](https://wappst
 -   [To report a change in the value](#to-report-a-change-in-the-value)
 -   [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
 -   [Reporting events for value](#reporting-events-for-value)
--   [To request access to an exsisting object from the user](#to-request-access-to-an-exsisting-object-from-the-user)
-    -   [Using filters to request access to an exsisting object from the user](#using-filters-to-request-access-to-an-exsisting-object-from-the-user)
--   [To find a child from an exsisting object](#to-find-a-child-from-an-exsisting-object)
--   [Retrive object by ID](#retrive-object-by-id)
+-   [To request access to an existing object from the user](#to-request-access-to-an-existing-object-from-the-user)
+    -   [Using filters to request access to an existing object from the user](#using-filters-to-request-access-to-an-existing-object-from-the-user)
+-   [To find a child from an existing object](#to-find-a-child-from-an-existing-object)
+-   [Retrieve object by ID](#retrieve-object-by-id)
 -   [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
 -   [To reload a model from the server](#to-reload-a-model-from-the-server)
 -   [Listing for changes on values](#listing-for-changes-on-values)
 -   [Sending an update event to a device](#sending-an-update-event-to-a-device)
+-   [Loading historical data](#loading-historical-data)
 -   [Check if a device is online](#check-if-a-device-is-online)
 -   [Changing the period and delta of a value](#changing-the-period-and-delta-of-a-value)
 -   [Analyzing historical data](#analyzing-historical-data)
@@ -85,7 +88,7 @@ Here are some examples on how to use the library.
 
 First you need to create a IoT network.
 To create a new network you need to call 'createNetwork'. If there is
-an Network with the same name, the exsisting network will be returned.
+an Network with the same name, the existing network will be returned.
 
 ```javascript
 let network = await Wappsto.createNetwork({
@@ -94,7 +97,7 @@ let network = await Wappsto.createNetwork({
 ```
 
 Then you need to create a device. To create a new device under an
-existing network, you should call createDevice. If a device exsists
+existing network, you should call createDevice. If a device exists
 with the given name, the existing device will be returned.
 
 ```javascript
@@ -111,15 +114,15 @@ let device = await network.createDevice({
 ```
 
 Then you need to create new values.
-To create a new value under an exsisting device, you should call
-createValue. If a value exsists with the given name, the existing
+To create a new value under an existing device, you should call
+createValue. If a value exists with the given name, the existing
 value will be returned.
-There will also be created the states nedded based on the
+There will also be created the states needed based on the
 permission. The only allowed values for permission is 'r', 'w' and
 'rw'. The state will have 'NA' as the initial data. This can be changed by
 setting the `initialState` when creating the value.
-The list of avaible value templates can be seen in the
-[value_template.ts](../main/src/util/value_template.ts) file.
+The list of available value templates can be seen in the
+[value_template.ts](https://github.com/Wappsto/javascript-wappsto-wapp/blob/main/src/util/value_template.ts) file.
 
 ```javascript
 let value = await device.createValue({
@@ -130,7 +133,7 @@ let value = await device.createValue({
 ```
 
 It is also possible to define a period for how often the library
-should poll your values for updates. In this way regulary reports will
+should poll your values for updates. In this way regularly reports will
 be send to the cloud. It is also possible to filter out small changes
 by setting the delta for number values. With the delta set, reported
 changes that are not bigger then the delta will be discarded. In the
@@ -152,7 +155,7 @@ let value = await device.createValue({
 It is also possible to define a value where the data is not put into
 the historical log. This is done by setting the `disableLog` to
 `true`. This can be set on the `createValue` and the special versions
-of the createValue funciton.
+of the createValue function.
 
 ```javascript
 let value = await device.createValue({
@@ -236,7 +239,7 @@ let data = value.getReportData();
 let timestamp = value.getReportTimestamp();
 ```
 
-If you need to report multiple historical data, you can speficy an array of data, timestamp pairs.
+If you need to report multiple historical data, you can specify an array of data, timestamp pairs.
 
 ```javascript
 await value.report([
@@ -281,9 +284,9 @@ The possible values for level is:
 await value.addEvent('error', 'something went wrong');
 ```
 
-### To request access to an exsisting object from the user
+### To request access to an existing object from the user
 
-To request access to an exsisting object, a request have to be
+To request access to an existing object, a request have to be
 send. You can request a single object or multiple objects of the same
 type. To request access to multiple objects, you can specify the
 amount after fx. the name `findByName('name', 3)`. You can also
@@ -291,7 +294,7 @@ request access to all the possible objects that matches the request by
 calling `findAllByName`. If you only need read access to the data,
 you can set the `readOnly` to true.
 
-To request access to a network with a spefict name, use
+To request access to a network with a specific name, use
 `findByName`.
 
 ```javascript
@@ -302,7 +305,7 @@ let allNetworks = await Wappsto.Network.findAllByName('Network name');
 let allReadOnlyNetworks = await Wappsto.Network.findAllByName('Network name', true);
 ```
 
-To request access to a device with a spefict name, use `findByName`.
+To request access to a device with a specific name, use `findByName`.
 
 ```javascript
 let oneDevice = await Wappsto.Device.findByName('Device name');
@@ -312,7 +315,7 @@ let allDevices = await Wappsto.Device.findAllByName('Device name');
 let allReadOnlyDevices = await Wappsto.Device.findAllByName('Device name', true);
 ```
 
-To request access to a device with a spefict product, use `findByProduct`.
+To request access to a device with a specific product, use `findByProduct`.
 
 ```javascript
 let oneDevice = await Wappsto.Device.findByProduct('Product name');
@@ -322,7 +325,7 @@ let allDevices = await Wappsto.Device.findAllByProduct('Product name');
 let allReadOnlyDevices = await Wappsto.Device.findAllByProduct('Product name', true);
 ```
 
-To request access to a value with a spefict name, use `findByName`.
+To request access to a value with a specific name, use `findByName`.
 
 ```javascript
 let oneValue = await Wappsto.Value.findByName('Value name');
@@ -332,7 +335,7 @@ let allValues = await Wappsto.Value.findAllByName('Value name');
 let allReadOnlyValues = await Wappsto.Value.findAllByName('Value name', true);
 ```
 
-To request access to a value with a spefict type, use `findByType`.
+To request access to a value with a specific type, use `findByType`.
 
 ```javascript
 let oneValue = await Wappsto.Value.findByType('Type name');
@@ -342,14 +345,14 @@ let allValues = await Wappsto.Value.findAllByType('Type name');
 let allReadOnlyValues = await Wappsto.Value.findAllByType('Type name', true);
 ```
 
-#### Using filters to request access to an exsisting object from the user
+#### Using filters to request access to an existing object from the user
 
 It is also possible to use more advanced filters to get more control
 over the specific objects that are requested. It is possible to
 combine any keys in the filter, to narrow down the returned objects.
 If you need to find multiple of the same type, you can use an Array
 with the values. A filter have 3 main entry points `network`, `device`
-and `value`. You can see the posible filters below.
+and `value`. You can see the possible filters below.
 
 ```javascript
 const filter = {
@@ -419,7 +422,7 @@ let allValues = await Wappsto.Value.findAllByFilter(filter, omit_filter);
 let allReadOnlyValues = await Wappsto.Value.findAllByFilter(filter, omit_filter, true);
 ```
 
-### To find a child from an exsisting object
+### To find a child from an existing object
 
 To find devices under a network, you can call `findDeviceByName` to
 search for all devices with the given name.
@@ -450,9 +453,9 @@ let values = network.findValueByType('value type');
 let values = device.findValueByType('value type');
 ```
 
-### Retrive object by ID
+### Retrieve object by ID
 
-If you already have access to some objects, you can retrive them
+If you already have access to some objects, you can retrieve them
 directly by their ID.
 
 ```javascript
@@ -474,7 +477,7 @@ if (!result) {
 ```
 
 If you need to verify that the device send back a report, you can use
-`controlWithAck` to wait for the incomming report.
+`controlWithAck` to wait for the incoming report.
 
 ```javascript
 const result = await value.controlWithAck('1');
@@ -524,7 +527,7 @@ value.cancelOnControl();
 
 ### To reload a model from the server
 
-If you want to load the newiest data from the server manually, you can
+If you want to load the newsiest data from the server manually, you can
 call `reload` on the model, to get the latest data for that model.
 
 ```javascript
@@ -545,6 +548,33 @@ To send an event to a device to get a new report data.
 ```javascript
 await value.refresh();
 ```
+
+### Loading historical data
+
+It is possible to load historical data for a value. Both report and
+control data can be loaded using `getReportLog` and
+`getControlLog`. Each function takes a `LogRequest` object, where you
+can define the parameters for the log service.
+
+```javascript
+const historicalReportData = await value.getReportLog({});
+const historicalControlData = await value.getControlLog({});
+```
+
+The `LogRequest` object is defined like this:
+
+| **Key**          | **Type** | **Meaning**                                                        |
+|------------------|----------|--------------------------------------------------------------------|
+| start            | date     | The start time for the log request                                 |
+| end              | date     | The end time for the log request                                   |
+| limit            | number   | The maximum number of itmes in the result                          |
+| offset           | number   | How many items that should be skiped before returning the result   |
+| operation        | string   | What operation should be performed on the data before returning it |
+| group_by         | string   | What time interval should the log data be grouped by               |
+| timestamp_format | string   | The format the timestamp should be converted into                  |
+| timezone         | string   | If the timestamp should be converted to a timezone instead of UTZ  |
+| order            | string   | Should the result be ordered ascending or descending               |
+| order_by         | string   | The field that should be used to order by                          |
 
 ### Check if a device is online
 
@@ -592,7 +622,7 @@ value.setDelta(2.2);
 
 ### Analyzing historical data
 
-It is possible to use the Analyric Backend to analyze the historical
+It is possible to use the Analytic Backend to analyze the historical
 data of a value.
 
 #### Energy Data
@@ -645,9 +675,9 @@ Wappsto.cancelFromForeground();
 
 ### Waiting for the background to be ready
 
-If you need to comunitate with the background, it is a good idea to
+If you need to communicate with the background, it is a good idea to
 wait for the background to be ready and have registered the
-`waitForForground` handler. This can be do using the
+`waitForBackground` handler. This can be do using the
 `waitForBackground` function.
 
 ```javascript
@@ -790,7 +820,7 @@ const startNode = await Wappsto.createNode('start node');
 
 When you have created your ontology, you can `transverse` the graph
 and find 'leafs' in the graph. You need to define a path to
-follow. There are 3 special charaters in the path, that have special
+follow. There are 3 special characters in the path, that have special
 meaning. `.` is used to separate each element in the path. `*` is used
 as matching any relationship. `|` is used as an 'or' between relationships.
 
@@ -800,7 +830,7 @@ const leafs = node.transverse('*.contains|child.*');
 
 When calling `transverse` the result is the leaf at the end of the
 path. But if you want all the nodes that are found along the path, you
-can set 'getAll' to true when callling `transverse`.
+can set 'getAll' to true when calling `transverse`.
 
 ```javascript
 const allNodes = node.transverse('*.contains|child.*', true);
@@ -812,7 +842,7 @@ To load all the ontology edges from an object, you can call `getAllEdges`.
 const edges = await node.getAllEdges();
 ```
 
-To the models that the edge points to is avaible in the `models` attribute.
+To the models that the edge points to is available in the `models` attribute.
 
 ```javascript
 edges.forEach((edge) => {
@@ -860,7 +890,7 @@ It is possible to send your own requests to wappsto by using the
 `request` object in wappsto.
 
 ```javascript
-let netwoks = await Wappsto.request.get('/network');
+let networks = await Wappsto.request.get('/network');
 await Wappsto.request.post('/network', { name: 'Network Name' });
 ```
 

@@ -5,5 +5,11 @@
       "module": "esnext",
       "experimentalDecorators": true,
       "moduleResolution": "node",
+  },
+  "typedocOptions": {
+    "entryPoints": ["src/index.ts"],
+    "readme": "./README.md",
+    "exclude": ["**/{types}/*.ts"],
+    "out": "docs"
   }
 }
