@@ -585,7 +585,10 @@ describe('value', () => {
                             type: 'log',
                             version: '2.1',
                         },
-                        data: [],
+                        data: [{
+                            time: '2022-01-01T01:02:03Z',
+                            data: '1'
+                        }],
                         more: false,
                         type: 'state',
                     },
@@ -654,6 +657,8 @@ describe('value', () => {
         expect(logsR.meta.type).toBe('log');
         expect(logsR.more).toBe(false);
         expect(logsR.type).toBe('state');
+        expect(logsR.data[0].data).toBe('1');
+        expect(logsR.data[0].timestamp).toBe('2022-01-01T01:02:03Z');
         expect(logsC.meta.type).toBe('log');
         expect(logsC.more).toBe(false);
         expect(logsC.type).toBe('state');
