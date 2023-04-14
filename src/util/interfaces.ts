@@ -476,14 +476,9 @@ export interface ILogRequest {
     order_by?: string;
 }
 
-export interface ILogData {
-    data: string;
-    timestamp: string;
-}
-
 export interface ILogResponse {
     meta: IMeta;
-    data: ILogData[];
+    data: LogValues;
     more: boolean;
     type: string;
 }

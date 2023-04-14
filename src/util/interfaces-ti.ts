@@ -626,14 +626,9 @@ export const ILogRequest = t.iface([], {
     order_by: t.opt('string'),
 });
 
-export const ILogData = t.iface([], {
-    data: 'string',
-    timestamp: 'string',
-});
-
 export const ILogResponse = t.iface([], {
     meta: 'IMeta',
-    data: t.array('ILogData'),
+    data: 'LogValues',
     more: 'boolean',
     type: 'string',
 });
@@ -965,7 +960,6 @@ const exportedTypeSuite: t.ITypeSuite = {
     LogOperation,
     LogGroupBy,
     ILogRequest,
-    ILogData,
     ILogResponse,
     EventType,
     IStreamEvent,
