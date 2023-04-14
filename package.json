@@ -40,7 +40,9 @@
         "test": "dts test --coverage",
         "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
         "prepublish": "yarn build",
-        "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags"
+        "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags",
+        "documentation": "typedoc && yarn documentation:fix",
+        "documentation:fix": "./fix_docs.sh"
     },
     "husky": {
         "hooks": {
@@ -108,6 +110,7 @@
         "size-limit": "^8.2.4",
         "ts-interface-builder": "^0.3.3",
         "ts-jest": "^29.0.5",
+        "typedoc": "^0.24.1",
         "typescript": "^4.9.5"
     }
 }
