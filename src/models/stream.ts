@@ -92,7 +92,7 @@ export class Stream extends Model {
         /* istanbul ignore next */
         if (this.backoff >= _config.reconnectCount) {
             printError(
-                `Stream failed to connect after ${this.backoff} attemps, exit!`
+                `Stream failed to connect after ${this.backoff} attempts, exit!`
             );
             if (isBrowser()) {
                 return Infinity;
@@ -390,7 +390,7 @@ export class Stream extends Model {
             /* istanbul ignore next */
             this.sendResponse(event, 501, e);
             /* istanbul ignore next */
-            printError('An error happend when calling request handler');
+            printError('An error happened when calling request handler');
             /* istanbul ignore next */
             printError(toString(e));
         }

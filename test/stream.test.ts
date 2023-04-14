@@ -120,7 +120,7 @@ describe('stream', () => {
         const fun = jest.fn();
         const value = new Value();
         const state = new State('Control');
-        const datas: string[] = [];
+        const arrData: string[] = [];
         value.meta.id = '6c06b63e-39ec-44a5-866a-c081aafb6726';
         state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         value.state.push(state);
@@ -128,10 +128,10 @@ describe('stream', () => {
         const p1 = value.onControl(fun);
         const p2 = value.onControl(fun);
         const p3 = value.onControl((v, s, t) => {
-            datas.push(s);
+            arrData.push(s);
         });
         const p4 = value.onControl((v, s, t) => {
-            datas.push(s);
+            arrData.push(s);
         });
         const p5 = value.onReport(fun);
 
@@ -202,7 +202,7 @@ describe('stream', () => {
         ]);
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(datas.length).toBe(1);
+        expect(arrData.length).toBe(1);
         expect(fun).toHaveBeenCalledTimes(1);
         expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
     });

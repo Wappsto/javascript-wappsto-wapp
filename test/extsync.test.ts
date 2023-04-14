@@ -95,7 +95,7 @@ describe('ExtSync stream', () => {
                 request: false,
                 method: 'POST',
                 uri: 'extsync/',
-                body: '{"type":"isBackgroudStarted","message":""}',
+                body: '{"type":"isBackgroundStarted","message":""}',
             },
             path: '/extsync/direct',
         });
@@ -137,7 +137,7 @@ describe('ExtSync stream', () => {
                 request: false,
                 method: 'POST',
                 uri: 'extsync/',
-                body: '{"type":"isBackgroudStarted","message":""}',
+                body: '{"type":"isBackgroundStarted","message":""}',
             },
             path: '/extsync/direct',
         });
@@ -147,7 +147,7 @@ describe('ExtSync stream', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
             message: '',
-            type: 'backgroudIsStarted',
+            type: 'backgroundIsStarted',
         });
     });
 
@@ -192,7 +192,7 @@ describe('ExtSync stream', () => {
                 type: 'extsync',
             },
             extsync: {
-                response: 'reponse',
+                response: 'response',
                 uri: 'extsync/request',
                 body: 'test',
             },
@@ -236,7 +236,7 @@ describe('ExtSync stream', () => {
     });
 
     it('can send to background and foreground', async () => {
-        let responseForground = undefined;
+        let responseForeground = undefined;
         let responseBackground = undefined;
         const msg = { test: 'test message' };
         const res = { result: 'true' };
@@ -255,7 +255,7 @@ describe('ExtSync stream', () => {
 
         const backgroundPromise = fromBackground(funB);
         sendToForeground(msg).then((result: any) => {
-            responseForground = result;
+            responseForeground = result;
         });
 
         const foregroundPromise = fromForeground(funF);
@@ -335,7 +335,7 @@ describe('ExtSync stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(responseForground).toBe(res);
+        expect(responseForeground).toBe(res);
         expect(responseBackground).toBe(res);
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
             message: {
@@ -775,7 +775,7 @@ describe('ExtSync stream', () => {
                 request: false,
                 method: 'POST',
                 uri: 'extsync/',
-                body: '{"type":"isBackgroudStarted","message":""}',
+                body: '{"type":"isBackgroundStarted","message":""}',
             },
             path: '/extsync/direct',
         });
@@ -800,7 +800,7 @@ describe('ExtSync stream', () => {
                 request: false,
                 method: 'POST',
                 uri: 'extsync/',
-                body: '{"type":"backgroudIsStarted","message":""}',
+                body: '{"type":"backgroundIsStarted","message":""}',
             },
             path: '/extsync/direct',
         });
@@ -832,7 +832,7 @@ describe('ExtSync stream', () => {
                 request: false,
                 method: 'POST',
                 uri: 'extsync/',
-                body: '{"type":"backgroudIsStarted","message":""}',
+                body: '{"type":"backgroundIsStarted","message":""}',
             },
             path: '/extsync/direct',
         });

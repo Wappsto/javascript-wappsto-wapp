@@ -6,12 +6,12 @@ import { isBrowser } from './util/helpers';
 
 const openStream: Stream = new Stream();
 let request_handlers: Record<string, RequestHandler> = {};
-let backgroudIsStarted = false;
+let backgroundIsStarted = false;
 
 export { openStream };
 
 export function streamHelperReset() {
-    backgroudIsStarted = false;
+    backgroundIsStarted = false;
     request_handlers = {};
 }
 
@@ -119,35 +119,35 @@ export function cancelFromForeground(): Promise<boolean> {
 
 function handleIsBackgroundStarted(message: any): undefined {
     if (request_handlers['foreground']) {
-        openStream.sendEvent('backgroudIsStarted', '');
+        openStream.sendEvent('backgroundIsStarted', '');
     }
     return;
 }
 
 function handleBackgroundIsStarted(message: any): undefined {
-    backgroudIsStarted = true;
+    backgroundIsStarted = true;
     return;
 }
 
 export async function waitForBackground(timeout = 10): Promise<boolean> {
     Model.validateMethod('Stream', 'waitForBackground', arguments);
-    if (backgroudIsStarted) {
+    if (backgroundIsStarted) {
         return true;
     }
     await openStream.subscribeInternal(
-        'backgroudIsStarted',
+        'backgroundIsStarted',
         handleBackgroundIsStarted
     );
     let count = timeout;
     do {
-        await openStream.sendEvent('isBackgroudStarted', '');
+        await openStream.sendEvent('isBackgroundStarted', '');
         let waits = 10;
-        while (!backgroudIsStarted && waits) {
+        while (!backgroundIsStarted && waits) {
             await new Promise((r) => setTimeout(r, 100));
             waits -= 1;
         }
         count -= 1;
-    } while (count !== 0 && !backgroudIsStarted);
+    } while (count !== 0 && !backgroundIsStarted);
 
     return !!count;
 }
@@ -155,7 +155,7 @@ export async function waitForBackground(timeout = 10): Promise<boolean> {
 if (!isBrowser()) {
     setTimeout(() => {
         openStream.subscribeInternal(
-            'isBackgroudStarted',
+            'isBackgroundStarted',
             handleIsBackgroundStarted
         );
     }, 0);

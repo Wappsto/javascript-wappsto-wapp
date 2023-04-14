@@ -42,7 +42,7 @@ describe('config', () => {
         printRequest('post', '/2.1/extsync/wappsto/editor/console', {}, {});
         expect(console.log).toHaveBeenCalledTimes(1);
         expect(console.log).toHaveBeenCalledWith(
-            'WAPPSTO REQUEST: post test {"config":"test"} {"key":"test","data":"CREF"} => test'
+            'WAPPSTO REQUEST: post test {"config":"test"} {"key":"test","data":"Circular REF"} => test'
         );
     });
 

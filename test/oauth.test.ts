@@ -36,7 +36,7 @@ describe('oauth', () => {
         server.close();
     });
 
-    it('can call requet handler', async () => {
+    it('can call request handler', async () => {
         mockedAxios.get.mockResolvedValueOnce({
             data: [
                 {
@@ -62,7 +62,7 @@ describe('oauth', () => {
         expect(requestUrl).toBe('https://wappsto.com/oauth');
     });
 
-    it('can return a token comming from stream', async () => {
+    it('can return a token coming from stream', async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
 
         const r = OAuth.getToken('test');
@@ -154,7 +154,7 @@ describe('oauth', () => {
         );
     });
 
-    it('can call requet handler without data', async () => {
+    it('can call request handler without data', async () => {
         mockedAxios.get.mockResolvedValueOnce({
             data: [],
         });

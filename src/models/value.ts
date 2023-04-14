@@ -169,7 +169,7 @@ export class Value extends StreamModel implements IValueBase {
         }
     }
 
-    public perserve(): void {
+    public preserve(): void {
         this.tmp_permission = this.permission;
     }
 

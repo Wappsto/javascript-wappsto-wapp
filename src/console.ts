@@ -97,7 +97,7 @@ export function startLogging(): void {
         backgroundLogging();
     } else {
         printWarning(
-            'DEPLICATED - The "startLogging" is not needed to be called anymore'
+            'DEPRECATED - The "startLogging" is not needed to be called anymore'
         );
     }
 }

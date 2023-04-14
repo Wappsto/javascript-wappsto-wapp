@@ -40,7 +40,7 @@ function _trace(parent: string, status: string): void {
         .get(url, {
             params: params,
         })
-        .catch((err) => {
+        .catch(() => {
             printError('Failed to send trace');
         });
 }

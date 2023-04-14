@@ -40,8 +40,8 @@ export function notify(
     data?: Record<string, any>
 ): Promise<void> {
     Model.validateMethod('notification', 'notify', arguments);
-    const noti = new SendNotification(message, level, data);
-    return noti.create();
+    const newNotification = new SendNotification(message, level, data);
+    return newNotification.create();
 }
 
 export class SendNotification extends PermissionModel {

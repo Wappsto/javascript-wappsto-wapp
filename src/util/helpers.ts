@@ -68,7 +68,7 @@ export function getCircularReplacer() {
     return (key: string, value: any) => {
         if (typeof value === 'object' && value !== null) {
             if (seen.has(value)) {
-                return 'CREF';
+                return 'Circular REF';
             }
             seen.add(value);
         }
