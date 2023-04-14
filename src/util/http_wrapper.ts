@@ -130,14 +130,12 @@ export function getErrorMessage(error: any | Error | AxiosError): string {
                     }
                     return `${data.message} (${toString(data.data)})`;
             }
-        } else {
-            return `${error.response.statusText} for ${error.config?.url}`;
         }
 
-        printDebug(toString(error));
-        return `Unknown HTTP error: ${error.message} (${error.code})`;
+        return `${error.response.statusText} for ${error.config?.url}`;
     }
 
+    printDebug(toString(error));
     return `Unknown error: ${toString(error)}`;
 }
 
