@@ -6,7 +6,7 @@
 
 This is a node/js library for easily creating wapps for [Wappsto](https://wappsto.com).
 
-In depth documentation can be found [Documentation](https://wappsto.github.io/javascript-wappsto-wapp/)
+In depth documentation can be found on [Github Pages](https://wappsto.github.io/javascript-wappsto-wapp/)
 
 ## Table of Contents
 

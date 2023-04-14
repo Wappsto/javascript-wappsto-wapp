@@ -15,6 +15,67 @@ export class PermissionModel extends OntologyModel {
         return `${type}-${quantity}-${message}`;
     }
 
+    private async handleNotification(
+        event: any,
+        options?: Record<string, any>
+    ): Promise<boolean | undefined> {
+        const notification = Notification.fromArray([event.data]);
+
+        /* istanbul ignore next */
+        if (!notification || !notification[0]) {
+            return undefined;
+        }
+
+        switch (notification[0].base?.code) {
+            case 1100013:
+                printDebug(
+                    `Got permission to create ${this.getType()} under users account`
+                );
+                try {
+                    await this._create({
+                        identifier: `request access to save ${this.getType()} under users account`,
+                    });
+                    return true;
+                } catch (e) {
+                    /* istanbul ignore next */
+                    printError(
+                        `Failed to get permission to save ${this.getType()} under users account`
+                    );
+                    /* istanbul ignore next */
+                    printDebug(toString(e));
+                }
+                break;
+            case 1100004:
+                if (!notification[0].base?.ids.includes(this.id())) {
+                    printDebug(
+                        `Got permission for wrong uuid ${notification[0].base?.ids[0]}`
+                    );
+                    return undefined;
+                }
+                printDebug(
+                    `Got permission to retrieve ${this.getType()}/${this.id()} from user`
+                );
+                try {
+                    await this._reload(
+                        options?.reloadAll,
+                        options?.defaultExpand
+                    );
+                    return true;
+                } catch (e) {
+                    /* istanbul ignore next */
+                    printError(
+                        `Failed to get permission to retrieve ${this.getType()}/${this.id()} from user`
+                    );
+                    /* istanbul ignore next */
+                    printDebug(toString(e));
+                }
+                break;
+        }
+
+        /* istanbul ignore next */
+        return undefined;
+    }
+
     public create(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
@@ -40,36 +101,15 @@ export class PermissionModel extends OntologyModel {
                     openStream.subscribeService(
                         '/notification',
                         async (event: any) => {
-                            if (event.meta_object?.type === 'notification') {
-                                const notification = Notification.fromArray([
-                                    event.data,
-                                ]);
-                                /* istanbul ignore next */
-                                if (!notification || !notification[0]) {
-                                    return;
-                                }
-                                if (notification[0].base?.code === 1100013) {
-                                    try {
-                                        printDebug(
-                                            `Got permission to create ${this.getType()} under users account`
-                                        );
-                                        await this._create({
-                                            identifier: `request access to save ${this.getType()} under users account`,
-                                        });
-                                        resolve();
-                                        return true;
-                                    } catch (e) {
-                                        /* istanbul ignore next */
-                                        printError(
-                                            `Failed to get permission to save ${this.getType()} under users account`
-                                        );
-                                        /* istanbul ignore next */
-                                        printDebug(toString(e));
-                                    }
-                                }
+                            if (event.meta_object?.type !== 'notification') {
+                                return undefined;
                             }
-                            /* istanbul ignore next */
-                            return undefined;
+
+                            const res = await this.handleNotification(event);
+                            if (res) {
+                                resolve();
+                            }
+                            return res;
                         }
                     );
                 } else {
@@ -198,6 +238,63 @@ export class PermissionModel extends OntologyModel {
                 }
                 return undefined;
             });
+        });
+    }
+
+    public reload(
+        reloadAll?: boolean | undefined,
+        defaultExpand?: number
+    ): Promise<boolean> {
+        return new Promise<boolean>(async (resolve, reject) => {
+            let res = false;
+            try {
+                res = await this._reload(reloadAll, defaultExpand);
+                resolve(res);
+            } catch (error) {
+                const data = getErrorResponse(error);
+
+                /* istanbul ignore next */
+                if (!data) {
+                    printHttpError(
+                        'PermissionModel.reload - Missing error data',
+                        error
+                    );
+                    this.meta.id = undefined;
+                    resolve(res);
+                    //reject(error);
+                    return;
+                }
+
+                if (data.code === 400006) {
+                    printDebug(
+                        `Requesting permission to get ${this.getType()}/${this.id()} from the user`
+                    );
+                    openStream.subscribeService(
+                        '/notification',
+                        async (event: any) => {
+                            if (event.meta_object?.type !== 'notification') {
+                                return undefined;
+                            }
+
+                            const res = await this.handleNotification(event, {
+                                reloadAll,
+                                defaultExpand,
+                            });
+                            if (res) {
+                                resolve(true);
+                            }
+                            return res;
+                        }
+                    );
+                } else {
+                    /* istanbul ignore next */
+                    printHttpError('Permission.reload - Unhandled code', error);
+                    /* istanbul ignore next */
+                    this.meta.id = undefined;
+                    resolve(res);
+                    //reject(error);
+                }
+            }
         });
     }
 }

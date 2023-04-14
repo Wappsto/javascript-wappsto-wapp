@@ -72,7 +72,7 @@ export class Model implements IModel {
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-    public perserve(): void {}
+    public preserve(): void {}
 
     /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     public restore(): void {}
@@ -119,7 +119,7 @@ export class Model implements IModel {
             this.toJSON(),
             Model.generateOptions(params)
         );
-        this.perserve();
+        this.preserve();
         this.parse(response.data);
         this.restore();
         addModel(this);
@@ -178,9 +178,31 @@ export class Model implements IModel {
     /* istanbul ignore next */
     public async loadAllChildren(
         json: Record<string, any> | null,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         reloadAll = false
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     ): Promise<void> {}
+
+    public async _reload(
+        reloadAll?: boolean,
+        defaultExpand = 0
+    ): Promise<boolean> {
+        Model.validateMethod('Model', 'reload', arguments);
+
+        if (this.meta.id === undefined) {
+            return false;
+        }
+
+        const response = await wappsto.get(
+            this.getUrl(),
+            Model.generateOptions({
+                expand: reloadAll ? this.expand : defaultExpand,
+            })
+        );
+        this.parse(response.data);
+        await this.loadAllChildren(response.data, reloadAll);
+        return true;
+    }
 
     public async reload(
         reloadAll?: boolean,
@@ -189,21 +211,11 @@ export class Model implements IModel {
         Model.validateMethod('Model', 'reload', arguments);
 
         let res = false;
-        if (this.meta.id !== undefined) {
-            try {
-                const response = await wappsto.get(
-                    this.getUrl(),
-                    Model.generateOptions({
-                        expand: reloadAll ? this.expand : defaultExpand,
-                    })
-                );
-                this.parse(response.data);
-                await this.loadAllChildren(response.data, reloadAll);
-                res = true;
-            } catch (e) {
-                this.meta.id = undefined;
-                printHttpError('Model.reload', e);
-            }
+        try {
+            res = await this._reload(reloadAll, defaultExpand);
+        } catch (e) {
+            this.meta.id = undefined;
+            printHttpError('Model.reload', e);
         }
         return res;
     }
@@ -235,6 +247,7 @@ export class Model implements IModel {
     }
 
     /* istanbul ignore next */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public parseChildren(json: Record<string, any>): boolean {
         return false;
     }
