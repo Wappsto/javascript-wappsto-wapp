@@ -711,7 +711,17 @@ export class Value extends StreamModel implements IValueBase {
                 go_internal: false,
                 throw_error: true,
             });
-            return response[0] as ILogResponse;
+            if (response[0]) {
+                return {
+                    ...response[0],
+                    data: response[0].data.map(
+                        (item: Record<string, string>) => ({
+                            data: item.data,
+                            timestamp: item.time || item.timestamp,
+                        })
+                    ),
+                } as ILogResponse;
+            }
         }
         return {
             meta: {

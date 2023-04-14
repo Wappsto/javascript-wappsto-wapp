@@ -626,9 +626,14 @@ export const ILogRequest = t.iface([], {
     order_by: t.opt('string'),
 });
 
+export const ILogData = t.iface([], {
+    data: 'string',
+    timestamp: 'string',
+});
+
 export const ILogResponse = t.iface([], {
     meta: 'IMeta',
-    data: 'any',
+    data: t.array('ILogData'),
     more: 'boolean',
     type: 'string',
 });
@@ -721,7 +726,7 @@ export const IWappStorageFunc = t.iface([], {
     onChange: t.func('void', t.param('cb', 'StorageChangeHandler')),
 });
 
-export const StorageChangeHandler = t.func('void');
+export const StorageChangeHandler = t.func(t.union('void', 'void'));
 
 export const ServiceHandler = t.func(
     t.union(t.union('boolean', 'undefined'), 'boolean', 'undefined'),
@@ -792,6 +797,7 @@ export const IOntologyModelFunc = t.iface([], {
 export const IOntologyEdge = t.iface(['IModel'], {
     relationship: 'Relationship',
     models: t.array('IOntologyModel'),
+    failedModels: 'any',
     to: 'any',
     name: t.opt('string'),
     description: t.opt('string'),
@@ -959,6 +965,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     LogOperation,
     LogGroupBy,
     ILogRequest,
+    ILogData,
     ILogResponse,
     EventType,
     IStreamEvent,
