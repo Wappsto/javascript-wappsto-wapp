@@ -1,1 +1,1 @@
-declare module 'universal-websocket-client' extends WebSocket;
+declare module 'universal-websocket-client'; // extends WebSocket;
