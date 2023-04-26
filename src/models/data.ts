@@ -57,7 +57,12 @@ export class Data extends StreamModel {
         return Object.entries(this.data);
     }
 
-    public static findByDataId = async (id: string) => {
+    /**
+     * Finds instances of the Data model with a specific ID.
+     * @param {string} id - The ID to search for.
+     * @returns {Promise<Data[]>} A Promise that resolves to an array of Data instances matching the provided ID.
+     */
+    public static async findByDataId(id: string): Promise<Data[]> {
         const json: any[] = await Model.fetch({
             endpoint: Data.endpoint,
             params: {
@@ -66,14 +71,12 @@ export class Data extends StreamModel {
             },
         });
 
-        const res: Data[] = [];
-        json.forEach((item) => {
+        return json.map((item) => {
             const data = new Data();
             data.parse(item);
-            res.push(data);
+            return data;
         });
-        return res;
-    };
+    }
 
     public parse(json: Record<string, any>): boolean {
         Model.validateMethod('Model', 'parse', arguments);
