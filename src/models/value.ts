@@ -493,7 +493,7 @@ export class Value extends StreamModel implements IValueBase {
         this.validate('report', arguments);
 
         if (typeof data === 'object') {
-            return this.sendLogReport(data);
+            return this._sendLogReport(data);
         } else {
             return this.sendReport(data, timestamp, false);
         }
@@ -554,28 +554,20 @@ export class Value extends StreamModel implements IValueBase {
         return this.findStateAndUpdate('Report', data, timestamp);
     }
 
-    private async sendLogReport(data: LogValues) {
+    public async sendLogReports(data: LogValues) {
         const state = this.findState('Report');
         if (!state) {
             return false;
         }
 
-        data = data.sort(sortByTimestamp);
-
-        const logData = data.slice(0);
-        const lastData = logData.pop();
-        if (lastData) {
-            await this.report(lastData.data, lastData.timestamp);
-        }
-
-        if (logData.length === 0) {
+        if (data.length === 0) {
             return true;
         }
 
         const id = state.meta.id;
         let offset = 0;
         do {
-            const tmpData = logData.slice(offset, offset + 50000);
+            const tmpData = data.slice(offset, offset + 50000);
             const csvStr = tmpData.reduce((p, c) => {
                 return `${p}${id},${c.data},${this.timestampToString(
                     c.timestamp
@@ -586,9 +578,25 @@ export class Value extends StreamModel implements IValueBase {
                 headers: { 'Content-type': 'text/csv' },
             });
             offset += 50000;
-        } while (offset < logData.length);
+        } while (offset < data.length);
 
         return true;
+    }
+
+    private async _sendLogReport(data: LogValues) {
+        const state = this.findState('Report');
+        if (!state) {
+            return false;
+        }
+
+        const logData = data.slice(0);
+        logData.sort(sortByTimestamp);
+        const lastData = logData.pop();
+        if (lastData) {
+            await this.report(lastData.data, lastData.timestamp);
+        }
+
+        return this.sendLogReports(logData);
     }
 
     public control(

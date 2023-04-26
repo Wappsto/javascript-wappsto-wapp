@@ -253,6 +253,17 @@ await value.report([
 ]);
 ```
 
+If you do not want the current report state to change, you can use the `sendLogReports` instead.
+
+```javascript
+await value.sendLogReports([
+	{ data: 1, timestamp: '2022-02-02T02:02:01Z' },
+	{ data: 2, timestamp: '2022-02-02T02:02:02Z' },
+	{ data: 3, timestamp: '2022-02-02T02:02:03Z' },
+]);
+```
+
+
 ### Listing for requests to refresh the value
 
 To receive request to refresh the value, register a callback on
