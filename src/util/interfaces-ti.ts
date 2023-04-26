@@ -624,6 +624,7 @@ export const ILogRequest = t.iface([], {
     timezone: t.opt('string'),
     order: t.opt(t.union(t.lit('ascending'), t.lit('descending'))),
     order_by: t.opt('string'),
+    number: t.opt('boolean'),
 });
 
 export const ILogResponse = t.iface([], {

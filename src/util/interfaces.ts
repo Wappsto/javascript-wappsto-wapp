@@ -474,6 +474,7 @@ export interface ILogRequest {
     timezone?: string;
     order?: 'ascending' | 'descending';
     order_by?: string;
+    number?: boolean;
 }
 
 export interface ILogResponse {
