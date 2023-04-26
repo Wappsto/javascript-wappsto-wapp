@@ -1970,9 +1970,9 @@ describe('value', () => {
 
         const data = [
             { timestamp: '2022-02-02T02:02:01Z', data: 1 },
+            { timestamp: '2022-02-02T02:02:04Z', data: 4 },
             { timestamp: '2022-02-02T02:02:02Z', data: 2 },
             { timestamp: new Date('2022-02-02T02:02:03Z'), data: 3 },
-            { timestamp: '2022-02-02T02:02:04Z', data: 4 },
         ];
         await value.report(data);
 

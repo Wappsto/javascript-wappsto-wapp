@@ -18,6 +18,7 @@ import {
     generateFilterRequest,
     convertFilterToJson,
     convertFilterToString,
+    sortByTimestamp,
 } from '../util/helpers';
 import { runAnalyticModel } from '../util/analytics_helpers';
 import { printDebug, printWarning } from '../util/debug';
@@ -558,6 +559,8 @@ export class Value extends StreamModel implements IValueBase {
         if (!state) {
             return false;
         }
+
+        data = data.sort(sortByTimestamp);
 
         const logData = data.slice(0);
         const lastData = logData.pop();

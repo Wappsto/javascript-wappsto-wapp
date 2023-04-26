@@ -1,4 +1,4 @@
-import { IModel } from './interfaces';
+import { IModel, LogValue } from './interfaces';
 
 export function isBrowser(): boolean {
     return (
@@ -186,4 +186,10 @@ export function generateFilterRequest(
     result: string
 ) {
     return { filter: { attribute: request }, return: `{${result}}` };
+}
+
+export function sortByTimestamp(a: LogValue, b: LogValue): number {
+    const dateA = new Date(a.timestamp || 0);
+    const dateB = new Date(b.timestamp || 0);
+    return dateA.getTime() - dateB.getTime();
 }
