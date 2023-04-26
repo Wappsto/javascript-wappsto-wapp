@@ -496,6 +496,32 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
+    it('fails to create a value when parameters is missing', async () => {
+
+        const device = new Device();
+        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
+
+        expect.assertions(2);
+
+        try {
+            await device.createValue(
+                'name',
+            );
+        } catch (error) {
+            expect(error).toEqual(new Error('Missing parameter "valueTemplate" in createValue function'));
+        }
+
+        try {
+            await device.createValue(
+                'name',
+                undefined,
+                ValueTemplate.NUMBER,
+            );
+        } catch (error) {
+            expect(error).toEqual(new Error('Missing parameter "permission" in createValue function'));
+        }
+    });
+
     it('can create a value with historical disabled', async () => {
         templateHelperStart();
 

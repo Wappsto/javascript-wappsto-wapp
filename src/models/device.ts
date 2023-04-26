@@ -256,11 +256,11 @@ export class Device extends ConnectionModel implements IDevice {
         if (typeof name === 'string') {
             if (template === undefined) {
                 throw new Error(
-                    'Missing parameter valueTemplate in createvalue'
+                    'Missing parameter "valueTemplate" in createValue function'
                 );
             }
             if (permission === undefined) {
-                throw new Error('Missing parameter permission in createvalue');
+                throw new Error('Missing parameter "permission" in createValue function');
             }
             template.name = name;
             template.permission = permission;
