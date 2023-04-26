@@ -245,7 +245,7 @@ export class PermissionModel extends OntologyModel {
         reloadAll?: boolean | undefined,
         defaultExpand?: number
     ): Promise<boolean> {
-        return new Promise<boolean>(async (resolve, reject) => {
+        return new Promise<boolean>(async (resolve) => {
             let res = false;
             try {
                 res = await this._reload(reloadAll, defaultExpand);
@@ -261,7 +261,6 @@ export class PermissionModel extends OntologyModel {
                     );
                     this.meta.id = undefined;
                     resolve(res);
-                    //reject(error);
                     return;
                 }
 
@@ -292,7 +291,6 @@ export class PermissionModel extends OntologyModel {
                     /* istanbul ignore next */
                     this.meta.id = undefined;
                     resolve(res);
-                    //reject(error);
                 }
             }
         });
