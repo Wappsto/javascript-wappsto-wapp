@@ -1269,7 +1269,7 @@ describe('device', () => {
             name: 'Test Value',
             permission: 'r',
             template: ValueTemplate.NUMBER,
-            initialState: '20',
+            initialState: {data: '20', timestamp: '2022-02-02T02:02:02Z'},
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -1334,6 +1334,7 @@ describe('device', () => {
                 data: '20',
                 meta: { type: 'state', version: '2.1' },
                 type: 'Report',
+                timestamp: '2022-02-02T02:02:02Z',
             }),
             {}
         );

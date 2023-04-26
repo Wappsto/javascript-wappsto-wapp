@@ -153,7 +153,7 @@ export interface ICreateValue {
     period?: number | string;
     delta?: number | 'inf';
     disableLog?: boolean;
-    initialState?: string | number;
+    initialState?: IInitialState;
 }
 
 export interface IDeviceFunc {
@@ -231,6 +231,8 @@ export interface LogValue {
     data: string | number;
 }
 
+export type IInitialState = string | number | LogValue;
+
 export type LogValues = LogValue[];
 export type ValuePermission = 'r' | 'w' | 'rw' | 'wr';
 
@@ -249,7 +251,7 @@ export interface IValueBase {
     period?: number | string;
     delta?: string;
     disableLog?: boolean;
-    initialState?: string | number;
+    initialState?: IInitialState;
 }
 
 export interface IValueNumberBase {

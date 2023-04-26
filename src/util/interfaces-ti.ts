@@ -178,7 +178,7 @@ export const ICreateValue = t.iface([], {
     period: t.opt(t.union('number', 'string')),
     delta: t.opt(t.union('number', t.lit('inf'))),
     disableLog: t.opt('boolean'),
-    initialState: t.opt(t.union('string', 'number')),
+    initialState: t.opt('IInitialState'),
 });
 
 export const IDeviceFunc = t.iface([], {
@@ -282,6 +282,8 @@ export const LogValue = t.iface([], {
     data: t.union('string', 'number'),
 });
 
+export const IInitialState = t.union('string', 'number', 'LogValue');
+
 export const LogValues = t.array('LogValue');
 
 export const ValuePermission = t.union(
@@ -327,7 +329,7 @@ export const IValueBase = t.iface([], {
     period: t.opt(t.union('number', 'string')),
     delta: t.opt('string'),
     disableLog: t.opt('boolean'),
-    initialState: t.opt(t.union('string', 'number')),
+    initialState: t.opt('IInitialState'),
 });
 
 export const IValueNumberBase = t.iface([], {
@@ -935,6 +937,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IDeviceFunc,
     IPermissionModelFunc,
     LogValue,
+    IInitialState,
     LogValues,
     ValuePermission,
     ValueType,

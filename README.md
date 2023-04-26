@@ -120,7 +120,8 @@ value will be returned.
 There will also be created the states needed based on the
 permission. The only allowed values for permission is 'r', 'w' and
 'rw'. The state will have 'NA' as the initial data. This can be changed by
-setting the `initialState` when creating the value.
+setting the `initialState` when creating the value. You can also define the initial
+timestamp by setting initialState as an object with data and timestamp.
 The list of available value templates can be seen in the
 [value_template.ts](https://github.com/Wappsto/javascript-wappsto-wapp/blob/main/src/util/value_template.ts) file.
 
@@ -182,7 +183,10 @@ let value = await device.createNumberValue({
     unit: 'count',
     si_conversion: 'c',
     disableLog: false,
-    initialState: 0,
+    initialState: {
+        data: 0,
+        timestamp: '2022-02-02T02:02:02Z',
+    },
 });
 ```
 
@@ -567,14 +571,15 @@ The `LogRequest` object is defined like this:
 |------------------|----------|--------------------------------------------------------------------|
 | start            | date     | The start time for the log request                                 |
 | end              | date     | The end time for the log request                                   |
-| limit            | number   | The maximum number of itmes in the result                          |
-| offset           | number   | How many items that should be skiped before returning the result   |
+| limit            | number   | The maximum number of items in the result                          |
+| offset           | number   | How many items that should be skipped before returning the result  |
 | operation        | string   | What operation should be performed on the data before returning it |
 | group_by         | string   | What time interval should the log data be grouped by               |
 | timestamp_format | string   | The format the timestamp should be converted into                  |
 | timezone         | string   | If the timestamp should be converted to a timezone instead of UTZ  |
 | order            | string   | Should the result be ordered ascending or descending               |
 | order_by         | string   | The field that should be used to order by                          |
+| number           | boolean  | If only numbers should be returned in the log response             |
 
 ### Check if a device is online
 

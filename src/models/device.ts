@@ -218,12 +218,24 @@ export class Device extends ConnectionModel implements IDevice {
             }
         }
 
+        let data;
+        let timestamp;
+        if (params.initialState) {
+            if (typeof params.initialState === 'object') {
+                data = params.initialState.data?.toString();
+                timestamp = params.initialState.timestamp?.toString();
+            } else {
+                data = params.initialState.toString();
+            }
+        }
+
         const poms: any[] = [];
         if (['r', 'rw', 'wr'].includes(params.permission)) {
             poms.push(
                 value.createState({
                     type: 'Report',
-                    data: params.initialState?.toString(),
+                    timestamp,
+                    data,
                 })
             );
         }
@@ -231,7 +243,8 @@ export class Device extends ConnectionModel implements IDevice {
             poms.push(
                 value.createState({
                     type: 'Control',
-                    data: params.initialState?.toString(),
+                    timestamp,
+                    data,
                 })
             );
         }
@@ -260,7 +273,9 @@ export class Device extends ConnectionModel implements IDevice {
                 );
             }
             if (permission === undefined) {
-                throw new Error('Missing parameter "permission" in createValue function');
+                throw new Error(
+                    'Missing parameter "permission" in createValue function'
+                );
             }
             template.name = name;
             template.permission = permission;
