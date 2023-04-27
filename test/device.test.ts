@@ -3,7 +3,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { Device, Value, ValueTemplate, config } from '../src/index';
+import { Device, Value, ValueTemplate, State, config } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { responses } from './util/response';
 
@@ -302,6 +302,7 @@ describe('device', () => {
     const templateHelperDone = () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenNthCalledWith(
             2,
@@ -375,6 +376,56 @@ describe('device', () => {
         expect(value.number?.max).toEqual(128);
         expect(value.number?.step).toEqual(0.1);
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('can reuse a value from a NUMBER template', async () => {
+        mockedAxios.put
+            .mockResolvedValueOnce({
+            });
+
+        const st = new State('Report', '123');
+        st.meta.id = 'bde1b7ed-de87-496a-baf3-7c258ec3db05';
+        st.timestamp = 'timestamp';
+
+        const val = new Value('name');
+        val.meta.id = '1ff269bc-5a90-424b-9442-cc90570ad479';
+        val.state = [st];
+
+        const device = new Device();
+        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
+
+        val.parent = device;
+        device.value = [val];
+        const value = await device.createValue(
+            'name',
+            'r',
+            ValueTemplate.NUMBER,
+            '0',
+            2
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/value/1ff269bc-5a90-424b-9442-cc90570ad479',
+            {
+                delta: '2',
+                meta: {
+                  id: '1ff269bc-5a90-424b-9442-cc90570ad479',
+                  type: 'value',
+                  version: '2.1',
+                },
+                name: 'name',
+                number: { max: 128, min: -128, step: 0.1, unit: '' },
+                period: '0',
+                permission: 'r',
+                type: 'number',
+              },
+            {}
+        );
     });
 
     it('can create a value from a STRING template', async () => {

@@ -409,6 +409,9 @@ export class Value extends StreamModel implements IValueBase {
         if (params.data === undefined) {
             delete params.data;
         }
+        if (params.timestamp === undefined) {
+            delete params.timestamp;
+        }
 
         let create = false;
         let state = this.findState(params.type);
