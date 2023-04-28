@@ -1567,16 +1567,32 @@ describe('device', () => {
     });
 
     it('can make a device online', async () => {
-        templateHelperStart();
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.1',
+                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        },
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.1',
+                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                        },
+                    },
+                ],
+            });
+
         const d = new Device();
         d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
-
-        await d.createValue(
-            'Connection',
-            'rw',
-            ValueTemplate.CONNECTION_STATUS
-        );
-        templateHelperDone();
 
         const responseOnline = await d.setConnectionStatus(1);
 
@@ -1584,23 +1600,38 @@ describe('device', () => {
 
         expect(responseOnline).toEqual(true);
         expect(responseOffline).toEqual(true);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
             1,
-            '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
+            '/2.1/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38/value',
             expect.objectContaining({
-                data: '1',
                 meta: {
-                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    type: 'value',
+                    version: '2.1',
+                },
+                name: 'Connection',
+                type: 'connection',
+                permission: 'r',
+            }),
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            expect.objectContaining({
+                meta: {
                     type: 'state',
                     version: '2.1',
                 },
+                data: '1',
                 type: 'Report',
             }),
             {}
         );
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenNthCalledWith(
-            2,
+            1,
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             expect.objectContaining({
                 data: '0',

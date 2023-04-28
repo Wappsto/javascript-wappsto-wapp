@@ -584,9 +584,19 @@ export class Device extends ConnectionModel implements IDevice {
         const value = this.findValueByType(
             ValueTemplate.CONNECTION_STATUS.type
         );
+        const reportState = state ? '1' : '0';
         if (value.length > 0) {
-            res = await value[0].report(state ? '1' : '0');
+            res = await value[0].report(reportState);
+        } else {
+            const newValue = await this.createValue({
+                name: 'Connection',
+                permission: 'r',
+                template: ValueTemplate.CONNECTION_STATUS,
+                initialState: reportState,
+            });
+            res = !!newValue;
         }
+
         return res;
     }
 
