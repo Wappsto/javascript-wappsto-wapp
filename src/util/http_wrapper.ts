@@ -1,19 +1,24 @@
 import axios, { AxiosError } from 'axios';
 import { session, baseUrl } from '../session';
 import { printError, printDebug, printRequest } from './debug';
-import { toString } from './helpers';
+import { toString, isBrowser } from './helpers';
 import { _config } from '../util/config';
 import { VERSION } from './version';
 
 type Methods = 'head' | 'options' | 'put' | 'post' | 'patch' | 'delete' | 'get';
 
+let HEADERS: any = {
+    'X-Session': session,
+    'Content-Type': 'application/json',
+};
+
+if (!isBrowser()) {
+    HEADERS['User-Agent'] = `Wappsto-wapp/${VERSION} (axios/${axios.VERSION})`;
+}
+
 const axiosInstance = axios.create({
     baseURL: baseUrl,
-    headers: {
-        'X-Session': session,
-        'Content-Type': 'application/json',
-        'User-Agent': `Wappsto-wapp/${VERSION} (axios/${axios.VERSION})`,
-    },
+    headers: HEADERS,
     timeout: 5 * 60 * 1000,
 });
 
