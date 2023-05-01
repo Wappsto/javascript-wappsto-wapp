@@ -769,7 +769,7 @@ export class Value extends StreamModel implements IValueBase {
                     ...response[0],
                     data: response[0].data.map(
                         (item: Record<string, string>) => ({
-                            data: item.data,
+                            data: item[params.operation || 'data'],
                             timestamp: item.time || item.timestamp,
                         })
                     ),

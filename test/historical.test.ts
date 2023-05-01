@@ -50,6 +50,23 @@ describe('historical', () => {
                             type: 'log',
                             version: '2.1',
                         },
+                        data: [{
+                            time: '2022-01-01T01:02:03Z',
+                            max: '2'
+                        }],
+                        more: false,
+                        type: 'state',
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            id: '',
+                            type: 'log',
+                            version: '2.1',
+                        },
                         data: [],
                         more: false,
                         type: 'state',
@@ -69,6 +86,7 @@ describe('historical', () => {
         const d = new Date(500000000000);
 
         const logsR = await value.getReportLog({ limit: 1, end: d });
+        const logsMax = await value.getReportLog({ operation: 'max' });
         const logsC = await value.getControlLog({ start: d });
         let failLog = false;
         try {
@@ -79,7 +97,7 @@ describe('historical', () => {
 
         expect(failLog).toBe(true);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
             '/2.1/log/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7/state',
@@ -89,13 +107,20 @@ describe('historical', () => {
         );
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             2,
+            '/2.1/log/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7/state',
+            {
+                params: { operation: 'max' },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
             '/2.1/log/1b743fa5-85a1-48e9-935c-b98ba27c0ffe/state',
             {
                 params: { start: '1985-11-05T00:53:20.000Z' },
             }
         );
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
-            3,
+            4,
             '/2.1/log/1b743fa5-85a1-48e9-935c-b98ba27c0ffe/state',
             {
                 params: { end: '2022-02-02T02:02:02Z' },
@@ -107,6 +132,8 @@ describe('historical', () => {
         expect(logsR.type).toBe('state');
         expect(logsR.data[0].data).toBe('1');
         expect(logsR.data[0].timestamp).toBe('2022-01-01T01:02:03Z');
+        expect(logsMax.data[0].data).toBe('2');
+        expect(logsMax.data[0].timestamp).toBe('2022-01-01T01:02:03Z');
         expect(logsC.meta.type).toBe('log');
         expect(logsC.more).toBe(false);
         expect(logsC.type).toBe('state');
