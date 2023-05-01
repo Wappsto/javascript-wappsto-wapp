@@ -440,6 +440,23 @@ export class Value extends StreamModel implements IValueBase {
         return state;
     }
 
+    public removeChild(child: IModel): void {
+        this.state = this.state.filter((state: State) => {
+            return child !== state;
+        });
+    }
+
+    public async deleteState(type: StateType): Promise<void> {
+        this.validate('deleteState', [type]);
+
+        const state = this.findState(type);
+        if (!state) {
+            return;
+        }
+
+        return state.delete();
+    }
+
     public toJSON(): Record<string, any> {
         const json = super.toJSON();
         if (json['period'] !== undefined) {

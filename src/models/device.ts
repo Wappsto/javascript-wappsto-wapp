@@ -248,6 +248,11 @@ export class Device extends ConnectionModel implements IDevice {
                 })
             );
         }
+        if (params.permission === 'r') {
+            poms.push(value.deleteState('Control'));
+        } else if (params.permission === 'w') {
+            poms.push(value.deleteState('Report'));
+        }
         await Promise.all(poms);
 
         await value.created();

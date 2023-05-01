@@ -29,6 +29,7 @@ In depth documentation can be found on [Github Pages](https://wappsto.github.io/
 -   [Loading historical data](#loading-historical-data)
 -   [Check if a device is online](#check-if-a-device-is-online)
 -   [Changing the period and delta of a value](#changing-the-period-and-delta-of-a-value)
+-   [Deleting an item that was created](#deleting-an-item-that-was-created)
 -   [Analyzing historical data](#analyzing-historical-data)
 -   [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
 -   [Waiting for the background to be ready](#waiting-for-the-background-to-be-ready)
@@ -230,10 +231,13 @@ let value = await device.createBlobValue({
 
 To send a new data point to wappsto, just call the `report` function
 on the value. If you omit the timestamp, it will get the curren time as timestamp.
+It is possible to send number, string, boolean and objects.
 
 ```javascript
-await value.report('1');
+await value.report(1);
 await value.report('1', '2022-02-02T02:02:02Z');
+await value.report(true);
+await value.report({"my_data":"is updated"});
 ```
 
 And to get the last reported data and timestamp.
@@ -618,8 +622,8 @@ network.onConnectionChange((network, status) => {
 ```
 
 If you have a created your own device, you can set it online/offline
-by calling `setConnectionStatus` on the device, if you have added a
-`CONNECTION_STATUS` value before hand.
+by calling `setConnectionStatus` on the device. This will automatic create
+a `CONNECTION_STATUS` value if needed.
 
 ```javascript
 await device.setConnectionStatus(true);
@@ -634,6 +638,15 @@ To change the delta and period of a value you can call `setDelta` or
 value.setPeriod('300');
 
 value.setDelta(2.2);
+```
+
+### Deleting an item that was created
+
+It is possible to remove an item that you have created by calling `delete` on the item.
+This will remove the item from the backend.
+
+```javascript
+await value.delete();
 ```
 
 ### Analyzing historical data

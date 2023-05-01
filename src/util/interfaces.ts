@@ -288,6 +288,7 @@ export type ReportValueInput = string | number | boolean | Record<string, any>;
 export interface IValueFunc {
     constructor(name?: string): IState;
     createState(parameters: IState): IState;
+    deleteState(type: StateType): Promise<void>;
     report(
         data: ReportValueInput | LogValues,
         timestamp?: Timestamp

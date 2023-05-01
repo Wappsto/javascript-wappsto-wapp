@@ -366,6 +366,7 @@ export const ReportValueInput = t.union('string', 'number', 'boolean', 'any');
 export const IValueFunc = t.iface([], {
     constructor: t.func('IState', t.param('name', 'string', true)),
     createState: t.func('IState', t.param('parameters', 'IState')),
+    deleteState: t.func('void', t.param('type', 'StateType')),
     report: t.func(
         'boolean',
         t.param('data', t.union('ReportValueInput', 'LogValues')),

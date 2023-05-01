@@ -120,7 +120,9 @@ export class Model implements IModel {
             Model.generateOptions(params)
         );
         this.preserve();
-        this.parse(response.data);
+        if (response?.data) {
+            this.parse(response.data);
+        }
         this.restore();
         addModel(this);
     }

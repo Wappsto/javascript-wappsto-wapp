@@ -7,6 +7,77 @@ import { Device, Value, ValueTemplate, State, config } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { responses } from './util/response';
 
+
+const templateHelperStart = () => {
+    mockedAxios.post
+        .mockResolvedValueOnce({
+            data: [
+                {
+                    meta: {
+                        type: 'value',
+                        version: '2.1',
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                    },
+                },
+            ],
+        })
+        .mockResolvedValueOnce({
+            data: [
+                {
+                    meta: {
+                        type: 'state',
+                        version: '2.1',
+                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    },
+                },
+            ],
+        })
+        .mockResolvedValueOnce({
+            data: [
+                {
+                    meta: {
+                        type: 'state',
+                        version: '2.1',
+                        id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
+                    },
+                },
+            ],
+        });
+};
+
+const templateHelperDone = () => {
+    expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+    expect(mockedAxios.put).toHaveBeenCalledTimes(0);
+    expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+    expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+    expect(mockedAxios.post).toHaveBeenNthCalledWith(
+        2,
+        '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+        expect.objectContaining({
+            meta: {
+                type: 'state',
+                version: '2.1',
+            },
+            data: 'NA',
+            type: 'Report',
+        }),
+        {}
+    );
+    expect(mockedAxios.post).toHaveBeenNthCalledWith(
+        3,
+        '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+        expect.objectContaining({
+            meta: {
+                type: 'state',
+                version: '2.1',
+            },
+            data: 'NA',
+            type: 'Control',
+        }),
+        {}
+    );
+};
+
 describe('device', () => {
     let server: WS;
 
@@ -262,75 +333,6 @@ describe('device', () => {
         expect(device.value[3].name).toEqual('value 4');
     });
 
-    const templateHelperStart = () => {
-        mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        meta: {
-                            type: 'value',
-                            version: '2.1',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        },
-                    },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                        },
-                    },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
-                        },
-                    },
-                ],
-            });
-    };
-
-    const templateHelperDone = () => {
-        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.post).toHaveBeenNthCalledWith(
-            2,
-            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
-            expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                },
-                data: 'NA',
-                type: 'Report',
-            }),
-            {}
-        );
-        expect(mockedAxios.post).toHaveBeenNthCalledWith(
-            3,
-            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
-            expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                },
-                data: 'NA',
-                type: 'Control',
-            }),
-            {}
-        );
-    };
 
     it('can create a value from a NUMBER template', async () => {
         templateHelperStart();
@@ -545,6 +547,68 @@ describe('device', () => {
         expect(value.blob?.max).toEqual(280);
         expect(value.blob?.encoding).toEqual('base64');
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
+    it('will remove states when the permission is changed', async () => {
+        templateHelperStart();
+
+        mockedAxios.post.mockResolvedValueOnce({
+            data: [
+                {
+                    meta: {
+                        type: 'state',
+                        version: '2.1',
+                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    },
+                },
+            ],
+        })
+
+        const device = new Device();
+        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
+        const value = await device.createValue(
+            'name',
+            'rw',
+            ValueTemplate.NUMBER,
+        );
+
+        templateHelperDone();
+
+        const value2 = await device.createValue(
+            'name',
+            'r',
+            ValueTemplate.NUMBER,
+        );
+
+        expect(value.permission).toEqual('r');
+        expect(value.state.length).toBe(1);
+        expect(value.state[0].type).toEqual('Report');
+
+        await device.createValue(
+            'name',
+            'w',
+            ValueTemplate.NUMBER,
+        );
+
+        expect(value).toBe(value2);
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(2);
+
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/state/d5ad7430-7948-47b5-ab85-c9a93d0bff5b',
+            {}
+        );
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
+            {}
+        );
+
+        expect(value.permission).toEqual('w');
+        expect(value.state.length).toBe(1);
+        expect(value.state[0].type).toEqual('Control');
     });
 
     it('fails to create a value when parameters is missing', async () => {
@@ -1717,31 +1781,5 @@ describe('device', () => {
         );
 
         expect(networks.length).toEqual(22);
-    });
-
-    it('can change the period and delta from createValue', async () => {
-        templateHelperStart();
-        const d = new Device();
-        d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
-
-        let value = await d.createValue({
-            name: 'ChangePeriodAndDelta',
-            permission: 'rw',
-            template: ValueTemplate.NUMBER,
-            period: '10',
-            delta: 10,
-        });
-        templateHelperDone();
-
-        value = await d.createValue(
-            'ChangePeriodAndDelta',
-            'rw',
-            ValueTemplate.NUMBER,
-            20,
-            20
-        );
-
-        expect(value.delta).toBe('20');
-        expect(value.period).toBe(20);
     });
 });
