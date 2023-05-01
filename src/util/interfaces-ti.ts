@@ -361,27 +361,29 @@ export const IValueBlob = t.iface(['IValueBase', 'IValueStringBlobBase'], {});
 
 export const IValueXml = t.iface(['IValueBase', 'IValueXmlBase'], {});
 
+export const ReportValueInput = t.union('string', 'number', 'boolean', 'any');
+
 export const IValueFunc = t.iface([], {
     constructor: t.func('IState', t.param('name', 'string', true)),
     createState: t.func('IState', t.param('parameters', 'IState')),
     report: t.func(
         'boolean',
-        t.param('data', t.union('string', 'number', 'LogValues')),
+        t.param('data', t.union('ReportValueInput', 'LogValues')),
         t.param('timestamp', 'Timestamp', true)
     ),
     forceReport: t.func(
         'boolean',
-        t.param('data', t.union('string', 'number')),
+        t.param('data', 'ReportValueInput'),
         t.param('timestamp', 'Timestamp', true)
     ),
     control: t.func(
         'boolean',
-        t.param('data', t.union('string', 'number')),
+        t.param('data', 'ReportValueInput'),
         t.param('timestamp', 'Timestamp', true)
     ),
     controlWithAck: t.func(
         'boolean',
-        t.param('data', t.union('string', 'number')),
+        t.param('data', 'ReportValueInput'),
         t.param('timestamp', 'Timestamp', true)
     ),
     onControl: t.func('boolean', t.param('callback', 'ValueStreamCallback')),
@@ -949,6 +951,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IValueString,
     IValueBlob,
     IValueXml,
+    ReportValueInput,
     IValueFunc,
     StateType,
     StateStatus,

@@ -39,6 +39,7 @@ import {
     RefreshStreamCallback,
     ValueStreamCallback,
     LogValues,
+    ReportValueInput,
 } from '../util/interfaces';
 import { addModel } from '../util/modelStore';
 
@@ -312,7 +313,7 @@ export class Value extends StreamModel implements IValueBase {
 
     private async findStateAndUpdate(
         type: StateType,
-        data: string | number,
+        data: ReportValueInput,
         timestamp: Timestamp
     ): Promise<boolean> {
         const state = this.findState(type);
@@ -320,7 +321,7 @@ export class Value extends StreamModel implements IValueBase {
             return false;
         }
 
-        state.data = data.toString();
+        state.data = this.convertValueInput(data);
         state.timestamp = this.timestampToString(timestamp);
 
         if (type !== 'Report' || !this.sendReportWithJitter) {
@@ -489,21 +490,41 @@ export class Value extends StreamModel implements IValueBase {
         return this.findStateAndTimestamp('Report');
     }
 
+    private convertValueInput(data: ReportValueInput): string {
+        switch (typeof data) {
+            case 'boolean':
+                if (this.number) {
+                    return data ? '1' : '0';
+                }
+                return data ? 'true' : 'false';
+            case 'object':
+                return JSON.stringify(data);
+            case 'number':
+            case 'string':
+            default:
+                return data.toString();
+        }
+    }
+
     public report(
-        data: string | number | LogValues,
+        data: ReportValueInput | LogValues,
         timestamp: Timestamp = undefined
     ): Promise<boolean> {
         this.validate('report', arguments);
 
-        if (typeof data === 'object') {
+        if (
+            Array.isArray(data) &&
+            data[0].data !== undefined &&
+            data[0].timestamp !== undefined
+        ) {
             return this._sendLogReport(data);
-        } else {
-            return this.sendReport(data, timestamp, false);
         }
+
+        return this.sendReport(data, timestamp, false);
     }
 
     public forceReport(
-        data: string | number,
+        data: ReportValueInput,
         timestamp: Timestamp = undefined
     ): Promise<boolean> {
         this.validate('forceReport', arguments);
@@ -512,10 +533,11 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     private async sendReport(
-        data: string | number,
+        data: ReportValueInput,
         timestamp: Timestamp = undefined,
         force: boolean
     ): Promise<boolean> {
+        const sendData = this.convertValueInput(data);
         const oldState = this.findState('Report');
         if (!oldState) {
             return false;
@@ -536,11 +558,11 @@ export class Value extends StreamModel implements IValueBase {
             }
 
             const oldData = parseFloat(oldState.data);
-            let newData: number;
-            if (typeof data === 'string') {
-                newData = parseFloat(data);
-            } else {
+            let newData = 0;
+            if (typeof data === 'number') {
                 newData = data;
+            } else if (typeof data === 'string') {
+                newData = parseFloat(data);
             }
 
             const delta = Math.abs(parseFloat(this.delta));
@@ -554,7 +576,7 @@ export class Value extends StreamModel implements IValueBase {
         }
 
         this.reportIsForced = false;
-        return this.findStateAndUpdate('Report', data, timestamp);
+        return this.findStateAndUpdate('Report', sendData, timestamp);
     }
 
     public async sendLogReports(data: LogValues) {
@@ -603,7 +625,7 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     public control(
-        data: string | number,
+        data: ReportValueInput,
         timestamp: Timestamp = undefined
     ): Promise<boolean> {
         this.validate('control', arguments);
@@ -611,7 +633,7 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     public controlWithAck(
-        data: string | number,
+        data: ReportValueInput,
         timestamp: Timestamp = undefined
     ): Promise<boolean> {
         this.validate('controlWithAck', arguments);

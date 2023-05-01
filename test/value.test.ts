@@ -321,14 +321,24 @@ describe('value', () => {
         state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
         await value.report(10);
+        await value.report(true);
+        await value.report({test: 'test'});
+        value.number = {
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'test',
+        };
+        await value.report(true);
         await value.report('test', 'timestamp');
         const res = await value.control(10);
 
         expect(res).toBe(false);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(5);
         expect(value.getReportData()).toBe('test');
         expect(value.getControlData()).toBe(undefined);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 meta: {
@@ -341,7 +351,50 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: 'true',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: '{"test":"test"}',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            4,
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: '1',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            5,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
@@ -370,14 +423,16 @@ describe('value', () => {
         state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
         const res1 = await value.control(10);
-        const res2 = await value.control('test', 'timestamp');
+        const res2 = await value.control(true);
+        const res3 = await value.control('test', 'timestamp');
         await value.report(10);
         value.delta = '1';
         await value.report(20);
 
         expect(res1).toBe(true);
         expect(res2).toBe(true);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(res3).toBe(true);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
@@ -388,6 +443,19 @@ describe('value', () => {
                 },
                 type: 'Control',
                 data: '10',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Control',
+                data: 'true',
             }),
             {}
         );
@@ -2024,5 +2092,30 @@ describe('value', () => {
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+    });
+
+    it('can fetch a value by ID', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: [{
+                meta: {
+                    id: 'a57b5e03-150e-4ca4-a249-7a311f7a28bc',
+                },
+                name: 'Value 1',
+            }] })
+        const found = await Value.fetchById('a57b5e03-150e-4ca4-a249-7a311f7a28bc');
+
+        expect(found.meta.id).toEqual('a57b5e03-150e-4ca4-a249-7a311f7a28bc');
+        expect(found.name).toEqual('Value 1');
+        expect(mockedAxios.get).toBeCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/value/a57b5e03-150e-4ca4-a249-7a311f7a28bc',
+            {
+                "params": {
+                    "expand": 1,
+                    "go_internal": true,
+                },
+            },
+        );
     });
 });

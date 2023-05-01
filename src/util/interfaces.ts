@@ -283,17 +283,22 @@ export interface IValueBlob extends IValueBase, IValueStringBlobBase {}
 
 export interface IValueXml extends IValueBase, IValueXmlBase {}
 
+export type ReportValueInput = string | number | boolean | Record<string, any>;
+
 export interface IValueFunc {
     constructor(name?: string): IState;
     createState(parameters: IState): IState;
     report(
-        data: string | number | LogValues,
+        data: ReportValueInput | LogValues,
         timestamp?: Timestamp
     ): Promise<boolean>;
-    forceReport(data: string | number, timestamp?: Timestamp): Promise<boolean>;
-    control(data: string | number, timestamp?: Timestamp): Promise<boolean>;
+    forceReport(
+        data: ReportValueInput,
+        timestamp?: Timestamp
+    ): Promise<boolean>;
+    control(data: ReportValueInput, timestamp?: Timestamp): Promise<boolean>;
     controlWithAck(
-        data: string | number,
+        data: ReportValueInput,
         timestamp?: Timestamp
     ): Promise<boolean>;
     onControl(callback: ValueStreamCallback): Promise<boolean>;
