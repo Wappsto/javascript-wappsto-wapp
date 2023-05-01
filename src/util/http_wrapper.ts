@@ -7,7 +7,7 @@ import { VERSION } from './version';
 
 type Methods = 'head' | 'options' | 'put' | 'post' | 'patch' | 'delete' | 'get';
 
-let HEADERS: any = {
+const HEADERS: any = {
     'X-Session': session,
     'Content-Type': 'application/json',
 };

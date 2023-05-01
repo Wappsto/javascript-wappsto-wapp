@@ -689,14 +689,14 @@ export class Value extends StreamModel implements IValueBase {
 
     public async onRefresh(callback: RefreshStreamCallback): Promise<boolean> {
         this.validate('onRefresh', arguments);
-        this.status = '';
+        this.status = undefined;
         if (!checkList(this.refreshCallbacks, callback)) {
             this.refreshCallbacks.push(callback);
             if (this.refreshCallbacks.length === 1) {
                 return this.onChange(async () => {
                     if (this.status === 'update') {
                         this.reportIsForced = true;
-                        this.status = '';
+                        this.status = undefined;
                         for (let i = 0; i < this.refreshCallbacks.length; i++) {
                             await this.refreshCallbacks[i](this, 'user');
                         }
