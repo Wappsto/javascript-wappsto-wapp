@@ -424,4 +424,30 @@ describe('WappStorage', () => {
         ws.reload();
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
     });
+
+    it('is supports multi key set and get', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce({
+            data: { meta: { id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5' } },
+        });
+        mockedAxios.put.mockResolvedValueOnce({ data: [] });
+
+        const ws = await wappStorage('multi_set');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+
+        await ws.set({key1: 'data1', key2: 'data2'});
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+
+        let values = ws.get(['key1', 'key2']);
+        expect(values).toEqual(['data1', 'data2']);
+
+        mockedAxios.put.mockResolvedValueOnce({ data: [] });
+        await ws.remove(['key1', 'key2']);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(2);
+
+        values = ws.get(['key1', 'key2']);
+        expect(values).toEqual([undefined, undefined]);
+    });
 });

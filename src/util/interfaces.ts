@@ -544,9 +544,9 @@ export interface IOAuthFunc {
 export interface IWappStorageFunc {
     wappStorage(name?: string): void;
     constructor(name: string): void;
-    set(name: string, item: any): Promise<void>;
-    get(name: string): any;
-    remove(name: string): Promise<void>;
+    set(name: string | Record<string, any>, item?: any): Promise<void>;
+    get(name: string | string[]): any;
+    remove(name: string | string[]): Promise<void>;
     onChange(cb: StorageChangeHandler): void;
 }
 

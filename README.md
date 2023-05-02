@@ -755,18 +755,34 @@ in the Wapp Storage. This data is persisted on Wappsto and can be read
 from the foreground and background wapp. The data can be reload from
 the server by calling `reload` function. The data can be deleted by
 calling the `reset` function. A callback can also be registered to be
-notified when the storage is updated.
+notified when the storage is updated. It is possible to set a single
+or multiple datas into the storage. In the same manner it is possible
+to get and remove multiple keys at the same time.
 
 ```javascript
 let storage = await Wappsto.wappStorage();
-//Signal when storage is changed
+
+// Signal when storage is changed
 storage.onChange(() => {
     console.log('Storage is updated');
 });
+
+// Set new data into the store
 await storage.set('key', 'item');
+await storage.set({key2: 'item 2', key3: 'item 3'});
+
+// Get data from the store
 let data = storage.get('key');
+let data2 = storage.get(['key2', 'key3']);
+
+
 // Reload the data from the server
 await storage.reload();
+
+// Remove data from the store
+await store.remove('key1');
+await store.remove(['key2', 'key3']);
+
 // Delete all the saved data
 await storage.reset();
 ```

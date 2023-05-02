@@ -38,15 +38,25 @@ export class WappStorage {
         }
     }
 
-    set(name: string, item: any): Promise<boolean> {
+    set(name: string | Record<string, any>, item?: any): Promise<boolean> {
         WappStorage.validate('set', arguments);
-        this.data.set(name, item);
+        if (typeof name === 'string') {
+            this.data.set(name, item);
+        } else {
+            Object.keys(name).forEach((key) => {
+                this.data.set(key, name[key]);
+            });
+        }
         return this.update();
     }
 
-    get(name: string): any {
+    get(name: string | string[]): any {
         WappStorage.validate('get', arguments);
-        return this.data.get(name);
+        if (typeof name === 'string') {
+            return this.data.get(name);
+        } else {
+            return name.map((key) => this.data.get(key));
+        }
     }
 
     keys(): Array<string> {
@@ -61,9 +71,13 @@ export class WappStorage {
         return this.data.entries();
     }
 
-    remove(name: string): Promise<boolean> {
+    remove(name: string | string[]): Promise<boolean> {
         WappStorage.validate('remove', arguments);
-        this.data.remove(name);
+        if (typeof name === 'string') {
+            this.data.remove(name);
+        } else {
+            name.forEach((key) => this.data.remove(key));
+        }
         return this.data.update();
     }
 

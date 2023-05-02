@@ -721,9 +721,16 @@ export const IOAuthFunc = t.iface([], {
 export const IWappStorageFunc = t.iface([], {
     wappStorage: t.func('void', t.param('name', 'string', true)),
     constructor: t.func('void', t.param('name', 'string')),
-    set: t.func('void', t.param('name', 'string'), t.param('item', 'any')),
-    get: t.func('any', t.param('name', 'string')),
-    remove: t.func('void', t.param('name', 'string')),
+    set: t.func(
+        'void',
+        t.param('name', t.union('string', 'any')),
+        t.param('item', 'any', true)
+    ),
+    get: t.func('any', t.param('name', t.union('string', t.array('string')))),
+    remove: t.func(
+        'void',
+        t.param('name', t.union('string', t.array('string')))
+    ),
     onChange: t.func('void', t.param('cb', 'StorageChangeHandler')),
 });
 
