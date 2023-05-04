@@ -545,8 +545,11 @@ export interface IWappStorageFunc {
     wappStorage(name?: string): void;
     constructor(name: string): void;
     set(name: string | Record<string, any>, item?: any): Promise<void>;
+    setSecret(name: string | Record<string, any>, item?: any): Promise<void>;
     get(name: string | string[]): any;
+    getSecret(name: string | string[]): any;
     remove(name: string | string[]): Promise<void>;
+    removeSecret(name: string | string[]): Promise<void>;
     onChange(cb: StorageChangeHandler): void;
 }
 

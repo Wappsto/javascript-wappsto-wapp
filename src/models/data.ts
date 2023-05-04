@@ -12,9 +12,10 @@ interface IDataMeta {
 
 export class Data extends StreamModel {
     static endpoint = '/2.1/data';
-    static attributes = ['meta', 'data_meta', 'data'];
+    static attributes = ['meta', 'data_meta', 'data', '_secret_background'];
     data_meta: IDataMeta = {};
     data: any = {};
+    _secret_background: any = {};
     oldKeys: Array<string> = [];
 
     constructor(id?: string, type?: string) {
@@ -33,16 +34,28 @@ export class Data extends StreamModel {
         return Data.attributes;
     }
 
-    set(name: string, item: any): void {
-        this.data[name] = item;
+    set(name: string, item: any, secret = false): void {
+        if (secret) {
+            this._secret_background[name] = item;
+        } else {
+            this.data[name] = item;
+        }
     }
 
-    get(name: string): any {
-        return this.data[name];
+    get(name: string, secret = false): any {
+        if (secret) {
+            return this._secret_background[name];
+        } else {
+            return this.data[name];
+        }
     }
 
-    remove(name: string): void {
-        delete this.data[name];
+    remove(name: string, secret = false): void {
+        if (secret) {
+            delete this._secret_background[name];
+        } else {
+            delete this.data[name];
+        }
     }
 
     keys(): Array<string> {

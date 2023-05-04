@@ -726,8 +726,21 @@ export const IWappStorageFunc = t.iface([], {
         t.param('name', t.union('string', 'any')),
         t.param('item', 'any', true)
     ),
+    setSecret: t.func(
+        'void',
+        t.param('name', t.union('string', 'any')),
+        t.param('item', 'any', true)
+    ),
     get: t.func('any', t.param('name', t.union('string', t.array('string')))),
+    getSecret: t.func(
+        'any',
+        t.param('name', t.union('string', t.array('string')))
+    ),
     remove: t.func(
+        'void',
+        t.param('name', t.union('string', t.array('string')))
+    ),
+    removeSecret: t.func(
         'void',
         t.param('name', t.union('string', t.array('string')))
     ),

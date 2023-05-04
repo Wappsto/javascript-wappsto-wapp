@@ -1,6 +1,8 @@
 import { Model } from './models/model';
 import { Data } from './models/data';
 import { StorageChangeHandler } from './util/interfaces';
+import { isBrowser } from './util/helpers';
+import { printError } from './util/debug';
 
 const storages: Record<string, WappStorage> = {};
 
@@ -38,25 +40,58 @@ export class WappStorage {
         }
     }
 
-    set(name: string | Record<string, any>, item?: any): Promise<boolean> {
-        WappStorage.validate('set', arguments);
+    private _set(
+        name: string | Record<string, any>,
+        item?: any,
+        secret?: boolean
+    ): Promise<boolean> {
         if (typeof name === 'string') {
-            this.data.set(name, item);
+            this.data.set(name, item, secret);
         } else {
             Object.keys(name).forEach((key) => {
-                this.data.set(key, name[key]);
+                this.data.set(key, name[key], secret);
             });
         }
         return this.update();
     }
 
+    set(name: string | Record<string, any>, item?: any): Promise<boolean> {
+        WappStorage.validate('set', arguments);
+        return this._set(name, item);
+    }
+
+    async setSecret(
+        name: string | Record<string, any>,
+        item?: any
+    ): Promise<boolean> {
+        WappStorage.validate('set', arguments);
+        if (isBrowser()) {
+            printError('You can only set secrets from the background');
+            return false;
+        }
+        return this._set(name, item, true);
+    }
+
+    private _get(name: string | string[], secret?: boolean): any {
+        if (typeof name === 'string') {
+            return this.data.get(name, secret);
+        } else {
+            return name.map((key) => this.data.get(key, secret));
+        }
+    }
+
     get(name: string | string[]): any {
         WappStorage.validate('get', arguments);
-        if (typeof name === 'string') {
-            return this.data.get(name);
-        } else {
-            return name.map((key) => this.data.get(key));
+        return this._get(name);
+    }
+
+    getSecret(name: string | string[]): any {
+        WappStorage.validate('getSecret', arguments);
+        if (isBrowser()) {
+            printError('You can only get secrets from the background');
+            return;
         }
+        return this._get(name, true);
     }
 
     keys(): Array<string> {
@@ -71,14 +106,30 @@ export class WappStorage {
         return this.data.entries();
     }
 
-    remove(name: string | string[]): Promise<boolean> {
-        WappStorage.validate('remove', arguments);
+    private _remove(
+        name: string | string[],
+        secret?: boolean
+    ): Promise<boolean> {
         if (typeof name === 'string') {
-            this.data.remove(name);
+            this.data.remove(name, secret);
         } else {
-            name.forEach((key) => this.data.remove(key));
+            name.forEach((key) => this.data.remove(key, secret));
         }
         return this.data.update();
+    }
+
+    remove(name: string | string[]): Promise<boolean> {
+        WappStorage.validate('remove', arguments);
+        return this._remove(name);
+    }
+
+    async removeSecret(name: string | string[]): Promise<boolean> {
+        WappStorage.validate('removeSecret', arguments);
+        if (isBrowser()) {
+            printError('You can only remove secrets from the background');
+            return false;
+        }
+        return this._remove(name, true);
     }
 
     update(): Promise<boolean> {
