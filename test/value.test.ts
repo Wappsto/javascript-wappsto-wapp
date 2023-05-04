@@ -138,21 +138,7 @@ describe('value', () => {
         });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-            {
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
-                type: 'Report',
-                data: 'new',
-                timestamp: 'timestamp',
-            },
-            {}
-        );
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(state.meta.id).toBe('6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7');
     });
 

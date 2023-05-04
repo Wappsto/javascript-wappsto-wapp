@@ -421,6 +421,8 @@ export class Value extends StreamModel implements IValueBase {
             create = true;
         } else {
             printDebug(`Using existing state with id ${state.id()}`);
+            delete params.data;
+            delete params.timestamp;
         }
 
         const oldJson = state.toJSON();

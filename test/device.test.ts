@@ -1337,6 +1337,96 @@ describe('device', () => {
         );
     });
 
+    it('can use initialState to send the correct value in post', async () => {
+        mockedAxios.post
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'value',
+                            version: '2.1',
+                            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        },
+                        name: 'Test Value',
+                        permission: '',
+                    },
+                ],
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        meta: {
+                            type: 'state',
+                            version: '2.1',
+                            id: '1c067551-799a-4b35-9a75-5eb0b978ee97',
+                        },
+                    },
+                ],
+            });
+
+        const device = new Device();
+        device.meta.id = 'c91500a4-3bc9-486e-a238-5f0614c3d9e0';
+
+        const val = await device.createValue({
+            name: 'Test Value',
+            permission: 'r',
+            template: ValueTemplate.NUMBER,
+            initialState: {data: '20', timestamp: '2022-02-02T02:02:02Z'},
+        });
+
+        await val.report('30', '2023-03-03T03:03:03Z');
+
+        await device.createValue({
+            name: 'Test Value',
+            permission: 'r',
+            template: ValueTemplate.NUMBER,
+            initialState: {data: '20', timestamp: '2022-02-02T02:02:02Z'},
+        });
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/device/c91500a4-3bc9-486e-a238-5f0614c3d9e0/value',
+            {
+                meta: { type: 'value', version: '2.1' },
+                name: 'Test Value',
+                number: { max: 128, min: -128, step: 0.1, unit: '' },
+                period: '0',
+                permission: 'r',
+                type: 'number',
+                delta: '0',
+            },
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/value/b62e285a-5188-4304-85a0-3982dcb575bc/state',
+            expect.objectContaining({
+                data: '20',
+                meta: { type: 'state', version: '2.1' },
+                type: 'Report',
+                timestamp: '2022-02-02T02:02:02Z'
+            }),
+            {}
+        );
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/state/1c067551-799a-4b35-9a75-5eb0b978ee97',
+            expect.objectContaining({
+                data: '30',
+                meta: { type: 'state', version: '2.1', id: '1c067551-799a-4b35-9a75-5eb0b978ee97' },
+                type: 'Report',
+                timestamp: '2023-03-03T03:03:03Z'
+            }),
+            {}
+        );
+    });
+
     it('can delete a value and make sure that it is not valid', async () => {
         mockedAxios.delete.mockResolvedValueOnce({ data: [] });
         mockedAxios.post
@@ -1376,7 +1466,6 @@ describe('device', () => {
             name: 'Test Value',
             permission: 'r',
             template: ValueTemplate.NUMBER,
-            initialState: 10,
         });
         await val1.delete();
 
@@ -1384,13 +1473,13 @@ describe('device', () => {
             name: 'Test Value',
             permission: 'r',
             template: ValueTemplate.NUMBER,
-            initialState: {data: '20', timestamp: '2022-02-02T02:02:02Z'},
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(5);
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
 
         expect(val1.name).toEqual('Test Value');
         expect(val2.name).toEqual('Test Value');
@@ -1422,7 +1511,7 @@ describe('device', () => {
             3,
             '/2.1/value/b62e285a-5188-4304-85a0-3982dcb575bc/state',
             expect.objectContaining({
-                data: '10',
+                data: 'NA',
                 meta: { type: 'state', version: '2.1' },
                 type: 'Report',
             }),
@@ -1446,10 +1535,9 @@ describe('device', () => {
             5,
             '/2.1/value/b62e285a-5188-4304-85a0-3982dcb575bc/state',
             expect.objectContaining({
-                data: '20',
+                data: 'NA',
                 meta: { type: 'state', version: '2.1' },
                 type: 'Report',
-                timestamp: '2022-02-02T02:02:02Z',
             }),
             {}
         );
