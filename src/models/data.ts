@@ -33,14 +33,17 @@ export class Data extends StreamModel {
     }
 
     private checkSecret() {
-        if(isBrowser()) {
-            throw new Error("Secret Storage is only available in the background");
+        if (isBrowser()) {
+            throw new Error(
+                'Secret Storage is only available in the background'
+            );
         }
     }
 
     getAttributes(): string[] {
-        if (Object.keys(this._secret_background).length === 0 &&
-                !this.clearSecret
+        if (
+            Object.keys(this._secret_background).length === 0 &&
+            !this.clearSecret
         ) {
             return Data.attributes;
         } else {
