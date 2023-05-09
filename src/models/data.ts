@@ -32,8 +32,16 @@ export class Data extends StreamModel {
         return Data.endpoint;
     }
 
+    private checkSecret() {
+        if(isBrowser()) {
+            throw new Error("Secret Storage is only available in the background");
+        }
+    }
+
     getAttributes(): string[] {
-        if(isBrowser() || (Object.keys(this._secret_background).length === 0 && !this.clearSecret)) {
+        if (Object.keys(this._secret_background).length === 0 &&
+                !this.clearSecret
+        ) {
             return Data.attributes;
         } else {
             return [...Data.attributes, '_secret_background'];
@@ -42,6 +50,7 @@ export class Data extends StreamModel {
 
     set(name: string, item: any, secret = false): void {
         if (secret) {
+            this.checkSecret();
             this._secret_background[name] = item;
         } else {
             this.data[name] = item;
@@ -50,6 +59,7 @@ export class Data extends StreamModel {
 
     get(name: string, secret = false): any {
         if (secret) {
+            this.checkSecret();
             return this._secret_background[name];
         } else {
             return this.data[name];
@@ -58,6 +68,7 @@ export class Data extends StreamModel {
 
     remove(name: string, secret = false): void {
         if (secret) {
+            this.checkSecret();
             this.clearSecret = true;
             delete this._secret_background[name];
         } else {
