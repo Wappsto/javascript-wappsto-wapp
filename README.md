@@ -756,7 +756,7 @@ from the foreground and background wapp. The data can be reload from
 the server by calling `reload` function. The data can be deleted by
 calling the `reset` function. A callback can also be registered to be
 notified when the storage is updated. It is possible to set a single
-or multiple datas into the storage. In the same manner it is possible
+or multiple data into the storage. In the same manner it is possible
 to get and remove multiple keys at the same time.
 
 ```javascript
@@ -785,6 +785,16 @@ await store.remove(['key2', 'key3']);
 
 // Delete all the saved data
 await storage.reset();
+```
+
+It is possible to store secret information in the Storage from the background
+part of the wapp. This information is only available for the background wapp
+and can't be accessed from the frontend part of the wapp.
+
+```javascript
+await storage.setSecret('key', 'item');
+const secret_data = storage.getSecret('key', 'item');
+await storage.removeSecret('key', 'item');
 ```
 
 ### OAuth
