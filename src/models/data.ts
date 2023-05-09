@@ -3,6 +3,7 @@ import pick from 'lodash.pick';
 import omit from 'lodash.omit';
 import { StreamModel } from './model.stream';
 import { Model } from './model';
+import { isBrowser } from '../util/helpers';
 
 interface IDataMeta {
     id?: string;
@@ -12,10 +13,11 @@ interface IDataMeta {
 
 export class Data extends StreamModel {
     static endpoint = '/2.1/data';
-    static attributes = ['meta', 'data_meta', 'data', '_secret_background'];
+    static attributes = ['meta', 'data_meta', 'data'];
     data_meta: IDataMeta = {};
     data: any = {};
     _secret_background: any = {};
+    clearSecret = false;
     oldKeys: Array<string> = [];
 
     constructor(id?: string, type?: string) {
@@ -31,7 +33,11 @@ export class Data extends StreamModel {
     }
 
     getAttributes(): string[] {
-        return Data.attributes;
+        if(isBrowser() || (Object.keys(this._secret_background).length === 0 && !this.clearSecret)) {
+            return Data.attributes;
+        } else {
+            return [...Data.attributes, '_secret_background'];
+        }
     }
 
     set(name: string, item: any, secret = false): void {
@@ -52,6 +58,7 @@ export class Data extends StreamModel {
 
     remove(name: string, secret = false): void {
         if (secret) {
+            this.clearSecret = true;
             delete this._secret_background[name];
         } else {
             delete this.data[name];
