@@ -311,6 +311,7 @@ export class Device extends ConnectionModel implements IDevice {
             period: params.period,
             delta: params.delta,
             disableLog: params.disableLog,
+            initialState: params.initialState,
         };
     }
 

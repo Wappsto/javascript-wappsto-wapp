@@ -735,6 +735,10 @@ describe('device', () => {
             unit: 'unit',
             si_conversion: 'si_conversion',
             disableLog: true,
+            initialState: {
+                data: 0,
+                timestamp: '2020-02-02T02:02:02Z',
+            },
         });
 
         expect(value.name).toEqual('Value Name');
@@ -782,7 +786,8 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: 'NA',
+                data: '0',
+                timestamp: '2020-02-02T02:02:02Z',
                 type: 'Report',
             }),
             {}
@@ -795,7 +800,8 @@ describe('device', () => {
                     type: 'state',
                     version: '2.1',
                 },
-                data: 'NA',
+                data: '0',
+                timestamp: '2020-02-02T02:02:02Z',
                 type: 'Control',
             }),
             {}
