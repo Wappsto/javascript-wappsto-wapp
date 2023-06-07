@@ -29,9 +29,11 @@ export class OAuth extends Model {
                 });
 
                 const oauth = data[0];
-                if (oauth?.params?.oauth_token ||
+                if (
+                    oauth?.params?.oauth_token ||
                     oauth?.params?.access_token ||
-                    oauth?.token) {
+                    oauth?.token
+                ) {
                     resolve(oauth.params);
                     return;
                 }
