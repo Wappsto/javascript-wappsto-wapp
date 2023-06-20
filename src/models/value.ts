@@ -307,7 +307,12 @@ export class Value extends StreamModel implements IValueBase {
         } else if (typeof timestamp === 'string') {
             return timestamp;
         } else {
-            return new Date(timestamp).toISOString();
+            try {
+                return new Date(timestamp).toISOString();
+            } catch (e) {
+                printWarning(`Failed to convert timestamp ($timestamp}) to string`);
+                return '';
+            }
         }
     }
 
