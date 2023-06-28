@@ -5,11 +5,14 @@
         "energidataservice",
         "eventlog",
         "eventstream",
+        "extsync",
         "ferror",
         "isequal",
         "KVAR",
         "KVARH",
         "sqrdiff",
-        "TRUEFALSE"
+        "TRUEFALSE",
+        "Wapp",
+        "wappsto"
     ]
 }

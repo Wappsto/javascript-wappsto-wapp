@@ -40,7 +40,7 @@ export class Stream extends Model {
     services: StreamServiceHash = {};
     subscriptions: string[] = [];
     opened = false;
-    backoff = 1;
+    backOff = 1;
     waiting: any = [];
     onRequestHandlers: Record<number, RequestHandler[]> = { 0: [], 1: [] };
     onRequestEvents: Record<number, any[]> = { 0: [], 1: [] };
@@ -79,7 +79,7 @@ export class Stream extends Model {
         this.onRequestHandlers = { 0: [], 1: [] };
         this.onRequestEvents = { 0: [], 1: [] };
         this.waiting = [];
-        this.backoff = 1;
+        this.backOff = 1;
         Object.values(this.rpc_response).forEach((resolve: any) => {
             printStream('Clean up', resolve);
             resolve(false);
@@ -90,9 +90,9 @@ export class Stream extends Model {
 
     private getTimeout(): number {
         /* istanbul ignore next */
-        if (this.backoff >= _config.reconnectCount) {
+        if (this.backOff >= _config.reconnectCount) {
             printError(
-                `Stream failed to connect after ${this.backoff} attempts, exit!`
+                `Stream failed to connect after ${this.backOff} attempts, exit!`
             );
             if (isBrowser()) {
                 return Infinity;
@@ -100,7 +100,7 @@ export class Stream extends Model {
                 process.exit(11);
             }
         }
-        return this.backoff * 2 * 1000;
+        return this.backOff * 2 * 1000;
     }
 
     private open(): Promise<void> {
@@ -455,8 +455,8 @@ export class Stream extends Model {
     }
 
     private reconnect(): void {
-        this.backoff++;
-        printDebug(`Stream Reconnecting for the ${this.backoff} times`);
+        this.backOff++;
+        printDebug(`Stream Reconnecting for the ${this.backOff} times`);
         this.close();
         this.open().then(() => {
             this.sendMessage('PATCH', '/services/2.1/websocket/open', {
@@ -591,7 +591,7 @@ export class Stream extends Model {
                 if (this.rpc_response[message.id]) {
                     this.rpc_response[message.id](message.result.value);
                 }
-                this.backoff = 1;
+                this.backOff = 1;
 
                 printDebug(
                     `Stream rpc ${message.id} result: ${toString(
@@ -670,12 +670,14 @@ export class Stream extends Model {
             }
         };
 
-        this.socket.onerror = (event: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        this.socket.onerror = (_event: any) => {
             /* istanbul ignore next */
             printError(`Stream error: ${this.websocketUrl}`);
         };
 
-        this.socket.onclose = (event: CloseEvent) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        this.socket.onclose = (_event: CloseEvent) => {
             if (this.socket && !this.ignoreReconnect) {
                 reconnect();
             }

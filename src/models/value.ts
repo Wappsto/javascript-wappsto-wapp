@@ -27,6 +27,7 @@ import {
     Timestamp,
     IModel,
     IValueBase,
+    IValueFunc,
     IValueNumberBase,
     IValueStringBlobBase,
     IValueXmlBase,
@@ -43,7 +44,7 @@ import {
 } from '../util/interfaces';
 import { addModel } from '../util/modelStore';
 
-export class Value extends StreamModel implements IValueBase {
+export class Value extends StreamModel implements IValueBase, IValueFunc {
     static endpoint = '/2.1/value';
     static attributes = [
         'name',
@@ -88,7 +89,7 @@ export class Value extends StreamModel implements IValueBase {
 
     constructor(name?: string) {
         super('value', 1);
-        Model.validateMethod('Value', 'constructor', arguments);
+        Model.validateMethod('Value', 'constructor', arguments, true);
         this.name = name || '';
     }
 
@@ -101,7 +102,7 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     public static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
-        Value.validate('getFilter', [filter, omit_filter]);
+        Value.validateStatic('getFilter', [filter, omit_filter]);
         return convertFilterToJson(
             'value',
             Value.attributes,
@@ -114,7 +115,7 @@ export class Value extends StreamModel implements IValueBase {
         filter?: Filter,
         omit_filter?: Filter
     ): string {
-        Value.validate('getFilterResult', [filter, omit_filter]);
+        Value.validateStatic('getFilterResult', [filter, omit_filter]);
         const fields = [Model.getFilterResult()]
             .concat(Value.attributes)
             .join(' ');
@@ -162,7 +163,8 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     public async created(): Promise<void> {
-        await this.onChange((val) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        await this.onChange((_val) => {
             this.handlePeriodUpdate();
         });
 
@@ -198,7 +200,7 @@ export class Value extends StreamModel implements IValueBase {
     }
 
     public static fetchById = async (id: string) => {
-        Value.validate('fetchById', [id]);
+        Value.validateStatic('fetchById', [id]);
         const data = await Model.fetch({
             endpoint: `${Value.endpoint}/${id}`,
             params: {
@@ -228,7 +230,8 @@ export class Value extends StreamModel implements IValueBase {
         return values;
     };
 
-    public async reload(reloadAll = false): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public async reload(_reloadAll = false): Promise<boolean> {
         return super.reload(false, 1);
     }
 
@@ -845,7 +848,7 @@ export class Value extends StreamModel implements IValueBase {
         usage = '',
         filterRequest?: Record<string, any>
     ) => {
-        Value.validate('find', [
+        Value.validateStatic('find', [
             params,
             quantity,
             readOnly,
@@ -902,13 +905,22 @@ export class Value extends StreamModel implements IValueBase {
         return values;
     };
 
+    public async findByName(
+        name: string,
+        quantity: number | 'all' = 1,
+        readOnly = false,
+        usage = ''
+    ) {
+        return Value.findByName(name, quantity, readOnly, usage);
+    }
+
     static findByName = (
         name: string,
         quantity: number | 'all' = 1,
         readOnly = false,
         usage = ''
     ) => {
-        Value.validate('findByName', [name, quantity, readOnly, usage]);
+        Value.validateStatic('findByName', [name, quantity, readOnly, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with name ${name}`;
         }
@@ -921,7 +933,7 @@ export class Value extends StreamModel implements IValueBase {
         readOnly = false,
         usage = ''
     ) => {
-        Value.validate('findByType', [type, quantity, readOnly, usage]);
+        Value.validateStatic('findByType', [type, quantity, readOnly, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with type ${type}`;
         }
@@ -929,17 +941,17 @@ export class Value extends StreamModel implements IValueBase {
     };
 
     static findAllByName = (name: string, readOnly = false, usage = '') => {
-        Value.validate('findAllByName', [name, readOnly, usage]);
+        Value.validateStatic('findAllByName', [name, readOnly, usage]);
         return Value.findByName(name, 'all', readOnly, usage);
     };
 
     static findAllByType = (type: string, readOnly = false, usage = '') => {
-        Value.validate('findAllByType', [type, readOnly, usage]);
+        Value.validateStatic('findAllByType', [type, readOnly, usage]);
         return Value.findByType(type, 'all', readOnly, usage);
     };
 
     static findById = async (id: string, readOnly = false) => {
-        Value.validate('findById', [id, readOnly]);
+        Value.validateStatic('findById', [id, readOnly]);
         const values = await Value.find(
             { 'meta.id': id },
             1,
@@ -956,7 +968,7 @@ export class Value extends StreamModel implements IValueBase {
         readOnly = false,
         usage = ''
     ) => {
-        Value.validate('findByFilter', [
+        Value.validateStatic('findByFilter', [
             filter,
             omit_filter,
             quantity,
@@ -979,7 +991,7 @@ export class Value extends StreamModel implements IValueBase {
         readOnly = false,
         usage = ''
     ) => {
-        Value.validate('findAllByFilter', [
+        Value.validateStatic('findAllByFilter', [
             filter,
             omit_filter,
             readOnly,
@@ -988,8 +1000,12 @@ export class Value extends StreamModel implements IValueBase {
         return Value.findByFilter(filter, omit_filter, 'all', readOnly, usage);
     };
 
-    private static validate(name: string, params: any): void {
-        Model.validateMethod('Value', name, params);
+    private static validateStatic(name: string, params: any): void {
+        Model.validateMethod('Value', name, params, true);
+    }
+
+    private static validate(name: string, params: any, isStatic = false): void {
+        Model.validateMethod('Value', name, params, isStatic);
     }
 
     private handlePeriodUpdate(): boolean {

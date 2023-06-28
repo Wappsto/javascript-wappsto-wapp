@@ -364,7 +364,6 @@ export const IValueXml = t.iface(['IValueBase', 'IValueXmlBase'], {});
 export const ReportValueInput = t.union('string', 'number', 'boolean', 'any');
 
 export const IValueFunc = t.iface([], {
-    constructor: t.func('IState', t.param('name', 'string', true)),
     createState: t.func('IState', t.param('parameters', 'IState')),
     deleteState: t.func('void', t.param('type', 'StateType')),
     report: t.func(
@@ -396,6 +395,31 @@ export const IValueFunc = t.iface([], {
     onRefresh: t.func('boolean', t.param('callback', 'RefreshStreamCallback')),
     getReportLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
     getControlLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
+    addEvent: t.func(
+        'IEventLog',
+        t.param('level', 'EventLogLevel'),
+        t.param('message', 'string'),
+        t.param('info', 'any', true)
+    ),
+    analyzeEnergy: t.func(
+        'any',
+        t.param('start', 'Timestamp'),
+        t.param('end', 'Timestamp')
+    ),
+    summarizeEnergy: t.func(
+        'any',
+        t.param('start', 'Timestamp'),
+        t.param('end', 'Timestamp')
+    ),
+    energyPieChart: t.func(
+        'any',
+        t.param('start', 'Timestamp'),
+        t.param('end', 'Timestamp')
+    ),
+});
+
+export const IValueStaticFunc = t.iface([], {
+    constructor: t.func('IValueBase', t.param('name', 'string', true)),
     find: t.func(
         t.array('ValueType'),
         t.param('options', 'any'),
@@ -450,12 +474,6 @@ export const IValueFunc = t.iface([], {
         t.param('usage', 'string')
     ),
     fetchById: t.func('ValueType', t.param('id', 'string')),
-    addEvent: t.func(
-        'IEventLog',
-        t.param('level', 'EventLogLevel'),
-        t.param('message', 'string'),
-        t.param('info', 'any', true)
-    ),
     getFilter: t.func(
         t.array('string'),
         t.param('filter', 'Filter', true),
@@ -465,21 +483,6 @@ export const IValueFunc = t.iface([], {
         'string',
         t.param('filter', 'Filter', true),
         t.param('omit_filter', 'Filter', true)
-    ),
-    analyzeEnergy: t.func(
-        'any',
-        t.param('start', 'Timestamp'),
-        t.param('end', 'Timestamp')
-    ),
-    summarizeEnergy: t.func(
-        'any',
-        t.param('start', 'Timestamp'),
-        t.param('end', 'Timestamp')
-    ),
-    energyPieChart: t.func(
-        'any',
-        t.param('start', 'Timestamp'),
-        t.param('end', 'Timestamp')
     ),
 });
 
@@ -766,14 +769,14 @@ export const StreamCallback = t.func(
 
 export const ValueStreamCallback = t.func(
     t.union('void', 'boolean', 'void'),
-    t.param('value', 'IValueBase'),
+    t.param('value', t.intersection('IValueFunc', 'IValueBase')),
     t.param('data', 'string'),
     t.param('timestamp', 'string')
 );
 
 export const RefreshStreamCallback = t.func(
     t.union('void', 'void'),
-    t.param('value', 'IValueBase'),
+    t.param('value', t.intersection('IValueFunc', 'IValueBase')),
     t.param('origin', t.union(t.lit('user'), t.lit('period')))
 );
 
@@ -974,6 +977,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IValueXml,
     ReportValueInput,
     IValueFunc,
+    IValueStaticFunc,
     StateType,
     StateStatus,
     IState,

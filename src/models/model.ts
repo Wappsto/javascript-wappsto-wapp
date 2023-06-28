@@ -77,7 +77,8 @@ export class Model implements IModel {
     /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     public restore(): void {}
 
-    public static getFilterResult(filter?: Filter): string {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public static getFilterResult(_filter?: Filter): string {
         return 'meta{id type version connection name_by_user}';
     }
 
@@ -325,11 +326,15 @@ export class Model implements IModel {
     public static validateMethod(
         type: string | undefined,
         name: string,
-        params: any
+        params: any,
+        isStatic = false
     ): void {
         if (type !== undefined && _config.validation !== 'none') {
+            const funcName = `i${type.toLowerCase()}${
+                isStatic ? 'static' : ''
+            }func`;
             const c = Object.keys(Model.checker).find(
-                (k) => k.toLowerCase() === `i${type.toLowerCase()}func`
+                (k) => k.toLowerCase() === funcName
             );
 
             /* istanbul ignore else */

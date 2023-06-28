@@ -124,7 +124,8 @@ export class Network extends ConnectionModel implements INetwork {
 
     public async loadAllChildren(
         json: Record<string, any> | null,
-        reloadAll = false
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _reloadAll = false
     ): Promise<void> {
         const proms: any[] = [];
         let devices: any | undefined;

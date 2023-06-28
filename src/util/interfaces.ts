@@ -286,8 +286,7 @@ export interface IValueXml extends IValueBase, IValueXmlBase {}
 export type ReportValueInput = string | number | boolean | Record<string, any>;
 
 export interface IValueFunc {
-    constructor(name?: string): IState;
-    createState(parameters: IState): IState;
+    createState(parameters: IState): Promise<IState>;
     deleteState(type: StateType): Promise<void>;
     report(
         data: ReportValueInput | LogValues,
@@ -310,6 +309,18 @@ export interface IValueFunc {
     onRefresh(callback: RefreshStreamCallback): Promise<boolean>;
     getReportLog(request: ILogRequest): Promise<ILogResponse>;
     getControlLog(request: ILogRequest): Promise<ILogResponse>;
+    addEvent(
+        level: EventLogLevel,
+        message: string,
+        info?: Record<string, any>
+    ): Promise<IEventLog>;
+    analyzeEnergy(start: Timestamp, end: Timestamp): Promise<any>;
+    summarizeEnergy(start: Timestamp, end: Timestamp): Promise<any>;
+    energyPieChart(start: Timestamp, end: Timestamp): Promise<any>;
+}
+
+export interface IValueStaticFunc {
+    constructor(name?: string): IValueBase;
     find(
         options: Record<string, any>,
         quantity: number | 'all',
@@ -321,7 +332,7 @@ export interface IValueFunc {
         quantity: number | 'all',
         readOnly: boolean,
         usage: string
-    ): ValueType[];
+    ): Promise<ValueType[]>;
     findByType(
         type: string,
         quantity: number | 'all',
@@ -345,16 +356,8 @@ export interface IValueFunc {
         usage: string
     ): Promise<ValueType[]>;
     fetchById(id: string): ValueType;
-    addEvent(
-        level: EventLogLevel,
-        message: string,
-        info?: Record<string, any>
-    ): Promise<IEventLog>;
     getFilter(filter?: Filter, omit_filter?: Filter): string[];
     getFilterResult(filter?: Filter, omit_filter?: Filter): string;
-    analyzeEnergy(start: Timestamp, end: Timestamp): Promise<any>;
-    summarizeEnergy(start: Timestamp, end: Timestamp): Promise<any>;
-    energyPieChart(start: Timestamp, end: Timestamp): Promise<any>;
 }
 
 export type StateType = 'Report' | 'Control';
@@ -560,12 +563,12 @@ export type ServiceHandler = (
 export type RequestHandler = (event: any) => Promise<any> | any;
 export type StreamCallback = (model: IStreamModel) => Promise<void> | void;
 export type ValueStreamCallback = (
-    value: IValueBase,
+    value: IValueFunc & IValueBase,
     data: string,
     timestamp: string
 ) => Promise<void> | boolean | void;
 export type RefreshStreamCallback = (
-    value: IValueBase,
+    value: IValueFunc & IValueBase,
     origin: 'user' | 'period'
 ) => Promise<void> | void;
 export type ConnectionCallback = (

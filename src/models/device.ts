@@ -112,7 +112,8 @@ export class Device extends ConnectionModel implements IDevice {
 
     public async loadAllChildren(
         json: Record<string, any> | null,
-        reloadAll = false
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _reloadAll = false
     ): Promise<void> {
         const proms: any[] = [];
         let values: any | undefined;

@@ -117,14 +117,16 @@ export function cancelFromForeground(): Promise<boolean> {
     return cancelFrom('foreground');
 }
 
-function handleIsBackgroundStarted(message: any): undefined {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function handleIsBackgroundStarted(_message: any): undefined {
     if (request_handlers['foreground']) {
         openStream.sendEvent('backgroundIsStarted', '');
     }
     return;
 }
 
-function handleBackgroundIsStarted(message: any): undefined {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function handleBackgroundIsStarted(_message: any): undefined {
     backgroundIsStarted = true;
     return;
 }
