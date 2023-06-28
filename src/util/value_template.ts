@@ -2,8 +2,23 @@ import { ValueType } from './interfaces';
 
 export class ValueTemplate {
     [key: string]: any;
-    static version = '0.0.3';
+    static version = '0.0.5';
 
+    static TRIGGER: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'trigger',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: 0,
+            max: 0,
+            step: 0,
+            si_conversion: undefined,
+            unit: '',
+        },
+    };
     static BOOLEAN_TRUEFALSE: ValueType = {
         name: '',
         permission: 'r',
@@ -117,7 +132,7 @@ export class ValueTemplate {
             mapping: undefined,
             ordered_mapping: undefined,
             meaningful_zero: undefined,
-            min: 0,
+            min: -1000000,
             max: 2500,
             step: 0.1,
             si_conversion: undefined,
@@ -132,7 +147,7 @@ export class ValueTemplate {
             mapping: undefined,
             ordered_mapping: undefined,
             meaningful_zero: undefined,
-            min: 0,
+            min: -1000000,
             max: 1000000,
             step: 0.1,
             si_conversion: '[W] = 1000 * [kW]',
@@ -147,10 +162,10 @@ export class ValueTemplate {
             mapping: undefined,
             ordered_mapping: undefined,
             meaningful_zero: undefined,
-            min: 0,
+            min: -1000000,
             max: 100000,
             step: 0.1,
-            si_conversion: undefined,
+            si_conversion: '[J] = 3600 * [Wh]',
             unit: 'Wh',
         },
     };
@@ -162,7 +177,7 @@ export class ValueTemplate {
             mapping: undefined,
             ordered_mapping: undefined,
             meaningful_zero: undefined,
-            min: 0,
+            min: -1000000,
             max: 1000000,
             step: 0.1,
             si_conversion: '[J] = 3600000 * [kWh]',
@@ -177,7 +192,97 @@ export class ValueTemplate {
             mapping: undefined,
             ordered_mapping: undefined,
             meaningful_zero: undefined,
+            min: -1000000,
+            max: 1000000,
+            step: 0.1,
+            si_conversion: '[J] = 3600000000 * [MWh]',
+            unit: 'MWh',
+        },
+    };
+    static TOTAL_ENERGY_WH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'total_energy',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
             min: 0,
+            max: 1000000,
+            step: 0.1,
+            si_conversion: '[J] = 3600 * [Wh]',
+            unit: 'Wh',
+        },
+    };
+    static TOTAL_ENERGY_KWH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'total_energy',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: 0,
+            max: 1000000,
+            step: 0.1,
+            si_conversion: '[J] = 3600000 * [kWh]  ',
+            unit: 'kWh',
+        },
+    };
+    static TOTAL_ENERGY_MWH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'total_energy',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: 0,
+            max: 1000000,
+            step: 0.1,
+            si_conversion: '[J] = 3600000000 * [MWh]',
+            unit: 'MWh',
+        },
+    };
+    static LOAD_CURVE_ENERGY_WH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'load_curve_energy',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: -1000000,
+            max: 1000000,
+            step: 0.1,
+            si_conversion: '[J] = 3600 * [Wh]',
+            unit: 'Wh',
+        },
+    };
+    static LOAD_CURVE_ENERGY_KWH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'load_curve_energy',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: -1000000,
+            max: 1000000,
+            step: 0.1,
+            si_conversion: '[J] = 3600000 * [kWh]  ',
+            unit: 'kWh',
+        },
+    };
+    static LOAD_CURVE_ENERGY_MWH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'load_curve_energy',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: -1000000,
             max: 1000000,
             step: 0.1,
             si_conversion: '[J] = 3600000000 * [MWh]',
@@ -214,19 +319,19 @@ export class ValueTemplate {
             unit: 'VA',
         },
     };
-    static FREQUENCY_HZ: ValueType = {
+    static REACTIVE_ENERGY_KVARH: ValueType = {
         name: '',
         permission: 'r',
-        type: 'frequency',
+        type: 'reactive_energy',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
             meaningful_zero: undefined,
-            min: 0,
-            max: 30000,
-            step: 0.01,
+            min: -5000,
+            max: 5000,
+            step: 0.001,
             si_conversion: undefined,
-            unit: 'Hz',
+            unit: 'kvarh',
         },
     };
     static REACTIVE_POWER_KVAR: ValueType = {
@@ -244,19 +349,79 @@ export class ValueTemplate {
             unit: 'kvar',
         },
     };
-    static REACTIVE_ENERGY_KVARH: ValueType = {
+    static ENERGY_PRICE_EUR_KWH: ValueType = {
         name: '',
         permission: 'r',
-        type: 'reactive_energy',
+        type: 'energy_price',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: false,
+            min: -10000,
+            max: 10000,
+            step: 0.01,
+            si_conversion: undefined,
+            unit: 'EUR/kWh',
+        },
+    };
+    static ENERGY_PRICE_EUR_MWH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'energy_price',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: false,
+            min: -10000,
+            max: 10000,
+            step: 0.001,
+            si_conversion: undefined,
+            unit: 'EUR/MWh',
+        },
+    };
+    static ENERGY_PRICE_DKK_KWH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'energy_price',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: false,
+            min: -10000,
+            max: 10000,
+            step: 0.01,
+            si_conversion: undefined,
+            unit: 'DKK/kWh',
+        },
+    };
+    static ENERGY_PRICE_DKK_MWH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'energy_price',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: false,
+            min: -10000,
+            max: 10000,
+            step: 0.001,
+            si_conversion: undefined,
+            unit: 'DKK/MWh',
+        },
+    };
+    static FREQUENCY_HZ: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'frequency',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
             meaningful_zero: undefined,
-            min: -5000,
-            max: 5000,
-            step: 0.001,
+            min: 0,
+            max: 30000,
+            step: 0.01,
             si_conversion: undefined,
-            unit: 'kvarh',
+            unit: 'Hz',
         },
     };
     static TEMPERATURE_CELSIUS: ValueType = {
@@ -349,6 +514,21 @@ export class ValueTemplate {
             unit: 'm/s',
         },
     };
+    static SPEED_KMH: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'speed',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 400,
+            step: 0.1,
+            si_conversion: '[ms] = [kmh]*1000/3600',
+            unit: 'km/h',
+        },
+    };
     static PRECIPITATION_MM: ValueType = {
         name: '',
         permission: 'r',
@@ -427,7 +607,7 @@ export class ValueTemplate {
     static VOLUME_M3: ValueType = {
         name: '',
         permission: 'r',
-        type: 'Volume',
+        type: 'volume',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -508,6 +688,15 @@ export class ValueTemplate {
             unit: 'ms',
         },
     };
+    static TIME_OF_DAY: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'time',
+        string: {
+            max: 100,
+            encoding: '',
+        },
+    };
     static DISTANCE_M: ValueType = {
         name: '',
         permission: 'r',
@@ -523,10 +712,10 @@ export class ValueTemplate {
             unit: 'm',
         },
     };
-    static LUMINOUSITY_LX: ValueType = {
+    static LUMINOSITY_LX: ValueType = {
         name: '',
         permission: 'r',
-        type: 'luminousity',
+        type: 'luminosity',
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
@@ -688,10 +877,10 @@ export class ValueTemplate {
             encoding: '',
         },
     };
-    static ORGANISATION: ValueType = {
+    static ORGANIZATION: ValueType = {
         name: '',
         permission: 'r',
-        type: 'organisation',
+        type: 'organization',
         string: {
             max: 85,
             encoding: '',
