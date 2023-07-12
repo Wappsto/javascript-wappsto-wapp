@@ -282,6 +282,16 @@ value.onRefresh((value) => {
 });
 ```
 
+It is possible to get the type of the source of the refresh event.
+But you should not use this information to not send an update on the value.
+It is important to always send value updates on all refresh requests.
+
+```javascript
+value.onRefresh((value, type) => {
+    console.log(`Got a refresh event from ${type}`);
+});
+```
+
 And you can cancel this callback by calling `cancelOnRefresh`.
 
 ```javascript
