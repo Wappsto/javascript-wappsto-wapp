@@ -273,7 +273,8 @@ await value.sendLogReports([
 ### Listing for requests to refresh the value
 
 To receive request to refresh the value, register a callback on
-`onRefresh`.
+`onRefresh`. This can be triggered by an user request or an 
+automatic event from the library based on the period.
 
 ```javascript
 value.onRefresh((value) => {
