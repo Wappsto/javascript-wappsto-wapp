@@ -86,7 +86,7 @@
         "lodash.pick": "^4.4.0",
         "reflect-metadata": "^0.1.13",
         "ts-interface-checker": "^1.0.2",
-        "tslib": "^2.6.0",
+        "tslib": "^2.6.1",
         "universal-websocket-client": "^1.0.2",
         "ws": "^8.13.0"
     },
