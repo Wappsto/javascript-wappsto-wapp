@@ -560,7 +560,12 @@ export type StorageChangeHandler = () => void | Promise<void>;
 export type ServiceHandler = (
     event: any
 ) => Promise<boolean | undefined> | boolean | undefined;
-export type RequestHandler = (event: any) => Promise<any> | any;
+export type RequestHandler = (
+    event: any,
+    method?: string,
+    uri?: string,
+    headers?: Record<string, string>
+) => Promise<any> | any;
 export type StreamCallback = (model: IStreamModel) => Promise<void> | void;
 export type ValueStreamCallback = (
     value: IValueFunc & IValueBase,

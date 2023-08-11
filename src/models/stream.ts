@@ -377,7 +377,12 @@ export class Stream extends Model {
             const handlers = this.onRequestHandlers[type];
             for (let i = 0; i < handlers.length; i++) {
                 try {
-                    const res = await handlers[i](event.body);
+                    const res = await handlers[i](
+                        event.body,
+                        event.method,
+                        event.uri,
+                        event.headers
+                    );
                     this.sendResponse(event, 200, res);
                 } catch (err: any) {
                     if (!(err instanceof IgnoreError)) {

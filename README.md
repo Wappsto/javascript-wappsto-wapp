@@ -739,17 +739,21 @@ const result = await Wappsto.waitForBackground(20);
 ### Web Hook
 
 If the Ext Sync is enabled for the Wapp, a event handler for WebHooks
-can be registered.
+can be registered. If you return something from your handler, it will be returned to the caller.
 
 ```javascript
-Wappsto.onWebHook((event) => {
+Wappsto.onWebHook((event, method, uri, headers) => {
     console.log('Web Hook event', event);
+    return { status: "ok" };
 });
 ```
 
-The webhook url is `https://wappsto.com/services/extsync/request/<wapp
-token>`. The token can be obtained from the settings page of your wapp
-on `wappsto.com`.
+The webhook url is `https://wappsto.com/services/extsync/request/<wapp_token>`. 
+You can get the token from the value `extSyncToken`.
+
+```javascript
+console.log(`WebHook URL: https://wappsto.com/services/extsync/request/${Wappsto.extSyncToken}`);
+```
 
 And if you want to cancel the web hook event handler, you can call
 `cancelWebHook`.

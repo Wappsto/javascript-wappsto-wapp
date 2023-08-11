@@ -179,11 +179,17 @@ describe('ExtSync stream', () => {
                 request: 'request',
                 uri: 'extsync/request',
                 body: 'test',
+                method: 'post',
+                headers: {
+                    'accept': 'none'
+                }
             },
         });
 
         await new Promise((r) => setTimeout(r, 1));
-        expect(fun).toHaveBeenCalledWith('test');
+        expect(fun).toHaveBeenCalledWith('test', 'post', 'extsync/request', {
+            'accept': 'none'
+        });
         expect(fun).toHaveBeenCalledTimes(1);
         await new Promise((r) => setTimeout(r, 1));
 
@@ -412,6 +418,10 @@ describe('ExtSync stream', () => {
                 request: 'request',
                 uri: 'extsync/request',
                 body: 'test',
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             },
         });
         server.send({
@@ -433,7 +443,9 @@ describe('ExtSync stream', () => {
         expect(responseForeground).toBe(res);
         expect(funWeb).toHaveBeenCalledTimes(1);
         expect(funFore).toHaveBeenCalledTimes(1);
-        expect(funWeb).toHaveBeenCalledWith('test');
+        expect(funWeb).toHaveBeenCalledWith('test', 'get', 'extsync/request',  {
+            'Content-Type': 'application/json',
+        });
         expect(funFore).toHaveBeenCalledWith({ test: 'foreground' });
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
             message: {
