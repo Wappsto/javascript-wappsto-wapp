@@ -759,7 +759,11 @@ export const ServiceHandler = t.func(
 
 export const RequestHandler = t.func(
     t.union('any', 'any'),
-    t.param('event', 'any')
+    t.param('event', 'any'),
+    t.param('method', 'string', true),
+    t.param('path', 'string', true),
+    t.param('query', 'any', true),
+    t.param('headers', 'any', true)
 );
 
 export const StreamCallback = t.func(

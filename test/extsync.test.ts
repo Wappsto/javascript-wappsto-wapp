@@ -177,7 +177,7 @@ describe('ExtSync stream', () => {
                     id: '1ae385e6-849c-44ac-9731-b360c1e774d4',
                 },
                 request: 'request',
-                uri: 'extsync/request',
+                uri: 'extsync/request?id=test',
                 body: 'test',
                 method: 'post',
                 headers: {
@@ -187,7 +187,7 @@ describe('ExtSync stream', () => {
         });
 
         await new Promise((r) => setTimeout(r, 1));
-        expect(fun).toHaveBeenCalledWith('test', 'post', 'extsync/request', {
+        expect(fun).toHaveBeenCalledWith('test', 'post', '/', {id: 'test'}, {
             'accept': 'none'
         });
         expect(fun).toHaveBeenCalledTimes(1);
@@ -416,7 +416,7 @@ describe('ExtSync stream', () => {
                     id: '9d9dc628-8542-4953-8d89-791978681b98',
                 },
                 request: 'request',
-                uri: 'extsync/request',
+                uri: 'extsync/request/test',
                 body: 'test',
                 method: 'get',
                 headers: {
@@ -443,7 +443,7 @@ describe('ExtSync stream', () => {
         expect(responseForeground).toBe(res);
         expect(funWeb).toHaveBeenCalledTimes(1);
         expect(funFore).toHaveBeenCalledTimes(1);
-        expect(funWeb).toHaveBeenCalledWith('test', 'get', 'extsync/request',  {
+        expect(funWeb).toHaveBeenCalledWith('test', 'get', '/test', {}, {
             'Content-Type': 'application/json',
         });
         expect(funFore).toHaveBeenCalledWith({ test: 'foreground' });

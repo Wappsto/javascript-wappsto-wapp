@@ -1,8 +1,14 @@
 import WebSocket from 'universal-websocket-client';
+import { URL } from 'url';
 import { Model } from './model';
-import { session, baseUrl } from '../session';
+import { session, baseUrl, extSyncToken } from '../session';
 import { _config } from '../util/config';
-import { printDebug, printError, printStream } from '../util/debug';
+import {
+    printDebug,
+    printError,
+    printStream,
+    printWarning,
+} from '../util/debug';
 import { isUUID, isBrowser, isVersion, toString } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { getErrorMessage } from '../util/http_wrapper';
@@ -377,10 +383,27 @@ export class Stream extends Model {
             const handlers = this.onRequestHandlers[type];
             for (let i = 0; i < handlers.length; i++) {
                 try {
+                    let path = '';
+                    let query = {};
+                    try {
+                        const url = new URL(event.uri, 'https://wappsto.com');
+                        path = url.pathname
+                            .replace('/extsync', '')
+                            .replace('/request', '');
+                        if (extSyncToken) {
+                            path = path.replace(`/${extSyncToken}`, '');
+                        }
+                        query = Object.fromEntries(url.searchParams);
+                    } catch (e: any) {
+                        printWarning(
+                            `Failed to decode ExtSync url: ${e.message}`
+                        );
+                    }
                     const res = await handlers[i](
                         event.body,
                         event.method,
-                        event.uri,
+                        path || '/',
+                        query,
                         event.headers
                     );
                     this.sendResponse(event, 200, res);

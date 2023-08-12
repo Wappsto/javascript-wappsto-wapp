@@ -563,7 +563,8 @@ export type ServiceHandler = (
 export type RequestHandler = (
     event: any,
     method?: string,
-    uri?: string,
+    path?: string,
+    query?: Record<string, any>,
     headers?: Record<string, string>
 ) => Promise<any> | any;
 export type StreamCallback = (model: IStreamModel) => Promise<void> | void;
