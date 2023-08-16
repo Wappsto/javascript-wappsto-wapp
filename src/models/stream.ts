@@ -193,7 +193,7 @@ export class Stream extends Model {
         );
     }
 
-    public async subscribe(model: IStreamModel, full = true): Promise<boolean> {
+    public async subscribe(model: IStreamModel, full = false): Promise<boolean> {
         this.validate('subscribe', arguments);
         const path = this.generatePathFromService(model.path(), full);
 
@@ -250,7 +250,7 @@ export class Stream extends Model {
     }
 
     private generatePathFromService(service: string, full: boolean): string {
-        let path = `${service}${full ? '' : '?full=true'}`;
+        let path = `${service}${full ? '?full=true' : ''}`;
         if (path[0] !== '/') {
             path = `/${path}`;
         }
@@ -260,7 +260,7 @@ export class Stream extends Model {
     public async subscribeService(
         service: string,
         handler: ServiceHandler,
-        full = true
+        full = false
     ): Promise<boolean> {
         this.validate('subscribeService', arguments);
         await this.open();
@@ -279,7 +279,7 @@ export class Stream extends Model {
     public async unsubscribeService(
         service: string,
         handler: ServiceHandler,
-        full = true
+        full = false
     ): Promise<boolean> {
         this.validate('subscribeService', arguments);
         const path = this.generatePathFromService(service, full);
