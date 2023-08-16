@@ -1,5 +1,4 @@
 import WebSocket from 'universal-websocket-client';
-import { URL } from 'url';
 import { Model } from './model';
 import { session, baseUrl, extSyncToken } from '../session';
 import { _config } from '../util/config';
@@ -384,21 +383,27 @@ export class Stream extends Model {
             for (let i = 0; i < handlers.length; i++) {
                 try {
                     let path = '';
-                    let query = {};
+                    const query: Record<string, string> = {};
                     try {
-                        const url = new URL(event.uri, 'https://wappsto.com');
-                        path = url.pathname
-                            .replace('/extsync', '')
-                            .replace('/request', '');
-                        if (extSyncToken) {
-                            path = path.replace(`/${extSyncToken}`, '');
+                        const arrUri = event.uri.split('?');
+                        path = `/${arrUri[0]}`;
+                        if (arrUri[1]) {
+                            arrUri[1].split('&').forEach((item: string) => {
+                                const items = item.split('=');
+                                query[items[0]] = items[1];
+                            });
                         }
-                        query = Object.fromEntries(url.searchParams);
                     } catch (e: any) {
                         printWarning(
-                            `Failed to decode ExtSync url: ${e.message}`
+                            `Failed to decode ExtSync url (${event.uri}): ${e.message}`
                         );
                     }
+
+                    path = path.replace('/extsync', '').replace('/request', '');
+                    if (extSyncToken) {
+                        path = path.replace(`/${extSyncToken}`, '');
+                    }
+
                     const res = await handlers[i](
                         event.body,
                         event.method,
