@@ -193,7 +193,10 @@ export class Stream extends Model {
         );
     }
 
-    public async subscribe(model: IStreamModel, full = false): Promise<boolean> {
+    public async subscribe(
+        model: IStreamModel,
+        full = false
+    ): Promise<boolean> {
         this.validate('subscribe', arguments);
         const path = this.generatePathFromService(model.path(), full);
 

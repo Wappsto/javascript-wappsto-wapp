@@ -1343,7 +1343,7 @@ describe('value', () => {
         );
     });
 
-    it('can create 3 new values from wappsto', async () => {
+    it('can create 2 new values from wappsto', async () => {
         mockedAxios.get
             .mockResolvedValueOnce({ data: response2Values })
             .mockResolvedValueOnce({ data: response });
