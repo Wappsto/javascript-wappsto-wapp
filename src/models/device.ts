@@ -576,10 +576,29 @@ export class Device extends ConnectionModel implements IDevice {
         const data = await Model.fetch({ endpoint: url, params });
         const devices = Device.fromArray(data);
         const poms: any[] = [];
-        devices.forEach((dev) => {
-            poms.push(dev.loadAllChildren(null));
+        devices.forEach((dev, index) => {
+            if (dev.loadAllChildren) {
+                poms.push(dev.loadAllChildren(null));
+            } else if (typeof dev === 'string') {
+                poms.push(
+                    new Promise<void>((resolve) => {
+                        const id = dev as unknown as string;
+                        Device.fetchById(id).then((device) => {
+                            devices[index] = device;
+                            resolve();
+                        });
+                    })
+                );
+            }
         });
         await Promise.all(poms);
+
+        devices.forEach((device) => {
+            if (device?.addChildrenToStore) {
+                device.addChildrenToStore();
+            }
+        });
+
         return devices;
     };
 

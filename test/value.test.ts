@@ -21,6 +21,21 @@ const response = {
     delta: '0',
 };
 
+const response2Values = [{
+    meta: {
+        type: 'value',
+        version: '2.1',
+        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+    },
+    name: 'test',
+    permission: '',
+    type: '',
+    period: '0',
+    delta: '0',
+},
+'bd1f46f9-f41a-4f59-bdbd-6529d58b91c5'
+];
+
 describe('value', () => {
     let server: WS;
 
@@ -1326,5 +1341,27 @@ describe('value', () => {
                 },
             },
         );
+    });
+
+    it('can create 3 new values from wappsto', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: response2Values })
+            .mockResolvedValueOnce({ data: response });
+
+        const values = await Value.fetch();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+            params: { expand: 1, go_internal: true },
+        });
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/value/bd1f46f9-f41a-4f59-bdbd-6529d58b91c5',
+            {
+                params: { expand: 1, go_internal: true },
+            }
+        );
+        expect(values.length).toEqual(2);
+        expect(values[0]?.name).toEqual('test');
+        expect(values[1]?.name).toEqual('test');
     });
 });

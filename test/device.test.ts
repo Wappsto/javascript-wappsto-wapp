@@ -7,7 +7,6 @@ import { Device, Value, ValueTemplate, State, config } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { responses } from './util/response';
 
-
 const templateHelperStart = () => {
     mockedAxios.post
         .mockResolvedValueOnce({
@@ -119,6 +118,26 @@ describe('device', () => {
             },
             name: 'test',
         },
+    ];
+
+    const response3Devices = [
+        {
+            meta: {
+                type: 'device',
+                version: '2.1',
+                id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+            },
+            name: 'test',
+        },
+        {
+            meta: {
+                type: 'device',
+                version: '2.1',
+                id: '7c1611da-46e2-4f0d-85fa-1b010561b35d',
+            },
+            name: 'test',
+        },
+        '47631c40-b687-4eca-9844-94be7328773f',
     ];
 
     it('can create a new device class', () => {
@@ -333,7 +352,6 @@ describe('device', () => {
         expect(device.value[3].name).toEqual('value 4');
     });
 
-
     it('can create a value from a NUMBER template', async () => {
         templateHelperStart();
 
@@ -381,9 +399,7 @@ describe('device', () => {
     });
 
     it('can reuse a value from a NUMBER template', async () => {
-        mockedAxios.put
-            .mockResolvedValueOnce({
-            });
+        mockedAxios.put.mockResolvedValueOnce({});
 
         const st = new State('Report', '123');
         st.meta.id = 'bde1b7ed-de87-496a-baf3-7c258ec3db05';
@@ -416,16 +432,16 @@ describe('device', () => {
             {
                 delta: '2',
                 meta: {
-                  id: '1ff269bc-5a90-424b-9442-cc90570ad479',
-                  type: 'value',
-                  version: '2.1',
+                    id: '1ff269bc-5a90-424b-9442-cc90570ad479',
+                    type: 'value',
+                    version: '2.1',
                 },
                 name: 'name',
                 number: { max: 128, min: -128, step: 0.1, unit: '' },
                 period: '0',
                 permission: 'r',
                 type: 'number',
-              },
+            },
             {}
         );
     });
@@ -562,14 +578,14 @@ describe('device', () => {
                     },
                 },
             ],
-        })
+        });
 
         const device = new Device();
         device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
         const value = await device.createValue(
             'name',
             'rw',
-            ValueTemplate.NUMBER,
+            ValueTemplate.NUMBER
         );
 
         templateHelperDone();
@@ -577,18 +593,14 @@ describe('device', () => {
         const value2 = await device.createValue(
             'name',
             'r',
-            ValueTemplate.NUMBER,
+            ValueTemplate.NUMBER
         );
 
         expect(value.permission).toEqual('r');
         expect(value.state.length).toBe(1);
         expect(value.state[0].type).toEqual('Report');
 
-        await device.createValue(
-            'name',
-            'w',
-            ValueTemplate.NUMBER,
-        );
+        await device.createValue('name', 'w', ValueTemplate.NUMBER);
 
         expect(value).toBe(value2);
 
@@ -612,28 +624,29 @@ describe('device', () => {
     });
 
     it('fails to create a value when parameters is missing', async () => {
-
         const device = new Device();
         device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
 
         expect.assertions(2);
 
         try {
-            await device.createValue(
-                'name',
-            );
+            await device.createValue('name');
         } catch (error) {
-            expect(error).toEqual(new Error('Missing parameter "valueTemplate" in createValue function'));
+            expect(error).toEqual(
+                new Error(
+                    'Missing parameter "valueTemplate" in createValue function'
+                )
+            );
         }
 
         try {
-            await device.createValue(
-                'name',
-                undefined,
-                ValueTemplate.NUMBER,
-            );
+            await device.createValue('name', undefined, ValueTemplate.NUMBER);
         } catch (error) {
-            expect(error).toEqual(new Error('Missing parameter "permission" in createValue function'));
+            expect(error).toEqual(
+                new Error(
+                    'Missing parameter "permission" in createValue function'
+                )
+            );
         }
     });
 
@@ -1377,7 +1390,7 @@ describe('device', () => {
             name: 'Test Value',
             permission: 'r',
             template: ValueTemplate.NUMBER,
-            initialState: {data: '20', timestamp: '2022-02-02T02:02:02Z'},
+            initialState: { data: '20', timestamp: '2022-02-02T02:02:02Z' },
         });
 
         await val.report('30', '2023-03-03T03:03:03Z');
@@ -1386,7 +1399,7 @@ describe('device', () => {
             name: 'Test Value',
             permission: 'r',
             template: ValueTemplate.NUMBER,
-            initialState: {data: '20', timestamp: '2022-02-02T02:02:02Z'},
+            initialState: { data: '20', timestamp: '2022-02-02T02:02:02Z' },
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -1414,7 +1427,7 @@ describe('device', () => {
                 data: '20',
                 meta: { type: 'state', version: '2.1' },
                 type: 'Report',
-                timestamp: '2022-02-02T02:02:02Z'
+                timestamp: '2022-02-02T02:02:02Z',
             }),
             {}
         );
@@ -1425,9 +1438,13 @@ describe('device', () => {
             '/2.1/state/1c067551-799a-4b35-9a75-5eb0b978ee97',
             expect.objectContaining({
                 data: '30',
-                meta: { type: 'state', version: '2.1', id: '1c067551-799a-4b35-9a75-5eb0b978ee97' },
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '1c067551-799a-4b35-9a75-5eb0b978ee97',
+                },
                 type: 'Report',
-                timestamp: '2023-03-03T03:03:03Z'
+                timestamp: '2023-03-03T03:03:03Z',
             }),
             {}
         );
@@ -1875,5 +1892,27 @@ describe('device', () => {
         );
 
         expect(networks.length).toEqual(22);
+    });
+
+    it('can create 3 new device from wappsto', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce({ data: response3Devices })
+            .mockResolvedValueOnce({ data: response });
+
+        const devices = await Device.fetch();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+            params: { expand: 2, go_internal: true },
+        });
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/device/47631c40-b687-4eca-9844-94be7328773f',
+            {
+                params: { expand: 2, go_internal: true },
+            }
+        );
+        expect(devices.length).toEqual(3);
+        expect(devices[0]?.name).toEqual('test');
+        expect(devices[2]?.name).toEqual('test');
     });
 });

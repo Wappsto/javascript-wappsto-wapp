@@ -1,7 +1,7 @@
 import isEqual from 'lodash.isequal';
 import pick from 'lodash.pick';
 import omit from 'lodash.omit';
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { isUUID, replaceAll } from '../util/helpers';
 import wappsto from '../util/http_wrapper';
 import { printHttpError } from '../util/http_wrapper';
@@ -312,7 +312,7 @@ export class Model implements IModel {
         json: Record<string, any>[],
         parent?: IModel
     ): T[] {
-        const obj = plainToClass(this, json) || [];
+        const obj = plainToInstance(this, json) || [];
         obj.forEach((o: T) => {
             if (o && typeof o !== 'string') {
                 const o2 = o as unknown as IModel;

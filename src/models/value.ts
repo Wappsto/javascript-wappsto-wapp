@@ -223,10 +223,28 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         const data = await Model.fetch({ endpoint: url, params });
         const values = Value.fromArray(data);
         const poms: any[] = [];
-        values.forEach((val) => {
-            poms.push(val.loadAllChildren(null));
+        values.forEach((val, index) => {
+            if (val.loadAllChildren) {
+                poms.push(val.loadAllChildren(null));
+            } else if (typeof val === 'string') {
+                poms.push(
+                    new Promise<void>((resolve) => {
+                        const id = val as unknown as string;
+                        Value.fetchById(id).then((value) => {
+                            values[index] = value;
+                            resolve();
+                        });
+                    })
+                );
+            }
         });
         await Promise.all(poms);
+
+        values.forEach((value) => {
+            if (value?.addChildrenToStore) {
+                value.addChildrenToStore();
+            }
+        });
         return values;
     };
 
