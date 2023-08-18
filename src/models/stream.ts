@@ -350,18 +350,24 @@ export class Stream extends Model {
     public async sendResponse(
         event: any,
         code: number,
-        msg: any
+        msg: any,
+        headers?: Record<string, string>
     ): Promise<void> {
         this.validate('sendResponse', arguments);
 
         try {
-            const data = {
-                code: code,
-                body: msg,
-            };
             await wappsto.patch(
                 `/2.1/extsync/response/${event?.meta?.id}`,
-                data
+                headers
+                    ? {
+                          code,
+                          body: msg,
+                          headers,
+                      }
+                    : {
+                          code,
+                          body: msg,
+                      }
             );
         } catch (e: any) {
             /* istanbul ignore next */
@@ -414,7 +420,27 @@ export class Stream extends Model {
                         query,
                         event.headers
                     );
-                    this.sendResponse(event, 200, res);
+                    let code = 200;
+                    let body = res;
+                    let headers;
+
+                    let data;
+                    try {
+                        data = JSON.parse(res);
+                    } catch (e) {
+                        data = res;
+                    }
+
+                    if (data?.body) {
+                        body = data.body;
+                        if (data.code) {
+                            code = data.code;
+                        }
+                        if (data.headers) {
+                            headers = data.headers;
+                        }
+                    }
+                    this.sendResponse(event, code, body, headers);
                 } catch (err: any) {
                     if (!(err instanceof IgnoreError)) {
                         printError(err);
@@ -695,6 +721,7 @@ export class Stream extends Model {
             if (ev.type !== 'message') {
                 /* istanbul ignore next */
                 printError("Can't handle binary stream data");
+                return;
             }
 
             try {

@@ -273,7 +273,7 @@ await value.sendLogReports([
 ### Listing for requests to refresh the value
 
 To receive request to refresh the value, register a callback on
-`onRefresh`. This can be triggered by an user request or an 
+`onRefresh`. This can be triggered by an user request or an
 automatic event from the library based on the period.
 
 ```javascript
@@ -748,11 +748,27 @@ Wappsto.onWebHook((event, method, uri, headers) => {
 });
 ```
 
-The webhook url is `https://wappsto.com/services/extsync/request/<wapp_token>`. 
+The webhook url is `https://wappsto.com/services/extsync/request/<wapp_token>`.
 You can get the token from the value `extSyncToken`.
 
 ```javascript
 console.log(`WebHook URL: https://wappsto.com/services/extsync/request/${Wappsto.extSyncToken}`);
+```
+
+It is also possible to change the return code byt returning a object with a `body` and `code`.
+This also supports adding headers to the response.
+
+```javascript
+Wappsto.onWebHook((event, method, uri, headers) => {
+    console.log('Web Hook event', event);
+    return {
+        code: 201,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: { status: "ok" };
+    };
+});
 ```
 
 And if you want to cancel the web hook event handler, you can call

@@ -920,4 +920,56 @@ describe('ExtSync stream', () => {
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
     });
+
+
+    it('supports headers in the response', async () => {
+        mockedAxios.post
+            .mockResolvedValueOnce({ data: false });
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: false });
+
+        fromForeground(async (event) => {
+            return {
+                code: 300,
+                body: "<html>Test</html>",
+                headers: {
+                    'Content-Type': 'text/html',
+                }
+            };
+        });
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                meta: {
+                    id: 'bbe306a7-7216-4d7d-8be1-08d94cd2142d',
+                },
+                request: 'request',
+                uri: 'extsync/',
+                body: '{"type": "foreground","message": {}}',
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 100));
+
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/extsync/response/bbe306a7-7216-4d7d-8be1-08d94cd2142d',
+            {
+                body: "<html>Test</html>",
+                code: 300,
+                headers: {
+                    'Content-Type': 'text/html',
+                }
+            }
+        );
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+    });
 });
