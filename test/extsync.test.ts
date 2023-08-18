@@ -862,10 +862,13 @@ describe('ExtSync stream', () => {
         const result: Array<number> = [];
 
         fromForeground(async (event) => {
+            let res;
             if (event.test === 'correct') {
                 await new Promise((r) => setTimeout(r, 10));
+                res = { status: "ok" };
             }
             result.push(event.test);
+            return res;
         });
 
         await new Promise((r) => setTimeout(r, 1));
@@ -903,14 +906,16 @@ describe('ExtSync stream', () => {
 
         expect(result).toEqual(['correct', 'order']);
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/extsync/response/bbe306a7-7216-4d7d-8be1-08d94cd2142d',
             {
-                body: undefined,
+                body: { status: "ok" },
                 code: 200,
             }
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/extsync/response/67756021-3b92-431d-8a70-692c295ca521',
             {
                 body: undefined,
