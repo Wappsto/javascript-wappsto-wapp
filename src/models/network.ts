@@ -55,7 +55,7 @@ export class Network extends ConnectionModel implements INetwork {
     }
 
     public static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
-        Network.validate('getFilter', [filter, omit_filter]);
+        Network.#validate('getFilter', [filter, omit_filter]);
         return convertFilterToJson(
             'network',
             Network.attributes,
@@ -68,7 +68,7 @@ export class Network extends ConnectionModel implements INetwork {
         filter?: Filter,
         omit_filter?: Filter
     ): string {
-        Network.validate('getFilterResult', [filter, omit_filter]);
+        Network.#validate('getFilterResult', [filter, omit_filter]);
         const fields = [Model.getFilterResult()]
             .concat(Network.attributes)
             .join(' ');
@@ -181,7 +181,7 @@ export class Network extends ConnectionModel implements INetwork {
                     proms.push(this.device[i].loadAllChildren(null, false));
                 }
             } else if (typeof this.device[i] === 'string') {
-                await this.fetchMissingDevices(i);
+                await this.#fetchMissingDevices(i);
                 break;
             }
         }
@@ -249,7 +249,7 @@ export class Network extends ConnectionModel implements INetwork {
         usage = '',
         filterRequest?: Record<string, any>
     ) => {
-        Network.validate('find', [
+        Network.#validate('find', [
             params,
             quantity,
             readOnly,
@@ -279,13 +279,13 @@ export class Network extends ConnectionModel implements INetwork {
         );
 
         const networks = Network.fromArray(data);
-        const poms: any[] = [];
+        const promises: any[] = [];
 
         networks.forEach((net, index) => {
             if (net.loadAllChildren) {
-                poms.push(net.loadAllChildren(null));
+                promises.push(net.loadAllChildren(null));
             } else if (typeof net === 'string') {
-                poms.push(
+                promises.push(
                     new Promise<void>((resolve) => {
                         const id = net as unknown as string;
                         Network.fetchById(id).then((network) => {
@@ -296,7 +296,7 @@ export class Network extends ConnectionModel implements INetwork {
                 );
             }
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
 
         networks.forEach((network) => {
             if (network?.addChildrenToStore) {
@@ -313,7 +313,7 @@ export class Network extends ConnectionModel implements INetwork {
         readOnly = false,
         usage = ''
     ) => {
-        Network.validate('findByName', [name, quantity, readOnly, usage]);
+        Network.#validate('findByName', [name, quantity, readOnly, usage]);
         if (usage === '') {
             usage = `Find ${quantity} network with name ${name}`;
         }
@@ -321,12 +321,12 @@ export class Network extends ConnectionModel implements INetwork {
     };
 
     static findAllByName = (name: string, readOnly = false, usage = '') => {
-        Network.validate('findAllByName', [name, readOnly, usage]);
+        Network.#validate('findAllByName', [name, readOnly, usage]);
         return Network.findByName(name, 'all', readOnly, usage);
     };
 
     static findById = async (id: string, readOnly = false) => {
-        Network.validate('findById', [id, readOnly]);
+        Network.#validate('findById', [id, readOnly]);
         const networks = await Network.find(
             { 'meta.id': id },
             1,
@@ -343,7 +343,7 @@ export class Network extends ConnectionModel implements INetwork {
         readOnly = false,
         usage = ''
     ) => {
-        Network.validate('findByFilter', [
+        Network.#validate('findByFilter', [
             filter,
             omit_filter,
             quantity,
@@ -366,7 +366,7 @@ export class Network extends ConnectionModel implements INetwork {
         readOnly = false,
         usage = ''
     ) => {
-        Network.validate('findAllByFilter', [
+        Network.#validate('findAllByFilter', [
             filter,
             omit_filter,
             readOnly,
@@ -382,7 +382,7 @@ export class Network extends ConnectionModel implements INetwork {
     };
 
     public static fetchById = async (id: string) => {
-        Network.validate('fetchById', [id]);
+        Network.#validate('fetchById', [id]);
         const data = await Model.fetch({
             endpoint: `${Network.endpoint}/${id}`,
             params: {
@@ -397,7 +397,7 @@ export class Network extends ConnectionModel implements INetwork {
     };
 
     static fetchByName = async (name = '') => {
-        Network.validate('fetchByName', [name]);
+        Network.#validate('fetchByName', [name]);
         const params = { expand: 3 };
         if (name !== '') {
             Object.assign(params, {
@@ -407,15 +407,15 @@ export class Network extends ConnectionModel implements INetwork {
         const data = await Model.fetch({ endpoint: Network.endpoint, params });
         const networks = Network.fromArray(data);
 
-        const poms: any[] = [];
+        const promises: any[] = [];
         networks.forEach((net) => {
-            poms.push(net.loadAllChildren(null));
+            promises.push(net.loadAllChildren(null));
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
         return networks;
     };
 
-    private async fetchMissingDevices(offset: number): Promise<void> {
+    async #fetchMissingDevices(offset: number): Promise<void> {
         const data = await Model.fetch({
             endpoint: `${this.url()}/${this.id()}/device`,
             params: {
@@ -424,7 +424,7 @@ export class Network extends ConnectionModel implements INetwork {
             },
         });
         const devices = Device.fromArray(data);
-        const poms: any[] = [];
+        const promises: any[] = [];
 
         devices.forEach((dev: any, index: number) => {
             this.device[offset + index] = dev;
@@ -432,21 +432,21 @@ export class Network extends ConnectionModel implements INetwork {
 
         for (let i = 0; i < this.device.length; i++) {
             if (typeof this.device[i] === 'string') {
-                poms.push(this.fetchMissingDevices(i));
+                promises.push(this.#fetchMissingDevices(i));
                 break;
             }
         }
 
         devices.forEach((dev) => {
             if (typeof dev === 'object') {
-                poms.push(dev.loadAllChildren(null));
+                promises.push(dev.loadAllChildren(null));
             }
         });
 
-        await Promise.all(poms);
+        await Promise.all(promises);
     }
 
-    private static validate(name: string, params: any): void {
+    static #validate(name: string, params: any): void {
         Model.validateMethod('Network', name, params);
     }
 }

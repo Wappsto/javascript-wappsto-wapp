@@ -54,7 +54,7 @@ export class Ontology extends Model implements IOntologyEdge {
         return res;
     }
 
-    private addModel(to: IOntologyModel): boolean {
+    addModel(to: IOntologyModel): boolean {
         let res = false;
         if (this.models.find((o) => compareModels(o, to)) === undefined) {
             this.models.push(to);
@@ -63,7 +63,7 @@ export class Ontology extends Model implements IOntologyEdge {
         return res;
     }
 
-    private addFailedModel(type: string, id: string) {
+    #addFailedModel(type: string, id: string) {
         if (!this.failedModels[type]) {
             this.failedModels[type] = [];
         }
@@ -82,7 +82,7 @@ export class Ontology extends Model implements IOntologyEdge {
                         if (m) {
                             this.addModel(m as IOntologyModel);
                         } else if (m === false) {
-                            this.addFailedModel(type, id);
+                            this.#addFailedModel(type, id);
                         }
                         resolve();
                     })
@@ -112,7 +112,7 @@ export class Ontology extends Model implements IOntologyEdge {
     }
 
     static fetch = async (parameters: FetchRequest): Promise<Ontology[]> => {
-        Ontology.validate('fetch', [parameters]);
+        Ontology.#validate('fetch', [parameters]);
 
         const params = parameters;
         if (!params.params) {
@@ -132,7 +132,7 @@ export class Ontology extends Model implements IOntologyEdge {
         return res;
     };
 
-    private static validate(name: string, params: any): void {
+    static #validate(name: string, params: any): void {
         Model.validateMethod('OntologyEdge', name, params);
     }
 }

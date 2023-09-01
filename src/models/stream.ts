@@ -93,7 +93,7 @@ export class Stream extends Model {
         clearTimeout(this.reconnect_timer);
     }
 
-    private getTimeout(): number {
+    #getTimeout(): number {
         /* istanbul ignore next */
         if (this.backOff >= _config.reconnectCount) {
             printError(
@@ -108,7 +108,7 @@ export class Stream extends Model {
         return this.backOff * 2 * 1000;
     }
 
-    private open(): Promise<void> {
+    #open(): Promise<void> {
         return new Promise<void>((resolve) => {
             if (this.socket) {
                 resolve();
@@ -127,9 +127,9 @@ export class Stream extends Model {
             const openTimeout: ReturnType<typeof setTimeout> = setTimeout(
                 () => {
                     /* istanbul ignore next */
-                    this.reconnect();
+                    this.#reconnect();
                 },
-                1000 + this.getTimeout()
+                1000 + this.#getTimeout()
             );
 
             try {
@@ -138,7 +138,7 @@ export class Stream extends Model {
                 socket.onopen = () => {
                     this.socket = socket;
                     clearTimeout(openTimeout);
-                    this.addListeners();
+                    this.#addListeners();
                     resolve();
                     this.waiting.forEach((r: any) => {
                         r();
@@ -162,21 +162,21 @@ export class Stream extends Model {
         }
     }
 
-    private async addSubscription(subscription: string): Promise<boolean> {
+    async #addSubscription(subscription: string): Promise<boolean> {
         if (this.subscriptions.includes(subscription)) {
             return true;
         }
 
         this.subscriptions.push(subscription);
 
-        return this.sendMessage(
+        return this.#sendMessage(
             'POST',
             '/services/2.1/websocket/open/subscription',
             `/2.1${subscription}`
         );
     }
 
-    private async removeSubscription(subscription: string): Promise<boolean> {
+    async #removeSubscription(subscription: string): Promise<boolean> {
         if (!this.subscriptions.includes(subscription)) {
             /* istanbul ignore next */
             return true;
@@ -186,7 +186,7 @@ export class Stream extends Model {
         if (index !== -1) {
             this.subscriptions.splice(index, 1);
         }
-        return this.sendMessage(
+        return this.#sendMessage(
             'DELETE',
             '/services/2.1/websocket/open/subscription',
             `/2.1${subscription}`
@@ -198,7 +198,7 @@ export class Stream extends Model {
         full = false
     ): Promise<boolean> {
         this.validate('subscribe', arguments);
-        const path = this.generatePathFromService(model.path(), full);
+        const path = this.#generatePathFromService(model.path(), full);
 
         if (!this.models[path]) {
             this.models[path] = [];
@@ -206,10 +206,10 @@ export class Stream extends Model {
 
         if (this.models[path].indexOf(model) === -1) {
             this.models[path].push(model);
-            await this.open();
+            await this.#open();
 
             printDebug(`Add subscription: ${model.path()}`);
-            return this.addSubscription(path);
+            return this.#addSubscription(path);
         }
         return false;
     }
@@ -222,7 +222,7 @@ export class Stream extends Model {
                 this.models[model.path()].splice(index, 1);
             }
 
-            return this.removeSubscription(model.path());
+            return this.#removeSubscription(model.path());
         }
         return true;
     }
@@ -252,7 +252,7 @@ export class Stream extends Model {
         });
     }
 
-    private generatePathFromService(service: string, full: boolean): string {
+    #generatePathFromService(service: string, full: boolean): string {
         let path = `${service}${full ? '?full=true' : ''}`;
         if (path[0] !== '/') {
             path = `/${path}`;
@@ -266,9 +266,9 @@ export class Stream extends Model {
         full = false
     ): Promise<boolean> {
         this.validate('subscribeService', arguments);
-        await this.open();
+        await this.#open();
 
-        const path = this.generatePathFromService(service, full);
+        const path = this.#generatePathFromService(service, full);
         if (!this.services[path]) {
             this.services[path] = [];
         }
@@ -276,7 +276,7 @@ export class Stream extends Model {
 
         printDebug(`Add service subscription: ${path}`);
 
-        return this.addSubscription(path);
+        return this.#addSubscription(path);
     }
 
     public async unsubscribeService(
@@ -285,7 +285,7 @@ export class Stream extends Model {
         full = false
     ): Promise<boolean> {
         this.validate('subscribeService', arguments);
-        const path = this.generatePathFromService(service, full);
+        const path = this.#generatePathFromService(service, full);
         let res = true;
 
         if (this.services[path] !== undefined) {
@@ -295,7 +295,7 @@ export class Stream extends Model {
             }
 
             if (this.services[path].length === 0) {
-                res = await this.removeSubscription(path);
+                res = await this.#removeSubscription(path);
             }
         }
         return res;
@@ -381,7 +381,7 @@ export class Stream extends Model {
         }
     }
 
-    private async runRequestHandlers(type: number) {
+    async #runRequestHandlers(type: number) {
         if (this.onRequestEvents[type].length === 0) {
             return;
         }
@@ -459,16 +459,16 @@ export class Stream extends Model {
 
         this.onRequestEvents[type].shift();
 
-        this.runRequestHandlers(type);
+        this.#runRequestHandlers(type);
     }
 
-    private onRequestHandler = (event: any): boolean => {
+    #onRequestHandler = (event: any): boolean => {
         const type = Number(event.uri === 'extsync/');
 
         this.onRequestEvents[type].push(event);
 
         if (this.onRequestEvents[type].length === 1) {
-            this.runRequestHandlers(type);
+            this.#runRequestHandlers(type);
         }
         return false;
     };
@@ -486,7 +486,7 @@ export class Stream extends Model {
         if (doSubscribe) {
             return this.subscribeService(
                 '/extsync/request',
-                this.onRequestHandler
+                this.#onRequestHandler
             );
         }
         return true;
@@ -510,24 +510,24 @@ export class Stream extends Model {
         ) {
             res = await this.unsubscribeService(
                 '/extsync/request',
-                this.onRequestHandler
+                this.#onRequestHandler
             );
         }
         return res;
     }
 
-    private reconnect(): void {
+    #reconnect(): void {
         this.backOff++;
         printDebug(`Stream Reconnecting for the ${this.backOff} times`);
         this.close();
-        this.open().then(() => {
-            this.sendMessage('PATCH', '/services/2.1/websocket/open', {
+        this.#open().then(() => {
+            this.#sendMessage('PATCH', '/services/2.1/websocket/open', {
                 subscription: this.subscriptions.map((s) => `/2.1${s}`),
             });
         });
     }
 
-    private filterCallback(
+    #filterCallback(
         callback: ServiceHandler,
         path: string,
         result: boolean
@@ -539,7 +539,7 @@ export class Stream extends Model {
         }
     }
 
-    private handleMessage(type: string, event: IStreamEvent): void {
+    #handleMessage(type: string, event: IStreamEvent): void {
         printStream('handleMessage', type, event);
         const paths: string[] = [];
         const services: string[] = [];
@@ -591,10 +591,10 @@ export class Stream extends Model {
                 const p = callback(event);
                 if (p) {
                     if (p === true) {
-                        this.filterCallback(callback, service, true);
+                        this.#filterCallback(callback, service, true);
                     } else {
                         p.then((res) => {
-                            this.filterCallback(
+                            this.#filterCallback(
                                 callback,
                                 service,
                                 res || false
@@ -606,7 +606,7 @@ export class Stream extends Model {
         });
     }
 
-    private async sendMessage(
+    async #sendMessage(
         method: string,
         url: string,
         body: any | undefined = undefined
@@ -647,7 +647,7 @@ export class Stream extends Model {
         return res;
     }
 
-    private handleRPCMessage(message: any): boolean {
+    #handleRPCMessage(message: any): boolean {
         if (message.jsonrpc) {
             if (message.result) {
                 if (this.rpc_response[message.id]) {
@@ -668,7 +668,7 @@ export class Stream extends Model {
         return false;
     }
 
-    private handleWappstoMessage(message: any) {
+    #handleWappstoMessage(message: any) {
         if (message.data?.uri !== 'extsync/wappsto/editor/console') {
             printDebug(`Stream message: ${toString(message)}`);
         }
@@ -676,19 +676,19 @@ export class Stream extends Model {
         if (message.meta_object?.type === 'extsync') {
             const newData = message.extsync || message.data;
             if (newData.request) {
-                this.handleMessage('extsync/request', newData);
+                this.#handleMessage('extsync/request', newData);
             } else if (newData.uri !== 'extsync/wappsto/editor/console') {
-                this.handleMessage('extsync', newData);
+                this.#handleMessage('extsync', newData);
             }
             return;
         }
-        this.checkAndSendTrace(message);
-        this.handleMessage('message', message);
+        this.#checkAndSendTrace(message);
+        this.#handleMessage('message', message);
         clearTrace('ok');
     }
 
-    private async handleStreamMessage(message: any): Promise<void> {
-        if (this.handleRPCMessage(message)) {
+    async #handleStreamMessage(message: any): Promise<void> {
+        if (this.#handleRPCMessage(message)) {
             return;
         }
 
@@ -700,11 +700,11 @@ export class Stream extends Model {
         }
 
         messages.forEach((msg) => {
-            this.handleWappstoMessage(msg);
+            this.#handleWappstoMessage(msg);
         });
     }
 
-    private addListeners(): void {
+    #addListeners(): void {
         if (!this.socket) {
             /* istanbul ignore next */
             return;
@@ -712,8 +712,8 @@ export class Stream extends Model {
 
         const reconnect = () => {
             this.reconnect_timer = setTimeout(() => {
-                this.reconnect();
-            }, this.getTimeout());
+                this.#reconnect();
+            }, this.#getTimeout());
         };
 
         this.socket.onmessage = (ev: any) => {
@@ -726,7 +726,7 @@ export class Stream extends Model {
 
             try {
                 const message = JSON.parse(ev.data);
-                this.handleStreamMessage(message);
+                this.#handleStreamMessage(message);
             } catch (e) {
                 /* istanbul ignore next */
                 printError('Failed to parse stream event');
@@ -747,7 +747,7 @@ export class Stream extends Model {
         };
     }
 
-    private checkAndSendTrace(event: IStreamEvent): void {
+    #checkAndSendTrace(event: IStreamEvent): void {
         if (event?.meta?.trace) {
             trace(event.meta.trace);
         }

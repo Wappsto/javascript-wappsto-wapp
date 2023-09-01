@@ -25,7 +25,7 @@ export class WappStorage {
     data: Data;
 
     constructor(name: string) {
-        WappStorage.validate('constructor', arguments);
+        WappStorage.#validate('constructor', arguments);
         this.name = name;
         this.id = `wapp_storage_${this.name}`;
         this.data = new Data(this.id, 'wapp_storage');
@@ -40,7 +40,7 @@ export class WappStorage {
         }
     }
 
-    private _set(
+    #set(
         name: string | Record<string, any>,
         item?: any,
         secret?: boolean
@@ -56,23 +56,23 @@ export class WappStorage {
     }
 
     set(name: string | Record<string, any>, item?: any): Promise<boolean> {
-        WappStorage.validate('set', arguments);
-        return this._set(name, item);
+        WappStorage.#validate('set', arguments);
+        return this.#set(name, item);
     }
 
     async setSecret(
         name: string | Record<string, any>,
         item?: any
     ): Promise<boolean> {
-        WappStorage.validate('set', arguments);
+        WappStorage.#validate('set', arguments);
         if (isBrowser()) {
             printError('You can only set secrets from the background');
             return false;
         }
-        return this._set(name, item, true);
+        return this.#set(name, item, true);
     }
 
-    private _get(name: string | string[], secret?: boolean): any {
+    #get(name: string | string[], secret?: boolean): any {
         if (typeof name === 'string') {
             return this.data.get(name, secret);
         } else {
@@ -81,17 +81,17 @@ export class WappStorage {
     }
 
     get(name: string | string[]): any {
-        WappStorage.validate('get', arguments);
-        return this._get(name);
+        WappStorage.#validate('get', arguments);
+        return this.#get(name);
     }
 
     getSecret(name: string | string[]): any {
-        WappStorage.validate('getSecret', arguments);
+        WappStorage.#validate('getSecret', arguments);
         if (isBrowser()) {
             printError('You can only get secrets from the background');
             return;
         }
-        return this._get(name, true);
+        return this.#get(name, true);
     }
 
     keys(): Array<string> {
@@ -106,10 +106,7 @@ export class WappStorage {
         return this.data.entries();
     }
 
-    private _remove(
-        name: string | string[],
-        secret?: boolean
-    ): Promise<boolean> {
+    #remove(name: string | string[], secret?: boolean): Promise<boolean> {
         if (typeof name === 'string') {
             this.data.remove(name, secret);
         } else {
@@ -119,17 +116,17 @@ export class WappStorage {
     }
 
     remove(name: string | string[]): Promise<boolean> {
-        WappStorage.validate('remove', arguments);
-        return this._remove(name);
+        WappStorage.#validate('remove', arguments);
+        return this.#remove(name);
     }
 
     async removeSecret(name: string | string[]): Promise<boolean> {
-        WappStorage.validate('removeSecret', arguments);
+        WappStorage.#validate('removeSecret', arguments);
         if (isBrowser()) {
             printError('You can only remove secrets from the background');
             return false;
         }
-        return this._remove(name, true);
+        return this.#remove(name, true);
     }
 
     update(): Promise<boolean> {
@@ -137,7 +134,7 @@ export class WappStorage {
     }
 
     onChange(cb: StorageChangeHandler): Promise<boolean> {
-        WappStorage.validate('onChange', arguments);
+        WappStorage.#validate('onChange', arguments);
         return this.data.onChange(async () => {
             await cb();
         });
@@ -153,7 +150,7 @@ export class WappStorage {
         await this.data.create();
     }
 
-    private static validate(name: string, params: any): void {
+    static #validate(name: string, params: any): void {
         Model.validateMethod('WappStorage', name, params);
     }
 }

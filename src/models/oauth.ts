@@ -20,7 +20,7 @@ export class OAuth extends Model {
     }
 
     public getToken(handler?: OAuthRequestHandler) {
-        OAuth.validate('getToken', arguments);
+        OAuth.#validate('getToken', arguments);
         return new Promise<Record<string, any>>(async (resolve, reject) => {
             try {
                 const data = await Model.fetch({
@@ -63,12 +63,12 @@ export class OAuth extends Model {
     }
 
     static getToken = (name: string, handler?: OAuthRequestHandler) => {
-        OAuth.validate('staticGetToken', [name, handler]);
+        OAuth.#validate('staticGetToken', [name, handler]);
         const oauth = new OAuth(name);
         return oauth.getToken(handler);
     };
 
-    private static validate(name: string, params: any): void {
+    static #validate(name: string, params: any): void {
         Model.validateMethod('OAuth', name, params);
     }
 }

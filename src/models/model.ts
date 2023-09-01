@@ -137,7 +137,7 @@ export class Model implements IModel {
         }
     }
 
-    private async _update(): Promise<void> {
+    async #update(): Promise<void> {
         if (!this.updateQueue.length) {
             return;
         }
@@ -160,7 +160,7 @@ export class Model implements IModel {
 
         this.updateQueue.shift();
 
-        this._update();
+        this.#update();
     }
 
     public async update(): Promise<boolean> {
@@ -171,7 +171,7 @@ export class Model implements IModel {
                 );
                 this.updateQueue.push({ data: this.toJSON(), resolve });
                 if (this.updateQueue.length === 1) {
-                    this._update();
+                    this.#update();
                 }
             });
         }
@@ -263,7 +263,7 @@ export class Model implements IModel {
 
         return Object.assign(
             { meta: meta },
-            this.removeUndefined(pick(this, this.getAttributes()))
+            this.#removeUndefined(pick(this, this.getAttributes()))
         );
     }
 
@@ -376,13 +376,13 @@ export class Model implements IModel {
         return options;
     }
 
-    private removeUndefined(obj: Record<string, any>, deep = 10) {
+    #removeUndefined(obj: Record<string, any>, deep = 10) {
         if (obj && deep > 0) {
             Object.keys(obj).forEach((key) => {
                 const value = obj[key];
                 const type = typeof value;
                 if (type === 'object') {
-                    this.removeUndefined(value, (deep -= 1));
+                    this.#removeUndefined(value, (deep -= 1));
                 } else if (type === 'undefined') {
                     delete obj[key];
                 }

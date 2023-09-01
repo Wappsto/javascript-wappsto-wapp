@@ -7,7 +7,7 @@ import { openStream } from '../stream_helpers';
 import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 
 export class PermissionModel extends OntologyModel {
-    private static getPermissionHash(
+    static #getPermissionHash(
         type: string,
         quantity: number | 'all',
         message: string
@@ -15,7 +15,7 @@ export class PermissionModel extends OntologyModel {
         return `${type}-${quantity}-${message}`;
     }
 
-    private async handleNotification(
+    async #handleNotification(
         event: any,
         options?: Record<string, any>
     ): Promise<boolean | undefined> {
@@ -105,7 +105,7 @@ export class PermissionModel extends OntologyModel {
                                 return undefined;
                             }
 
-                            const res = await this.handleNotification(event);
+                            const res = await this.#handleNotification(event);
                             if (res) {
                                 resolve();
                             }
@@ -122,10 +122,7 @@ export class PermissionModel extends OntologyModel {
         });
     }
 
-    private static convertFromFetch(
-        endpoint: string,
-        data: Record<string, any>[]
-    ) {
+    static #convertFromFetch(endpoint: string, data: Record<string, any>[]) {
         if (data.length === 1 && data[0]?.meta?.type === 'fetch') {
             const arr = endpoint.split('/');
             if (arr.length) {
@@ -153,7 +150,7 @@ export class PermissionModel extends OntologyModel {
         ]);
         return new Promise<Record<string, any>[]>(async (resolve) => {
             const newParams = params || {};
-            const id = PermissionModel.getPermissionHash(
+            const id = PermissionModel.#getPermissionHash(
                 endpoint.split('/')[2],
                 quantity,
                 message
@@ -172,7 +169,7 @@ export class PermissionModel extends OntologyModel {
                 body: body,
             });
 
-            const data = PermissionModel.convertFromFetch(endpoint, result);
+            const data = PermissionModel.#convertFromFetch(endpoint, result);
             if (data.length === 0) {
                 printDebug(`Requesting new access to users data: ${message}`);
             } else {
@@ -228,7 +225,7 @@ export class PermissionModel extends OntologyModel {
                             params: newParams,
                             body: body,
                         });
-                        const data = PermissionModel.convertFromFetch(
+                        const data = PermissionModel.#convertFromFetch(
                             endpoint,
                             result
                         );
@@ -275,7 +272,7 @@ export class PermissionModel extends OntologyModel {
                                 return undefined;
                             }
 
-                            const res = await this.handleNotification(event, {
+                            const res = await this.#handleNotification(event, {
                                 reloadAll,
                                 defaultExpand,
                             });

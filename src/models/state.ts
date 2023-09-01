@@ -38,12 +38,12 @@ export class State extends StreamModel implements IState {
         return false;
     }
 
-    private static validate(name: string, params: any): void {
+    static #validate(name: string, params: any): void {
         Model.validateMethod('State', name, params);
     }
 
     public static fetchById = async (id: string) => {
-        State.validate('fetchById', [id]);
+        State.#validate('fetchById', [id]);
         const data = await Model.fetch({ endpoint: `${State.endpoint}/${id}` });
         const res = State.fromArray(data);
         return res[0];

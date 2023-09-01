@@ -64,7 +64,7 @@ export class Device extends ConnectionModel implements IDevice {
     }
 
     public static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
-        Device.validate('getFilter', [filter, omit_filter]);
+        Device.#validate('getFilter', [filter, omit_filter]);
         return convertFilterToJson(
             'device',
             Device.attributes,
@@ -77,7 +77,7 @@ export class Device extends ConnectionModel implements IDevice {
         filter?: Filter,
         omit_filter?: Filter
     ): string {
-        Device.validate('getFilterResult', [filter, omit_filter]);
+        Device.#validate('getFilterResult', [filter, omit_filter]);
         const fields = [Model.getFilterResult()].concat(Device.attributes);
 
         const strFilter = convertFilterToString(
@@ -170,7 +170,7 @@ export class Device extends ConnectionModel implements IDevice {
                     proms.push(this.value[i].loadAllChildren(null, false));
                 }
             } else if (typeof this.value[i] === 'string') {
-                await this.fetchMissingValues(i);
+                await this.#fetchMissingValues(i);
                 break;
             }
         }
@@ -178,7 +178,7 @@ export class Device extends ConnectionModel implements IDevice {
         await Promise.all(proms);
     }
 
-    private async _createValue(params: ValueType): Promise<Value> {
+    async #createValue(params: ValueType): Promise<Value> {
         let oldType;
 
         let value = new Value();
@@ -230,9 +230,9 @@ export class Device extends ConnectionModel implements IDevice {
             }
         }
 
-        const poms: any[] = [];
+        const promises: any[] = [];
         if (['r', 'rw', 'wr'].includes(params.permission)) {
-            poms.push(
+            promises.push(
                 value.createState({
                     type: 'Report',
                     timestamp,
@@ -241,7 +241,7 @@ export class Device extends ConnectionModel implements IDevice {
             );
         }
         if (['w', 'rw', 'wr'].includes(params.permission)) {
-            poms.push(
+            promises.push(
                 value.createState({
                     type: 'Control',
                     timestamp,
@@ -250,11 +250,11 @@ export class Device extends ConnectionModel implements IDevice {
             );
         }
         if (params.permission === 'r') {
-            poms.push(value.deleteState('Control'));
+            promises.push(value.deleteState('Control'));
         } else if (params.permission === 'w') {
-            poms.push(value.deleteState('Report'));
+            promises.push(value.deleteState('Report'));
         }
-        await Promise.all(poms);
+        await Promise.all(promises);
 
         await value.created();
 
@@ -298,10 +298,10 @@ export class Device extends ConnectionModel implements IDevice {
             template.initialState = name.initialState;
         }
 
-        return this._createValue(template);
+        return this.#createValue(template);
     }
 
-    private getValueBase(
+    #getValueBase(
         params: IValueNumber | IValueString | IValueBlob | IValueXml
     ): IValueBase {
         return {
@@ -318,9 +318,9 @@ export class Device extends ConnectionModel implements IDevice {
 
     public createNumberValue(params: IValueNumber): Promise<Value> {
         this.validate('createNumberValue', arguments);
-        const base = this.getValueBase(params);
+        const base = this.#getValueBase(params);
         base.delta = params.delta ?? '0';
-        return this._createValue({
+        return this.#createValue({
             ...base,
             number: {
                 min: params.min,
@@ -337,8 +337,8 @@ export class Device extends ConnectionModel implements IDevice {
 
     public createStringValue(params: IValueString): Promise<Value> {
         this.validate('createStringValue', arguments);
-        const base = this.getValueBase(params);
-        return this._createValue({
+        const base = this.#getValueBase(params);
+        return this.#createValue({
             ...base,
             string: {
                 max: params.max,
@@ -349,8 +349,8 @@ export class Device extends ConnectionModel implements IDevice {
 
     public createBlobValue(params: IValueBlob): Promise<Value> {
         this.validate('createBlobValue', arguments);
-        const base = this.getValueBase(params);
-        return this._createValue({
+        const base = this.#getValueBase(params);
+        return this.#createValue({
             ...base,
             blob: {
                 max: params.max,
@@ -361,8 +361,8 @@ export class Device extends ConnectionModel implements IDevice {
 
     public createXmlValue(params: IValueXml): Promise<Value> {
         this.validate('createXmlValue', arguments);
-        const base = this.getValueBase(params);
-        return this._createValue({
+        const base = this.#getValueBase(params);
+        return this.#createValue({
             ...base,
             xml: {
                 xsd: params.xsd,
@@ -403,7 +403,7 @@ export class Device extends ConnectionModel implements IDevice {
         usage = '',
         filterRequest?: Record<string, any>
     ) => {
-        Device.validate('find', [
+        Device.#validate('find', [
             params,
             quantity,
             readOnly,
@@ -434,13 +434,13 @@ export class Device extends ConnectionModel implements IDevice {
         );
 
         const devices = Device.fromArray(data);
-        const poms: any[] = [];
+        const promises: any[] = [];
 
         devices.forEach((dev, index) => {
             if (dev.loadAllChildren) {
-                poms.push(dev.loadAllChildren(null));
+                promises.push(dev.loadAllChildren(null));
             } else if (typeof dev === 'string') {
-                poms.push(
+                promises.push(
                     new Promise<void>((resolve) => {
                         const id = dev as unknown as string;
                         Device.fetchById(id).then((device) => {
@@ -451,7 +451,7 @@ export class Device extends ConnectionModel implements IDevice {
                 );
             }
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
 
         devices.forEach((device) => {
             if (device?.addChildrenToStore) {
@@ -467,7 +467,7 @@ export class Device extends ConnectionModel implements IDevice {
         readOnly = false,
         usage = ''
     ) {
-        Device.validate('findByName', [name, quantity, readOnly, usage]);
+        Device.#validate('findByName', [name, quantity, readOnly, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device with name ${name}`;
@@ -476,7 +476,7 @@ export class Device extends ConnectionModel implements IDevice {
     }
 
     public static findAllByName(name: string, readOnly = false, usage = '') {
-        Device.validate('findAllByName', [name, readOnly, usage]);
+        Device.#validate('findAllByName', [name, readOnly, usage]);
 
         return Device.findByName(name, 'all', readOnly, usage);
     }
@@ -487,7 +487,7 @@ export class Device extends ConnectionModel implements IDevice {
         readOnly = false,
         usage = ''
     ) {
-        Device.validate('findByProduct', [product, quantity, readOnly, usage]);
+        Device.#validate('findByProduct', [product, quantity, readOnly, usage]);
 
         if (usage === '') {
             usage = `Find ${quantity} device with product ${product}`;
@@ -500,13 +500,13 @@ export class Device extends ConnectionModel implements IDevice {
         readOnly = false,
         usage = ''
     ) {
-        Device.validate('findAllByProduct', [product, readOnly, usage]);
+        Device.#validate('findAllByProduct', [product, readOnly, usage]);
 
         return Device.findByProduct(product, 'all', readOnly, usage);
     }
 
     public static findById = async (id: string, readOnly = false) => {
-        Device.validate('findById', [id, readOnly]);
+        Device.#validate('findById', [id, readOnly]);
         const devices = await Device.find(
             { 'meta.id': id },
             1,
@@ -523,7 +523,7 @@ export class Device extends ConnectionModel implements IDevice {
         readOnly = false,
         usage = ''
     ) => {
-        Device.validate('findByFilter', [
+        Device.#validate('findByFilter', [
             filter,
             omit_filter,
             quantity,
@@ -546,7 +546,7 @@ export class Device extends ConnectionModel implements IDevice {
         readOnly = false,
         usage = ''
     ) => {
-        Device.validate('findAllByFilter', [
+        Device.#validate('findAllByFilter', [
             filter,
             omit_filter,
             readOnly,
@@ -556,7 +556,7 @@ export class Device extends ConnectionModel implements IDevice {
     };
 
     public static fetchById = async (id: string) => {
-        Device.validate('fetchById', [id]);
+        Device.#validate('fetchById', [id]);
         const data = await Model.fetch({
             endpoint: `${Device.endpoint}/${id}`,
             params: {
@@ -575,12 +575,12 @@ export class Device extends ConnectionModel implements IDevice {
         const url = Device.endpoint;
         const data = await Model.fetch({ endpoint: url, params });
         const devices = Device.fromArray(data);
-        const poms: any[] = [];
+        const promises: any[] = [];
         devices.forEach((dev, index) => {
             if (dev.loadAllChildren) {
-                poms.push(dev.loadAllChildren(null));
+                promises.push(dev.loadAllChildren(null));
             } else if (typeof dev === 'string') {
-                poms.push(
+                promises.push(
                     new Promise<void>((resolve) => {
                         const id = dev as unknown as string;
                         Device.fetchById(id).then((device) => {
@@ -591,7 +591,7 @@ export class Device extends ConnectionModel implements IDevice {
                 );
             }
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
 
         devices.forEach((device) => {
             if (device?.addChildrenToStore) {
@@ -605,7 +605,7 @@ export class Device extends ConnectionModel implements IDevice {
     public async setConnectionStatus(
         state: boolean | number
     ): Promise<boolean> {
-        Device.validate('setConnectionStatus', [state]);
+        Device.#validate('setConnectionStatus', [state]);
         let res = false;
         const value = this.findValueByType(
             ValueTemplate.CONNECTION_STATUS.type
@@ -626,7 +626,7 @@ export class Device extends ConnectionModel implements IDevice {
         return res;
     }
 
-    private async fetchMissingValues(offset: number): Promise<void> {
+    async #fetchMissingValues(offset: number): Promise<void> {
         const data = await Model.fetch({
             endpoint: `${this.url()}/${this.id()}/value`,
             params: {
@@ -635,7 +635,7 @@ export class Device extends ConnectionModel implements IDevice {
             },
         });
         const values = Value.fromArray(data);
-        const poms: any[] = [];
+        const promises: any[] = [];
 
         values.forEach((val: any, index: number) => {
             this.value[offset + index] = val;
@@ -643,20 +643,20 @@ export class Device extends ConnectionModel implements IDevice {
 
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'string') {
-                poms.push(this.fetchMissingValues(i));
+                promises.push(this.#fetchMissingValues(i));
                 break;
             }
         }
 
         values.forEach((val) => {
             if (typeof val === 'object') {
-                poms.push(val.loadAllChildren(null));
+                promises.push(val.loadAllChildren(null));
             }
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
     }
 
-    private static validate(name: string, params: any): void {
+    static #validate(name: string, params: any): void {
         Model.validateMethod('Device', name, params);
     }
 }

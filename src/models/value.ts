@@ -102,7 +102,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     }
 
     public static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
-        Value.validateStatic('getFilter', [filter, omit_filter]);
+        Value.#validateStatic('getFilter', [filter, omit_filter]);
         return convertFilterToJson(
             'value',
             Value.attributes,
@@ -115,7 +115,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         filter?: Filter,
         omit_filter?: Filter
     ): string {
-        Value.validateStatic('getFilterResult', [filter, omit_filter]);
+        Value.#validateStatic('getFilterResult', [filter, omit_filter]);
         const fields = [Model.getFilterResult()]
             .concat(Value.attributes)
             .join(' ');
@@ -165,10 +165,10 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     public async created(): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         await this.onChange((_val) => {
-            this.handlePeriodUpdate();
+            this.#handlePeriodUpdate();
         });
 
-        if (this.handlePeriodUpdate()) {
+        if (this.#handlePeriodUpdate()) {
             printDebug(`Starting period for ${this.name}`);
         }
     }
@@ -200,7 +200,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     }
 
     public static fetchById = async (id: string) => {
-        Value.validateStatic('fetchById', [id]);
+        Value.#validateStatic('fetchById', [id]);
         const data = await Model.fetch({
             endpoint: `${Value.endpoint}/${id}`,
             params: {
@@ -208,11 +208,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             },
         });
         const values = Value.fromArray(data);
-        const poms: any[] = [];
+        const promises: any[] = [];
         values.forEach((val) => {
-            poms.push(val.loadAllChildren(null));
+            promises.push(val.loadAllChildren(null));
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
         return values[0];
     };
 
@@ -222,12 +222,12 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
         const data = await Model.fetch({ endpoint: url, params });
         const values = Value.fromArray(data);
-        const poms: any[] = [];
+        const promises: any[] = [];
         values.forEach((val, index) => {
             if (val.loadAllChildren) {
-                poms.push(val.loadAllChildren(null));
+                promises.push(val.loadAllChildren(null));
             } else if (typeof val === 'string') {
-                poms.push(
+                promises.push(
                     new Promise<void>((resolve) => {
                         const id = val as unknown as string;
                         Value.fetchById(id).then((value) => {
@@ -238,7 +238,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 );
             }
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
 
         values.forEach((value) => {
             if (value?.addChildrenToStore) {
@@ -308,7 +308,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         }
     }
 
-    private findState(type: StateType): State | undefined {
+    #findState(type: StateType): State | undefined {
         let res: State | undefined = undefined;
         this.state.forEach((state) => {
             if (state.type === type) {
@@ -318,13 +318,13 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return res;
     }
 
-    private getTime(): string {
+    #getTime(): string {
         return new Date().toISOString();
     }
 
-    private timestampToString(timestamp: Timestamp): string {
+    #timestampToString(timestamp: Timestamp): string {
         if (!timestamp) {
-            return this.getTime();
+            return this.#getTime();
         } else if (typeof timestamp === 'string') {
             return timestamp;
         } else {
@@ -339,18 +339,18 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         }
     }
 
-    private async findStateAndUpdate(
+    async #findStateAndUpdate(
         type: StateType,
         data: ReportValueInput,
         timestamp: Timestamp
     ): Promise<boolean> {
-        const state = this.findState(type);
+        const state = this.#findState(type);
         if (!state) {
             return false;
         }
 
-        state.data = this.convertValueInput(data);
-        state.timestamp = this.timestampToString(timestamp);
+        state.data = this.#convertValueInput(data);
+        state.timestamp = this.#timestampToString(timestamp);
 
         if (type !== 'Report' || !this.sendReportWithJitter) {
             return await state.update();
@@ -381,13 +381,13 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return await p;
     }
 
-    private async findStateAndCallback(
+    async #findStateAndCallback(
         type: StateType,
         callback: ValueStreamCallback,
         callOnInit?: boolean
     ): Promise<boolean> {
         let res = false;
-        const state = this.findState(type);
+        const state = this.#findState(type);
         if (state) {
             if (callOnInit === true) {
                 callback(this, state.data, state.timestamp);
@@ -407,9 +407,9 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return res;
     }
 
-    private async findStateAndClearCallback(type: StateType): Promise<boolean> {
+    async #findStateAndClearCallback(type: StateType): Promise<boolean> {
         this.stateCallbacks[type] = [];
-        const state = this.findState(type);
+        const state = this.#findState(type);
         if (state) {
             return state.clearAllCallbacks();
         }
@@ -443,7 +443,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         }
 
         let create = false;
-        let state = this.findState(params.type);
+        let state = this.#findState(params.type);
         if (!state) {
             state = new State(params.type);
             create = true;
@@ -479,7 +479,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     public async deleteState(type: StateType): Promise<void> {
         this.validate('deleteState', [type]);
 
-        const state = this.findState(type);
+        const state = this.#findState(type);
         if (!state) {
             return;
         }
@@ -505,16 +505,16 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return res;
     }
 
-    private findStateAndData(type: StateType): string | undefined {
-        const state = this.findState(type);
+    #findStateAndData(type: StateType): string | undefined {
+        const state = this.#findState(type);
         if (state) {
             return state.data;
         }
         return undefined;
     }
 
-    private findStateAndTimestamp(type: StateType): string | undefined {
-        const state = this.findState(type);
+    #findStateAndTimestamp(type: StateType): string | undefined {
+        const state = this.#findState(type);
         if (state) {
             return state.timestamp;
         }
@@ -522,22 +522,22 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     }
 
     public getReportData(): string | undefined {
-        return this.findStateAndData('Report');
+        return this.#findStateAndData('Report');
     }
 
     public getControlData(): string | undefined {
-        return this.findStateAndData('Control');
+        return this.#findStateAndData('Control');
     }
 
     public getControlTimestamp(): string | undefined {
-        return this.findStateAndTimestamp('Control');
+        return this.#findStateAndTimestamp('Control');
     }
 
     public getReportTimestamp(): string | undefined {
-        return this.findStateAndTimestamp('Report');
+        return this.#findStateAndTimestamp('Report');
     }
 
-    private convertValueInput(data: ReportValueInput): string {
+    #convertValueInput(data: ReportValueInput): string {
         switch (typeof data) {
             case 'boolean':
                 if (this.number) {
@@ -564,10 +564,10 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             data[0].data !== undefined &&
             data[0].timestamp !== undefined
         ) {
-            return this._sendLogReport(data);
+            return this.#sendLogReport(data);
         }
 
-        return this.sendReport(data, timestamp, false);
+        return this.#sendReport(data, timestamp, false);
     }
 
     public forceReport(
@@ -576,16 +576,16 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     ): Promise<boolean> {
         this.validate('forceReport', arguments);
 
-        return this.sendReport(data, timestamp, true);
+        return this.#sendReport(data, timestamp, true);
     }
 
-    private async sendReport(
+    async #sendReport(
         data: ReportValueInput,
         timestamp: Timestamp = undefined,
         force: boolean
     ): Promise<boolean> {
-        const sendData = this.convertValueInput(data);
-        const oldState = this.findState('Report');
+        const sendData = this.#convertValueInput(data);
+        const oldState = this.#findState('Report');
         if (!oldState) {
             return false;
         }
@@ -623,11 +623,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         }
 
         this.reportIsForced = false;
-        return this.findStateAndUpdate('Report', sendData, timestamp);
+        return this.#findStateAndUpdate('Report', sendData, timestamp);
     }
 
     public async sendLogReports(data: LogValues) {
-        const state = this.findState('Report');
+        const state = this.#findState('Report');
         if (!state) {
             return false;
         }
@@ -641,7 +641,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         do {
             const tmpData = data.slice(offset, offset + 50000);
             const csvStr = tmpData.reduce((p, c) => {
-                return `${p}${id},${c.data},${this.timestampToString(
+                return `${p}${id},${c.data},${this.#timestampToString(
                     c.timestamp
                 )}\n`;
             }, 'state_id,data,timestamp\n');
@@ -655,8 +655,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return true;
     }
 
-    private async _sendLogReport(data: LogValues) {
-        const state = this.findState('Report');
+    async #sendLogReport(data: LogValues) {
+        const state = this.#findState('Report');
         if (!state) {
             return false;
         }
@@ -676,7 +676,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         timestamp: Timestamp = undefined
     ): Promise<boolean> {
         this.validate('control', arguments);
-        return this.findStateAndUpdate('Control', data, timestamp);
+        return this.#findStateAndUpdate('Control', data, timestamp);
     }
 
     public controlWithAck(
@@ -686,7 +686,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         this.validate('controlWithAck', arguments);
 
         const promise = new Promise<boolean>((resolve) => {
-            this.findStateAndUpdate('Control', data, timestamp).then((res) => {
+            this.#findStateAndUpdate('Control', data, timestamp).then((res) => {
                 if (!res) {
                     resolve(false);
                 }
@@ -706,7 +706,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
     public onControl(callback: ValueStreamCallback): Promise<boolean> {
         this.validate('onControl', arguments);
-        return this.findStateAndCallback('Control', callback);
+        return this.#findStateAndCallback('Control', callback);
     }
 
     public onReport(
@@ -714,7 +714,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         callOnInit?: boolean
     ): Promise<boolean> {
         this.validate('onReport', arguments);
-        return this.findStateAndCallback('Report', callback, callOnInit);
+        return this.#findStateAndCallback('Report', callback, callOnInit);
     }
 
     public async onRefresh(callback: RefreshStreamCallback): Promise<boolean> {
@@ -738,11 +738,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     }
 
     public cancelOnReport(): Promise<boolean> {
-        return this.findStateAndClearCallback('Report');
+        return this.#findStateAndClearCallback('Report');
     }
 
     public cancelOnControl(): Promise<boolean> {
-        return this.findStateAndClearCallback('Control');
+        return this.#findStateAndClearCallback('Control');
     }
 
     public cancelOnRefresh(): Promise<boolean> {
@@ -750,10 +750,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return this.clearAllCallbacks();
     }
 
-    private async changeAttribute(
-        key: string,
-        value: string | number
-    ): Promise<void> {
+    async #changeAttribute(key: string, value: string | number): Promise<void> {
         try {
             const data: Record<string, string | number> = {};
             data[key] = value;
@@ -764,22 +761,22 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     }
 
     public refresh(): Promise<void> {
-        return this.changeAttribute('status', 'update');
+        return this.#changeAttribute('status', 'update');
     }
 
     public setPeriod(period: number): Promise<void> {
-        return this.changeAttribute('period', period.toString());
+        return this.#changeAttribute('period', period.toString());
     }
 
     public setDelta(delta: number): Promise<void> {
-        return this.changeAttribute('delta', delta.toString());
+        return this.#changeAttribute('delta', delta.toString());
     }
 
-    private async findStateAndLog(
+    async #findStateAndLog(
         type: StateType,
         request: ILogRequest
     ): Promise<ILogResponse> {
-        const state = this.findState(type);
+        const state = this.#findState(type);
         if (state) {
             const params = request;
             if (typeof params.start === 'object') {
@@ -821,21 +818,21 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     public getReportLog(request: ILogRequest): Promise<ILogResponse> {
         this.validate('getReportLog', arguments);
 
-        return this.findStateAndLog('Report', request);
+        return this.#findStateAndLog('Report', request);
     }
 
     public getControlLog(request: ILogRequest): Promise<ILogResponse> {
         this.validate('getControlLog', arguments);
 
-        return this.findStateAndLog('Control', request);
+        return this.#findStateAndLog('Control', request);
     }
 
-    private async runAnalytics(
+    async #runAnalytics(
         model: any,
         start: Timestamp,
         end: Timestamp
     ): Promise<any> {
-        const report = this.findState('Report');
+        const report = this.#findState('Report');
         if (!report) {
             printWarning('Analytics is only available for report values');
             return null;
@@ -846,17 +843,17 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
     public analyzeEnergy(start: Timestamp, end: Timestamp): Promise<any> {
         this.validate('analyzeEnergy', arguments);
-        return this.runAnalytics(EnergyData, start, end);
+        return this.#runAnalytics(EnergyData, start, end);
     }
 
     public summarizeEnergy(start: Timestamp, end: Timestamp): Promise<any> {
         this.validate('summarizeEnergy', arguments);
-        return this.runAnalytics(EnergySummary, start, end);
+        return this.#runAnalytics(EnergySummary, start, end);
     }
 
     public energyPieChart(start: Timestamp, end: Timestamp): Promise<any> {
         this.validate('energyPieChart', arguments);
-        return this.runAnalytics(EnergyPieChart, start, end);
+        return this.#runAnalytics(EnergyPieChart, start, end);
     }
 
     static find = async (
@@ -866,7 +863,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         usage = '',
         filterRequest?: Record<string, any>
     ) => {
-        Value.validateStatic('find', [
+        Value.#validateStatic('find', [
             params,
             quantity,
             readOnly,
@@ -896,13 +893,13 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         );
 
         const values = Value.fromArray(data);
-        const poms: any[] = [];
+        const promises: any[] = [];
 
         values.forEach((val, index) => {
             if (val.loadAllChildren) {
-                poms.push(val.loadAllChildren(null));
+                promises.push(val.loadAllChildren(null));
             } else if (typeof val === 'string') {
-                poms.push(
+                promises.push(
                     new Promise<void>((resolve) => {
                         const id = val as unknown as string;
                         Value.fetchById(id).then((value) => {
@@ -913,7 +910,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 );
             }
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
 
         values.forEach((value) => {
             if (value?.addChildrenToStore) {
@@ -938,7 +935,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         readOnly = false,
         usage = ''
     ) => {
-        Value.validateStatic('findByName', [name, quantity, readOnly, usage]);
+        Value.#validateStatic('findByName', [name, quantity, readOnly, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with name ${name}`;
         }
@@ -951,7 +948,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         readOnly = false,
         usage = ''
     ) => {
-        Value.validateStatic('findByType', [type, quantity, readOnly, usage]);
+        Value.#validateStatic('findByType', [type, quantity, readOnly, usage]);
         if (usage === '') {
             usage = `Find ${quantity} value with type ${type}`;
         }
@@ -959,17 +956,17 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     };
 
     static findAllByName = (name: string, readOnly = false, usage = '') => {
-        Value.validateStatic('findAllByName', [name, readOnly, usage]);
+        Value.#validateStatic('findAllByName', [name, readOnly, usage]);
         return Value.findByName(name, 'all', readOnly, usage);
     };
 
     static findAllByType = (type: string, readOnly = false, usage = '') => {
-        Value.validateStatic('findAllByType', [type, readOnly, usage]);
+        Value.#validateStatic('findAllByType', [type, readOnly, usage]);
         return Value.findByType(type, 'all', readOnly, usage);
     };
 
     static findById = async (id: string, readOnly = false) => {
-        Value.validateStatic('findById', [id, readOnly]);
+        Value.#validateStatic('findById', [id, readOnly]);
         const values = await Value.find(
             { 'meta.id': id },
             1,
@@ -986,7 +983,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         readOnly = false,
         usage = ''
     ) => {
-        Value.validateStatic('findByFilter', [
+        Value.#validateStatic('findByFilter', [
             filter,
             omit_filter,
             quantity,
@@ -1009,7 +1006,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         readOnly = false,
         usage = ''
     ) => {
-        Value.validateStatic('findAllByFilter', [
+        Value.#validateStatic('findAllByFilter', [
             filter,
             omit_filter,
             readOnly,
@@ -1018,24 +1015,24 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return Value.findByFilter(filter, omit_filter, 'all', readOnly, usage);
     };
 
-    private static validateStatic(name: string, params: any): void {
+    static #validateStatic(name: string, params: any): void {
         Model.validateMethod('Value', name, params, true);
     }
 
-    private static validate(name: string, params: any, isStatic = false): void {
+    static #validate(name: string, params: any, isStatic = false): void {
         Model.validateMethod('Value', name, params, isStatic);
     }
 
-    private handlePeriodUpdate(): boolean {
+    #handlePeriodUpdate(): boolean {
         if (this.period && Number(this.period) !== this.last_period) {
             this.last_period = Number(this.period);
-            this.startPeriodHandler();
+            this.#startPeriodHandler();
             return true;
         }
         return false;
     }
 
-    private getPeriodTimeout(): number {
+    #getPeriodTimeout(): number {
         let timeout = 0;
         timeout = this.last_period;
         if (timeout && isPositiveInteger(this.last_period)) {
@@ -1045,19 +1042,19 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         }
     }
 
-    private startPeriodHandler(): void {
+    #startPeriodHandler(): void {
         clearTimeout(this.periodTimer);
 
-        if (this.getPeriodTimeout() === 0) {
+        if (this.#getPeriodTimeout() === 0) {
             return;
         }
 
         this.periodTimer = setTimeout(() => {
-            this.triggerPeriodUpdate();
-        }, this.getPeriodTimeout());
+            this.#triggerPeriodUpdate();
+        }, this.#getPeriodTimeout());
     }
 
-    private triggerPeriodUpdate() {
+    #triggerPeriodUpdate() {
         this.refreshCallbacks.forEach((cb) => {
             this.sendReportWithJitter = true;
             this.reportIsForced = true;
@@ -1065,8 +1062,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         });
 
         this.periodTimer = setTimeout(() => {
-            this.triggerPeriodUpdate();
-        }, this.getPeriodTimeout());
+            this.#triggerPeriodUpdate();
+        }, this.#getPeriodTimeout());
     }
 
     public cancelPeriod(): void {
@@ -1076,11 +1073,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
     public async clearAllCallbacks(): Promise<boolean> {
         const res = await super.clearAllCallbacks();
-        const poms: any[] = [];
+        const promises: any[] = [];
         this.state.forEach((sta) => {
-            poms.push(sta.clearAllCallbacks());
+            promises.push(sta.clearAllCallbacks());
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
         return res;
     }
 }

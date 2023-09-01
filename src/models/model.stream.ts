@@ -82,7 +82,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         return res;
     }
 
-    private async runQueue(
+    async #runQueue(
         type: string,
         handlers: StreamCallback[],
         eventHandler?: EventHandler
@@ -105,10 +105,10 @@ export class StreamModel extends PermissionModel implements IStreamModel {
 
         this.eventQueue[type].shift();
 
-        this.runQueue(type, handlers, eventHandler);
+        this.#runQueue(type, handlers, eventHandler);
     }
 
-    private enqueueEvent(
+    #enqueueEvent(
         type: string,
         event: IStreamEvent,
         eventHandler?: EventHandler
@@ -116,24 +116,24 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         this.eventQueue[type].push(event);
 
         if (this.eventQueue[type].length === 1) {
-            this.runQueue(type, this.streamCallback[type], eventHandler);
+            this.#runQueue(type, this.streamCallback[type], eventHandler);
         }
     }
 
     async handleStream(event: IStreamEvent): Promise<void> {
         switch (event.event) {
             case 'create':
-                this.enqueueEvent('create', event, (event: IStreamEvent) => {
+                this.#enqueueEvent('create', event, (event: IStreamEvent) => {
                     this.parseChildren(event.data);
                 });
                 break;
             case 'update':
-                this.enqueueEvent('change', event, (event: IStreamEvent) => {
+                this.#enqueueEvent('change', event, (event: IStreamEvent) => {
                     return this.parse(event.data);
                 });
                 break;
             case 'delete':
-                this.enqueueEvent('delete', event);
+                this.#enqueueEvent('delete', event);
                 break;
             /* istanbul ignore next */
             default:
