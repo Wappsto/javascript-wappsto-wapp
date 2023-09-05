@@ -91,9 +91,9 @@
         "ws": "^8.13.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.22.10",
+        "@babel/core": "^7.22.15",
         "@babel/plugin-syntax-flow": "^7.22.5",
-        "@babel/plugin-transform-react-jsx": "^7.22.5",
+        "@babel/plugin-transform-react-jsx": "^7.22.15",
         "@size-limit/preset-small-lib": "^8.2.6",
         "@tsconfig/recommended": "^1.0.2",
         "@types/lodash.isequal": "^4.5.6",
