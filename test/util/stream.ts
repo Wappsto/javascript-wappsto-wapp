@@ -13,7 +13,7 @@ export function after() {
     openStream.close();
     openStream.reset();
     streamHelperReset();
-    server.close();
+    server?.close();
     WS.clean();
 }
 

@@ -1,6 +1,5 @@
 {
   "extends": "@tsconfig/recommended/tsconfig.json",
-  "include": ["src", "types"],
   "compilerOptions": {
       "module": "esnext",
       "experimentalDecorators": true,
@@ -11,5 +10,7 @@
     "readme": "./README.md",
     "exclude": ["**/{types}/*.ts"],
     "out": "docs"
-  }
+  },
+  "include": ["src", "types"],
+  "exclude": ["node_modules/**"]
 }

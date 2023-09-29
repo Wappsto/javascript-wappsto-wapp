@@ -21,19 +21,20 @@ const response = {
     delta: '0',
 };
 
-const response2Values = [{
-    meta: {
-        type: 'value',
-        version: '2.1',
-        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+const response2Values = [
+    {
+        meta: {
+            type: 'value',
+            version: '2.1',
+            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+        },
+        name: 'test',
+        permission: '',
+        type: '',
+        period: '0',
+        delta: '0',
     },
-    name: 'test',
-    permission: '',
-    type: '',
-    period: '0',
-    delta: '0',
-},
-'bd1f46f9-f41a-4f59-bdbd-6529d58b91c5'
+    'bd1f46f9-f41a-4f59-bdbd-6529d58b91c5',
 ];
 
 describe('value', () => {
@@ -285,7 +286,7 @@ describe('value', () => {
         value.state.push(state);
         await value.report(10);
         await value.report(true);
-        await value.report({test: 'test'});
+        await value.report({ test: 'test' });
         value.number = {
             min: 0,
             max: 1,
@@ -719,7 +720,6 @@ describe('value', () => {
         expect(v.state[0].toJSON).toBeDefined();
     });
 
-
     it('can add an event', async () => {
         mockedAxios.post.mockResolvedValueOnce({});
         const value = new Value('test');
@@ -1118,7 +1118,6 @@ describe('value', () => {
         expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
     });
 
-
     it('can not override data by sending fast', async () => {
         mockedAxios.patch
             .mockResolvedValueOnce({ data: [] })
@@ -1317,29 +1316,33 @@ describe('value', () => {
         expect(values.length).toEqual(32);
     });
 
-
     it('can fetch a value by ID', async () => {
-        mockedAxios.get
-            .mockResolvedValueOnce({ data: [{
-                meta: {
-                    id: 'a57b5e03-150e-4ca4-a249-7a311f7a28bc',
+        mockedAxios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    meta: {
+                        id: 'a57b5e03-150e-4ca4-a249-7a311f7a28bc',
+                    },
+                    name: 'Value 1',
                 },
-                name: 'Value 1',
-            }] })
-        const found = await Value.fetchById('a57b5e03-150e-4ca4-a249-7a311f7a28bc');
+            ],
+        });
+        const found = await Value.fetchById(
+            'a57b5e03-150e-4ca4-a249-7a311f7a28bc'
+        );
 
         expect(found.meta.id).toEqual('a57b5e03-150e-4ca4-a249-7a311f7a28bc');
         expect(found.name).toEqual('Value 1');
-        expect(mockedAxios.get).toBeCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
             '/2.1/value/a57b5e03-150e-4ca4-a249-7a311f7a28bc',
             {
-                "params": {
-                    "expand": 1,
-                    "go_internal": true,
+                params: {
+                    expand: 1,
+                    go_internal: true,
                 },
-            },
+            }
         );
     });
 

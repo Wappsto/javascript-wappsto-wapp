@@ -430,9 +430,9 @@ describe('period and delta on value', () => {
             unit: '',
         });
 
-        value.onRefresh((val, type) => {
-            value.report(10);
-            value.report(100);
+        value.onRefresh((val) => {
+            val.report(10);
+            val.report(100);
         });
 
         await server.connected;
@@ -547,9 +547,9 @@ describe('period and delta on value', () => {
         const timestamp_jitter = '2022-02-02T02:02:02.000Z';
         const timestamp = '2022-02-02T03:03:03Z';
 
-        value.onRefresh((val, type) => {
-            value.report(10, Date.parse(timestamp_jitter));
-            value.report(100, timestamp);
+        value.onRefresh((val) => {
+            val.report(10, Date.parse(timestamp_jitter));
+            val.report(100, timestamp);
         });
 
         await server.connected;
@@ -677,7 +677,6 @@ describe('period and delta on value', () => {
             {}
         );
     });
-
 
     it('can send old data without delta', async () => {
         mockedAxios.patch

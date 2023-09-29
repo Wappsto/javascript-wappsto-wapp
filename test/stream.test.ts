@@ -127,10 +127,10 @@ describe('stream', () => {
 
         const p1 = value.onControl(fun);
         const p2 = value.onControl(fun);
-        const p3 = value.onControl((v, s, t) => {
+        const p3 = value.onControl((v, s) => {
             arrData.push(s);
         });
-        const p4 = value.onControl((v, s, t) => {
+        const p4 = value.onControl((v, s) => {
             arrData.push(s);
         });
         const p5 = value.onReport(fun);
@@ -430,8 +430,8 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(fun1).toBeCalledTimes(2);
-        expect(fun2).toBeCalledTimes(2);
+        expect(fun1).toHaveBeenCalledTimes(2);
+        expect(fun2).toHaveBeenCalledTimes(2);
 
         expect(fun1).toHaveBeenCalledWith(value, 'user');
 
@@ -464,8 +464,8 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(fun1).toBeCalledTimes(2);
-        expect(fun2).toBeCalledTimes(2);
+        expect(fun1).toHaveBeenCalledTimes(2);
+        expect(fun2).toHaveBeenCalledTimes(2);
     });
 
     it('can handle a stream error', async () => {
@@ -602,8 +602,8 @@ describe('stream', () => {
         state.meta.id = 'cda4d978-39e9-47bf-8497-9813b0f94973';
         value.state.push(state);
 
-        const controlPromise = value.onControl((v, s, t) => {
-            value.control(10);
+        const controlPromise = value.onControl((v) => {
+            v.control(10);
         });
 
         await server.connected;

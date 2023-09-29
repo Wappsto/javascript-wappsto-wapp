@@ -1492,7 +1492,10 @@ describe('Ontology', () => {
                         data: { test: 'data' },
                         relationship: 'state',
                         to: {
-                            state: ['0cce27ee-46ad-4296-b61e-7f7765e3edf3','7c7171b7-db9c-4418-8e29-2e76c42597b0'],
+                            state: [
+                                '0cce27ee-46ad-4296-b61e-7f7765e3edf3',
+                                '7c7171b7-db9c-4418-8e29-2e76c42597b0',
+                            ],
                         },
                     },
                     {
@@ -1545,7 +1548,9 @@ describe('Ontology', () => {
 
         const edges = await network.getAllEdges();
 
-        expect(edges[0].failedModels['state'][0]).toEqual('0cce27ee-46ad-4296-b61e-7f7765e3edf3');
+        expect(edges[0].failedModels['state'][0]).toEqual(
+            '0cce27ee-46ad-4296-b61e-7f7765e3edf3'
+        );
         expect(edges[1].failedModels).toEqual({});
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
@@ -1590,126 +1595,4 @@ describe('Ontology', () => {
             }
         );
     });
-
-    /*
-    it('can load the EMS network', async () => {
-        mockedAxios.get.mockResolvedValueOnce(ems_reply);
-
-        await Network.findAllByName('Shelly');
-
-        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
-
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
-            params: {
-                expand: 3,
-                go_internal: true,
-                identifier: 'network-all-Find all network with name Shelly',
-                message: 'Find all network with name Shelly',
-                method: ['retrieve', 'update'],
-                quantity: 'all',
-                this_name: '=Shelly',
-            },
-        });
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.1/network/c0b441a4-6800-46cc-8904-2ce145f4af20/device',
-            {
-                params: {
-                    expand: 2,
-                    go_internal: true,
-                    offset: 7,
-                },
-            }
-        );
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/2.1/network/6d300174-4d86-4abb-b4c6-f231eca2f3ce',
-            {
-                params: {
-                    expand: 3,
-                    go_internal: true,
-                },
-            }
-        );
-
-        expect(mockedAxios.get).toHaveBeenLastCalledWith(
-            '/2.1/device/4fb107fc-facb-4bda-8950-acf6e07901f2/value',
-            {
-                params: {
-                    expand: 1,
-                    go_internal: true,
-                    offset: 2,
-                },
-            }
-        );
-    });
-*/
-    /*
-    it('can load a full Shelly network', async () => {
-        mockedAxios.get
-            .mockResolvedValueOnce(responses.fullShelly1)
-            .mockResolvedValueOnce(responses.fullShelly2)
-            .mockResolvedValueOnce(responses.fullShelly3)
-            .mockResolvedValueOnce(responses.fullShelly4)
-            .mockResolvedValueOnce(responses.fullShelly5)
-            .mockResolvedValueOnce(responses.fullShelly6)
-            .mockResolvedValueOnce(responses.fullShelly7)
-            .mockResolvedValueOnce(responses.fullShelly8)
-            .mockResolvedValueOnce(responses.fullShelly9)
-            .mockResolvedValueOnce(responses.fullShelly10)
-            .mockResolvedValueOnce(responses.fullShelly11)
-            .mockResolvedValueOnce(responses.fullShelly12)
-            .mockResolvedValueOnce(responses.fullShelly13)
-            .mockResolvedValueOnce(responses.fullShelly14);
-
-
-        const networks = Network.findAllByName('Shelly');
-
-        await new Promise((r) => setTimeout(r, 1000));
-*/
-    /*
-        networks.forEach((network) => {
-            expect(typeof(network)).toEqual('object');
-            network.device.forEach((device) => {
-                expect(typeof(device)).toEqual('object');
-                device.value.forEach((value) => {
-                    expect(typeof(value)).toEqual('object');
-                    value.state.forEach((state) => {
-                        expect(typeof(state)).toEqual('object');
-                    });
-                });
-            });
-        });
-*/
-    //expect(mockedAxios.get).toHaveBeenCalledTimes(8);
-    /*
-        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
-            params: {
-                expand: 3,
-                go_internal: true,
-                identifier: 'network-all-Find all network with name Shelly',
-                message: 'Find all network with name Shelly',
-                method: ['retrieve', 'update'],
-                quantity: 'all',
-                this_name: '=Shelly',
-            },
-        });
-        expect(mockedAxios.get).toHaveBeenNthCalledWith(2,
-            '/2.1/network/e6d15b11-1141-4ff9-9374-1348581ae3d7',
-            {
-                params: {
-                    expand: 3,
-                    go_internal: true,
-                },
-            }
-        );
-        expect(mockedAxios.get).toHaveBeenNthCalledWith(3,
-            '/2.1/network/e6d15b11-1141-4ff9-9374-1348581ae3d7/device',
-            {
-                params: {
-                    expand: 2,
-                    go_internal: true,
-                    offset: 5,
-                },
-            }
-        );
-    });*/
 });

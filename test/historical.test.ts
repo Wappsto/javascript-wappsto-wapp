@@ -1,27 +1,19 @@
-import WS from 'jest-websocket-mock';
 import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Value, State } from '../src/index';
-import { before, after, newWServer } from './util/stream';
+import { before, after } from './util/stream';
 
 describe('historical', () => {
-    let server: WS;
-
     beforeAll(() => {
         before();
-    });
-
-    beforeEach(() => {
-        server = newWServer(true);
     });
 
     afterEach(() => {
         after();
     });
-
 
     it('can get log data', async () => {
         mockedAxios.get
@@ -33,10 +25,12 @@ describe('historical', () => {
                             type: 'log',
                             version: '2.1',
                         },
-                        data: [{
-                            time: '2022-01-01T01:02:03Z',
-                            data: '1'
-                        }],
+                        data: [
+                            {
+                                time: '2022-01-01T01:02:03Z',
+                                data: '1',
+                            },
+                        ],
                         more: false,
                         type: 'state',
                     },
@@ -50,10 +44,12 @@ describe('historical', () => {
                             type: 'log',
                             version: '2.1',
                         },
-                        data: [{
-                            time: '2022-01-01T01:02:03Z',
-                            max: '2'
-                        }],
+                        data: [
+                            {
+                                time: '2022-01-01T01:02:03Z',
+                                max: '2',
+                            },
+                        ],
                         more: false,
                         type: 'state',
                     },
@@ -91,7 +87,7 @@ describe('historical', () => {
         let failLog = false;
         try {
             await value.getControlLog({ end: '2022-02-02T02:02:02Z' });
-        } catch(e) {
+        } catch (e) {
             failLog = true;
         }
 
@@ -145,7 +141,6 @@ describe('historical', () => {
 
         expect(logs.data.length).toBe(0);
     });
-
 
     it('can send log values to log_zip', async () => {
         mockedAxios.patch

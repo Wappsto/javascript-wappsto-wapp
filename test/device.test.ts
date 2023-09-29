@@ -414,13 +414,7 @@ describe('device', () => {
 
         val.parent = device;
         device.value = [val];
-        const value = await device.createValue(
-            'name',
-            'r',
-            ValueTemplate.NUMBER,
-            '0',
-            2
-        );
+        await device.createValue('name', 'r', ValueTemplate.NUMBER, '0', 2);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);

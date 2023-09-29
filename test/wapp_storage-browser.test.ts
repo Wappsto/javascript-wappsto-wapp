@@ -35,7 +35,7 @@ describe('wapp storage', () => {
         await ws.setSecret('secret_key', 'secret_value');
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
 
-        let value = ws.getSecret('secret_key');
+        const value = ws.getSecret('secret_key');
         expect(value).toEqual(undefined);
 
         await ws.removeSecret('secret_key');

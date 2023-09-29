@@ -101,7 +101,7 @@ describe('ExtSync stream', () => {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        fromForeground((msg) => {});
+        fromForeground(() => {});
 
         await expect(server).toReceiveMessage(
             expect.objectContaining({
@@ -181,15 +181,21 @@ describe('ExtSync stream', () => {
                 body: 'test',
                 method: 'post',
                 headers: {
-                    'accept': 'none'
-                }
+                    accept: 'none',
+                },
             },
         });
 
         await new Promise((r) => setTimeout(r, 1));
-        expect(fun).toHaveBeenCalledWith('test', 'post', '/', {id: 'test'}, {
-            'accept': 'none'
-        });
+        expect(fun).toHaveBeenCalledWith(
+            'test',
+            'post',
+            '/',
+            { id: 'test' },
+            {
+                accept: 'none',
+            }
+        );
         expect(fun).toHaveBeenCalledTimes(1);
         await new Promise((r) => setTimeout(r, 1));
 
@@ -443,9 +449,15 @@ describe('ExtSync stream', () => {
         expect(responseForeground).toBe(res);
         expect(funWeb).toHaveBeenCalledTimes(1);
         expect(funFore).toHaveBeenCalledTimes(1);
-        expect(funWeb).toHaveBeenCalledWith('test', 'get', '/test', {}, {
-            'Content-Type': 'application/json',
-        });
+        expect(funWeb).toHaveBeenCalledWith(
+            'test',
+            'get',
+            '/test',
+            {},
+            {
+                'Content-Type': 'application/json',
+            }
+        );
         expect(funFore).toHaveBeenCalledWith({ test: 'foreground' });
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
             message: {
@@ -865,7 +877,7 @@ describe('ExtSync stream', () => {
             let res;
             if (event.test === 'correct') {
                 await new Promise((r) => setTimeout(r, 10));
-                res = { status: "ok" };
+                res = { status: 'ok' };
             }
             result.push(event.test);
             return res;
@@ -910,7 +922,7 @@ describe('ExtSync stream', () => {
             1,
             '/2.1/extsync/response/bbe306a7-7216-4d7d-8be1-08d94cd2142d',
             {
-                body: { status: "ok" },
+                body: { status: 'ok' },
                 code: 200,
             }
         );
@@ -926,20 +938,17 @@ describe('ExtSync stream', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
     });
 
-
     it('supports headers in the response', async () => {
-        mockedAxios.post
-            .mockResolvedValueOnce({ data: false });
-        mockedAxios.patch
-            .mockResolvedValueOnce({ data: false });
+        mockedAxios.post.mockResolvedValueOnce({ data: false });
+        mockedAxios.patch.mockResolvedValueOnce({ data: false });
 
-        fromForeground(async (event) => {
+        fromForeground(async () => {
             return {
                 code: 300,
-                body: "<html>Test</html>",
+                body: '<html>Test</html>',
                 headers: {
                     'Content-Type': 'text/html',
-                }
+                },
             };
         });
 
@@ -966,11 +975,11 @@ describe('ExtSync stream', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/extsync/response/bbe306a7-7216-4d7d-8be1-08d94cd2142d',
             {
-                body: "<html>Test</html>",
+                body: '<html>Test</html>',
                 code: 300,
                 headers: {
                     'Content-Type': 'text/html',
-                }
+                },
             }
         );
 
