@@ -556,6 +556,24 @@ export interface IWappStorageFunc {
     onChange(cb: StorageChangeHandler): void;
 }
 
+export interface WappStorageType {
+    name: string;
+    id: string;
+    set(name: string | Record<string, any>, item?: any): Promise<boolean>;
+    setSecret(name: string | Record<string, any>, item?: any): Promise<boolean>;
+    get(name: string | string[]): any;
+    getSecret(name: string | string[]): any;
+    keys(): Array<string>;
+    values(): Array<any>;
+    entries(): Array<Array<any>>;
+    remove(name: string | string[]): Promise<boolean>;
+    removeSecret(name: string | string[]): Promise<boolean>;
+    update(): Promise<boolean>;
+    onChange(cb: StorageChangeHandler): Promise<boolean>;
+    reload(): Promise<boolean>;
+    reset(): Promise<void>;
+}
+
 export type StorageChangeHandler = () => void | Promise<void>;
 export type ServiceHandler = (
     event: any

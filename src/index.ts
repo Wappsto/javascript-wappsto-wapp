@@ -9,7 +9,7 @@ export { config } from './util/config';
 export { ValueTemplate } from './util/value_template';
 export { startLogging, stopLogging } from './console';
 export * from './models';
-export { wappStorage, WappStorageType } from './wapp_storage';
+export { wappStorage } from './wapp_storage';
 export { default as request } from './util/http_wrapper';
 export { extSyncToken, session } from './session';
 export {

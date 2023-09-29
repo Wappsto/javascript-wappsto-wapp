@@ -750,6 +750,41 @@ export const IWappStorageFunc = t.iface([], {
     onChange: t.func('void', t.param('cb', 'StorageChangeHandler')),
 });
 
+export const WappStorageType = t.iface([], {
+    name: 'string',
+    id: 'string',
+    set: t.func(
+        'boolean',
+        t.param('name', t.union('string', 'any')),
+        t.param('item', 'any', true)
+    ),
+    setSecret: t.func(
+        'boolean',
+        t.param('name', t.union('string', 'any')),
+        t.param('item', 'any', true)
+    ),
+    get: t.func('any', t.param('name', t.union('string', t.array('string')))),
+    getSecret: t.func(
+        'any',
+        t.param('name', t.union('string', t.array('string')))
+    ),
+    keys: t.func(t.array('string')),
+    values: t.func(t.array('any')),
+    entries: t.func(t.array(t.array('any'))),
+    remove: t.func(
+        'boolean',
+        t.param('name', t.union('string', t.array('string')))
+    ),
+    removeSecret: t.func(
+        'boolean',
+        t.param('name', t.union('string', t.array('string')))
+    ),
+    update: t.func('boolean'),
+    onChange: t.func('boolean', t.param('cb', 'StorageChangeHandler')),
+    reload: t.func('boolean'),
+    reset: t.func('void'),
+});
+
 export const StorageChangeHandler = t.func(t.union('void', 'void'));
 
 export const ServiceHandler = t.func(
@@ -1006,6 +1041,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     OAuthRequestHandler,
     IOAuthFunc,
     IWappStorageFunc,
+    WappStorageType,
     StorageChangeHandler,
     ServiceHandler,
     RequestHandler,

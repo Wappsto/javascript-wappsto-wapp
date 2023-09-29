@@ -1,6 +1,6 @@
 import { Model } from './models/model';
 import { Data } from './models/data';
-import { StorageChangeHandler } from './util/interfaces';
+import { StorageChangeHandler, WappStorageType } from './util/interfaces';
 import { isBrowser } from './util/helpers';
 import { printError } from './util/debug';
 
@@ -18,24 +18,6 @@ export async function wappStorage(name?: string) {
     }
     return storages[name];
 }
-
-export type WappStorageType = {
-    name: string;
-    id: string;
-    set(name: string | Record<string, any>, item?: any): Promise<boolean>;
-    setSecret(name: string | Record<string, any>, item?: any): Promise<boolean>;
-    get(name: string | string[]): any;
-    getSecret(name: string | string[]): any;
-    keys(): Array<string>;
-    values(): Array<any>;
-    entries(): Array<Array<any>>;
-    remove(name: string | string[]): Promise<boolean>;
-    removeSecret(name: string | string[]): Promise<boolean>;
-    update(): Promise<boolean>;
-    onChange(cb: StorageChangeHandler): Promise<boolean>;
-    reload(): Promise<boolean>;
-    reset(): Promise<void>;
-};
 
 class WappStorage implements WappStorageType {
     name = '';
