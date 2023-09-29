@@ -10,7 +10,7 @@ class Config implements IConfig {
     validation: ValidationType = 'normal';
     reconnectCount = 10;
     ackTimeout = 5;
-    jitterMin = 1;
+    jitterMin = 0;
     jitterMax = 10;
 }
 

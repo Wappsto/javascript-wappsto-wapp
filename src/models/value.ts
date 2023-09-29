@@ -360,11 +360,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         const eventTimestamp = state.timestamp;
 
         const timeout = randomIntFromInterval(
-            _config.jitterMin,
-            _config.jitterMax
+            _config.jitterMin * 10,
+            _config.jitterMax * 10
         );
         await new Promise((r) => {
-            this.jitterTimer = setTimeout(r, timeout * 1000);
+            this.jitterTimer = setTimeout(r, timeout * 100);
         });
 
         const oldData = state.data;
