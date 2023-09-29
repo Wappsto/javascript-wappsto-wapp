@@ -15,7 +15,7 @@ describe('console', () => {
         console.warn = jest.fn();
         startLogging();
         expect(console.warn).toHaveBeenCalledWith(
-            'WAPPSTO WARN: DEPRECATED - The "startLogging" is not needed to be called anymore'
+            'WAPPSTO WARN: DEPRECATED - The "startLogging" is not needed to be called any more'
         );
     });
 

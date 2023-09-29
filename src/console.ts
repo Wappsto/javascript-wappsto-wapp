@@ -4,22 +4,26 @@ import { isBrowser, toString } from './util/helpers';
 
 const defaultConsole = Object.assign({}, console);
 let stopExtSync = false;
-let debugQueue: any[] = [];
+type consoleEvent = { type: string; data: any };
+let debugQueue: consoleEvent[] = [];
 
-function generateExtsyncMessage(key: string, ...args: any[]): any {
+function generateConsoleMessage(key: string, ...args: any[]): any {
     const time = new Date().toISOString();
-    const data = toString({
-        key: key,
-        arguments: args[0],
-        time: time,
-    });
+    const data = {
+        type: key,
+        data: toString({
+            key: key,
+            arguments: args[0],
+            time: time,
+        }),
+    };
     return data;
 }
 
-async function sendExtsync(data: any): Promise<any> {
+async function sendConsoleEvent(event: consoleEvent): Promise<any> {
     let res;
     try {
-        res = await wappsto.post('/2.1/extsync/wappsto/editor/console', data);
+        res = await wappsto.post(`/2.1/console/${event.type}`, event.data);
     } catch (e: any) {
         if (e.response) {
             printError(
@@ -45,7 +49,7 @@ async function sendDebugQueue() {
 
     const event = debugQueue[0];
 
-    const res = await sendExtsync(event);
+    const res = await sendConsoleEvent(event);
     if (res === false) {
         stopExtSync = true;
         printError(
@@ -62,7 +66,7 @@ async function sendDebugQueue() {
 function newFunc(name: string) {
     return function (...args: any[]) {
         if (process.env.DISABLE_LOG === undefined && !stopExtSync) {
-            debugQueue.push(generateExtsyncMessage(name, arguments));
+            debugQueue.push(generateConsoleMessage(name, arguments));
             if (debugQueue.length === 1) {
                 sendDebugQueue();
             }
@@ -80,7 +84,9 @@ export function backgroundLogging(): void {
     /* istanbul ignore next */
     process.on('uncaughtException', (err) => {
         defaultConsole.error(err);
-        const req = sendExtsync(generateExtsyncMessage('error', [err.stack]));
+        const req = sendConsoleEvent(
+            generateConsoleMessage('error', [err.stack])
+        );
         req.finally(function () {
             process.exit(1);
         });
@@ -97,7 +103,7 @@ export function startLogging(): void {
         backgroundLogging();
     } else {
         printWarning(
-            'DEPRECATED - The "startLogging" is not needed to be called anymore'
+            'DEPRECATED - The "startLogging" is not needed to be called any more'
         );
     }
 }

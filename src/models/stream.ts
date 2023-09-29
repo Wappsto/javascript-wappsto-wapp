@@ -669,7 +669,7 @@ export class Stream extends Model {
     }
 
     #handleWappstoMessage(message: any) {
-        if (message.data?.uri !== 'extsync/wappsto/editor/console') {
+        if (!message.data?.uri?.startsWith('/console')) {
             printDebug(`Stream message: ${toString(message)}`);
         }
 
@@ -677,7 +677,7 @@ export class Stream extends Model {
             const newData = message.extsync || message.data;
             if (newData.request) {
                 this.#handleMessage('extsync/request', newData);
-            } else if (newData.uri !== 'extsync/wappsto/editor/console') {
+            } else if (!newData.uri?.startsWith('/console')) {
                 this.#handleMessage('extsync', newData);
             }
             return;

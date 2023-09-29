@@ -39,7 +39,7 @@ describe('config', () => {
         data.data = data;
         await request.post('test', data, { config: 'test' });
 
-        printRequest('post', '/2.1/extsync/wappsto/editor/console', {}, {});
+        printRequest('post', '/2.1/console', {}, {});
         expect(console.log).toHaveBeenCalledTimes(1);
         expect(console.log).toHaveBeenCalledWith(
             'WAPPSTO REQUEST: post test {"config":"test"} {"key":"test","data":"Circular REF"} => test'
