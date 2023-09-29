@@ -627,13 +627,13 @@ describe('device', () => {
         try {
             await device.createValue('name');
         } catch (error) {
-            errors.push(error);
+            errors.push(error as Error);
         }
 
         try {
             await device.createValue('name', undefined, ValueTemplate.NUMBER);
         } catch (error) {
-            errors.push(error);
+            errors.push(error as Error);
         }
 
         expect(errors[0]).toEqual(
