@@ -622,26 +622,28 @@ describe('device', () => {
         device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
 
         expect.assertions(2);
+        const errors: Error[] = [];
 
         try {
             await device.createValue('name');
         } catch (error) {
-            expect(error).toEqual(
-                new Error(
-                    'Missing parameter "valueTemplate" in createValue function'
-                )
-            );
+            errors.push(error);
         }
 
         try {
             await device.createValue('name', undefined, ValueTemplate.NUMBER);
         } catch (error) {
-            expect(error).toEqual(
-                new Error(
-                    'Missing parameter "permission" in createValue function'
-                )
-            );
+            errors.push(error);
         }
+
+        expect(errors[0]).toEqual(
+            new Error(
+                'Missing parameter "valueTemplate" in createValue function'
+            )
+        );
+        expect(errors[1]).toEqual(
+            new Error('Missing parameter "permission" in createValue function')
+        );
     });
 
     it('can create a value with historical disabled', async () => {
