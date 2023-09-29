@@ -3,7 +3,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { wappStorage, stopLogging } from '../src/index';
+import { wappStorage, stopLogging, WappStorageType } from '../src/index';
 import { openStream } from '../src/stream_helpers';
 import { sendRpcResponse } from './util/stream';
 
@@ -32,7 +32,7 @@ describe('WappStorage', () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
 
-        const ws = await wappStorage('test');
+        const ws: WappStorageType = await wappStorage('test');
         expect(ws.name).toEqual('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
@@ -437,25 +437,25 @@ describe('WappStorage', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
 
-        await ws.set({key1: 'data1', key2: 'data2'});
+        await ws.set({ key1: 'data1', key2: 'data2' });
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenLastCalledWith(
             '/2.1/data/bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
             {
                 data: {
-                    key1: "data1",
-                    key2: "data2",
+                    key1: 'data1',
+                    key2: 'data2',
                 },
                 data_meta: {
-                    id: "wapp_storage_multi_set",
-                    type: "wapp_storage",
+                    id: 'wapp_storage_multi_set',
+                    type: 'wapp_storage',
                     version: 1,
                 },
                 meta: {
-                    id: "bd5e3c4c-2957-429c-b39a-b5523f1b18e5",
+                    id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
                 },
             },
-            {},
+            {}
         );
 
         let values = ws.get(['key1', 'key2']);
@@ -467,17 +467,17 @@ describe('WappStorage', () => {
         expect(mockedAxios.put).toHaveBeenLastCalledWith(
             '/2.1/data/bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
             {
-                "data": {},
-                "data_meta": {
-                    "id": "wapp_storage_multi_set",
-                    "type": "wapp_storage",
-                    "version": 1,
+                data: {},
+                data_meta: {
+                    id: 'wapp_storage_multi_set',
+                    type: 'wapp_storage',
+                    version: 1,
                 },
-                "meta": {
-                    "id": "bd5e3c4c-2957-429c-b39a-b5523f1b18e5",
+                meta: {
+                    id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
                 },
             },
-            {},
+            {}
         );
 
         values = ws.get(['key1', 'key2']);
@@ -500,43 +500,46 @@ describe('WappStorage', () => {
         expect(mockedAxios.put).toHaveBeenLastCalledWith(
             '/2.1/data/bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
             {
-                "data": {},
-                "_secret_background": {
-                    "secret_key": "secret_value",
+                data: {},
+                _secret_background: {
+                    secret_key: 'secret_value',
                 },
-                "data_meta": {
-                    "id": "wapp_storage_background_secret",
-                    "type": "wapp_storage",
-                    "version": 1,
+                data_meta: {
+                    id: 'wapp_storage_background_secret',
+                    type: 'wapp_storage',
+                    version: 1,
                 },
-                "meta": {
-                    "id": "bd5e3c4c-2957-429c-b39a-b5523f1b18e5",
+                meta: {
+                    id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
                 },
             },
-            {},
+            {}
         );
 
-        await ws.setSecret({'secret_key2': 'secret_value2', 'secret_key3': 'secret_value3'});
+        await ws.setSecret({
+            secret_key2: 'secret_value2',
+            secret_key3: 'secret_value3',
+        });
         expect(mockedAxios.put).toHaveBeenCalledTimes(2);
         expect(mockedAxios.put).toHaveBeenLastCalledWith(
             '/2.1/data/bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
             {
-                "data": {},
-                "_secret_background": {
-                    "secret_key": "secret_value",
-                    "secret_key2": "secret_value2",
-                    "secret_key3": "secret_value3",
+                data: {},
+                _secret_background: {
+                    secret_key: 'secret_value',
+                    secret_key2: 'secret_value2',
+                    secret_key3: 'secret_value3',
                 },
-                "data_meta": {
-                    "id": "wapp_storage_background_secret",
-                    "type": "wapp_storage",
-                    "version": 1,
+                data_meta: {
+                    id: 'wapp_storage_background_secret',
+                    type: 'wapp_storage',
+                    version: 1,
                 },
-                "meta": {
-                    "id": "bd5e3c4c-2957-429c-b39a-b5523f1b18e5",
+                meta: {
+                    id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
                 },
             },
-            {},
+            {}
         );
 
         let value = ws.getSecret('secret_key');
@@ -549,21 +552,21 @@ describe('WappStorage', () => {
         expect(mockedAxios.put).toHaveBeenLastCalledWith(
             '/2.1/data/bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
             {
-                "data": {},
-                "_secret_background": {
-                    "secret_key2": "secret_value2",
-                    "secret_key3": "secret_value3",
+                data: {},
+                _secret_background: {
+                    secret_key2: 'secret_value2',
+                    secret_key3: 'secret_value3',
                 },
-                "data_meta": {
-                    "id": "wapp_storage_background_secret",
-                    "type": "wapp_storage",
-                    "version": 1,
+                data_meta: {
+                    id: 'wapp_storage_background_secret',
+                    type: 'wapp_storage',
+                    version: 1,
                 },
-                "meta": {
-                    "id": "bd5e3c4c-2957-429c-b39a-b5523f1b18e5",
+                meta: {
+                    id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
                 },
             },
-            {},
+            {}
         );
 
         await ws.removeSecret(['secret_key2', 'secret_key3']);
@@ -571,18 +574,18 @@ describe('WappStorage', () => {
         expect(mockedAxios.put).toHaveBeenLastCalledWith(
             '/2.1/data/bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
             {
-                "data": {},
-                "_secret_background": {},
-                "data_meta": {
-                    "id": "wapp_storage_background_secret",
-                    "type": "wapp_storage",
-                    "version": 1,
+                data: {},
+                _secret_background: {},
+                data_meta: {
+                    id: 'wapp_storage_background_secret',
+                    type: 'wapp_storage',
+                    version: 1,
                 },
-                "meta": {
-                    "id": "bd5e3c4c-2957-429c-b39a-b5523f1b18e5",
+                meta: {
+                    id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5',
                 },
             },
-            {},
+            {}
         );
 
         value = ws.getSecret('secret_key');

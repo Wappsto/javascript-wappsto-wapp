@@ -19,24 +19,42 @@ export async function wappStorage(name?: string) {
     return storages[name];
 }
 
-export class WappStorage {
+export type WappStorageType = {
+    name: string;
+    id: string;
+    set(name: string | Record<string, any>, item?: any): Promise<boolean>;
+    setSecret(name: string | Record<string, any>, item?: any): Promise<boolean>;
+    get(name: string | string[]): any;
+    getSecret(name: string | string[]): any;
+    keys(): Array<string>;
+    values(): Array<any>;
+    entries(): Array<Array<any>>;
+    remove(name: string | string[]): Promise<boolean>;
+    removeSecret(name: string | string[]): Promise<boolean>;
+    update(): Promise<boolean>;
+    onChange(cb: StorageChangeHandler): Promise<boolean>;
+    reload(): Promise<boolean>;
+    reset(): Promise<void>;
+};
+
+class WappStorage implements WappStorageType {
     name = '';
     id = '';
-    data: Data;
+    #data: Data;
 
     constructor(name: string) {
         WappStorage.#validate('constructor', arguments);
         this.name = name;
         this.id = `wapp_storage_${this.name}`;
-        this.data = new Data(this.id, 'wapp_storage');
+        this.#data = new Data(this.id, 'wapp_storage');
     }
 
     async init(): Promise<void> {
         const data = await Data.findByDataId(this.id);
         if (data.length > 0) {
-            this.data = data[0];
+            this.#data = data[0];
         } else {
-            await this.data.create();
+            await this.#data.create();
         }
     }
 
@@ -46,10 +64,10 @@ export class WappStorage {
         secret?: boolean
     ): Promise<boolean> {
         if (typeof name === 'string') {
-            this.data.set(name, item, secret);
+            this.#data.set(name, item, secret);
         } else {
             Object.keys(name).forEach((key) => {
-                this.data.set(key, name[key], secret);
+                this.#data.set(key, name[key], secret);
             });
         }
         return this.update();
@@ -74,9 +92,9 @@ export class WappStorage {
 
     #get(name: string | string[], secret?: boolean): any {
         if (typeof name === 'string') {
-            return this.data.get(name, secret);
+            return this.#data.get(name, secret);
         } else {
-            return name.map((key) => this.data.get(key, secret));
+            return name.map((key) => this.#data.get(key, secret));
         }
     }
 
@@ -95,24 +113,24 @@ export class WappStorage {
     }
 
     keys(): Array<string> {
-        return this.data.keys();
+        return this.#data.keys();
     }
 
     values(): Array<any> {
-        return this.data.values();
+        return this.#data.values();
     }
 
     entries(): Array<Array<any>> {
-        return this.data.entries();
+        return this.#data.entries();
     }
 
     #remove(name: string | string[], secret?: boolean): Promise<boolean> {
         if (typeof name === 'string') {
-            this.data.remove(name, secret);
+            this.#data.remove(name, secret);
         } else {
-            name.forEach((key) => this.data.remove(key, secret));
+            name.forEach((key) => this.#data.remove(key, secret));
         }
-        return this.data.update();
+        return this.#data.update();
     }
 
     remove(name: string | string[]): Promise<boolean> {
@@ -130,24 +148,24 @@ export class WappStorage {
     }
 
     update(): Promise<boolean> {
-        return this.data.update();
+        return this.#data.update();
     }
 
     onChange(cb: StorageChangeHandler): Promise<boolean> {
         WappStorage.#validate('onChange', arguments);
-        return this.data.onChange(async () => {
+        return this.#data.onChange(async () => {
             await cb();
         });
     }
 
     reload(): Promise<boolean> {
-        return this.data.reload();
+        return this.#data.reload();
     }
 
     async reset(): Promise<void> {
-        await this.data.delete();
-        this.data = new Data(this.id, 'wapp_storage');
-        await this.data.create();
+        await this.#data.delete();
+        this.#data = new Data(this.id, 'wapp_storage');
+        await this.#data.create();
     }
 
     static #validate(name: string, params: any): void {
