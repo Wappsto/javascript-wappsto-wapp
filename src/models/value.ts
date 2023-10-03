@@ -544,8 +544,13 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                     return data ? '1' : '0';
                 }
                 return data ? 'true' : 'false';
+            case 'function':
             case 'object':
                 return JSON.stringify(data);
+            case 'undefined':
+                return 'NA';
+            case 'symbol':
+            case 'bigint':
             case 'number':
             case 'string':
             default:
@@ -561,8 +566,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
         if (
             Array.isArray(data) &&
-            data[0].data !== undefined &&
-            data[0].timestamp !== undefined
+            data[0]?.data !== undefined &&
+            data[0]?.timestamp !== undefined
         ) {
             return this.#sendLogReport(data);
         }
