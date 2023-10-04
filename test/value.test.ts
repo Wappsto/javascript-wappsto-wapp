@@ -294,11 +294,12 @@ describe('value', () => {
             unit: 'test',
         };
         await value.report(true);
+        await value.report([]);
         await value.report('test', 'timestamp');
         const res = await value.control(10);
 
         expect(res).toBe(false);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(6);
         expect(value.getReportData()).toBe('test');
         expect(value.getControlData()).toBe(undefined);
         expect(mockedAxios.patch).toHaveBeenNthCalledWith(
@@ -359,6 +360,20 @@ describe('value', () => {
         );
         expect(mockedAxios.patch).toHaveBeenNthCalledWith(
             5,
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+                },
+                type: 'Report',
+                data: '[]',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            6,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 meta: {
