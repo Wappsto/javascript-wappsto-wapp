@@ -3,7 +3,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { wappStorage, stopLogging, WappStorageType } from '../src/index';
+import { wappStorage, stopLogging, IWappStorage } from '../src/index';
 import { openStream } from '../src/stream_helpers';
 import { sendRpcResponse } from './util/stream';
 
@@ -32,7 +32,7 @@ describe('WappStorage', () => {
         mockedAxios.get.mockResolvedValueOnce({ data: [] });
         mockedAxios.post.mockResolvedValueOnce({ data: [] });
 
-        const ws: WappStorageType = await wappStorage('test');
+        const ws: IWappStorage = await wappStorage('test');
         expect(ws.name).toEqual('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);

@@ -547,16 +547,16 @@ export interface IOAuthFunc {
 export interface IWappStorageFunc {
     wappStorage(name?: string): void;
     constructor(name: string): void;
-    set(name: string | Record<string, any>, item?: any): Promise<void>;
-    setSecret(name: string | Record<string, any>, item?: any): Promise<void>;
+    set(name: string | Record<string, any>, item?: any): Promise<boolean>;
+    setSecret(name: string | Record<string, any>, item?: any): Promise<boolean>;
     get(name: string | string[]): any;
     getSecret(name: string | string[]): any;
-    remove(name: string | string[]): Promise<void>;
-    removeSecret(name: string | string[]): Promise<void>;
+    remove(name: string | string[]): Promise<boolean>;
+    removeSecret(name: string | string[]): Promise<boolean>;
     onChange(cb: StorageChangeHandler): void;
 }
 
-export interface WappStorageType {
+export interface IWappStorage {
     name: string;
     id: string;
     set(name: string | Record<string, any>, item?: any): Promise<boolean>;

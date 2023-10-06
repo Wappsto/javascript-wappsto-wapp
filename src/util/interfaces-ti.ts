@@ -725,12 +725,12 @@ export const IWappStorageFunc = t.iface([], {
     wappStorage: t.func('void', t.param('name', 'string', true)),
     constructor: t.func('void', t.param('name', 'string')),
     set: t.func(
-        'void',
+        'boolean',
         t.param('name', t.union('string', 'any')),
         t.param('item', 'any', true)
     ),
     setSecret: t.func(
-        'void',
+        'boolean',
         t.param('name', t.union('string', 'any')),
         t.param('item', 'any', true)
     ),
@@ -740,17 +740,17 @@ export const IWappStorageFunc = t.iface([], {
         t.param('name', t.union('string', t.array('string')))
     ),
     remove: t.func(
-        'void',
+        'boolean',
         t.param('name', t.union('string', t.array('string')))
     ),
     removeSecret: t.func(
-        'void',
+        'boolean',
         t.param('name', t.union('string', t.array('string')))
     ),
     onChange: t.func('void', t.param('cb', 'StorageChangeHandler')),
 });
 
-export const WappStorageType = t.iface([], {
+export const IWappStorage = t.iface([], {
     name: 'string',
     id: 'string',
     set: t.func(
@@ -1041,7 +1041,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     OAuthRequestHandler,
     IOAuthFunc,
     IWappStorageFunc,
-    WappStorageType,
+    IWappStorage,
     StorageChangeHandler,
     ServiceHandler,
     RequestHandler,

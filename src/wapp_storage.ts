@@ -1,6 +1,6 @@
 import { Model } from './models/model';
 import { Data } from './models/data';
-import { StorageChangeHandler, WappStorageType } from './util/interfaces';
+import { StorageChangeHandler, IWappStorage } from './util/interfaces';
 import { isBrowser } from './util/helpers';
 import { printError } from './util/debug';
 
@@ -19,7 +19,7 @@ export async function wappStorage(name?: string) {
     return storages[name];
 }
 
-class WappStorage implements WappStorageType {
+class WappStorage implements IWappStorage {
     name = '';
     id = '';
     #data: Data;
