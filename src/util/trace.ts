@@ -1,6 +1,6 @@
-import wappsto from './http_wrapper';
-import { isBrowser } from './helpers';
 import { printError } from './debug';
+import { isBrowser } from './helpers';
+import wappsto from './http_wrapper';
 
 const url = 'https://tracer.iot.seluxit.com/trace';
 let traceId = '';

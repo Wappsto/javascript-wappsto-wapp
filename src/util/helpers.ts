@@ -181,13 +181,6 @@ export function convertFilterToString(
     return '';
 }
 
-export function generateFilterRequest(
-    request: Record<string, any>,
-    result: string
-) {
-    return { filter: { attribute: request }, return: `{${result}}` };
-}
-
 export function sortByTimestamp(a: LogValue, b: LogValue): number {
     const dateA = new Date(a.timestamp || 0);
     const dateB = new Date(b.timestamp || 0);

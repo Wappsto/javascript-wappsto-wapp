@@ -1,6 +1,5 @@
 import WebSocket from 'universal-websocket-client';
-import { Model } from './model';
-import { session, baseUrl, extSyncToken } from '../session';
+import { baseUrl, extSyncToken, session } from '../session';
 import { _config } from '../util/config';
 import {
     printDebug,
@@ -8,16 +7,16 @@ import {
     printStream,
     printWarning,
 } from '../util/debug';
-import { isUUID, isBrowser, isVersion, toString } from '../util/helpers';
-import wappsto from '../util/http_wrapper';
-import { getErrorMessage } from '../util/http_wrapper';
-import { trace, clearTrace } from '../util/trace';
+import { isBrowser, isUUID, isVersion, toString } from '../util/helpers';
+import wappsto, { getErrorMessage } from '../util/http_wrapper';
 import {
     IStreamEvent,
-    ServiceHandler,
-    RequestHandler,
     IStreamModel,
+    RequestHandler,
+    ServiceHandler,
 } from '../util/interfaces';
+import { clearTrace, trace } from '../util/trace';
+import { Model } from './model';
 
 export class IgnoreError extends Error {
     constructor(msg: string) {

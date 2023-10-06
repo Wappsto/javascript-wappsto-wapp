@@ -1,18 +1,15 @@
-import isEqual from 'lodash.isequal';
 import { Type } from 'class-transformer';
-import { PermissionModel } from './model.permission';
-import { ConnectionModel } from './model.connection';
-import { Model } from './model';
-import { Device } from './device';
-import { Value } from './value';
+import isEqual from 'lodash.isequal';
 import { printDebug } from '../util/debug';
-import {
-    generateFilterRequest,
-    convertFilterToJson,
-    convertFilterToString,
-} from '../util/helpers';
+import { generateFilterRequest } from '../util/filter';
+import { convertFilterToJson, convertFilterToString } from '../util/helpers';
+import { Filter, IDevice, IModel, INetwork } from '../util/interfaces';
 import { addModel } from '../util/modelStore';
-import { IModel, INetwork, IDevice, Filter } from '../util/interfaces';
+import { Device } from './device';
+import { Model } from './model';
+import { ConnectionModel } from './model.connection';
+import { PermissionModel } from './model.permission';
+import { Value } from './value';
 
 export async function createNetwork(params: INetwork): Promise<Network> {
     Model.validateMethod('Network', 'createNetwork', arguments);
@@ -69,7 +66,7 @@ export class Network extends ConnectionModel implements INetwork {
         omit_filter?: Filter
     ): string {
         Network.#validate('getFilterResult', [filter, omit_filter]);
-        const fields = [Model.getFilterResult()]
+        const fields = [Model.getMetaFilterResult()]
             .concat(Network.attributes)
             .join(' ');
 
@@ -256,10 +253,8 @@ export class Network extends ConnectionModel implements INetwork {
             usage,
             filterRequest,
         ]);
-        if (usage === '') {
-            usage = `Find ${quantity} network`;
-        }
 
+        usage ||= `Find ${quantity} network`;
         const query: Record<string, any> = {
             expand: 3,
         };
@@ -314,9 +309,8 @@ export class Network extends ConnectionModel implements INetwork {
         usage = ''
     ) => {
         Network.#validate('findByName', [name, quantity, readOnly, usage]);
-        if (usage === '') {
-            usage = `Find ${quantity} network with name ${name}`;
-        }
+
+        usage ||= `Find ${quantity} network with name ${name}`;
         return Network.find({ name: name }, quantity, readOnly, usage);
     };
 
@@ -350,12 +344,12 @@ export class Network extends ConnectionModel implements INetwork {
             readOnly,
             usage,
         ]);
-        if (usage === '') {
-            usage = `Find ${quantity} network using filter`;
-        }
+
+        usage ||= `Find ${quantity} network using filter`;
         const filterRequest = generateFilterRequest(
-            Network.getFilter(filter, omit_filter),
-            Network.getFilterResult(filter, omit_filter)
+            Network.getFilterResult,
+            filter,
+            omit_filter
         );
         return await Network.find({}, quantity, readOnly, usage, filterRequest);
     };

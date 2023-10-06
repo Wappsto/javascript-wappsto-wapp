@@ -1,5 +1,5 @@
-import { Model } from './model';
 import { printError } from '../util/debug';
+import { Model } from './model';
 
 export class User extends Model {
     static endpoint = '/2.1/user';

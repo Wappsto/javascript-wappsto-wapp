@@ -1,6 +1,6 @@
-import { IConfig, ValidationType } from './interfaces';
-import interfaceTI from '../util/interfaces-ti';
 import { createCheckers } from 'ts-interface-checker';
+import interfaceTI from '../util/interfaces-ti';
+import { IConfig, ValidationType } from './interfaces';
 
 class Config implements IConfig {
     debug = false;

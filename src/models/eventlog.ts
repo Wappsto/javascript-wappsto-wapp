@@ -1,5 +1,5 @@
+import { EventLogLevel, IEventLog } from '../util/interfaces';
 import { Model } from './model';
-import { IEventLog, EventLogLevel } from '../util/interfaces';
 
 export class EventLog extends Model implements IEventLog {
     static endpoint = '/2.1/eventlog';

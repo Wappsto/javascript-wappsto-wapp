@@ -1,30 +1,27 @@
-import isEqual from 'lodash.isequal';
 import { Type } from 'class-transformer';
-import { PermissionModel } from './model.permission';
-import { ConnectionModel } from './model.connection';
-import { Model } from './model';
-import { Value } from './value';
+import isEqual from 'lodash.isequal';
 import { printDebug } from '../util/debug';
+import { generateFilterRequest } from '../util/filter';
+import { convertFilterToJson, convertFilterToString } from '../util/helpers';
 import {
     Filter,
-    IModel,
+    ICreateValue,
     IDevice,
+    IModel,
     IValueBase,
+    IValueBlob,
     IValueNumber,
     IValueString,
-    IValueBlob,
     IValueXml,
-    ValueType,
     ValuePermission,
-    ICreateValue,
+    ValueType,
 } from '../util/interfaces';
-import {
-    generateFilterRequest,
-    convertFilterToJson,
-    convertFilterToString,
-} from '../util/helpers';
 import { addModel } from '../util/modelStore';
 import { ValueTemplate } from '../util/value_template';
+import { Model } from './model';
+import { ConnectionModel } from './model.connection';
+import { PermissionModel } from './model.permission';
+import { Value } from './value';
 
 export class Device extends ConnectionModel implements IDevice {
     static endpoint = '/2.1/device';
@@ -78,7 +75,7 @@ export class Device extends ConnectionModel implements IDevice {
         omit_filter?: Filter
     ): string {
         Device.#validate('getFilterResult', [filter, omit_filter]);
-        const fields = [Model.getFilterResult()].concat(Device.attributes);
+        const fields = [Model.getMetaFilterResult()].concat(Device.attributes);
 
         const strFilter = convertFilterToString(
             Device.attributes,
@@ -411,9 +408,7 @@ export class Device extends ConnectionModel implements IDevice {
             filterRequest,
         ]);
 
-        if (usage === '') {
-            usage = `Find ${quantity} device`;
-        }
+        usage ||= `Find ${quantity} device`;
 
         const query: Record<string, any> = {
             expand: 2,
@@ -469,9 +464,7 @@ export class Device extends ConnectionModel implements IDevice {
     ) {
         Device.#validate('findByName', [name, quantity, readOnly, usage]);
 
-        if (usage === '') {
-            usage = `Find ${quantity} device with name ${name}`;
-        }
+        usage ||= `Find ${quantity} device with name ${name}`;
         return Device.find({ name: name }, quantity, readOnly, usage);
     }
 
@@ -489,9 +482,7 @@ export class Device extends ConnectionModel implements IDevice {
     ) {
         Device.#validate('findByProduct', [product, quantity, readOnly, usage]);
 
-        if (usage === '') {
-            usage = `Find ${quantity} device with product ${product}`;
-        }
+        usage ||= `Find ${quantity} device with product ${product}`;
         return Device.find({ product: product }, quantity, readOnly, usage);
     }
 
@@ -530,12 +521,12 @@ export class Device extends ConnectionModel implements IDevice {
             readOnly,
             usage,
         ]);
-        if (usage === '') {
-            usage = `Find ${quantity} device using filter`;
-        }
+
+        usage ||= `Find ${quantity} device using filter`;
         const filterRequest = generateFilterRequest(
-            Device.getFilter(filter, omit_filter),
-            Device.getFilterResult(filter, omit_filter)
+            Device.getFilterResult,
+            filter,
+            omit_filter
         );
         return await Device.find({}, quantity, readOnly, usage, filterRequest);
     };

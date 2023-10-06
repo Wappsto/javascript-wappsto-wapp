@@ -1,8 +1,8 @@
 import axios, { AxiosError } from 'axios';
-import { session, baseUrl } from '../session';
-import { printError, printDebug, printRequest } from './debug';
-import { toString, isBrowser } from './helpers';
+import { baseUrl, session } from '../session';
 import { _config } from '../util/config';
+import { printDebug, printError, printRequest } from './debug';
+import { isBrowser, toString } from './helpers';
 import { VERSION } from './version';
 
 type Methods = 'head' | 'options' | 'put' | 'post' | 'patch' | 'delete' | 'get';

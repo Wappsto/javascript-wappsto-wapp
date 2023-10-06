@@ -1,7 +1,7 @@
-import { printWarning, printDebug } from './debug';
-import { Timestamp } from './interfaces';
-import { openStream } from '../stream_helpers';
 import { PowerPriceList } from '../models/analytic';
+import { openStream } from '../stream_helpers';
+import { printDebug, printWarning } from './debug';
+import { Timestamp } from './interfaces';
 
 export function runAnalyticModel(
     model: any,

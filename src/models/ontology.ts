@@ -1,12 +1,12 @@
-import { Model } from './model';
-import {
-    Relationship,
-    IOntologyModel,
-    IOntologyEdge,
-    FetchRequest,
-} from '../util/interfaces';
 import { compareModels } from '../util/helpers';
+import {
+    FetchRequest,
+    IOntologyEdge,
+    IOntologyModel,
+    Relationship,
+} from '../util/interfaces';
 import { getModel } from '../util/modelStore';
+import { Model } from './model';
 
 export class Ontology extends Model implements IOntologyEdge {
     static endpoint = '/2.1/ontology';

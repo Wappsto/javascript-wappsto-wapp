@@ -1,7 +1,7 @@
+import { checkList } from '../util/helpers';
+import { ConnectionCallback, IConnectionModel } from '../util/interfaces';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
-import { checkList } from '../util/helpers';
-import { IConnectionModel, ConnectionCallback } from '../util/interfaces';
 
 export class ConnectionModel extends StreamModel implements IConnectionModel {
     connectionCallbacks: ConnectionCallback[] = [];

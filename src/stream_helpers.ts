@@ -1,8 +1,8 @@
 import { Model } from './models/model';
 import { IgnoreError, Stream } from './models/stream';
 import { printDebug } from './util/debug';
-import { RequestHandler } from './util/interfaces';
 import { isBrowser } from './util/helpers';
+import { RequestHandler } from './util/interfaces';
 
 const openStream: Stream = new Stream();
 let request_handlers: Record<string, RequestHandler> = {};

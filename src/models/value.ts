@@ -1,48 +1,47 @@
-import isEqual from 'lodash.isequal';
 import { Type } from 'class-transformer';
-import { PermissionModel } from './model.permission';
-import { StreamModel } from './model.stream';
-import { Model } from './model';
-import { State } from './state';
-import { EventLog } from './eventlog';
-import { EnergyData, EnergySummary, EnergyPieChart } from './analytic';
+import isEqual from 'lodash.isequal';
+import { runAnalyticModel } from '../util/analytics_helpers';
 import { _config } from '../util/config';
-import wappsto from '../util/http_wrapper';
-import { printHttpError } from '../util/http_wrapper';
+import { printDebug, printWarning } from '../util/debug';
+import { generateFilterRequest } from '../util/filter';
 import {
     checkList,
-    getSecondsToNextPeriod,
-    randomIntFromInterval,
-    isPositiveInteger,
     compareDates,
-    generateFilterRequest,
     convertFilterToJson,
     convertFilterToString,
+    getSecondsToNextPeriod,
+    isPositiveInteger,
+    randomIntFromInterval,
     sortByTimestamp,
 } from '../util/helpers';
-import { runAnalyticModel } from '../util/analytics_helpers';
-import { printDebug, printWarning } from '../util/debug';
+import wappsto, { printHttpError } from '../util/http_wrapper';
 import {
+    EventLogLevel,
     Filter,
-    Timestamp,
+    ILogRequest,
+    ILogResponse,
     IModel,
+    IState,
     IValueBase,
     IValueFunc,
     IValueNumberBase,
     IValueStringBlobBase,
     IValueXmlBase,
-    ValuePermission,
-    EventLogLevel,
-    IState,
-    StateType,
-    ILogRequest,
-    ILogResponse,
-    RefreshStreamCallback,
-    ValueStreamCallback,
     LogValues,
+    RefreshStreamCallback,
     ReportValueInput,
+    StateType,
+    Timestamp,
+    ValuePermission,
+    ValueStreamCallback,
 } from '../util/interfaces';
 import { addModel } from '../util/modelStore';
+import { EnergyData, EnergyPieChart, EnergySummary } from './analytic';
+import { EventLog } from './eventlog';
+import { Model } from './model';
+import { PermissionModel } from './model.permission';
+import { StreamModel } from './model.stream';
+import { State } from './state';
 
 export class Value extends StreamModel implements IValueBase, IValueFunc {
     static endpoint = '/2.1/value';
@@ -116,7 +115,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         omit_filter?: Filter
     ): string {
         Value.#validateStatic('getFilterResult', [filter, omit_filter]);
-        const fields = [Model.getFilterResult()]
+        const fields = [Model.getMetaFilterResult()]
             .concat(Value.attributes)
             .join(' ');
 
@@ -875,10 +874,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             usage,
             filterRequest,
         ]);
-        if (usage === '') {
-            usage = `Find ${quantity} value`;
-        }
 
+        usage ||= `Find ${quantity} value`;
         const query: Record<string, any> = {
             expand: 1,
         };
@@ -941,9 +938,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         usage = ''
     ) => {
         Value.#validateStatic('findByName', [name, quantity, readOnly, usage]);
-        if (usage === '') {
-            usage = `Find ${quantity} value with name ${name}`;
-        }
+
+        usage ||= `Find ${quantity} value with name ${name}`;
         return Value.find({ name: name }, quantity, readOnly, usage);
     };
 
@@ -954,9 +950,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         usage = ''
     ) => {
         Value.#validateStatic('findByType', [type, quantity, readOnly, usage]);
-        if (usage === '') {
-            usage = `Find ${quantity} value with type ${type}`;
-        }
+
+        usage ||= `Find ${quantity} value with type ${type}`;
         return Value.find({ type: type }, quantity, readOnly, usage);
     };
 
@@ -995,12 +990,12 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             readOnly,
             usage,
         ]);
-        if (usage === '') {
-            usage = `Find ${quantity} value using filter`;
-        }
+
+        usage ||= `Find ${quantity} value using filter`;
         const filterRequest = generateFilterRequest(
-            Value.getFilter(filter, omit_filter),
-            Value.getFilterResult(filter, omit_filter)
+            Value.getFilterResult,
+            filter,
+            omit_filter
         );
         return await Value.find({}, quantity, readOnly, usage, filterRequest);
     };

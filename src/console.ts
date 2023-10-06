@@ -1,6 +1,6 @@
-import wappsto from './util/http_wrapper';
 import { printError, printWarning } from './util/debug';
 import { isBrowser, toString } from './util/helpers';
+import wappsto from './util/http_wrapper';
 
 const defaultConsole = Object.assign({}, console);
 let stopExtSync = false;

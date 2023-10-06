@@ -1856,9 +1856,14 @@ describe('device', () => {
             data: responses['fetch_device'],
         });
 
-        const networks = await Device.findAllByFilter({
-            value: { type: ['energy', 'template'], number: { max: 1 } },
-        });
+        const networks = await Device.findAllByFilter(
+            {
+                value: { type: ['energy', 'template'], number: { max: 1 } },
+            },
+            {
+                network: { name: 'network name' },
+            }
+        );
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -1868,6 +1873,7 @@ describe('device', () => {
             {
                 filter: {
                     attribute: [
+                        'network_name!=network name',
                         'value_type=[energy,template]',
                         'value_number.max=1',
                     ],

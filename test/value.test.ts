@@ -1302,9 +1302,14 @@ describe('value', () => {
             data: responses['fetch_value'],
         });
 
-        const values = await Value.findAllByFilter({
-            value: { type: 'energy' },
-        });
+        const values = await Value.findAllByFilter(
+            {
+                value: { type: 'energy' },
+            },
+            {
+                device: { name: 'device name' },
+            }
+        );
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -1312,7 +1317,12 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.1/value',
             {
-                filter: { attribute: ['value_type=energy'] },
+                filter: {
+                    attribute: [
+                        'device_name!=device name',
+                        'value_type=energy',
+                    ],
+                },
                 return: '{value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}',
             },
             {

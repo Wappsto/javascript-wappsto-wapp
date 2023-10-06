@@ -1,10 +1,10 @@
+import { openStream } from '../stream_helpers';
+import { printDebug, printError } from '../util/debug';
+import { toString } from '../util/helpers';
+import { getErrorResponse, printHttpError } from '../util/http_wrapper';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';
 import { Notification } from './notification';
-import { printDebug, printError } from '../util/debug';
-import { toString } from '../util/helpers';
-import { openStream } from '../stream_helpers';
-import { printHttpError, getErrorResponse } from '../util/http_wrapper';
 
 export class PermissionModel extends OntologyModel {
     static #getPermissionHash(

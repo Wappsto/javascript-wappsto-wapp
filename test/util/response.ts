@@ -369,13 +369,13 @@ export function generateStreamEvent(type: string, id: string, data: any): any {
 }
 
 export {
-    simpleNetworkResponse,
     emptyResponse,
-    signalRequest,
+    energyDataResponse,
+    energyPieChartResponse,
+    energySummaryResponse,
     fullNetworkResponse,
     fullNetworkResponseUpdated,
-    energyDataResponse,
-    energySummaryResponse,
-    energyPieChartResponse,
     powerPriceListResponse,
+    signalRequest,
+    simpleNetworkResponse,
 };

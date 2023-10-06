@@ -1,8 +1,7 @@
-import wappsto from '../util/http_wrapper';
-import { PermissionModel } from './model.permission';
 import { Model } from '../models/model';
+import wappsto, { printHttpError } from '../util/http_wrapper';
 import { EventLogLevel, IMail } from '../util/interfaces';
-import { printHttpError } from '../util/http_wrapper';
+import { PermissionModel } from './model.permission';
 
 export async function sendMail(params: IMail): Promise<boolean> {
     Model.validateMethod('notification', 'sendMail', arguments);

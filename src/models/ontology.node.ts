@@ -1,6 +1,6 @@
-import { Model } from './model';
-import { Data } from './data';
 import { IOntologyNode } from '../util/interfaces';
+import { Data } from './data';
+import { Model } from './model';
 
 export class OntologyNode extends Data implements IOntologyNode {
     constructor(name?: string) {

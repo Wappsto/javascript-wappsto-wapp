@@ -1,6 +1,6 @@
 import WS from 'jest-websocket-mock';
-import { openStream, streamHelperReset } from '../../src/stream_helpers';
 import { stopLogging } from '../../src/index';
+import { openStream, streamHelperReset } from '../../src/stream_helpers';
 
 let server: WS;
 let autoTimer: any;

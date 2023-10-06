@@ -1,12 +1,12 @@
-export { createNetwork, Network } from './network';
-export { Stream } from './stream';
-export { Device } from './device';
-export { Value } from './value';
-export { State } from './state';
-export { User } from './user';
 export { Data } from './data';
+export { Device } from './device';
+export { Network, createNetwork } from './network';
 export { Notification } from './notification';
 export { notify, sendMail, sendSMS } from './notification.send';
 export { OAuth } from './oauth';
 export { Ontology } from './ontology';
 export { OntologyNode, createNode, getAllNodes } from './ontology.node';
+export { State } from './state';
+export { Stream } from './stream';
+export { User } from './user';
+export { Value } from './value';

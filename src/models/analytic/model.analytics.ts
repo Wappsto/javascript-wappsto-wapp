@@ -1,6 +1,6 @@
 import pick from 'lodash.pick';
-import { PermissionModel } from '../model.permission';
 import { Timestamp } from '../../util/interfaces';
+import { PermissionModel } from '../model.permission';
 
 export class AnalyticsModel extends PermissionModel {
     static endpoint = '/2.1/analytics';

@@ -5,26 +5,26 @@ Error.stackTraceLimit = Infinity;
 
 setupModelStore();
 
-export { config } from './util/config';
-export { ValueTemplate } from './util/value_template';
 export { startLogging, stopLogging } from './console';
 export * from './models';
-export { wappStorage } from './wapp_storage';
-export { default as request } from './util/http_wrapper';
 export { extSyncToken, session } from './session';
 export {
-    sendToForeground,
-    sendToBackground,
+    cancelFromBackground,
+    cancelFromForeground,
+    cancelOnWebHook,
     fromBackground,
     fromForeground,
-    cancelFromForeground,
-    cancelFromBackground,
     onWebHook,
-    cancelOnWebHook,
-    signalForeground,
+    sendToBackground,
+    sendToForeground,
     signalBackground,
+    signalForeground,
     waitForBackground,
 } from './stream_helpers';
 export { getPowerPriceList } from './util/analytics_helpers';
+export { config } from './util/config';
+export { default as request } from './util/http_wrapper';
 export * from './util/interfaces';
+export { ValueTemplate } from './util/value_template';
 export { VERSION } from './util/version';
+export { wappStorage } from './wapp_storage';

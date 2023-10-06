@@ -1,17 +1,16 @@
-import isEqual from 'lodash.isequal';
-import pick from 'lodash.pick';
-import omit from 'lodash.omit';
 import { plainToInstance } from 'class-transformer';
-import { isUUID, replaceAll } from '../util/helpers';
-import wappsto from '../util/http_wrapper';
-import { printHttpError } from '../util/http_wrapper';
-import { printError, printDebug } from '../util/debug';
+import isEqual from 'lodash.isequal';
+import omit from 'lodash.omit';
+import pick from 'lodash.pick';
+import { createCheckers } from 'ts-interface-checker';
 import { _config } from '../util/config';
-import { getTraceId } from '../util/trace';
-import { IMeta, IModel, FetchRequest, Filter } from '../util/interfaces';
+import { printDebug, printError } from '../util/debug';
+import { isUUID, replaceAll } from '../util/helpers';
+import wappsto, { printHttpError } from '../util/http_wrapper';
+import { FetchRequest, Filter, IMeta, IModel } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { addModel } from '../util/modelStore';
-import { createCheckers } from 'ts-interface-checker';
+import { getTraceId } from '../util/trace';
 
 export class Model implements IModel {
     meta: IMeta = { version: '2.1' };
@@ -78,7 +77,7 @@ export class Model implements IModel {
     public restore(): void {}
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public static getFilterResult(_filter?: Filter): string {
+    public static getMetaFilterResult(_filter?: Filter): string {
         return 'meta{id type version connection name_by_user}';
     }
 

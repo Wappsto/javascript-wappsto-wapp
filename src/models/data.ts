@@ -1,9 +1,9 @@
 import isEqual from 'lodash.isequal';
-import pick from 'lodash.pick';
 import omit from 'lodash.omit';
-import { StreamModel } from './model.stream';
-import { Model } from './model';
+import pick from 'lodash.pick';
 import { isBrowser } from '../util/helpers';
+import { Model } from './model';
+import { StreamModel } from './model.stream';
 
 interface IDataMeta {
     id?: string;

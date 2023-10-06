@@ -1,12 +1,12 @@
-import { Model } from './model';
-import { Ontology } from './ontology';
+import { compareModels, uniqueModels } from '../util/helpers';
 import {
     IModel,
     IOntology,
-    IOntologyModel,
     IOntologyEdge,
+    IOntologyModel,
 } from '../util/interfaces';
-import { compareModels, uniqueModels } from '../util/helpers';
+import { Model } from './model';
+import { Ontology } from './ontology';
 
 export class OntologyModel extends Model implements IOntologyModel {
     ontology: Ontology[] = [];

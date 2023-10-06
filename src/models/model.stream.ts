@@ -1,9 +1,9 @@
-import { Model } from './model';
 import { openStream } from '../stream_helpers';
 import { printError } from '../util/debug';
 import { checkList } from '../util/helpers';
+import { IStreamEvent, IStreamModel, StreamCallback } from '../util/interfaces';
+import { Model } from './model';
 import { PermissionModel } from './model.permission';
-import { IStreamModel, IStreamEvent, StreamCallback } from '../util/interfaces';
 
 export type EventHandler = (event: IStreamEvent) => boolean | void;
 

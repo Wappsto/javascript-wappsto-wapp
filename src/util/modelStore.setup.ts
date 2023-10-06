@@ -1,10 +1,10 @@
-import { Network } from '../models/network';
 import { Device } from '../models/device';
-import { Value } from '../models/value';
-import { State } from '../models/state';
+import { Network } from '../models/network';
 import { OntologyNode } from '../models/ontology.node';
-import { IModel } from './interfaces';
+import { State } from '../models/state';
+import { Value } from '../models/value';
 import { printDebug, printWarning } from './debug';
+import { IModel } from './interfaces';
 import { setModelCreateCallback } from './modelStore';
 
 async function loadModel(

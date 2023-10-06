@@ -1,5 +1,5 @@
-import { Model } from './model';
 import { INotificationBase, INotificationCustom } from '../util/interfaces';
+import { Model } from './model';
 
 export class Notification extends Model {
     static endpoint = '/2.1/notification';

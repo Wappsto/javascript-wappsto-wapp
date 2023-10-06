@@ -1,8 +1,8 @@
-import { Model } from './models/model';
 import { Data } from './models/data';
-import { StorageChangeHandler, IWappStorage } from './util/interfaces';
-import { isBrowser } from './util/helpers';
+import { Model } from './models/model';
 import { printError } from './util/debug';
+import { isBrowser } from './util/helpers';
+import { IWappStorage, StorageChangeHandler } from './util/interfaces';
 
 const storages: Record<string, WappStorage> = {};
 

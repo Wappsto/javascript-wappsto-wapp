@@ -1,7 +1,7 @@
-import { Model } from './model';
 import { openStream } from '../stream_helpers';
 import { printDebug } from '../util/debug';
 import { OAuthRequestHandler } from '../util/interfaces';
+import { Model } from './model';
 
 export class OAuth extends Model {
     static endpoint = '/2.1/oauth_connect';

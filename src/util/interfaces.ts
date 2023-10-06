@@ -80,6 +80,7 @@ export interface IModelFunc {
     onChange(callback: StreamCallback): void;
     onDelete(callback: StreamCallback): void;
     onCreate(callback: StreamCallback): void;
+    getFilterResult(filter?: Filter, omit_filter?: Filter): string;
 }
 
 export interface INetwork {
