@@ -28,20 +28,13 @@ function readCookie(name: string): string {
  * @returns The value of the key or empty string.
  */
 function get(key: string) {
-    let result = '';
     if (isBrowser()) {
-        result = window.sessionStorage.getItem(key) || '';
-        if (!result) {
-            result = readCookie(key);
-        }
+        return window.sessionStorage.getItem(key) || readCookie(key) || '';
+    } else {
+        return process.env[key] || '';
     }
-
-    if (!result) {
-        result = process.env[key] || '';
-    }
-    return result;
 }
 
 export const baseUrl: string = get('baseUrl') || '/services';
-export const session: string = get('sessionID') || '';
-export const extSyncToken: string = get('tokenID') || '';
+export const session: string = get('sessionID');
+export const extSyncToken: string = get('tokenID');

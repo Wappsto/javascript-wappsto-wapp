@@ -52,6 +52,9 @@ export const IMeta = t.iface([], {
     icon: t.opt('string'),
     trace: t.opt('string'),
     historical: t.opt('boolean'),
+    name_by_user: t.opt('string'),
+    tag: t.opt(t.array('string')),
+    tag_by_user: t.opt(t.array('string')),
 });
 
 export const FetchRequest = t.iface([], {
@@ -85,6 +88,11 @@ export const IModelFunc = t.iface([], {
     onChange: t.func('void', t.param('callback', 'StreamCallback')),
     onDelete: t.func('void', t.param('callback', 'StreamCallback')),
     onCreate: t.func('void', t.param('callback', 'StreamCallback')),
+    getFilterResult: t.func(
+        'string',
+        t.param('filter', 'Filter', true),
+        t.param('omit_filter', 'Filter', true)
+    ),
 });
 
 export const INetwork = t.iface([], {

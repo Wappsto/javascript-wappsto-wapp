@@ -47,6 +47,9 @@ export interface IMeta {
     icon?: string;
     trace?: string;
     historical?: boolean;
+    name_by_user?: string;
+    tag?: string[];
+    tag_by_user?: string[];
 }
 
 export interface FetchRequest {
