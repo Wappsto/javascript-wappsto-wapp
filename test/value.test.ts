@@ -510,7 +510,7 @@ describe('value', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(res1).toBe(true);
+        expect(res1).toBe('1');
         expect(fun).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -566,7 +566,7 @@ describe('value', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(res1).toBe(false);
+        expect(res1).toBe(undefined);
         expect(fun).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -605,7 +605,7 @@ describe('value', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(res1).toBe(false);
+        expect(res1).toBe(null);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
