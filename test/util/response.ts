@@ -151,6 +151,52 @@ const fullNetworkResponseUpdated = {
                         },
                     ],
                 },
+                {
+                    meta: {
+                        id: '18ad6c7c-df91-4e3d-8fbb-5841163a5739',
+                        version: '2.1',
+                        type: 'value',
+                    },
+                    name: 'Value Name 2',
+                    permission: 'w',
+                    type: 'temperature',
+                    number: { min: 0, max: 100, step: 1, unit: 'c' },
+                    state: [
+                        {
+                            meta: {
+                                id: 'f11a485e-22ca-48f6-9797-3de7c6192355',
+                                version: '2.1',
+                                type: 'state',
+                            },
+                            type: 'Control',
+                            timestamp: '',
+                            data: '1',
+                        },
+                    ],
+                },
+                {
+                    meta: {
+                        id: 'fb9a354c-605e-40fb-b5bd-4047d9298790',
+                        version: '2.1',
+                        type: 'value',
+                    },
+                    name: 'Value Name 2',
+                    permission: 'w',
+                    type: 'temperature',
+                    number: { min: 0, max: 100, step: 1, unit: 'c' },
+                    state: [
+                        {
+                            meta: {
+                                id: 'd8c394ee-379a-4532-97e7-ae56036e7214',
+                                version: '2.1',
+                                type: 'state',
+                            },
+                            type: 'Control',
+                            timestamp: '',
+                            data: '1',
+                        },
+                    ],
+                },
             ],
         },
         {

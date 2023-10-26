@@ -1,0 +1,251 @@
+{
+    "device": [
+      {
+        "status": [],
+        "value": [
+          {
+            "state": [
+              {
+                "timestamp": "2022-01-10T10:41:07.244438Z",
+                "data": "0",
+                "status_payment": "free",
+                "type": "Report",
+                "meta": {
+                  "id": "6b168505-ec2d-4475-a0af-14ba933ee63f",
+                  "type": "state",
+                  "version": "2.1",
+                  "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "created": "2022-01-10T10:41:07.244438Z",
+                  "updated": "2023-10-26T14:21:10.584768Z",
+                  "tag": [],
+                  "tag_by_user": [],
+                  "name_by_user": "Report",
+                  "iot": false,
+                  "historical": true
+                }
+              }
+            ],
+            "eventlog": [],
+            "name": "Temperature",
+            "type": "temperature",
+            "permission": "r",
+            "number": {
+              "min": -40,
+              "max": 85,
+              "step": 0.5,
+              "unit": "°C",
+              "si_conversion": "[K]=[°C]+273.15"
+            },
+            "meta": {
+              "id": "f98667c3-16fc-4851-8e1d-bc7f1e6dc613",
+              "type": "value",
+              "version": "2.1",
+              "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+              "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+              "created": "2022-01-10T10:41:07.244438Z",
+              "updated": "2023-10-26T14:21:10.584768Z",
+              "tag": [],
+              "tag_by_user": [],
+              "name_by_user": "Temperature"
+            }
+          },
+          {
+            "state": [
+              {
+                "timestamp": "2022-01-10T10:41:07.244438Z",
+                "data": "0",
+                "status_payment": "free",
+                "type": "Report",
+                "meta": {
+                  "id": "8ab39a94-bb76-4164-87ac-cfe9c1f778ff",
+                  "type": "state",
+                  "version": "2.1",
+                  "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "created": "2022-01-10T10:41:07.244438Z",
+                  "updated": "2023-10-26T14:21:10.584768Z",
+                  "tag": [],
+                  "tag_by_user": [],
+                  "name_by_user": "Report",
+                  "iot": false,
+                  "historical": true
+                }
+              }
+            ],
+            "eventlog": [],
+            "name": "Humidity",
+            "type": "relative_humidity",
+            "permission": "r",
+            "number": {
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "unit": "%",
+              "si_conversion": "[1]=100[%]"
+            },
+            "meta": {
+              "id": "fcd2db59-3a61-482c-b322-a49b35c4c8fe",
+              "type": "value",
+              "version": "2.1",
+              "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+              "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+              "created": "2022-01-10T10:41:07.244438Z",
+              "updated": "2023-10-26T14:21:10.584768Z",
+              "tag": [],
+              "tag_by_user": [],
+              "name_by_user": "Humidity"
+            }
+          },
+          {
+            "state": [
+              {
+                "timestamp": "2022-01-10T10:41:07.244438Z",
+                "data": "300",
+                "status_payment": "free",
+                "type": "Report",
+                "meta": {
+                  "id": "1e1eea9c-24e6-4b2a-9b18-4b86deb76e08",
+                  "type": "state",
+                  "version": "2.1",
+                  "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "created": "2022-01-10T10:41:07.244438Z",
+                  "updated": "2023-10-26T14:21:10.584768Z",
+                  "tag": [],
+                  "tag_by_user": [],
+                  "name_by_user": "Report",
+                  "iot": false,
+                  "historical": true
+                }
+              }
+            ],
+            "eventlog": [],
+            "name": "Pressure",
+            "type": "pressure",
+            "permission": "r",
+            "number": {
+              "min": 300,
+              "max": 1100,
+              "step": 1,
+              "unit": "hPa",
+              "si_conversion": "[Pa]=[hPa]/100"
+            },
+            "meta": {
+              "id": "83b28292-c4d6-4126-9b83-8430a000febf",
+              "type": "value",
+              "version": "2.1",
+              "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+              "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+              "created": "2022-01-10T10:41:07.244438Z",
+              "updated": "2023-10-26T14:21:10.584768Z",
+              "tag": [],
+              "tag_by_user": [],
+              "name_by_user": "Pressure"
+            }
+          },
+          {
+            "state": [
+              {
+                "timestamp": "2022-01-10T10:41:07.244438Z",
+                "data": "10",
+                "status_payment": "free",
+                "type": "Report",
+                "meta": {
+                  "id": "60efeaad-347f-49b3-8ad2-d9a0bba04765",
+                  "type": "state",
+                  "version": "2.1",
+                  "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "created": "2022-01-10T10:41:07.244438Z",
+                  "updated": "2023-10-26T14:21:10.584768Z",
+                  "tag": [],
+                  "tag_by_user": [],
+                  "name_by_user": "Report",
+                  "iot": false,
+                  "historical": true
+                }
+              },
+              {
+                "timestamp": "2022-01-10T10:41:07.244438Z",
+                "data": "10",
+                "status_payment": "free",
+                "type": "Control",
+                "meta": {
+                  "id": "63dc2a0e-4ef3-4de1-86eb-bfcbf23e5663",
+                  "type": "state",
+                  "version": "2.1",
+                  "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+                  "created": "2022-01-10T10:41:07.244438Z",
+                  "updated": "2023-10-26T14:21:10.584768Z",
+                  "tag": [],
+                  "tag_by_user": [],
+                  "name_by_user": "Control",
+                  "iot": false,
+                  "historical": true
+                }
+              }
+            ],
+            "eventlog": [],
+            "name": "Sensor update interval",
+            "type": "time",
+            "permission": "rw",
+            "number": {
+              "min": 1,
+              "max": 1200,
+              "step": 1,
+              "unit": "s"
+            },
+            "meta": {
+              "id": "3e608a81-02f7-4acc-b02c-74aae728c945",
+              "type": "value",
+              "version": "2.1",
+              "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+              "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+              "created": "2022-01-10T10:41:07.244438Z",
+              "updated": "2023-10-26T14:21:10.584768Z",
+              "tag": [],
+              "tag_by_user": [],
+              "name_by_user": "Sensor update interval"
+            }
+          }
+        ],
+        "name": "Barometer",
+        "manufacturer": "Seluxit",
+        "product": "SUITKASE_Barometer",
+        "version": "1.0.0",
+        "serial": "",
+        "description": "BMP280 is a high-precision, low-power combined humidity, pressure, and temperature sensor. Accuracy:  ±1.0 pressure & temperature,  ±3 relative humidity.",
+        "protocol": "",
+        "communication": "",
+        "meta": {
+          "id": "e156996c-82a6-44f8-9a8a-a16960a9d10c",
+          "type": "device",
+          "version": "2.1",
+          "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+          "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+          "created": "2022-01-10T10:41:07.244438Z",
+          "updated": "2023-10-26T14:21:10.584768Z",
+          "tag": [],
+          "tag_by_user": [],
+          "name_by_user": "Barometer",
+          "iot": false
+        }
+      }
+    ],
+    "name": "Untitled",
+    "meta": {
+      "id": "11c73ade-ddf0-4bd1-8ad5-c3d05dd1dd1f",
+      "type": "network",
+      "version": "2.1",
+      "owner": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+      "manufacturer": "f23b3a6e-391f-4efd-a690-49173d4c675a",
+      "created": "2022-01-10T10:41:07.244438Z",
+      "updated": "2023-10-26T14:24:51.393772Z",
+      "tag": [],
+      "tag_by_user": [],
+      "name_by_user": "Untitled",
+      "iot": false
+    }
+  }

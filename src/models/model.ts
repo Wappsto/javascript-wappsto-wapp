@@ -185,10 +185,7 @@ export class Model implements IModel {
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     ): Promise<void> {}
 
-    public async _reload(
-        reloadAll?: boolean,
-        defaultExpand = 0
-    ): Promise<boolean> {
+    async _reload(reloadAll?: boolean, defaultExpand = 0): Promise<boolean> {
         Model.validateMethod('Model', 'reload', arguments);
 
         if (this.meta.id === undefined) {

@@ -106,7 +106,7 @@ describe('network', () => {
     });
 
     afterEach(() => {
-        after();
+        after(mockedAxios);
     });
 
     it('can create a new network class', () => {
@@ -807,6 +807,7 @@ describe('network', () => {
         const state1 = value1.state[0];
         const state2 = value1.state[1];
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: { expand: 3, go_internal: true },
         });
@@ -825,8 +826,6 @@ describe('network', () => {
             '/2.1/state/9ee509d7-07ce-4e71-9016-340d53867af4',
             { params: { expand: 0 } }
         );
-
-        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
 
         expect(device1.name).toEqual('Device Name');
         expect(device2.name).toEqual('Device Name 2');
@@ -994,6 +993,7 @@ describe('network', () => {
         expect(res).toBe(true);
         expect(res2).toBe(false);
         expect(res3).toBe(false);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
     });
 
     it('can find network by id', async () => {
@@ -1058,6 +1058,7 @@ describe('network', () => {
         network.meta.id = '744be12b-85a5-4ef0-8ca1-00856a748049';
         await network.reload();
 
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(network.meta.id).toBe(undefined);
     });
 
@@ -1198,5 +1199,61 @@ describe('network', () => {
         );
 
         expect(networks.length).toEqual(11);
+    });
+
+    it('can load all items after using a filter', async () => {
+        mockedAxios.post.mockResolvedValue({
+            data: responses['network_filter'],
+        });
+        mockedAxios.get.mockResolvedValue({
+            data: responses['network_reload'],
+        });
+
+        const networks = await Network.findAllByFilter({
+            device: { manufacturer: 'Seluxit' },
+            value: { type: 'temperature', number: { max: 85 } },
+        });
+
+        expect(networks[0].device.length).toBe(1);
+        expect(networks[0].device[0].value.length).toBe(1);
+
+        const res = await networks[0].reload(true);
+
+        expect(res).toBe(true);
+        expect(networks[0].device.length).toBe(1);
+        expect(networks[0].device[0].value.length).toBe(4);
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/network',
+            {
+                filter: {
+                    attribute: [
+                        'device_manufacturer=Seluxit',
+                        'value_type=temperature',
+                        'value_number.max=85',
+                    ],
+                },
+                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_manufacturer=Seluxit"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=temperature","this_number.max=85"]) { meta{id type version connection name_by_user} name permission type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+            },
+            {
+                params: {
+                    expand: 3,
+                    quantity: 'all',
+                    message: 'Find all network using filter',
+                    identifier: 'network-all-Find all network using filter',
+                    method: ['retrieve', 'update'],
+                    go_internal: true,
+                    fetch: true,
+                },
+            }
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            '/2.1/network/11c73ade-ddf0-4bd1-8ad5-c3d05dd1dd1f',
+            { params: { expand: 3 } }
+        );
     });
 });

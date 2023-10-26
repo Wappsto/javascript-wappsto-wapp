@@ -121,8 +121,7 @@ export class Network extends ConnectionModel implements INetwork {
 
     public async loadAllChildren(
         json: Record<string, any> | null,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _reloadAll = false
+        reloadAll = false
     ): Promise<void> {
         const proms: any[] = [];
         let devices: any | undefined;
@@ -153,6 +152,11 @@ export class Network extends ConnectionModel implements INetwork {
                         this.device.push(dev);
                         if (data) {
                             dev.parse(data);
+                            if (reloadAll) {
+                                proms.push(
+                                    dev.loadAllChildren(data, reloadAll)
+                                );
+                            }
                         }
                     } else {
                         if (data) {

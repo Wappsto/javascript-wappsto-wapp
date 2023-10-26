@@ -1,15 +1,23 @@
 import WS from 'jest-websocket-mock';
 import { stopLogging } from '../../src/index';
 import { openStream, streamHelperReset } from '../../src/stream_helpers';
+import { AxiosStatic } from 'axios';
 
 let server: WS;
 let autoTimer: any;
 let answered = 0;
 
-export function after() {
+export function after(mockedAxios?: jest.Mocked<AxiosStatic>) {
     // console.log('********* TEST DONE **********');
     clearTimeout(autoTimer);
     jest.clearAllMocks();
+    if (mockedAxios) {
+        mockedAxios.get.mockClear();
+        mockedAxios.post.mockClear();
+        mockedAxios.put.mockClear();
+        mockedAxios.patch.mockClear();
+        mockedAxios.delete.mockClear();
+    }
     openStream.close();
     openStream.reset();
     streamHelperReset();
