@@ -509,12 +509,21 @@ if (!result) {
 ```
 
 If you need to verify that the device send back a report, you can use
-`controlWithAck` to wait for the incoming report.
+`controlWithAck` to wait for the incoming report. It will return the
+received value from the device. 
 
 ```javascript
 const result = await value.controlWithAck('1');
-if (!result || value.getReportData() !== '1') {
-    console.warn('Device failed to verify the control');
+switch (result) {
+    case undefined:
+        console.log('Failed to control device');
+        break;
+    case null:
+        console.log('Timeout while waiting for response');
+        break;
+    default:
+        console.log(`Received ${result} from the device`);
+        break;
 }
 ```
 

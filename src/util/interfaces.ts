@@ -304,7 +304,7 @@ export interface IValueFunc {
     controlWithAck(
         data: ReportValueInput,
         timestamp?: Timestamp
-    ): Promise<boolean>;
+    ): Promise<string | undefined | null>;
     onControl(callback: ValueStreamCallback): Promise<boolean>;
     onReport(
         callback: ValueStreamCallback,

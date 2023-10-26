@@ -686,22 +686,22 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     public controlWithAck(
         data: ReportValueInput,
         timestamp: Timestamp = undefined
-    ): Promise<boolean> {
+    ): Promise<string | undefined | null> {
         this.validate('controlWithAck', arguments);
 
-        const promise = new Promise<boolean>((resolve) => {
+        const promise = new Promise<string | undefined | null>((resolve) => {
             this.#findStateAndUpdate('Control', data, timestamp).then((res) => {
                 if (!res) {
-                    resolve(false);
+                    resolve(undefined);
                 }
             });
-            this.onReport(() => {
-                resolve(true);
+            this.onReport((val, data) => {
+                resolve(data);
                 return true;
             });
 
             setTimeout(() => {
-                resolve(false);
+                resolve(null);
             }, _config.ackTimeout * 1000);
         });
 

@@ -390,7 +390,7 @@ export const IValueFunc = t.iface([], {
         t.param('timestamp', 'Timestamp', true)
     ),
     controlWithAck: t.func(
-        'boolean',
+        t.union('string', 'undefined', 'null'),
         t.param('data', 'ReportValueInput'),
         t.param('timestamp', 'Timestamp', true)
     ),
