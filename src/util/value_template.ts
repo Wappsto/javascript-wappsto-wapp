@@ -1,7 +1,7 @@
 import { ValueType } from './interfaces';
 
 export class ValueTemplate {
-    [key: string]: any;
+    [key: string]: ValueType;
     static version = '0.0.5';
 
     static TRIGGER: ValueType = {

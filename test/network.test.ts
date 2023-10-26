@@ -1135,6 +1135,9 @@ describe('network', () => {
             value: { type: 'energy' },
         });
 
+        expect(networks.length).toEqual(11);
+        expect(networks[0].reload).toBeDefined();
+
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
 
@@ -1156,8 +1159,6 @@ describe('network', () => {
                 },
             }
         );
-
-        expect(networks.length).toEqual(11);
     });
 
     it('can find all using omit filter', async () => {
