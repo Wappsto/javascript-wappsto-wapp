@@ -2041,10 +2041,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.9.tgz#c7164e0f8d3f12dfae336af0b1f7fdec8c6b204f"
   integrity sha512-8e2HYcg7ohnTUbHk8focoklEQYvemQmu9M/f43DZVx43kHn0tE3BY/6gSDxS7k0SprtS0NHvj+L80cGLnoOUcQ==
 
-"@types/node@^20.8.9":
-  version "20.8.9"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.8.9.tgz#646390b4fab269abce59c308fc286dcd818a2b08"
-  integrity sha512-UzykFsT3FhHb1h7yD4CA4YhBHq545JC0YnEz41xkipN88eKQtL6rSgocL5tbAP6Ola9Izm/Aw4Ora8He4x0BHg==
+"@types/node@^20.8.10":
+  version "20.8.10"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.8.10.tgz#a5448b895c753ae929c26ce85cab557c6d4a365e"
+  integrity sha512-TlgT8JntpcbmKUFzjhsyhGfP2fsiz1Mv56im6enJ905xG1DAYesxJaeSbGqQmAw8OWPdhyJGhGSQGKRNJ45u9w==
   dependencies:
     undici-types "~5.26.4"
 
@@ -7577,10 +7577,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
 
-typedoc@^0.25.2:
-  version "0.25.2"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.25.2.tgz#39f525c28b6eb61da54dda4ec6b1500df620bed8"
-  integrity sha512-286F7BeATBiWe/qC4PCOCKlSTwfnsLbC/4cZ68oGBbvAqb9vV33quEOXx7q176OXotD+JdEerdQ1OZGJ818lnA==
+typedoc@^0.25.3:
+  version "0.25.3"
+  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.25.3.tgz#53c6d668e1001b3d488e9a750fcdfb05433554c0"
+  integrity sha512-Ow8Bo7uY1Lwy7GTmphRIMEo6IOZ+yYUyrc8n5KXIZg1svpqhZSWgni2ZrDhe+wLosFS8yswowUzljTAV/3jmWw==
   dependencies:
     lunr "^2.3.9"
     marked "^4.3.0"
