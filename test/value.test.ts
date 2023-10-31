@@ -306,11 +306,6 @@ describe('value', () => {
             1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '10',
             }),
@@ -320,11 +315,6 @@ describe('value', () => {
             2,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: 'true',
             }),
@@ -334,11 +324,6 @@ describe('value', () => {
             3,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '{"test":"test"}',
             }),
@@ -348,11 +333,6 @@ describe('value', () => {
             4,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '1',
             }),
@@ -362,11 +342,6 @@ describe('value', () => {
             5,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '[]',
             }),
@@ -376,11 +351,6 @@ describe('value', () => {
             6,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: 'test',
                 timestamp: 'timestamp',
@@ -415,11 +385,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: '10',
             }),
@@ -428,11 +393,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: 'true',
             }),
@@ -443,11 +403,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: 'test',
                 timestamp: 'timestamp',
@@ -516,11 +471,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: '10',
             }),
@@ -572,11 +522,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: '10',
             }),
@@ -610,11 +555,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: '10',
             }),
@@ -1157,11 +1097,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: '1',
             }),
@@ -1170,11 +1105,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: '2',
             }),
@@ -1183,11 +1113,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: '3',
             }),
@@ -1196,11 +1121,6 @@ describe('value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Control',
                 data: '4',
             }),

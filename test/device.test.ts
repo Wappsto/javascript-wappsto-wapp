@@ -1434,11 +1434,6 @@ describe('device', () => {
             '/2.1/state/1c067551-799a-4b35-9a75-5eb0b978ee97',
             expect.objectContaining({
                 data: '30',
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '1c067551-799a-4b35-9a75-5eb0b978ee97',
-                },
                 type: 'Report',
                 timestamp: '2023-03-03T03:03:03Z',
             }),
@@ -1613,7 +1608,7 @@ describe('device', () => {
         const d = new Device();
         d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
 
-        const connP = d.onConnectionChange(f);
+        const connectionPromise = d.onConnectionChange(f);
 
         await server.connected;
 
@@ -1629,7 +1624,7 @@ describe('device', () => {
         );
         sendRpcResponse(server);
 
-        await connP;
+        await connectionPromise;
 
         server.send({
             meta_object: {
@@ -1806,11 +1801,6 @@ describe('device', () => {
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             expect.objectContaining({
                 data: '0',
-                meta: {
-                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                    type: 'state',
-                    version: '2.1',
-                },
                 type: 'Report',
             }),
             {}

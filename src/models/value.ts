@@ -352,7 +352,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         state.timestamp = this.#timestampToString(timestamp);
 
         if (type !== 'Report' || !this.sendReportWithJitter) {
-            return await state.update();
+            return await state.update(State.attributes);
         }
 
         this.sendReportWithJitter = false;
@@ -372,7 +372,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         state.data = data.toString();
         state.timestamp = eventTimestamp;
 
-        const p = state.update();
+        const p = state.update(State.attributes);
 
         state.data = oldData;
         state.timestamp = oldTimestamp;
@@ -462,7 +462,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 await state.create();
                 this.state.push(state);
             } else {
-                await state.update();
+                await state.update(State.attributes);
             }
         }
 

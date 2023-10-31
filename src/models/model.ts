@@ -162,13 +162,16 @@ export class Model implements IModel {
         this.#update();
     }
 
-    public async update(): Promise<boolean> {
+    public async update(customKeys?: string[]): Promise<boolean> {
         if (this.meta.id !== undefined) {
             return new Promise<boolean>((resolve) => {
                 printDebug(
                     `Adding to update queue: ${this.updateQueue.length}`
                 );
-                this.updateQueue.push({ data: this.toJSON(), resolve });
+                this.updateQueue.push({
+                    data: this.toJSON(customKeys),
+                    resolve,
+                });
                 if (this.updateQueue.length === 1) {
                     this.#update();
                 }
@@ -251,7 +254,13 @@ export class Model implements IModel {
         return false;
     }
 
-    public toJSON(): Record<string, any> {
+    public toJSON(customKeys?: string[]): Record<string, any> {
+        if (customKeys) {
+            return Object.assign(
+                {},
+                this.#removeUndefined(pick(this, customKeys))
+            );
+        }
         const meta = Object.assign(
             {},
             pick(this.meta, ['id', 'type', 'version', 'historical'])

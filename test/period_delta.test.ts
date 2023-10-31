@@ -53,10 +53,6 @@ const templateHelperDone = () => {
         2,
         '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
         expect.objectContaining({
-            meta: {
-                type: 'state',
-                version: '2.1',
-            },
             data: 'NA',
             type: 'Report',
         }),
@@ -66,10 +62,6 @@ const templateHelperDone = () => {
         3,
         '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
         expect.objectContaining({
-            meta: {
-                type: 'state',
-                version: '2.1',
-            },
             data: 'NA',
             type: 'Control',
         }),
@@ -148,11 +140,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '1',
             }),
@@ -161,11 +148,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '3',
             }),
@@ -174,11 +156,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: 'error',
             }),
@@ -187,11 +164,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '10',
             }),
@@ -200,11 +172,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '444',
             }),
@@ -266,11 +233,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '1',
             }),
@@ -279,11 +241,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '3',
             }),
@@ -462,11 +419,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
             expect.objectContaining({
-                meta: {
-                    id: '05bcdf20-cf39-4b16-adb2-ac711d5678a6',
-                    type: 'state',
-                    version: '2.1',
-                },
                 type: 'Report',
                 data: '1',
             }),
@@ -475,11 +427,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
             expect.objectContaining({
-                meta: {
-                    id: '05bcdf20-cf39-4b16-adb2-ac711d5678a6',
-                    type: 'state',
-                    version: '2.1',
-                },
                 type: 'Report',
                 data: '10',
             }),
@@ -488,11 +435,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
             expect.objectContaining({
-                meta: {
-                    id: '05bcdf20-cf39-4b16-adb2-ac711d5678a6',
-                    type: 'state',
-                    version: '2.1',
-                },
                 type: 'Report',
                 data: '100',
             }),
@@ -600,11 +542,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             expect.objectContaining({
-                meta: {
-                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                    type: 'state',
-                    version: '2.1',
-                },
                 type: 'Report',
                 data: '1',
             }),
@@ -613,11 +550,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             {
-                meta: {
-                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                    type: 'state',
-                    version: '2.1',
-                },
                 type: 'Report',
                 data: '100',
                 timestamp: timestamp,
@@ -627,11 +559,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenLastCalledWith(
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             {
-                meta: {
-                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                    type: 'state',
-                    version: '2.1',
-                },
                 type: 'Report',
                 data: '10',
                 timestamp: timestamp_jitter,
@@ -703,11 +630,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '1',
                 timestamp: timestamp1,
@@ -717,11 +639,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '1',
                 timestamp: timestamp2,
@@ -731,11 +648,6 @@ describe('period and delta on value', () => {
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
-                meta: {
-                    type: 'state',
-                    version: '2.1',
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                },
                 type: 'Report',
                 data: '1',
                 timestamp: timestamp3,

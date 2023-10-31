@@ -171,11 +171,6 @@ describe('historical', () => {
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 data: '4',
-                meta: {
-                    id: '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-                    type: 'state',
-                    version: '2.1',
-                },
                 timestamp: '2022-02-02T02:02:04Z',
                 type: 'Report',
             },
