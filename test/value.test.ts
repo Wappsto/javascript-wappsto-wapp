@@ -415,7 +415,9 @@ describe('value', () => {
 
     it('can send a controlWithAck', async () => {
         const fun = jest.fn();
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -465,9 +467,32 @@ describe('value', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
+        const controlPromise2 = value.controlWithAck(20);
+
+        server.send({
+            meta_object: {
+                type: 'state',
+            },
+            event: 'update',
+            path: '/state/f1ada7da-7192-487d-93d5-221a00bdc23c',
+            data: {
+                meta: {
+                    id: 'f1ada7da-7192-487d-93d5-221a00bdc23c',
+                    type: 'state',
+                },
+                type: 'Report',
+                data: '20',
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        const res2 = await controlPromise2;
+
         expect(res1).toBe('1');
-        expect(fun).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(res2).toBe('20');
+        expect(fun).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
@@ -476,11 +501,27 @@ describe('value', () => {
             }),
             {}
         );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                type: 'Control',
+                data: '20',
+            }),
+            {}
+        );
     });
 
     it('can send a controlWithAck that fails', async () => {
+        config({
+            requests: true,
+            stream: true,
+            debug: true,
+        });
+
         const fun = jest.fn();
-        mockedAxios.patch.mockRejectedValueOnce({ data: [] });
+        mockedAxios.patch
+            .mockRejectedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -514,11 +555,32 @@ describe('value', () => {
 
         const res1 = await controlPromise;
 
+        const controlPromise2 = value.controlWithAck(20);
+
         await new Promise((r) => setTimeout(r, 1));
 
+        server.send({
+            meta_object: {
+                type: 'state',
+            },
+            event: 'update',
+            path: '/state/f1ada7da-7192-487d-93d5-221a00bdc23c',
+            data: {
+                meta: {
+                    id: 'f1ada7da-7192-487d-93d5-221a00bdc23c',
+                    type: 'state',
+                },
+                type: 'Report',
+                data: '2',
+            },
+        });
+
+        const res2 = await controlPromise2;
+
         expect(res1).toBe(undefined);
-        expect(fun).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(res2).toBe('2');
+        expect(fun).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
@@ -527,11 +589,21 @@ describe('value', () => {
             }),
             {}
         );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                type: 'Control',
+                data: '20',
+            }),
+            {}
+        );
     });
 
     it('can send a controlWithAck that timeout', async () => {
         config({ ackTimeout: 1 });
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch
+            .mockResolvedValueOnce({ data: [] })
+            .mockResolvedValueOnce({ data: [] });
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -543,20 +615,45 @@ describe('value', () => {
         value.state.push(state);
 
         const controlPromise = value.controlWithAck(10);
-
-        await new Promise((r) => setTimeout(r, 1));
-
         const res1 = await controlPromise;
 
-        await new Promise((r) => setTimeout(r, 1));
+        const controlPromise2 = value.controlWithAck(20);
+        await new Promise((r) => setTimeout(r, 10));
+
+        server.send({
+            meta_object: {
+                type: 'state',
+            },
+            event: 'update',
+            path: '/state/f1ada7da-7192-487d-93d5-221a00bdc23c',
+            data: {
+                meta: {
+                    id: 'f1ada7da-7192-487d-93d5-221a00bdc23c',
+                    type: 'state',
+                },
+                type: 'Report',
+                data: '2',
+            },
+        });
+
+        const res2 = await controlPromise2;
 
         expect(res1).toBe(null);
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(res2).toBe('2');
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
                 data: '10',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledWith(
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                type: 'Control',
+                data: '20',
             }),
             {}
         );

@@ -6,6 +6,7 @@ import { printDebug, printWarning } from '../util/debug';
 import { generateFilterRequest } from '../util/filter';
 import {
     checkList,
+    compareCallback,
     compareDates,
     convertFilterToJson,
     convertFilterToString,
@@ -85,6 +86,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     periodTimer?: any;
     refreshCallbacks: RefreshStreamCallback[] = [];
     jitterTimer?: any;
+    callbackFunc: Record<string, () => Promise<void>> = {};
 
     constructor(name?: string) {
         super('value', 1);
@@ -392,25 +394,51 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 callback(this, state.data, state.timestamp);
             }
 
-            if (!checkList(this.stateCallbacks[type], callback)) {
-                this.stateCallbacks[type].push(callback);
-                res = await state.onChange(async () => {
-                    const callbacks = this.stateCallbacks[state.type];
+            if (!this.callbackFunc[type]) {
+                this.callbackFunc[type] = async () => {
+                    const callbacks = this.stateCallbacks?.[state.type] || [];
                     for (let i = 0; i < callbacks.length; i++) {
                         const cb = callbacks[i];
                         await cb(this, state.data, state.timestamp);
                     }
-                });
+                };
+            }
+
+            if (!checkList(this.stateCallbacks[type], callback)) {
+                this.stateCallbacks[type].push(callback);
+                if (this.stateCallbacks[type].length === 1) {
+                    res = await state.onChange(this.callbackFunc[type]);
+                }
+            } else {
+                printDebug(
+                    `Skipping duplicate ${type} callback for ${this.id()}`
+                );
             }
         }
         return res;
     }
 
-    async #findStateAndClearCallback(type: StateType): Promise<boolean> {
-        this.stateCallbacks[type] = [];
-        const state = this.#findState(type);
-        if (state) {
-            return state.clearAllCallbacks();
+    async #findStateAndClearCallback(
+        type: StateType,
+        callback?: ValueStreamCallback
+    ): Promise<boolean> {
+        if (callback) {
+            const index = this.stateCallbacks[type].findIndex((c) =>
+                compareCallback(c, callback)
+            );
+            if (index !== -1) {
+                this.stateCallbacks[type].splice(index, 1);
+            } else {
+                printDebug(`Failed to find and remove ${type} callback`);
+            }
+        } else {
+            this.stateCallbacks[type] = [];
+        }
+        if (this.stateCallbacks[type].length === 0) {
+            const state = this.#findState(type);
+            if (state && this.callbackFunc[type]) {
+                return state.cancelOnChange(this.callbackFunc[type]);
+            }
         }
         return false;
     }
@@ -692,14 +720,24 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         const promise = new Promise<string | undefined | null>(
             async (resolve) => {
                 // eslint-disable-next-line prefer-const
-                let timer: ReturnType<typeof setTimeout> | undefined;
-                await this.onReport((_, data) => {
+                let timer: ReturnType<typeof setTimeout> | 'skip' | undefined;
+                const cb = (
+                    _value: IValueFunc & IValueBase,
+                    data: string,
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    _timestamp: string
+                ) => {
                     if (timer) {
                         clearTimeout(timer);
+                        timer = undefined;
+                    } else {
+                        timer = 'skip';
                     }
+                    this.cancelOnReport(cb);
                     resolve(data);
-                    return true;
-                });
+                };
+
+                await this.onReport(cb);
 
                 const res = await this.#findStateAndUpdate(
                     'Control',
@@ -708,13 +746,18 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 );
 
                 if (!res) {
+                    this.cancelOnReport(cb);
                     resolve(undefined);
                     return;
                 }
 
-                timer = setTimeout(() => {
-                    resolve(null);
-                }, _config.ackTimeout * 1000);
+                if (timer === undefined) {
+                    timer = setTimeout(() => {
+                        timer = undefined;
+                        this.cancelOnReport(cb);
+                        resolve(null);
+                    }, _config.ackTimeout * 1000);
+                }
             }
         );
 
@@ -754,12 +797,12 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return true;
     }
 
-    public cancelOnReport(): Promise<boolean> {
-        return this.#findStateAndClearCallback('Report');
+    public cancelOnReport(callback?: ValueStreamCallback): Promise<boolean> {
+        return this.#findStateAndClearCallback('Report', callback);
     }
 
-    public cancelOnControl(): Promise<boolean> {
-        return this.#findStateAndClearCallback('Control');
+    public cancelOnControl(callback?: ValueStreamCallback): Promise<boolean> {
+        return this.#findStateAndClearCallback('Control', callback);
     }
 
     public cancelOnRefresh(): Promise<boolean> {

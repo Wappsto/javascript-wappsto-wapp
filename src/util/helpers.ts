@@ -18,9 +18,13 @@ export function isVersion(data: string) {
     return reg.test(data);
 }
 
+export function compareCallback(cb1: any, cb2: any) {
+    return cb1 === cb2 || cb1.toString() === cb2.toString();
+}
+
 export function checkList(list: any[], check: any): boolean {
     for (let i = 0; i < list.length; i++) {
-        if (list[i] === check || list[i].toString() === check.toString()) {
+        if (compareCallback(list[i], check)) {
             return true;
         }
     }
