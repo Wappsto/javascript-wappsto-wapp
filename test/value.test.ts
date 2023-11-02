@@ -512,12 +512,6 @@ describe('value', () => {
     });
 
     it('can send a controlWithAck that fails', async () => {
-        config({
-            requests: true,
-            stream: true,
-            debug: true,
-        });
-
         const fun = jest.fn();
         mockedAxios.patch
             .mockRejectedValueOnce({ data: [] })
