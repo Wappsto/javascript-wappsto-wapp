@@ -97,7 +97,7 @@
         "@size-limit/preset-small-lib": "^10.0.1",
         "@tsconfig/recommended": "^1.0.3",
         "@types/lodash.isequal": "^4.5.7",
-        "@types/lodash.omit": "^4.5.8",
+        "@types/lodash.omit": "^4.5.9",
         "@types/lodash.pick": "^4.4.8",
         "@types/node": "^20.8.9",
         "@types/websocket": "^1.0.8",
