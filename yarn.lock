@@ -2019,10 +2019,10 @@
   dependencies:
     "@types/lodash" "*"
 
-"@types/lodash.pick@^4.4.8":
-  version "4.4.8"
-  resolved "https://registry.yarnpkg.com/@types/lodash.pick/-/lodash.pick-4.4.8.tgz#125ba7fb4a0d7a02ac41bae1f2c455e60c125347"
-  integrity sha512-jQUDDkyIROOnAvtuqhvOb/Ws1plf+Wr1f0jKOoctJJZFreu/Bbc5Fnjg7dIrdt9ZxRDiItuVFGP84z1xHAHS4w==
+"@types/lodash.pick@^4.4.9":
+  version "4.4.9"
+  resolved "https://registry.yarnpkg.com/@types/lodash.pick/-/lodash.pick-4.4.9.tgz#06f7d88faa81a6c5665584778aea7b1374a1dc5b"
+  integrity sha512-hDpr96x9xHClwy1KX4/RXRejqjDFTEGbEMT3t6wYSYeFDzxmMnSKB/xHIbktRlPj8Nii2g8L5dtFDRaNFBEzUQ==
   dependencies:
     "@types/lodash" "*"
 
