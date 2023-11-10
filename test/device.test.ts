@@ -1823,7 +1823,7 @@ describe('device', () => {
             '/2.1/device',
             {
                 filter: { attribute: ['value_type=energy'] },
-                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
+                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
             },
             {
                 params: {
@@ -1868,7 +1868,7 @@ describe('device', () => {
                         'value_number.max=1',
                     ],
                 },
-                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=[energy,template]","this_number.max=1"]) { meta{id type version connection name_by_user} name permission type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
+                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=[energy,template]","this_number.max=1"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
             },
             {
                 params: {
