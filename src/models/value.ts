@@ -48,6 +48,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     static attributes = [
         'name',
         'permission',
+        'description',
         'type',
         'period',
         'delta',
