@@ -839,7 +839,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     ): Promise<ILogResponse> {
         const state = this.#findState(type);
         if (state) {
-            const params = request;
+            const params = { ...request };
             if (typeof params.start === 'object') {
                 params.start = params.start.toISOString();
             }
@@ -848,7 +848,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             }
             const response = await Model.fetch({
                 endpoint: `/2.1/log/${state.id()}/state`,
-                params: request,
+                params,
                 go_internal: false,
                 throw_error: true,
             });
@@ -857,9 +857,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                     ...response[0],
                     data: response[0].data.map(
                         (item: Record<string, string>) => ({
-                            data:
-                                item[params.operation || 'data'] ||
-                                item['data'],
+                            data: item[params.operation || 'data'],
                             timestamp: item.time || item.timestamp,
                         })
                     ),
