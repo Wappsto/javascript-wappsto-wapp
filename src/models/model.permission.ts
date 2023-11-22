@@ -160,6 +160,7 @@ export class PermissionModel extends OntologyModel {
                 quantity: quantity,
                 message: message,
                 identifier: id,
+                manufacturer: false,
                 method:
                     readOnly === true ? ['retrieve'] : ['retrieve', 'update'],
             });

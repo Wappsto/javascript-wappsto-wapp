@@ -345,6 +345,7 @@ describe('network', () => {
                 expand: 3,
                 quantity: 1,
                 go_internal: true,
+                manufacturer: false,
                 message: 'Find 1 network with name test',
                 identifier: 'network-1-Find 1 network with name test',
                 this_name: '=test',
@@ -662,6 +663,7 @@ describe('network', () => {
                 expand: 3,
                 quantity: 'all',
                 go_internal: true,
+                manufacturer: false,
                 message: 'Find all network with name test',
                 identifier: 'network-all-Find all network with name test',
                 this_name: '=test',
@@ -727,6 +729,7 @@ describe('network', () => {
                 expand: 3,
                 quantity: 1,
                 go_internal: true,
+                manufacturer: false,
                 message: 'Find 1 network',
                 identifier: 'network-1-Find 1 network',
                 this_name: '=test',
@@ -1040,6 +1043,7 @@ describe('network', () => {
                 expand: 3,
                 quantity: 1,
                 go_internal: true,
+                manufacturer: false,
                 message:
                     'Find network with id b62e285a-5188-4304-85a0-3982dcb575bc',
                 identifier:
@@ -1116,6 +1120,7 @@ describe('network', () => {
                     expand: 3,
                     fetch: true,
                     go_internal: true,
+                    manufacturer: false,
                     identifier: 'network-1-Find 1 network using filter',
                     message: 'Find 1 network using filter',
                     method: ['retrieve', 'update'],
@@ -1153,6 +1158,7 @@ describe('network', () => {
                     expand: 3,
                     fetch: true,
                     go_internal: true,
+                    manufacturer: false,
                     identifier: 'network-all-Find all network using filter',
                     message: 'Find all network using filter',
                     method: ['retrieve', 'update'],
@@ -1190,6 +1196,7 @@ describe('network', () => {
                     expand: 3,
                     fetch: true,
                     go_internal: true,
+                    manufacturer: false,
                     identifier: 'network-all-Find all network using filter',
                     message: 'Find all network using filter',
                     method: ['retrieve', 'update'],
@@ -1247,6 +1254,7 @@ describe('network', () => {
                     method: ['retrieve', 'update'],
                     go_internal: true,
                     fetch: true,
+                    manufacturer: false,
                 },
             }
         );
