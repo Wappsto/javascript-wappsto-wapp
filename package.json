@@ -100,7 +100,7 @@
         "@types/lodash.omit": "^4.5.8",
         "@types/lodash.pick": "^4.4.8",
         "@types/node": "^20.8.10",
-        "@types/websocket": "^1.0.8",
+        "@types/websocket": "^1.0.10",
         "@types/ws": "^8.5.8",
         "browserify": "^17.0.0",
         "dts-cli": "^2.0.3",
