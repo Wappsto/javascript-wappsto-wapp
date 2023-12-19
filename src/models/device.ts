@@ -419,14 +419,14 @@ export class Device extends ConnectionModel implements IDevice {
             }
         }
 
-        const data = await PermissionModel.request(
-            Device.endpoint,
+        const data = await PermissionModel.request({
+            endpoint: Device.endpoint,
             quantity,
-            usage,
-            query,
-            filterRequest,
-            readOnly
-        );
+            message: usage,
+            params: query,
+            body: filterRequest,
+            readOnly,
+        });
 
         const devices = Device.fromArray(data);
         const promises: any[] = [];

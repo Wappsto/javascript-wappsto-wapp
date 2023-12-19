@@ -268,14 +268,14 @@ export class Network extends ConnectionModel implements INetwork {
             }
         }
 
-        const data = await PermissionModel.request(
-            Network.endpoint,
+        const data = await PermissionModel.request({
+            endpoint: Network.endpoint,
             quantity,
-            usage,
-            query,
-            filterRequest,
-            readOnly
-        );
+            message: usage,
+            params: query,
+            body: filterRequest,
+            readOnly,
+        });
 
         const networks = Network.fromArray(data);
         const promises: any[] = [];

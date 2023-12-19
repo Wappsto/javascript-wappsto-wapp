@@ -443,6 +443,7 @@ let allValues = await Wappsto.Value.findAllByFilter(filter);
 ```
 
 It is also possible to use the filter to omit objects by giving a second filter to the `findByFilter` and `findAllByFilter`.
+To specify the number of items to request, a 3rd parameter can be applied. It is also possible to specify that the items is only needed to read from, by setting the 4th paramter to `true`.
 
 ```javascript
 const filter = { value: { type: 'energy' }};

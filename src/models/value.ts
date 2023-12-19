@@ -942,14 +942,14 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             }
         }
 
-        const data = await PermissionModel.request(
-            Value.endpoint,
+        const data = await PermissionModel.request({
+            endpoint: Value.endpoint,
             quantity,
-            usage,
-            query,
-            filterRequest,
-            readOnly
-        );
+            message: usage,
+            params: query,
+            body: filterRequest,
+            readOnly,
+        });
 
         const values = Value.fromArray(data);
         const promises: any[] = [];

@@ -133,20 +133,22 @@ export class PermissionModel extends OntologyModel {
         return data;
     }
 
-    public static request(
-        endpoint: string,
-        quantity: number | 'all',
-        message: string,
-        params?: Record<string, any>,
-        body?: Record<string, any>,
-        readOnly?: boolean
-    ): Promise<Record<string, any>[]> {
+    public static request(options: {
+        endpoint: string;
+        quantity: number | 'all';
+        message: string;
+        params?: Record<string, any>;
+        body?: Record<string, any>;
+        readOnly?: boolean;
+    }): Promise<Record<string, any>[]> {
+        const { endpoint, quantity, message, params, body, readOnly } = options;
         Model.validateMethod('PermissionModel', 'request', [
             endpoint,
             quantity,
             message,
             params,
             body,
+            readOnly,
         ]);
         return new Promise<Record<string, any>[]>(async (resolve) => {
             const newParams = params || {};
