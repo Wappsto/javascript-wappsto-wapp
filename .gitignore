@@ -13,3 +13,4 @@ saved_instance
 /*.js
 *.bak
 /run*.sh
+tmp
