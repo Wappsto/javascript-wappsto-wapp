@@ -140,8 +140,10 @@ export class PermissionModel extends OntologyModel {
         params?: Record<string, any>;
         body?: Record<string, any>;
         readOnly?: boolean;
+        create?: boolean;
     }): Promise<Record<string, any>[]> {
-        const { endpoint, quantity, message, params, body, readOnly } = options;
+        const { endpoint, quantity, message, params, body, readOnly, create } =
+            options;
         Model.validateMethod('PermissionModel', 'request', [
             endpoint,
             quantity,
@@ -149,6 +151,7 @@ export class PermissionModel extends OntologyModel {
             params,
             body,
             readOnly,
+            create,
         ]);
         return new Promise<Record<string, any>[]>(async (resolve) => {
             const newParams = params || {};
@@ -164,7 +167,11 @@ export class PermissionModel extends OntologyModel {
                 identifier: id,
                 manufacturer: false,
                 method:
-                    readOnly === true ? ['retrieve'] : ['retrieve', 'update'],
+                    readOnly === true
+                        ? ['retrieve']
+                        : create === true
+                        ? ['create', 'retrieve', 'update']
+                        : ['retrieve', 'update'],
             });
             const result = await Model.fetch({
                 endpoint,

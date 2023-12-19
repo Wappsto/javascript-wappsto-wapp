@@ -226,7 +226,9 @@ export interface IPermissionModelFunc {
         quantity: number | 'all',
         message: string,
         options?: Record<string, any>,
-        body?: Record<string, any>
+        body?: Record<string, any>,
+        readOnly?: boolean,
+        create?: boolean
     ): Promise<Record<string, any>[]>;
 }
 

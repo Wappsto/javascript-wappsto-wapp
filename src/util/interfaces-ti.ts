@@ -281,7 +281,9 @@ export const IPermissionModelFunc = t.iface([], {
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('message', 'string'),
         t.param('options', 'any', true),
-        t.param('body', 'any', true)
+        t.param('body', 'any', true),
+        t.param('readOnly', 'boolean', true),
+        t.param('create', 'boolean', true)
     ),
 });
 
