@@ -186,6 +186,7 @@ describe('Ontology', () => {
             '/2.1/data',
             {
                 data: {},
+                _secret_background: {},
                 data_meta: {
                     id: 'ontology_node_onto name',
                     type: 'ontology_node',

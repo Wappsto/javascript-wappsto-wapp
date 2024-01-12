@@ -41,10 +41,7 @@ export class Data extends StreamModel {
     }
 
     getAttributes(): string[] {
-        if (
-            Object.keys(this._secret_background).length === 0 &&
-            !this.clearSecret
-        ) {
+        if (isBrowser()) {
             return Data.attributes;
         } else {
             return [...Data.attributes, '_secret_background'];
