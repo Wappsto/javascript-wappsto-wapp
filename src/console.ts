@@ -94,7 +94,13 @@ export function backgroundLogging(): void {
 
     /* istanbul ignore next */
     process.on('unhandledRejection', (reason, promise) => {
-        console.warn('Unhandled Rejection at:', promise, 'reason:', reason);
+        defaultConsole.error('Unhandled Rejection at:', promise, 'reason:', reason);
+        const req = sendConsoleEvent(
+            generateConsoleMessage('error', [reason])
+        );
+        req.finally(function () {
+            process.exit(1);
+        });
     });
 }
 
