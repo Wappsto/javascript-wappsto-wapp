@@ -23,6 +23,7 @@ In depth documentation can be found on [Github Pages](https://wappsto.github.io/
 -   [To request access to an existing object from the user](#to-request-access-to-an-existing-object-from-the-user)
     -   [Using filters to request access to an existing object from the user](#using-filters-to-request-access-to-an-existing-object-from-the-user)
 -   [To find a child from an existing object](#to-find-a-child-from-an-existing-object)
+-   [List all objects by type](#list-all-objects-by-type)
 -   [Retrieve object by ID](#retrieve-object-by-id)
 -   [To change a value on a network created outside your wapp](#to-change-a-value-on-a-network-created-outside-your-wapp)
 -   [To reload a model from the server](#to-reload-a-model-from-the-server)
@@ -484,6 +485,14 @@ Or you can find all values with a given type, by calling
 ```javascript
 let values = network.findValueByType('value type');
 let values = device.findValueByType('value type');
+```
+
+### List all objects by type
+
+To list all objects of a spefic type that you have access to use `fetch` to get then all.
+
+```javascript
+let networks = await Wappsto.Network.fetch();
 ```
 
 ### Retrieve object by ID
