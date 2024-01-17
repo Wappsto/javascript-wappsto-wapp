@@ -140,6 +140,18 @@ describe('network', () => {
         expect(network.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
     });
 
+    it('can create a new networks from wappsto', async () => {
+        mockedAxios.get.mockResolvedValueOnce({ data: response2Networks });
+
+        const networks = await Network.fetch();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+            params: { go_internal: true, expand: 3 },
+        });
+        expect(networks[0]?.name).toEqual('test');
+    });
+
     it('can update a network on wappsto', async () => {
         mockedAxios.post.mockResolvedValueOnce(simpleNetworkResponse);
         mockedAxios.put.mockResolvedValueOnce(simpleNetworkResponse);

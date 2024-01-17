@@ -413,6 +413,38 @@ export class Network extends ConnectionModel implements INetwork {
         return networks;
     };
 
+    public static fetch = async () => {
+        const params = { expand: 3 };
+        const url = Network.endpoint;
+        const data = await Model.fetch({ endpoint: url, params });
+        const networks = Network.fromArray(data);
+        const promises: any[] = [];
+        networks.forEach((network, index) => {
+            if (network.loadAllChildren) {
+                promises.push(network.loadAllChildren(null));
+            } else if (typeof network === 'string') {
+                promises.push(
+                    new Promise<void>((resolve) => {
+                        const id = network as unknown as string;
+                        Network.fetchById(id).then((net) => {
+                            networks[index] = net;
+                            resolve();
+                        });
+                    })
+                );
+            }
+        });
+        await Promise.all(promises);
+
+        networks.forEach((network) => {
+            if (network?.addChildrenToStore) {
+                network.addChildrenToStore();
+            }
+        });
+
+        return networks;
+    };
+
     async #fetchMissingDevices(offset: number): Promise<void> {
         const data = await Model.fetch({
             endpoint: `${this.url()}/${this.id()}/device`,
