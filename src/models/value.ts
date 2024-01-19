@@ -1073,7 +1073,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     };
 
     static #validateStatic(name: string, params: any): void {
-        Model.validateMethod('Value', name, params, true);
+        Value.#validate(name, params, true);
     }
 
     static #validate(name: string, params: any, isStatic = false): void {

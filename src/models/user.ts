@@ -16,6 +16,7 @@ export class User extends Model {
     provider?: any[];
     public?: any[];
     verified_email?: boolean;
+    installation?: string;
 
     constructor() {
         super('user');

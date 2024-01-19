@@ -28,3 +28,4 @@ export * from './util/interfaces';
 export { ValueTemplate } from './util/value_template';
 export { VERSION } from './util/version';
 export { wappStorage } from './wapp_storage';
+export { default as getWappVersion } from './util/wappVersion';
