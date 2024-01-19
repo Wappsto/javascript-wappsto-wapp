@@ -43,6 +43,7 @@ In depth documentation can be found on [Github Pages](https://wappsto.github.io/
 -   [Ontology](#ontology)
 -   [Background logging](#background-logging)
 -   [Raw requests](#raw-requests)
+-   [Wapp Version](#wapp-version)
 -   [Config](#config)
     -   [Enable verbose responses from wappsto](#enable-verbose-responses-from-wappsto)
     -   [Validation](#validation)
@@ -520,7 +521,7 @@ if (!result) {
 
 If you need to verify that the device send back a report, you can use
 `controlWithAck` to wait for the incoming report. It will return the
-received value from the device. 
+received value from the device.
 
 ```javascript
 const result = await value.controlWithAck('1');
@@ -999,6 +1000,14 @@ It is possible to send your own requests to wappsto by using the
 ```javascript
 let networks = await Wappsto.request.get('/network');
 await Wappsto.request.post('/network', { name: 'Network Name' });
+```
+
+### Wapp Version
+
+To get the current version of the installed application, call `getWappVersion`.
+```javascript
+const version = await Wappsto.getWappVersion();
+console.log(`Current Installed Wapp Version: ${version}`);
 ```
 
 ### Config
