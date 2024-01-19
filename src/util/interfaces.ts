@@ -45,7 +45,6 @@ export interface IMeta {
     product?: string;
     deprecated?: boolean;
     icon?: string;
-    trace?: string;
     historical?: boolean;
     name_by_user?: string;
     tag?: string[];

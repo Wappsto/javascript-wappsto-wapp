@@ -288,7 +288,7 @@ describe('value', () => {
         state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
         await value.report(10);
-        await value.report(true);
+        await value.report(true, new Date('wrong'));
         await value.report({ test: 'test' });
         value.number = {
             min: 0,

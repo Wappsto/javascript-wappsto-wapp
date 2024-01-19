@@ -10,7 +10,6 @@ import wappsto, { printHttpError } from '../util/http_wrapper';
 import { FetchRequest, Filter, IMeta, IModel } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { addModel } from '../util/modelStore';
-import { getTraceId } from '../util/trace';
 
 export class Model implements IModel {
     meta: IMeta = { version: '2.1' };
@@ -371,9 +370,6 @@ export class Model implements IModel {
         }
         if (_config.verbose) {
             options.params['verbose'] = true;
-        }
-        if (getTraceId()) {
-            options.params['trace'] = getTraceId();
         }
         if (Object.keys(options.params).length === 0) {
             options = omit(options, 'params');

@@ -15,7 +15,6 @@ import {
     RequestHandler,
     ServiceHandler,
 } from '../util/interfaces';
-import { clearTrace, trace } from '../util/trace';
 import { Model } from './model';
 
 export class IgnoreError extends Error {
@@ -681,9 +680,7 @@ export class Stream extends Model {
             }
             return;
         }
-        this.#checkAndSendTrace(message);
         this.#handleMessage('message', message);
-        clearTrace('ok');
     }
 
     async #handleStreamMessage(message: any): Promise<void> {
@@ -744,11 +741,5 @@ export class Stream extends Model {
                 reconnect();
             }
         };
-    }
-
-    #checkAndSendTrace(event: IStreamEvent): void {
-        if (event?.meta?.trace) {
-            trace(event.meta.trace);
-        }
     }
 }

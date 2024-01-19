@@ -50,7 +50,6 @@ export const IMeta = t.iface([], {
     product: t.opt('string'),
     deprecated: t.opt('boolean'),
     icon: t.opt('string'),
-    trace: t.opt('string'),
     historical: t.opt('boolean'),
     name_by_user: t.opt('string'),
     tag: t.opt(t.array('string')),
