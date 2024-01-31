@@ -36,19 +36,23 @@ interface StreamServiceHash {
 
 export class Stream extends Model {
     static endpoint = '/2.1/stream';
-    socket?: WebSocket;
     websocketUrl = '';
-    ignoreReconnect = false;
-    models: StreamModelHash = {};
-    services: StreamServiceHash = {};
-    subscriptions: string[] = [];
-    opened = false;
-    backOff = 1;
-    waiting: any = [];
-    onRequestHandlers: Record<number, RequestHandler[]> = { 0: [], 1: [] };
-    onRequestEvents: Record<number, any[]> = { 0: [], 1: [] };
-    rpc_response: Record<number, any> = {};
-    reconnect_timer: any = undefined;
+
+    #socket?: WebSocket;
+    #ignoreReconnect = false;
+    #models: StreamModelHash = {};
+    #services: StreamServiceHash = {};
+    #subscriptions: string[] = [];
+    #opened = false;
+    #backOff = 1;
+    #waiting: any = [];
+    #onRequestHandlers: Record<number, RequestHandler[]> = { 0: [], 1: [] };
+    #onRequestEvents: Record<number, any[]> = { 0: [], 1: [] };
+    #rpc_response: Record<number, any> = {};
+    #reconnect_timer: any = undefined;
+    #watchdogTimer?: ReturnType<typeof setTimeout> = undefined;
+    #watchDogTriggerTimeout?: ReturnType<typeof setTimeout> = undefined;
+    #lastStreamMessage = 0;
 
     constructor() {
         super('stream');
@@ -74,28 +78,32 @@ export class Stream extends Model {
     }
 
     public reset(): void {
-        this.ignoreReconnect = false;
-        this.opened = false;
-        this.models = {};
-        this.services = {};
-        this.subscriptions = [];
-        this.onRequestHandlers = { 0: [], 1: [] };
-        this.onRequestEvents = { 0: [], 1: [] };
-        this.waiting = [];
-        this.backOff = 1;
-        Object.values(this.rpc_response).forEach((resolve: any) => {
+        this.#ignoreReconnect = false;
+        this.#opened = false;
+        this.#models = {};
+        this.#services = {};
+        this.#subscriptions = [];
+        this.#onRequestHandlers = { 0: [], 1: [] };
+        this.#onRequestEvents = { 0: [], 1: [] };
+        this.#waiting = [];
+        this.#backOff = 1;
+        Object.values(this.#rpc_response).forEach((resolve: any) => {
             printStream('Clean up', resolve);
             resolve(false);
         });
-        this.rpc_response = {};
-        clearTimeout(this.reconnect_timer);
+        this.#rpc_response = {};
+        clearTimeout(this.#reconnect_timer);
+        clearTimeout(this.#watchDogTriggerTimeout);
+        clearTimeout(this.#watchdogTimer);
     }
 
     #getTimeout(): number {
         /* istanbul ignore next */
-        if (this.backOff >= _config.reconnectCount) {
+        if (this.#backOff >= _config.reconnectCount) {
             printError(
-                `Stream failed to connect after ${this.backOff} attempts, exit!`
+                `Stream failed to connect after ${
+                    this.#backOff
+                } attempts, exit!`
             );
             if (isBrowser()) {
                 return Infinity;
@@ -103,24 +111,24 @@ export class Stream extends Model {
                 process.exit(11);
             }
         }
-        return this.backOff * 2 * 1000;
+        return this.#backOff * 2 * 1000;
     }
 
     #open(): Promise<void> {
         return new Promise<void>((resolve) => {
-            if (this.socket) {
+            if (this.#socket) {
                 resolve();
                 return;
             } else {
-                if (this.opened) {
-                    this.waiting.push(resolve);
+                if (this.#opened) {
+                    this.#waiting.push(resolve);
                     return;
                 }
             }
-            this.opened = true;
+            this.#opened = true;
 
             printDebug(`Open WebSocket on ${this.websocketUrl}`);
-            this.ignoreReconnect = false;
+            this.#ignoreReconnect = false;
 
             const openTimeout: ReturnType<typeof setTimeout> = setTimeout(
                 () => {
@@ -134,14 +142,14 @@ export class Stream extends Model {
                 const socket = new WebSocket(this.websocketUrl);
 
                 socket.onopen = () => {
-                    this.socket = socket;
+                    this.#socket = socket;
                     clearTimeout(openTimeout);
                     this.#addListeners();
                     resolve();
-                    this.waiting.forEach((r: any) => {
+                    this.#waiting.forEach((r: any) => {
                         r();
                     });
-                    this.waiting = [];
+                    this.#waiting = [];
                 };
             } catch (e) {
                 /* istanbul ignore next */
@@ -151,21 +159,21 @@ export class Stream extends Model {
     }
 
     public close(): void {
-        if (this.socket) {
+        if (this.#socket) {
             printDebug(`Closing WebSocket on ${this.url}`);
-            this.ignoreReconnect = true;
-            this.socket.close();
-            this.opened = false;
-            this.socket = undefined;
+            this.#ignoreReconnect = true;
+            this.#socket.close();
+            this.#opened = false;
+            this.#socket = undefined;
         }
     }
 
     async #addSubscription(subscription: string): Promise<boolean> {
-        if (this.subscriptions.includes(subscription)) {
+        if (this.#subscriptions.includes(subscription)) {
             return true;
         }
 
-        this.subscriptions.push(subscription);
+        this.#subscriptions.push(subscription);
 
         return this.#sendMessage(
             'POST',
@@ -175,14 +183,14 @@ export class Stream extends Model {
     }
 
     async #removeSubscription(subscription: string): Promise<boolean> {
-        if (!this.subscriptions.includes(subscription)) {
+        if (!this.#subscriptions.includes(subscription)) {
             /* istanbul ignore next */
             return true;
         }
 
-        const index = this.subscriptions.indexOf(subscription);
+        const index = this.#subscriptions.indexOf(subscription);
         if (index !== -1) {
-            this.subscriptions.splice(index, 1);
+            this.#subscriptions.splice(index, 1);
         }
         return this.#sendMessage(
             'DELETE',
@@ -198,12 +206,12 @@ export class Stream extends Model {
         this.validate('subscribe', arguments);
         const path = this.#generatePathFromService(model.path(), full);
 
-        if (!this.models[path]) {
-            this.models[path] = [];
+        if (!this.#models[path]) {
+            this.#models[path] = [];
         }
 
-        if (this.models[path].indexOf(model) === -1) {
-            this.models[path].push(model);
+        if (this.#models[path].indexOf(model) === -1) {
+            this.#models[path].push(model);
             await this.#open();
 
             printDebug(`Add subscription: ${model.path()}`);
@@ -214,10 +222,10 @@ export class Stream extends Model {
 
     public async unsubscribe(model: IStreamModel): Promise<boolean> {
         this.validate('subscribe', arguments);
-        if (this.models[model.path()]) {
-            const index = this.models[model.path()].indexOf(model);
+        if (this.#models[model.path()]) {
+            const index = this.#models[model.path()].indexOf(model);
             if (index !== -1) {
-                this.models[model.path()].splice(index, 1);
+                this.#models[model.path()].splice(index, 1);
             }
 
             return this.#removeSubscription(model.path());
@@ -267,10 +275,10 @@ export class Stream extends Model {
         await this.#open();
 
         const path = this.#generatePathFromService(service, full);
-        if (!this.services[path]) {
-            this.services[path] = [];
+        if (!this.#services[path]) {
+            this.#services[path] = [];
         }
-        this.services[path].push(handler);
+        this.#services[path].push(handler);
 
         printDebug(`Add service subscription: ${path}`);
 
@@ -286,13 +294,13 @@ export class Stream extends Model {
         const path = this.#generatePathFromService(service, full);
         let res = true;
 
-        if (this.services[path] !== undefined) {
-            const index = this.services[path].indexOf(handler);
+        if (this.#services[path] !== undefined) {
+            const index = this.#services[path].indexOf(handler);
             if (index !== -1) {
-                this.services[path].splice(index, 1);
+                this.#services[path].splice(index, 1);
             }
 
-            if (this.services[path].length === 0) {
+            if (this.#services[path].length === 0) {
                 res = await this.#removeSubscription(path);
             }
         }
@@ -380,13 +388,13 @@ export class Stream extends Model {
     }
 
     async #runRequestHandlers(type: number) {
-        if (this.onRequestEvents[type].length === 0) {
+        if (this.#onRequestEvents[type].length === 0) {
             return;
         }
 
-        const event = this.onRequestEvents[type][0];
+        const event = this.#onRequestEvents[type][0];
         try {
-            const handlers = this.onRequestHandlers[type];
+            const handlers = this.#onRequestHandlers[type];
             for (let i = 0; i < handlers.length; i++) {
                 try {
                     let path = '';
@@ -455,7 +463,7 @@ export class Stream extends Model {
             printError(toString(e));
         }
 
-        this.onRequestEvents[type].shift();
+        this.#onRequestEvents[type].shift();
 
         this.#runRequestHandlers(type);
     }
@@ -463,9 +471,9 @@ export class Stream extends Model {
     #onRequestHandler = (event: any): boolean => {
         const type = Number(event.uri === 'extsync/');
 
-        this.onRequestEvents[type].push(event);
+        this.#onRequestEvents[type].push(event);
 
-        if (this.onRequestEvents[type].length === 1) {
+        if (this.#onRequestEvents[type].length === 1) {
             this.#runRequestHandlers(type);
         }
         return false;
@@ -477,10 +485,10 @@ export class Stream extends Model {
     ): Promise<boolean> {
         this.validate('onRequest', arguments);
         const doSubscribe =
-            this.onRequestHandlers[0].length === 0 &&
-            this.onRequestHandlers[1].length === 0;
+            this.#onRequestHandlers[0].length === 0 &&
+            this.#onRequestHandlers[1].length === 0;
 
-        this.onRequestHandlers[Number(internal)].push(handler);
+        this.#onRequestHandlers[Number(internal)].push(handler);
         if (doSubscribe) {
             return this.subscribeService(
                 '/extsync/request',
@@ -497,14 +505,15 @@ export class Stream extends Model {
         this.validate('onRequest', arguments);
 
         let res = true;
-        const index = this.onRequestHandlers[Number(internal)].indexOf(handler);
+        const index =
+            this.#onRequestHandlers[Number(internal)].indexOf(handler);
         if (index !== -1) {
-            this.onRequestHandlers[Number(internal)].splice(index, 1);
+            this.#onRequestHandlers[Number(internal)].splice(index, 1);
         }
 
         if (
-            this.onRequestHandlers[0].length === 0 &&
-            this.onRequestHandlers[1].length === 0
+            this.#onRequestHandlers[0].length === 0 &&
+            this.#onRequestHandlers[1].length === 0
         ) {
             res = await this.unsubscribeService(
                 '/extsync/request',
@@ -515,23 +524,23 @@ export class Stream extends Model {
     }
 
     #reconnect(): void {
-        this.backOff++;
-        printDebug(`Stream Reconnecting for the ${this.backOff} times`);
+        this.#backOff++;
+        printDebug(`Stream Reconnecting for the ${this.#backOff} times`);
         this.close();
         this.#open().then(() => {
             this.#sendMessage('PATCH', '/services/2.1/websocket/open', {
-                subscription: this.subscriptions.map((s) => `/2.1${s}`),
+                subscription: this.#subscriptions.map((s) => `/2.1${s}`),
             });
         });
     }
 
-    #filterCallback(
+    #removeCallbackUsingFilter(
         callback: ServiceHandler,
         path: string,
         result: boolean
     ): void {
         if (result === true) {
-            this.services[path] = this.services[path].filter(
+            this.#services[path] = this.#services[path].filter(
                 (item) => item !== callback
             );
         }
@@ -574,25 +583,29 @@ export class Stream extends Model {
             services.push(`/${type}`);
         }
 
-        printStream('services', services, this.services);
-        printStream('paths', paths, this.models);
+        printStream('services', services, this.#services);
+        printStream('paths', paths, this.#models);
 
         paths.forEach((path: string) => {
-            this.models[path]?.forEach((model: IStreamModel) => {
+            this.#models[path]?.forEach((model: IStreamModel) => {
                 model.handleStream(event);
             });
         });
 
         services.forEach((service: string) => {
-            const tmpList = this.services[service];
+            const tmpList = this.#services[service];
             tmpList?.forEach((callback: ServiceHandler) => {
                 const p = callback(event);
                 if (p) {
                     if (p === true) {
-                        this.#filterCallback(callback, service, true);
+                        this.#removeCallbackUsingFilter(
+                            callback,
+                            service,
+                            true
+                        );
                     } else {
                         p.then((res) => {
-                            this.#filterCallback(
+                            this.#removeCallbackUsingFilter(
                                 callback,
                                 service,
                                 res || false
@@ -626,21 +639,21 @@ export class Stream extends Model {
         printDebug(`Sending a ${method} message to ${url}: ${toString(hash)}`);
         try {
             const p = new Promise<boolean>((resolve) => {
-                this.rpc_response[hash.id] = resolve;
+                this.#rpc_response[hash.id] = resolve;
             });
-            this.socket?.send(toString(hash));
+            this.#socket?.send(toString(hash));
             printStream('Waiting for', hash);
             const timeoutPromise = new Promise<boolean>((resolve) => {
                 setTimeout(resolve, 1000, false);
             });
             res = await Promise.race([p, timeoutPromise]);
-            delete this.rpc_response[hash.id];
+            delete this.#rpc_response[hash.id];
             printStream('ready', hash.id);
         } catch (e) {
             /* istanbul ignore next */
             printError(`Failed to send message on WebSocket: ${e}`);
             /* istanbul ignore next */
-            delete this.rpc_response[hash.id];
+            delete this.#rpc_response[hash.id];
         }
         return res;
     }
@@ -648,10 +661,10 @@ export class Stream extends Model {
     #handleRPCMessage(message: any): boolean {
         if (message.jsonrpc) {
             if (message.result) {
-                if (this.rpc_response[message.id]) {
-                    this.rpc_response[message.id](message.result.value);
+                if (this.#rpc_response[message.id]) {
+                    this.#rpc_response[message.id](message.result.value);
                 }
-                this.backOff = 1;
+                this.#backOff = 1;
 
                 printDebug(
                     `Stream rpc ${message.id} result: ${toString(
@@ -700,19 +713,58 @@ export class Stream extends Model {
         });
     }
 
+    validateWatchdog() {
+        const diff = Date.now() - this.#lastStreamMessage;
+        if (diff > (_config.watchdogTimeout * 60) / 2) {
+            this.#triggerWatchdog();
+        }
+    }
+
+    #triggerWatchdog(): void {
+        const diff = Math.trunc((Date.now() - this.#lastStreamMessage) / 60);
+        printDebug(
+            `Trigger Watchdog because we did not receive any stream messages for ${diff} minutes`
+        );
+        this.sendEvent('ping', 'pong');
+        this.#watchDogTriggerTimeout = setTimeout(() => {
+            printWarning('Reconnecting stream because Watchdog Triggered!');
+            this.#reconnect();
+        }, 5000);
+    }
+
+    #startWatchDog(): void {
+        this.#lastStreamMessage = Date.now();
+
+        if (this.#watchdogTimer) {
+            clearTimeout(this.#watchdogTimer);
+        }
+
+        if (this.#watchDogTriggerTimeout) {
+            printDebug('Stream is alive');
+            clearTimeout(this.#watchDogTriggerTimeout);
+            this.#watchDogTriggerTimeout = undefined;
+        }
+
+        this.#watchdogTimer = setTimeout(() => {
+            this.#triggerWatchdog();
+        }, _config.watchdogTimeout * 60000);
+    }
+
     #addListeners(): void {
-        if (!this.socket) {
+        if (!this.#socket) {
             /* istanbul ignore next */
             return;
         }
 
         const reconnect = () => {
-            this.reconnect_timer = setTimeout(() => {
+            this.#reconnect_timer = setTimeout(() => {
                 this.#reconnect();
             }, this.#getTimeout());
         };
 
-        this.socket.onmessage = (ev: any) => {
+        this.#socket.onmessage = (ev: any) => {
+            this.#startWatchDog();
+
             /* istanbul ignore else */
             if (ev.type !== 'message') {
                 /* istanbul ignore next */
@@ -730,14 +782,14 @@ export class Stream extends Model {
         };
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        this.socket.onerror = (_event: any) => {
+        this.#socket.onerror = (_event: any) => {
             /* istanbul ignore next */
             printError(`Stream error: ${this.websocketUrl}`);
         };
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        this.socket.onclose = (_event: CloseEvent) => {
-            if (this.socket && !this.ignoreReconnect) {
+        this.#socket.onclose = (_event: CloseEvent) => {
+            if (this.#socket && !this.#ignoreReconnect) {
                 reconnect();
             }
         };
