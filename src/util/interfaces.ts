@@ -10,6 +10,7 @@ export interface IConfig {
     validation?: ValidationType;
     reconnectCount?: number;
     ackTimeout?: number;
+    watchdogTimeout?: number;
     jitterMin?: number;
     jitterMax?: number;
 }

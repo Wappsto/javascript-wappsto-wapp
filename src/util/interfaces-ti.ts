@@ -16,6 +16,7 @@ export const IConfig = t.iface([], {
     validation: t.opt('ValidationType'),
     reconnectCount: t.opt('number'),
     ackTimeout: t.opt('number'),
+    watchdogTimeout: t.opt('number'),
     jitterMin: t.opt('number'),
     jitterMax: t.opt('number'),
 });

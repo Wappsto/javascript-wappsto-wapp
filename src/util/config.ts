@@ -10,6 +10,7 @@ class Config implements IConfig {
     validation: ValidationType = 'normal';
     reconnectCount = 10;
     ackTimeout = 5;
+    watchdogTimeout = 5;
     jitterMin = 0;
     jitterMax = 10;
 }
@@ -45,6 +46,9 @@ export function config(param: IConfig): Config {
     }
     if (param.ackTimeout !== undefined) {
         _config.ackTimeout = param.ackTimeout;
+    }
+    if (param.watchdogTimeout !== undefined) {
+        _config.watchdogTimeout = param.watchdogTimeout;
     }
     if (param.jitterMin !== undefined) {
         _config.jitterMin = param.jitterMin;
