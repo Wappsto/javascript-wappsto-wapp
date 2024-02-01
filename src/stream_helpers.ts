@@ -7,8 +7,9 @@ import { RequestHandler } from './util/interfaces';
 const openStream: Stream = new Stream();
 let request_handlers: Record<string, RequestHandler> = {};
 let backgroundIsStarted = false;
+let startBackgroundTimer: ReturnType<typeof setTimeout>;
 
-export { openStream };
+export { openStream, startBackgroundTimer };
 
 export function streamHelperReset() {
     backgroundIsStarted = false;
@@ -155,7 +156,7 @@ export async function waitForBackground(timeout = 10): Promise<boolean> {
 }
 
 if (!isBrowser()) {
-    setTimeout(() => {
+    startBackgroundTimer = setTimeout(() => {
         openStream.subscribeInternal(
             'isBackgroundStarted',
             handleIsBackgroundStarted

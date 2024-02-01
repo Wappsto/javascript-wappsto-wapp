@@ -52,6 +52,7 @@ export class Stream extends Model {
     #reconnect_timer: any = undefined;
     #watchdogTimer?: ReturnType<typeof setTimeout> = undefined;
     #watchDogTriggerTimeout?: ReturnType<typeof setTimeout> = undefined;
+    #openTimeout?: ReturnType<typeof setTimeout> = undefined;
     #lastStreamMessage = 0;
 
     constructor() {
@@ -95,6 +96,7 @@ export class Stream extends Model {
         clearTimeout(this.#reconnect_timer);
         clearTimeout(this.#watchDogTriggerTimeout);
         clearTimeout(this.#watchdogTimer);
+        clearTimeout(this.#openTimeout);
     }
 
     #getTimeout(): number {
@@ -130,20 +132,17 @@ export class Stream extends Model {
             printDebug(`Open WebSocket on ${this.websocketUrl}`);
             this.#ignoreReconnect = false;
 
-            const openTimeout: ReturnType<typeof setTimeout> = setTimeout(
-                () => {
-                    /* istanbul ignore next */
-                    this.#reconnect();
-                },
-                1000 + this.#getTimeout()
-            );
+            this.#openTimeout = setTimeout(() => {
+                /* istanbul ignore next */
+                this.#reconnect();
+            }, 1000 + this.#getTimeout());
 
             try {
                 const socket = new WebSocket(this.websocketUrl);
 
                 socket.onopen = () => {
                     this.#socket = socket;
-                    clearTimeout(openTimeout);
+                    clearTimeout(this.#openTimeout);
                     this.#addListeners();
                     resolve();
                     this.#waiting.forEach((r: any) => {
