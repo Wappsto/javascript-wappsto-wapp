@@ -159,7 +159,7 @@ export class Stream extends Model {
 
     public close(): void {
         if (this.#socket) {
-            printDebug(`Closing WebSocket on ${this.url}`);
+            printDebug(`Closing WebSocket on ${this.url()}`);
             this.#ignoreReconnect = true;
             this.#socket.close();
             this.#opened = false;
@@ -685,6 +685,10 @@ export class Stream extends Model {
 
         if (message.meta_object?.type === 'extsync') {
             const newData = message.extsync || message.data;
+            if (newData.body === '{"type":"ping","message":"pong"}') {
+                return;
+            }
+
             if (newData.request) {
                 this.#handleMessage('extsync/request', newData);
             } else if (!newData.uri?.startsWith('/console')) {
@@ -720,7 +724,7 @@ export class Stream extends Model {
     }
 
     #triggerWatchdog(): void {
-        const diff = Math.trunc((Date.now() - this.#lastStreamMessage) / 60);
+        const diff = Math.trunc((Date.now() - this.#lastStreamMessage) / 60000);
         printDebug(
             `Trigger Watchdog because we did not receive any stream messages for ${diff} minutes`
         );
@@ -736,6 +740,9 @@ export class Stream extends Model {
 
         if (this.#watchdogTimer) {
             clearTimeout(this.#watchdogTimer);
+        } else {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+            this.subscribeInternal('ping', (_msg: any): undefined => {});
         }
 
         if (this.#watchDogTriggerTimeout) {
