@@ -18,6 +18,7 @@ import {
 } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { signalRequest } from './util/response';
+import { makeErrorResponse, makeResponse } from './util/helpers';
 
 const rpcExtSyncRequest = expect.objectContaining({
     jsonrpc: '2.0',
@@ -158,7 +159,7 @@ describe('ExtSync stream', () => {
                 resolve(true);
             })
         );
-        mockedAxios.put.mockResolvedValueOnce({ data: [] });
+        mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
         const webPromise = onWebHook(fun);
         await server.connected;
@@ -262,8 +263,8 @@ describe('ExtSync stream', () => {
         funB.mockReturnValue(true);
 
         mockedAxios.post
-            .mockResolvedValueOnce({ data: res })
-            .mockResolvedValueOnce({ data: res });
+            .mockResolvedValueOnce(makeResponse(res))
+            .mockResolvedValueOnce(makeResponse(res));
 
         const backgroundPromise = fromBackground(funB);
         sendToForeground(msg).then((result: any) => {
@@ -395,10 +396,10 @@ describe('ExtSync stream', () => {
                 resolve(true);
             })
         );
-        mockedAxios.post.mockResolvedValueOnce({ data: res });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse(res));
         mockedAxios.put
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const webPromise = onWebHook(funWeb);
         const backgroundPromise = fromBackground(funFore);
@@ -695,9 +696,9 @@ describe('ExtSync stream', () => {
     });
 
     it('can handle timeout when sending a request', async () => {
-        mockedAxios.post.mockRejectedValueOnce({
-            response: { data: { code: 507000000 } },
-        });
+        mockedAxios.post.mockRejectedValueOnce(
+            makeErrorResponse({ code: 507000000 })
+        );
 
         const res = await sendToForeground('test');
 
@@ -723,8 +724,8 @@ describe('ExtSync stream', () => {
         funB.mockReturnValue(true);
 
         mockedAxios.post
-            .mockResolvedValueOnce({ data: res })
-            .mockResolvedValueOnce({ data: res });
+            .mockResolvedValueOnce(makeResponse(res))
+            .mockResolvedValueOnce(makeResponse(res));
 
         signalForeground(msg);
         signalBackground(msg);
@@ -868,8 +869,8 @@ describe('ExtSync stream', () => {
 
     it('makes sure that onRequest is awaited', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({ data: false })
-            .mockResolvedValueOnce({ data: false });
+            .mockResolvedValueOnce(makeResponse(false))
+            .mockResolvedValueOnce(makeResponse(false));
 
         const result: Array<number> = [];
 
@@ -939,8 +940,8 @@ describe('ExtSync stream', () => {
     });
 
     it('supports headers in the response', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: false });
-        mockedAxios.patch.mockResolvedValueOnce({ data: false });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse(false));
+        mockedAxios.patch.mockResolvedValueOnce(makeResponse(false));
 
         fromForeground(async () => {
             return {

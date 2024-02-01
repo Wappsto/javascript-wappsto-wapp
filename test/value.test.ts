@@ -7,6 +7,7 @@ import 'reflect-metadata';
 import { Device, Value, State, config, ValueTemplate } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { responses, generateStreamEvent } from './util/response';
+import { makeErrorResponse, makeResponse } from './util/helpers';
 
 const response = {
     meta: {
@@ -60,7 +61,7 @@ describe('value', () => {
     });
 
     it('can create a value on wappsto', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: response });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse(response));
 
         const value = new Value('test');
         await value.create();
@@ -86,8 +87,8 @@ describe('value', () => {
     });
 
     it('can update a value on wappsto', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: response });
-        mockedAxios.put.mockResolvedValueOnce({ data: response });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse(response));
+        mockedAxios.put.mockResolvedValueOnce(makeResponse(response));
 
         const value = new Value('test');
         await value.create();
@@ -111,7 +112,7 @@ describe('value', () => {
     });
 
     it('can create a new value from wappsto', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         const values = await Value.fetch();
 
@@ -124,7 +125,7 @@ describe('value', () => {
     });
 
     it('can create a new value from wappsto with verbose', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         config({ verbose: true });
         const values = await Value.fetch();
@@ -139,7 +140,7 @@ describe('value', () => {
     });
 
     it('can return an old state when creating', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -159,7 +160,7 @@ describe('value', () => {
     });
 
     it('can trigger an refresh event to the device', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -179,8 +180,8 @@ describe('value', () => {
 
     it('can find a value by name', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [response] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([response]));
 
         const r = Value.findByName('test');
         await server.connected;
@@ -214,7 +215,9 @@ describe('value', () => {
     });
 
     it('can find a value by name and extra parameters', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response, response] });
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([response, response])
+        );
 
         const value = await Value.findByName('test', 2, true, 'msg');
 
@@ -238,8 +241,8 @@ describe('value', () => {
 
     it('can find a value by type', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [response] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([response]));
 
         const r = Value.findByType('test');
         await server.connected;
@@ -279,8 +282,8 @@ describe('value', () => {
 
     it('can send a report', async () => {
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -367,8 +370,8 @@ describe('value', () => {
 
     it('can send a control', async () => {
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -420,8 +423,8 @@ describe('value', () => {
     it('can send a controlWithAck', async () => {
         const fun = jest.fn();
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -518,8 +521,8 @@ describe('value', () => {
     it('can send a controlWithAck that fails', async () => {
         const fun = jest.fn();
         mockedAxios.patch
-            .mockRejectedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockRejectedValueOnce(makeErrorResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -600,8 +603,8 @@ describe('value', () => {
     it('can send a controlWithAck that timeout', async () => {
         config({ ackTimeout: 1 });
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -658,7 +661,7 @@ describe('value', () => {
     });
 
     it('can use custom find', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: response });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse(response));
 
         const value = await Value.find({ name: 'test' });
 
@@ -683,7 +686,7 @@ describe('value', () => {
     });
 
     it('can find all values by name', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         const value = await Value.findAllByName('test');
 
@@ -706,7 +709,7 @@ describe('value', () => {
     });
 
     it('can find all values by type', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         const value = await Value.findAllByType('test');
 
@@ -774,7 +777,7 @@ describe('value', () => {
     });
 
     it('can add an event', async () => {
-        mockedAxios.post.mockResolvedValueOnce({});
+        mockedAxios.post.mockResolvedValueOnce(makeResponse({}));
         const value = new Value('test');
         value.meta.id = '23dba0b8-79df-425b-b443-3aaa385d8636';
 
@@ -799,8 +802,8 @@ describe('value', () => {
 
     it('can change the value type after it is created', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -808,10 +811,10 @@ describe('value', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -819,10 +822,10 @@ describe('value', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -830,10 +833,10 @@ describe('value', () => {
                             id: 'c50bf7a7-a409-41f7-b017-9b256949538f',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -841,11 +844,11 @@ describe('value', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            });
+                ])
+            );
         mockedAxios.put
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -853,10 +856,10 @@ describe('value', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -864,10 +867,10 @@ describe('value', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -875,10 +878,10 @@ describe('value', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -886,8 +889,8 @@ describe('value', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const device = new Device();
         device.meta.id = '1714e470-76ef-4310-8c49-dda18ef8b819';
@@ -980,7 +983,7 @@ describe('value', () => {
     });
 
     it('can reload the value', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: { name: 'test 1' } });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse({ name: 'test 1' }));
 
         const value = new Value();
         value.name = 'start';
@@ -1007,8 +1010,8 @@ describe('value', () => {
     });
 
     it('can reload the value and the children', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: {
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse({
                 state: [
                     {
                         meta: {
@@ -1017,8 +1020,8 @@ describe('value', () => {
                         data: '1',
                     },
                 ],
-            },
-        });
+            })
+        );
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -1054,8 +1057,8 @@ describe('value', () => {
     });
 
     it('can load all children', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: {
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse({
                 state: [
                     {
                         meta: {
@@ -1064,8 +1067,8 @@ describe('value', () => {
                         data: '2',
                     },
                 ],
-            },
-        });
+            })
+        );
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
         const state = new State('Control');
@@ -1087,8 +1090,8 @@ describe('value', () => {
 
     it('can load all children as id', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: {
+            .mockResolvedValueOnce(
+                makeResponse({
                     state: [
                         {
                             meta: {
@@ -1098,16 +1101,16 @@ describe('value', () => {
                         },
                         '0d362fb9-3c52-4c4c-89aa-19f33cbe2f4f',
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '0d362fb9-3c52-4c4c-89aa-19f33cbe2f4f',
                     },
                     data: '3',
-                },
-            });
+                })
+            );
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
         const state = new State('Control');
@@ -1173,10 +1176,10 @@ describe('value', () => {
 
     it('can not override data by sending fast', async () => {
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -1228,8 +1231,8 @@ describe('value', () => {
 
     it('can find value by id', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [response] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([response]));
 
         const r = Value.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
 
@@ -1283,9 +1286,9 @@ describe('value', () => {
     });
 
     it('can find using filter', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: responses['fetch_value'],
-        });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(responses['fetch_value'])
+        );
 
         const values = await Value.findByFilter({
             value: { type: 'energy' },
@@ -1318,9 +1321,9 @@ describe('value', () => {
     });
 
     it('can find all using filter', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: responses['fetch_value'],
-        });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(responses['fetch_value'])
+        );
 
         const values = await Value.findAllByFilter(
             {
@@ -1363,16 +1366,16 @@ describe('value', () => {
     });
 
     it('can fetch a value by ID', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: [
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([
                 {
                     meta: {
                         id: 'a57b5e03-150e-4ca4-a249-7a311f7a28bc',
                     },
                     name: 'Value 1',
                 },
-            ],
-        });
+            ])
+        );
         const found = await Value.fetchById(
             'a57b5e03-150e-4ca4-a249-7a311f7a28bc'
         );
@@ -1394,8 +1397,8 @@ describe('value', () => {
 
     it('can create 2 new values from wappsto', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: response2Values })
-            .mockResolvedValueOnce({ data: response });
+            .mockResolvedValueOnce(makeResponse(response2Values))
+            .mockResolvedValueOnce(makeResponse(response));
 
         const values = await Value.fetch();
 

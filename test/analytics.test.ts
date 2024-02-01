@@ -8,11 +8,13 @@ import { Value, State, getPowerPriceList } from '../src/index';
 import { before, after, newWServer } from './util/stream';
 import {
     energyDataResponse,
+    emptyEnergyDataResponse,
     energySummaryResponse,
     energyPieChartResponse,
     generateStreamEvent,
     powerPriceListResponse,
 } from './util/response';
+import { makeErrorResponse, makeResponse } from './util/helpers';
 
 describe('analytics', () => {
     let server: WS;
@@ -30,7 +32,9 @@ describe('analytics', () => {
     });
 
     it('can load energy_data', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: energyDataResponse });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(energyDataResponse)
+        );
 
         const value = new Value('test');
         const state = new State('Report');
@@ -81,8 +85,51 @@ describe('analytics', () => {
         expect(data.length).toBe(9);
     });
 
+    it('can load empty energy_data', async () => {
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(emptyEnergyDataResponse)
+        );
+
+        const value = new Value('test');
+        const state = new State('Report');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+        const dataPromise = value.analyzeEnergy(
+            '2022-01-01T01:01:01Z',
+            '2022-02-02T02:02:02Z'
+        );
+
+        await server.connected;
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    data: '/2.1/analytics',
+                    url: '/services/2.1/websocket/open/subscription',
+                },
+            })
+        );
+        await new Promise((r) => setTimeout(r, 1));
+
+        server.send(
+            generateStreamEvent(
+                'analytics',
+                emptyEnergyDataResponse.meta.id,
+                emptyEnergyDataResponse
+            )
+        );
+
+        const data = await dataPromise;
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(data).toBeUndefined();
+    });
+
     it('can load energy_summary', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: energySummaryResponse });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(energySummaryResponse)
+        );
 
         const value = new Value('test');
         const state = new State('Report');
@@ -121,9 +168,9 @@ describe('analytics', () => {
     });
 
     it('can load energy_pie_chart', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: energyPieChartResponse,
-        });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(energyPieChartResponse)
+        );
 
         const value = new Value('test');
         const state = new State('Report');
@@ -162,9 +209,9 @@ describe('analytics', () => {
     });
 
     it('can load power price list', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: powerPriceListResponse,
-        });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(powerPriceListResponse)
+        );
 
         const dataPromise = getPowerPriceList(
             '2022-01-01T01:01:01Z',
@@ -226,9 +273,9 @@ describe('analytics', () => {
     });
 
     it('can handle error when calling analytics', async () => {
-        mockedAxios.post.mockRejectedValueOnce({
-            data: { response: { message: 'error' } },
-        });
+        mockedAxios.post.mockRejectedValueOnce(
+            makeErrorResponse({ message: 'error' })
+        );
 
         const value = new Value('test');
         const state = new State('Report');
@@ -253,7 +300,7 @@ describe('analytics', () => {
     });
 
     it('can handle unknown error when calling analytics', async () => {
-        mockedAxios.post.mockRejectedValueOnce({});
+        mockedAxios.post.mockRejectedValueOnce(makeErrorResponse({}));
 
         const value = new Value('test');
         const state = new State('Report');

@@ -3,6 +3,8 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { User, config, stopLogging } from '../src/index';
+import { after } from './util/stream';
+import { makeResponse } from './util/helpers';
 
 describe('user', () => {
     const response = {
@@ -21,11 +23,11 @@ describe('user', () => {
     });
 
     beforeEach(() => {
-        mockedAxios.get.mockResolvedValue({ data: [response] });
+        mockedAxios.get.mockResolvedValue(makeResponse([response]));
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
+        after();
     });
 
     it('can not create a user on wappsto', async () => {

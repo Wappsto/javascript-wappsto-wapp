@@ -5,10 +5,16 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 console.log = jest.fn();
 console.error = jest.fn();
 import { startLogging, stopLogging } from '../src/index';
+import { makeErrorResponse, makeResponse } from './util/helpers';
+import { after } from './util/stream';
 
 describe('console', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+        after();
     });
 
     it('has startLogging as a warning', () => {
@@ -27,10 +33,10 @@ describe('console', () => {
 
     it('can send log messages to wappsto', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({})
-            .mockResolvedValueOnce({})
-            .mockResolvedValueOnce({})
-            .mockResolvedValueOnce({});
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(makeResponse({}));
         startLogging();
         console.log('test start');
         console.info('test start');
@@ -43,10 +49,8 @@ describe('console', () => {
 
     it('will not stop sending messages to wappsto when there is an unknown error', async () => {
         mockedAxios.post
-            .mockRejectedValueOnce({
-                response: { data: { code: 1234 } },
-            })
-            .mockRejectedValueOnce({});
+            .mockRejectedValueOnce(makeErrorResponse({ code: 1234 }))
+            .mockRejectedValueOnce(makeErrorResponse({}));
         console.log('test 1');
 
         await new Promise((r) => setTimeout(r, 1));
@@ -57,9 +61,9 @@ describe('console', () => {
     });
 
     it('will stop sending messages to wappsto when there is an session error', async () => {
-        mockedAxios.post.mockRejectedValueOnce({
-            response: { data: { code: 117000000 } },
-        });
+        mockedAxios.post.mockRejectedValueOnce(
+            makeErrorResponse({ code: 117000000 })
+        );
         console.log('test 1');
 
         await new Promise((r) => setTimeout(r, 1));

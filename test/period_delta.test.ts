@@ -6,6 +6,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Device, Value, State, config, ValueTemplate } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
+import { makeResponse } from './util/helpers';
 
 const templateHelperStart = () => {
     mockedAxios.post
@@ -108,16 +109,18 @@ describe('period and delta on value', () => {
 
         expect(value.delta).toBe('20');
         expect(value.period).toBe(20);
+
+        value.cancelPeriod();
     });
 
     it('drops message when there is a delta', async () => {
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -177,13 +180,15 @@ describe('period and delta on value', () => {
             }),
             {}
         );
+
+        value.cancelPeriod();
     });
 
     it('can handle delta update from user', async () => {
         const funR = jest.fn();
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -246,12 +251,14 @@ describe('period and delta on value', () => {
             }),
             {}
         );
+
+        value.cancelPeriod();
     });
 
     it('will trigger period events', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -259,10 +266,10 @@ describe('period and delta on value', () => {
                             id: 'e094d45e-49cd-465f-8a04-c5a879f796e2',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -270,8 +277,8 @@ describe('period and delta on value', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const fun = jest.fn();
         const device = new Device();
@@ -343,16 +350,18 @@ describe('period and delta on value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(fun).toHaveBeenCalledTimes(2);
         expect(fun).toHaveBeenCalledWith(value, 'period');
+
+        value.cancelPeriod();
     });
 
     it('can send a report with a high delta when it is triggered by user', async () => {
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -360,10 +369,10 @@ describe('period and delta on value', () => {
                             id: '4240a9b6-168e-43a6-b291-afbd960a6cd5',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -371,8 +380,8 @@ describe('period and delta on value', () => {
                             id: '05bcdf20-cf39-4b16-adb2-ac711d5678a6',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const device = new Device();
         device.meta.id = '416104e7-a94e-47c0-b504-bc4f9b81575a';
@@ -440,17 +449,19 @@ describe('period and delta on value', () => {
             }),
             {}
         );
+
+        value.cancelPeriod();
     });
 
     it('can send a report with a high delta when it is triggered by period', async () => {
         config({ jitterMin: 2, jitterMax: 2 });
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -458,10 +469,10 @@ describe('period and delta on value', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -469,8 +480,8 @@ describe('period and delta on value', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const device = new Device();
         device.meta.id = '1714e470-76ef-4310-8c49-dda18ef8b819';
@@ -565,10 +576,12 @@ describe('period and delta on value', () => {
             },
             {}
         );
+
+        value.cancelPeriod();
     });
 
     it('can trigger a period event to the device', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -584,10 +597,12 @@ describe('period and delta on value', () => {
             },
             {}
         );
+
+        value.cancelPeriod();
     });
 
     it('can trigger a delta event to the device', async () => {
-        mockedAxios.patch.mockResolvedValueOnce({ data: [] });
+        mockedAxios.patch.mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -603,13 +618,15 @@ describe('period and delta on value', () => {
             },
             {}
         );
+
+        value.cancelPeriod();
     });
 
     it('can send old data without delta', async () => {
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -654,5 +671,7 @@ describe('period and delta on value', () => {
             },
             {}
         );
+
+        value.cancelPeriod();
     });
 });

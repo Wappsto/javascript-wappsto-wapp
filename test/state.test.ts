@@ -3,6 +3,8 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { State, config, stopLogging } from '../src/index';
+import { after } from './util/stream';
+import { makeResponse } from './util/helpers';
 
 const response = {
     meta: {
@@ -24,6 +26,10 @@ describe('state', () => {
         jest.clearAllMocks();
     });
 
+    afterAll(() => {
+        after();
+    });
+
     it('can create a new state class', () => {
         const state = new State('Report');
 
@@ -32,7 +38,7 @@ describe('state', () => {
     });
 
     it('can create a state on wappsto', async () => {
-        mockedAxios.post.mockResolvedValue({ data: response });
+        mockedAxios.post.mockResolvedValue(makeResponse(response));
 
         const state = new State('Report');
         await state.create();
@@ -55,7 +61,7 @@ describe('state', () => {
     });
 
     it('can update a state on wappsto', async () => {
-        mockedAxios.patch.mockResolvedValue({ data: response });
+        mockedAxios.patch.mockResolvedValue(makeResponse(response));
 
         const state = new State('Report');
         await state.create();
@@ -75,7 +81,7 @@ describe('state', () => {
     });
 
     it('can create a new state from wappsto', async () => {
-        mockedAxios.get.mockResolvedValue({ data: [response] });
+        mockedAxios.get.mockResolvedValue(makeResponse([response]));
 
         const states = await State.fetch();
 
@@ -87,7 +93,7 @@ describe('state', () => {
     });
 
     it('can create a new state from wappsto with verbose', async () => {
-        mockedAxios.get.mockResolvedValue({ data: [response] });
+        mockedAxios.get.mockResolvedValue(makeResponse([response]));
 
         config({ verbose: true });
         const states = await State.fetch();
@@ -101,8 +107,8 @@ describe('state', () => {
     });
 
     it('only sends a small meta when updating', async () => {
-        mockedAxios.get.mockResolvedValue({
-            data: [
+        mockedAxios.get.mockResolvedValue(
+            makeResponse([
                 {
                     meta: {
                         type: 'state',
@@ -115,9 +121,9 @@ describe('state', () => {
                     timestamp: '2021-10-10T10:10:10Z',
                     data: '0',
                 },
-            ],
-        });
-        mockedAxios.patch.mockResolvedValue({ data: [response] });
+            ])
+        );
+        mockedAxios.patch.mockResolvedValue(makeResponse([response]));
 
         const states = await State.fetch();
         await states[0].update();

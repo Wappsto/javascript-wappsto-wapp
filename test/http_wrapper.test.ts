@@ -3,6 +3,8 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { request, stopLogging } from '../src/index';
+import { after } from './util/stream';
+import { makeErrorResponse, makeResponse } from './util/helpers';
 
 describe('http_wrapper', () => {
     beforeAll(() => {
@@ -13,10 +15,12 @@ describe('http_wrapper', () => {
         jest.clearAllMocks();
     });
 
+    afterAll(() => {
+        after();
+    });
+
     it('can call GET', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: 'test',
-        });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse('test'));
 
         const res = await request.get('/network');
 
@@ -26,9 +30,7 @@ describe('http_wrapper', () => {
     });
 
     it('can call POST', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: 'test',
-        });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse('test'));
 
         const res = await request.post('/network', 'data');
 
@@ -38,9 +40,7 @@ describe('http_wrapper', () => {
     });
 
     it('can call PATCH', async () => {
-        mockedAxios.put.mockResolvedValueOnce({
-            data: 'test',
-        });
+        mockedAxios.put.mockResolvedValueOnce(makeResponse('test'));
 
         const res = await request.put('/network', 'data');
 
@@ -50,9 +50,7 @@ describe('http_wrapper', () => {
     });
 
     it('can call PUT', async () => {
-        mockedAxios.put.mockResolvedValueOnce({
-            data: 'test',
-        });
+        mockedAxios.put.mockResolvedValueOnce(makeResponse('test'));
 
         const res = await request.put('/network', 'data');
 
@@ -62,9 +60,7 @@ describe('http_wrapper', () => {
     });
 
     it('can call DELETE', async () => {
-        mockedAxios.delete.mockResolvedValueOnce({
-            data: 'test',
-        });
+        mockedAxios.delete.mockResolvedValueOnce(makeResponse('test'));
 
         const res = await request.delete('/network');
 
@@ -74,9 +70,7 @@ describe('http_wrapper', () => {
     });
 
     it('can report an error', async () => {
-        mockedAxios.get.mockRejectedValueOnce({
-            data: 'test',
-        });
+        mockedAxios.get.mockRejectedValueOnce(makeErrorResponse('test'));
 
         let err;
         try {
@@ -85,7 +79,16 @@ describe('http_wrapper', () => {
             err = e;
         }
 
-        expect(err).toEqual({ data: 'test' });
+        expect(err).toEqual({
+            config: {
+                url: 'JEST URL',
+            },
+            isAxiosError: true,
+            response: {
+                data: 'test',
+                statusText: 'HTTP JEST ERROR',
+            },
+        });
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/network', undefined);
     });

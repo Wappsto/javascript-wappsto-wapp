@@ -11,6 +11,8 @@ import {
     printStream,
 } from '../src/util/debug';
 import { IModel } from '../src/util/interfaces';
+import { after } from './util/stream';
+import { makeResponse } from './util/helpers';
 console.log = jest.fn();
 console.warn = jest.fn();
 console.error = jest.fn();
@@ -20,8 +22,12 @@ describe('config', () => {
         jest.clearAllMocks();
     });
 
+    afterAll(() => {
+        after();
+    });
+
     it('can enable debug', () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: 'test' });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse('test'));
 
         printDebug('test 1');
         config({ debug: true });
@@ -32,7 +38,7 @@ describe('config', () => {
     });
 
     it('can enable requests', async () => {
-        mockedAxios.post.mockResolvedValueOnce({});
+        mockedAxios.post.mockResolvedValueOnce(makeResponse({}));
 
         config({ requests: true });
         const data = { key: 'test', data: {} };

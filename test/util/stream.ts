@@ -1,6 +1,10 @@
 import WS from 'jest-websocket-mock';
 import { stopLogging } from '../../src/index';
-import { openStream, streamHelperReset } from '../../src/stream_helpers';
+import {
+    openStream,
+    startBackgroundTimer,
+    streamHelperReset,
+} from '../../src/stream_helpers';
 import { AxiosStatic } from 'axios';
 
 let server: WS;
@@ -23,6 +27,7 @@ export function after(mockedAxios?: jest.Mocked<AxiosStatic>) {
     streamHelperReset();
     server?.close();
     WS.clean();
+    clearTimeout(startBackgroundTimer);
 }
 
 export function before() {

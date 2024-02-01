@@ -24,16 +24,13 @@ fs.readdir(directoryPath, function (err, files) {
 
 export { data as responses };
 
-const emptyResponse = { data: [] };
 const simpleNetworkResponse = {
-    data: {
-        meta: {
-            type: 'network',
-            version: '2.1',
-            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-        },
-        name: 'test',
+    meta: {
+        type: 'network',
+        version: '2.1',
+        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
     },
+    name: 'test',
 };
 
 const fullNetworkResponse = {
@@ -343,6 +340,20 @@ const energyDataResponse = {
     },
 };
 
+const emptyEnergyDataResponse = {
+    status: 'completed',
+    operation: 'energy_data',
+    version: '1.0',
+    parameter: { start: '2022-01-01T01:01:01Z', end: '2023-01-01T01:01:01Z' },
+    access: { state_id: ['ad2a9baf-b578-4977-bf91-debe1f201e16'] },
+    result: [],
+    meta: {
+        type: 'analytics',
+        version: '2.1',
+        id: 'a22c77d2-ef3b-4294-8898-ad05b54c81ce',
+    },
+};
+
 const energySummaryResponse = {
     status: 'cached',
     operation: 'energy_summary',
@@ -415,8 +426,8 @@ export function generateStreamEvent(type: string, id: string, data: any): any {
 }
 
 export {
-    emptyResponse,
     energyDataResponse,
+    emptyEnergyDataResponse,
     energyPieChartResponse,
     energySummaryResponse,
     fullNetworkResponse,

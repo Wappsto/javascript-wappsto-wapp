@@ -5,6 +5,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Value, State } from '../src/index';
 import { before, after } from './util/stream';
+import { makeResponse } from './util/helpers';
 
 describe('historical', () => {
     beforeAll(() => {
@@ -17,8 +18,8 @@ describe('historical', () => {
 
     it('can get log data', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             id: '',
@@ -34,10 +35,10 @@ describe('historical', () => {
                         more: false,
                         type: 'state',
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             id: '',
@@ -53,10 +54,10 @@ describe('historical', () => {
                         more: false,
                         type: 'state',
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             id: '',
@@ -67,8 +68,8 @@ describe('historical', () => {
                         more: false,
                         type: 'state',
                     },
-                ],
-            });
+                ])
+            );
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
@@ -144,9 +145,9 @@ describe('historical', () => {
 
     it('can send log values to log_zip', async () => {
         mockedAxios.patch
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
-        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
         value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';

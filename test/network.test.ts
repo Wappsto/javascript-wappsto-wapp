@@ -7,11 +7,11 @@ import { createNetwork, Network, Device, Value, config } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import {
     simpleNetworkResponse,
-    emptyResponse,
     fullNetworkResponse,
     fullNetworkResponseUpdated,
     responses,
 } from './util/response';
+import { makeErrorResponse, makeResponse } from './util/helpers';
 
 const responseOffline = {
     meta: {
@@ -116,7 +116,9 @@ describe('network', () => {
     });
 
     it('can create a network on wappsto', async () => {
-        mockedAxios.post.mockResolvedValueOnce(simpleNetworkResponse);
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(simpleNetworkResponse)
+        );
 
         const network = new Network('test');
         await network.create();
@@ -141,7 +143,7 @@ describe('network', () => {
     });
 
     it('can create a new networks from wappsto', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: response2Networks });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse(response2Networks));
 
         const networks = await Network.fetch();
 
@@ -153,8 +155,12 @@ describe('network', () => {
     });
 
     it('can update a network on wappsto', async () => {
-        mockedAxios.post.mockResolvedValueOnce(simpleNetworkResponse);
-        mockedAxios.put.mockResolvedValueOnce(simpleNetworkResponse);
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(simpleNetworkResponse)
+        );
+        mockedAxios.put.mockResolvedValueOnce(
+            makeResponse(simpleNetworkResponse)
+        );
 
         const network = new Network('test');
         await network.create();
@@ -180,10 +186,10 @@ describe('network', () => {
     });
 
     it('can request access to create new network', async () => {
-        mockedAxios.get.mockResolvedValueOnce(emptyResponse);
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post
-            .mockRejectedValueOnce({ code: 400013 })
-            .mockResolvedValueOnce(emptyResponse);
+            .mockRejectedValueOnce(makeErrorResponse({ code: 400013 }))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const p = createNetwork({ name: 'Network Name' });
         await server.connected;
@@ -210,9 +216,11 @@ describe('network', () => {
     });
 
     it('can create a new network from wappsto', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [fullNetworkResponse] });
-        mockedAxios.post.mockResolvedValueOnce(emptyResponse);
-        mockedAxios.put.mockResolvedValueOnce(emptyResponse);
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([fullNetworkResponse])
+        );
+        mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
         const network = await createNetwork({ name: 'Wapp Network' });
         const device = await network.createDevice({ name: 'Device Name' });
@@ -290,7 +298,9 @@ describe('network', () => {
     });
 
     it('can create a new network from wappsto with verbose', async () => {
-        mockedAxios.get.mockResolvedValueOnce(simpleNetworkResponse);
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse(simpleNetworkResponse)
+        );
 
         config({ verbose: true });
         const networks = await Network.fetchByName();
@@ -306,8 +316,8 @@ describe('network', () => {
 
     it('can find a network by name', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce(emptyResponse)
-            .mockResolvedValueOnce(simpleNetworkResponse);
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse(simpleNetworkResponse));
 
         const r = Network.findByName('test');
         await server.connected;
@@ -370,7 +380,9 @@ describe('network', () => {
     });
 
     it('can find device by name', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [fullNetworkResponse] });
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([fullNetworkResponse])
+        );
 
         const networks = await Network.fetchByName();
         const device = networks[0].findDeviceByName('Device Name');
@@ -381,7 +393,9 @@ describe('network', () => {
     });
 
     it('can find device by product', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [fullNetworkResponse] });
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([fullNetworkResponse])
+        );
 
         const networks = await Network.fetchByName();
         const device = networks[0].findDeviceByProduct('Device Product');
@@ -392,7 +406,9 @@ describe('network', () => {
     });
 
     it('can find value by name', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [fullNetworkResponse] });
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([fullNetworkResponse])
+        );
 
         const networks = await Network.fetchByName();
         const value = networks[0]?.findValueByName('Value Name');
@@ -414,8 +430,8 @@ describe('network', () => {
 
     it('can reload and get new devices', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: {
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '0a4de380-1c16-4b5c-a081-912b931ff891',
                         version: '2.1',
@@ -445,17 +461,17 @@ describe('network', () => {
                             name: 'device 4',
                         },
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         version: '2.1',
                     },
                     name: 'device 2',
-                },
-            });
+                })
+            );
 
         const device = new Device();
         device.meta.id = '0af35945-f38b-4528-a7c7-3a7d42a2a132';
@@ -479,16 +495,16 @@ describe('network', () => {
     });
 
     it('can create a new device as a child', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: [
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse([
                 {
                     meta: {
                         id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         version: '2.1',
                     },
                 },
-            ],
-        });
+            ])
+        );
 
         const network = new Network();
         network.meta.id = '0a4de380-1c16-4b5c-a081-912b931ff891';
@@ -536,9 +552,9 @@ describe('network', () => {
     });
 
     it('can create a new network', async () => {
-        mockedAxios.get.mockResolvedValueOnce(emptyResponse);
-        mockedAxios.post.mockResolvedValueOnce({
-            data: [
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse([
                 {
                     meta: {
                         type: 'network',
@@ -548,8 +564,8 @@ describe('network', () => {
                     name: 'Network Name',
                     description: 'Description',
                 },
-            ],
-        });
+            ])
+        );
 
         const network = await createNetwork({
             name: 'Network Name',
@@ -571,8 +587,8 @@ describe('network', () => {
     });
 
     it('can return device as a child', async () => {
-        mockedAxios.put.mockResolvedValueOnce({
-            data: [
+        mockedAxios.put.mockResolvedValueOnce(
+            makeResponse([
                 {
                     communication: 'communication',
                     description: 'description',
@@ -588,8 +604,8 @@ describe('network', () => {
                     serial: 'serial',
                     version: 'version',
                 },
-            ],
-        });
+            ])
+        );
 
         const oldDevice = new Device('Device Name');
         oldDevice.meta.id = 'f589b816-1f2b-412b-ac36-1ca5a6db0273';
@@ -643,8 +659,8 @@ describe('network', () => {
 
     it('can find all network by name', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce(emptyResponse)
-            .mockResolvedValueOnce({ data: response2Networks });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse(response2Networks));
         const r = Network.findAllByName('test');
         await server.connected;
 
@@ -692,8 +708,8 @@ describe('network', () => {
 
     it('can use custom find', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce(emptyResponse)
-            .mockResolvedValueOnce({ data: response2Networks });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse(response2Networks));
         const r = Network.find({ name: 'test' });
         await server.connected;
 
@@ -754,7 +770,7 @@ describe('network', () => {
     });
 
     it('can delete a network', async () => {
-        mockedAxios.delete.mockResolvedValueOnce(emptyResponse);
+        mockedAxios.delete.mockResolvedValueOnce(makeResponse([]));
 
         const network = new Network('network');
         network.meta.id = 'f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02';
@@ -772,11 +788,11 @@ describe('network', () => {
 
     it('can load all missing object using lazy loading', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [responseHalf] })
-            .mockResolvedValueOnce({ data: { type: 'Control' } })
-            .mockResolvedValueOnce({ data: [{ name: 'Value Name 2' }] })
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(makeResponse([responseHalf]))
+            .mockResolvedValueOnce(makeResponse({ type: 'Control' }))
+            .mockResolvedValueOnce(makeResponse([{ name: 'Value Name 2' }]))
+            .mockResolvedValueOnce(
+                makeResponse([
                     { name: 'Device Name 2' },
                     { name: 'Device Name 3' },
                     {
@@ -808,8 +824,8 @@ describe('network', () => {
                             },
                         ],
                     },
-                ],
-            });
+                ])
+            );
 
         const networks = await Network.fetchByName();
 
@@ -857,11 +873,11 @@ describe('network', () => {
     });
 
     it('can delete a device and make sure that it is not valid', async () => {
-        mockedAxios.delete.mockResolvedValueOnce(emptyResponse);
+        mockedAxios.delete.mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post
-            .mockResolvedValueOnce(simpleNetworkResponse)
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(makeResponse(simpleNetworkResponse))
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'device',
@@ -870,10 +886,10 @@ describe('network', () => {
                         },
                         name: 'Device Test',
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'device',
@@ -882,8 +898,8 @@ describe('network', () => {
                         },
                         name: 'Device Test',
                     },
-                ],
-            });
+                ])
+            );
 
         const network = new Network();
         await network.create();
@@ -958,8 +974,8 @@ describe('network', () => {
 
     it('reload all the data from the server', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [fullNetworkResponse] })
-            .mockResolvedValueOnce(simpleNetworkResponse);
+            .mockResolvedValueOnce(makeResponse([fullNetworkResponse]))
+            .mockResolvedValueOnce(makeResponse(simpleNetworkResponse));
 
         const network = await createNetwork({ name: 'Network Name' });
 
@@ -994,9 +1010,9 @@ describe('network', () => {
 
     it('can check if network is online', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [fullNetworkResponse] })
-            .mockResolvedValueOnce(simpleNetworkResponse)
-            .mockResolvedValueOnce({ data: [responseOffline] });
+            .mockResolvedValueOnce(makeResponse([fullNetworkResponse]))
+            .mockResolvedValueOnce(makeResponse(simpleNetworkResponse))
+            .mockResolvedValueOnce(makeResponse([responseOffline]));
 
         const network = await createNetwork({ name: 'test name' });
         const res = network.isOnline();
@@ -1013,8 +1029,8 @@ describe('network', () => {
 
     it('can find network by id', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce(emptyResponse)
-            .mockResolvedValueOnce({ data: [fullNetworkResponse] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([fullNetworkResponse]));
 
         const r = Network.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
         await server.connected;
@@ -1069,7 +1085,7 @@ describe('network', () => {
     });
 
     it('will clear the id, when failing to talk to backend', async () => {
-        mockedAxios.get.mockRejectedValueOnce({});
+        mockedAxios.get.mockRejectedValueOnce(makeErrorResponse({}));
         const network = new Network();
         network.meta.id = '744be12b-85a5-4ef0-8ca1-00856a748049';
         await network.reload();
@@ -1080,8 +1096,8 @@ describe('network', () => {
 
     it('will remove old device when reloading', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [fullNetworkResponse] })
-            .mockResolvedValueOnce({ data: [fullNetworkResponseUpdated] });
+            .mockResolvedValueOnce(makeResponse([fullNetworkResponse]))
+            .mockResolvedValueOnce(makeResponse([fullNetworkResponseUpdated]));
 
         const network = await createNetwork({ name: 'Wapp Network' });
 
@@ -1108,9 +1124,9 @@ describe('network', () => {
     });
 
     it('can find using filter', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: responses['fetch_network'],
-        });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(responses['fetch_network'])
+        );
 
         const networks = await Network.findByFilter({
             value: { type: 'energy', number: { max: [1, 2] } },
@@ -1145,9 +1161,9 @@ describe('network', () => {
     });
 
     it('can find all using filter', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: responses['fetch_network'],
-        });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(responses['fetch_network'])
+        );
 
         const networks = await Network.findAllByFilter({
             value: { type: 'energy' },
@@ -1181,9 +1197,9 @@ describe('network', () => {
     });
 
     it('can find all using omit filter', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: responses['fetch_network'],
-        });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(responses['fetch_network'])
+        );
 
         const networks = await Network.findAllByFilter(
             { device: { name: 'test' } },
@@ -1221,12 +1237,12 @@ describe('network', () => {
     });
 
     it('can load all items after using a filter', async () => {
-        mockedAxios.post.mockResolvedValue({
-            data: responses['network_filter'],
-        });
-        mockedAxios.get.mockResolvedValue({
-            data: responses['network_reload'],
-        });
+        mockedAxios.post.mockResolvedValue(
+            makeResponse(responses['network_filter'])
+        );
+        mockedAxios.get.mockResolvedValue(
+            makeResponse(responses['network_reload'])
+        );
 
         const networks = await Network.findAllByFilter({
             device: { manufacturer: 'Seluxit' },

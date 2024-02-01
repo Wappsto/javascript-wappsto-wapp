@@ -3,6 +3,8 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { notify, stopLogging, sendMail, sendSMS } from '../src/index';
+import { after } from './util/stream';
+import { makeErrorResponse, makeResponse } from './util/helpers';
 
 describe('notification', () => {
     beforeAll(() => {
@@ -12,9 +14,12 @@ describe('notification', () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
+    afterAll(() => {
+        after();
+    });
 
     it('can create a new notification', () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
 
         notify('message');
 
@@ -36,7 +41,7 @@ describe('notification', () => {
     });
 
     it('can create a new error notification with data', () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
 
         notify('message2', 'error', { test: 'data' });
 
@@ -59,7 +64,7 @@ describe('notification', () => {
     });
 
     it('can send mail', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
 
         const res = await sendMail({
             subject: 'Test Mail',
@@ -80,7 +85,7 @@ describe('notification', () => {
         const tmp = console.error;
         console.error = jest.fn();
 
-        mockedAxios.post.mockRejectedValueOnce({ response: {}, config: {} });
+        mockedAxios.post.mockRejectedValueOnce(makeErrorResponse({}));
 
         const res = await sendMail({
             subject: 'Test Mail',
@@ -99,7 +104,7 @@ describe('notification', () => {
     });
 
     it('can send SMS', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: [] });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
 
         const res = await sendSMS('My sms message');
 
@@ -115,8 +120,8 @@ describe('notification', () => {
         console.error = jest.fn();
 
         mockedAxios.post
-            .mockRejectedValueOnce({ data: {} })
-            .mockRejectedValueOnce({ response: {} });
+            .mockRejectedValueOnce(makeErrorResponse({}))
+            .mockRejectedValueOnce(makeErrorResponse({}));
 
         const res = await sendSMS('My sms message');
         const res2 = await sendSMS('My sms message');

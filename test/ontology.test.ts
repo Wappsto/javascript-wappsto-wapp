@@ -15,6 +15,7 @@ import {
 import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
 import { fullNetworkResponse, responses } from './util/response';
+import { makeErrorResponse, makeResponse } from './util/helpers';
 
 describe('Ontology', () => {
     beforeAll(() => {
@@ -30,12 +31,10 @@ describe('Ontology', () => {
     });
 
     it('can create a new edge', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: [],
-        });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: {
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '1e844d39-6b70-4f96-b762-9c28c73c5410',
                         type: 'ontology',
@@ -48,10 +47,10 @@ describe('Ontology', () => {
                     to: {
                         state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
                     },
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '9764d589-047e-4089-af0c-6034349df23f',
                         type: 'ontology',
@@ -64,8 +63,8 @@ describe('Ontology', () => {
                     to: {
                         state: ['047f00f9-276b-4f5b-ba28-c1ab05f16e52'],
                     },
-                },
-            });
+                })
+            );
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
@@ -160,21 +159,17 @@ describe('Ontology', () => {
 
     it('can create a new node', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: [],
-            })
-            .mockResolvedValueOnce({
-                data: [],
-            });
-        mockedAxios.post.mockResolvedValueOnce({
-            data: {
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse({
                 meta: {
                     id: 'dd4e6da3-f70f-403b-8ba0-79b1c14028d8',
                     type: 'data',
                     version: '2.1',
                 },
-            },
-        });
+            })
+        );
         const node = await createNode('onto name');
 
         expect(node.data_meta.type).toEqual('ontology_node');
@@ -200,8 +195,8 @@ describe('Ontology', () => {
 
     it('can get all edges on a network', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             id: 'd98e784e-0bb3-4693-899c-1071483b857e',
@@ -273,10 +268,10 @@ describe('Ontology', () => {
                             ],
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: {
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         type: 'state',
                         version: '2.1',
@@ -285,10 +280,10 @@ describe('Ontology', () => {
                     type: 'Report',
                     timestamp: '2021-10-10T10:10:10Z',
                     data: '0',
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         type: 'network',
                         version: '2.1',
@@ -324,10 +319,10 @@ describe('Ontology', () => {
                             ],
                         },
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         type: 'device',
                         version: '2.1',
@@ -354,10 +349,10 @@ describe('Ontology', () => {
                             ],
                         },
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         type: 'value',
                         version: '2.1',
@@ -375,17 +370,17 @@ describe('Ontology', () => {
                             data: '0',
                         },
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         type: 'data',
                         version: '2.1',
                         id: '97e0dd7c-8e22-4263-82f9-d26102643465',
                     },
-                },
-            });
+                })
+            );
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
@@ -506,8 +501,8 @@ describe('Ontology', () => {
     });
 
     it('can get all nodes', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: [
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([
                 {
                     meta: {
                         id: '09af28b3-0e84-4230-ab96-88990cfa04b8',
@@ -532,8 +527,8 @@ describe('Ontology', () => {
                         id: 'ontology_node_2',
                     },
                 },
-            ],
-        });
+            ])
+        );
         const nodes = await getAllNodes();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
@@ -545,11 +540,9 @@ describe('Ontology', () => {
     });
 
     it('can remove an edge', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: [],
-        });
-        mockedAxios.post.mockResolvedValueOnce({
-            data: {
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse({
                 meta: {
                     id: '75f43647-bf73-44df-a04e-4d04e47cd0fc',
                     type: 'ontology',
@@ -559,11 +552,9 @@ describe('Ontology', () => {
                 to: {
                     state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
                 },
-            },
-        });
-        mockedAxios.delete.mockResolvedValueOnce({
-            data: {},
-        });
+            })
+        );
+        mockedAxios.delete.mockResolvedValueOnce(makeResponse({}));
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
@@ -596,11 +587,9 @@ describe('Ontology', () => {
     });
 
     it('can remove an edge using the child', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: [],
-        });
-        mockedAxios.post.mockResolvedValueOnce({
-            data: {
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse({
                 meta: {
                     id: '75f43647-bf73-44df-a04e-4d04e47cd0fc',
                     type: 'ontology',
@@ -610,11 +599,9 @@ describe('Ontology', () => {
                 to: {
                     state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
                 },
-            },
-        });
-        mockedAxios.delete.mockResolvedValueOnce({
-            data: {},
-        });
+            })
+        );
+        mockedAxios.delete.mockResolvedValueOnce(makeResponse({}));
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
@@ -651,8 +638,8 @@ describe('Ontology', () => {
     });
 
     it('can delete all edges', async () => {
-        mockedAxios.get.mockResolvedValueOnce({
-            data: [
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([
                 {
                     meta: {
                         id: 'd98e784e-0bb3-4693-899c-1071483b857e',
@@ -678,15 +665,11 @@ describe('Ontology', () => {
                         network: ['f11fa9d7-3b2b-474e-95e4-f086c5606154'],
                     },
                 },
-            ],
-        });
+            ])
+        );
         mockedAxios.delete
-            .mockResolvedValueOnce({
-                data: {},
-            })
-            .mockResolvedValueOnce({
-                data: {},
-            });
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(makeResponse({}));
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
@@ -702,8 +685,8 @@ describe('Ontology', () => {
 
     it('can remove an branch', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: {
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: 'f275ac72-a2fe-42fe-b4ea-e87eabfe14bf',
                         type: 'ontology',
@@ -713,10 +696,10 @@ describe('Ontology', () => {
                     to: {
                         state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
                     },
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: 'd7224517-328f-4ccd-874c-06e3257dc090',
                         type: 'ontology',
@@ -726,25 +709,15 @@ describe('Ontology', () => {
                     to: {
                         state: ['d2d27eab-bfaa-4253-b9cb-6402dc04e16b'],
                     },
-                },
-            });
+                })
+            );
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: [],
-            })
-            .mockResolvedValueOnce({
-                data: [],
-            })
-            .mockResolvedValueOnce({
-                data: [],
-            });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
         mockedAxios.delete
-            .mockResolvedValueOnce({
-                data: {},
-            })
-            .mockResolvedValueOnce({
-                data: {},
-            });
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(makeResponse({}));
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
@@ -798,14 +771,10 @@ describe('Ontology', () => {
 
     it('can remove a node', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: [],
-            })
-            .mockResolvedValueOnce({
-                data: [],
-            })
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             id: '45332794-e710-4702-90d6-632fe461d3e5',
@@ -818,14 +787,12 @@ describe('Ontology', () => {
                             id: 'ontology_node_2',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [],
-            });
+                ])
+            )
+            .mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: {
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '09af28b3-0e84-4230-ab96-88990cfa04b8',
                         type: 'data',
@@ -836,10 +803,10 @@ describe('Ontology', () => {
                         version: '1',
                         id: 'ontology_node_1',
                     },
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: 'b0553348-deac-4ed8-a546-f72346a60bb0',
                         type: 'ontology',
@@ -847,15 +814,11 @@ describe('Ontology', () => {
                     },
                     relationship: 'look',
                     to: {},
-                },
-            });
+                })
+            );
         mockedAxios.delete
-            .mockResolvedValueOnce({
-                data: {},
-            })
-            .mockResolvedValueOnce({
-                data: {},
-            });
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(makeResponse({}));
 
         const node1 = await createNode('node 1');
         const node2 = await createNode('node 2');
@@ -887,14 +850,10 @@ describe('Ontology', () => {
 
     it('can transverse the graph', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: [],
-            })
-            .mockResolvedValueOnce({
-                data: [],
-            })
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             id: '45332794-e710-4702-90d6-632fe461d3e5',
@@ -907,16 +866,12 @@ describe('Ontology', () => {
                             id: 'ontology_node_2',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [],
-            })
-            .mockResolvedValueOnce({
-                data: [],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             id: 'b0553348-deac-4ed8-a546-f72346a60bb0',
@@ -926,11 +881,11 @@ describe('Ontology', () => {
                         relationship: 'look',
                         to: { state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'] },
                     },
-                ],
-            });
+                ])
+            );
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: {
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '09af28b3-0e84-4230-ab96-88990cfa04b8',
                         type: 'data',
@@ -941,10 +896,10 @@ describe('Ontology', () => {
                         version: '1',
                         id: 'ontology_node_1',
                     },
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: 'b0553348-deac-4ed8-a546-f72346a60bb0',
                         type: 'ontology',
@@ -952,8 +907,8 @@ describe('Ontology', () => {
                     },
                     relationship: 'look',
                     to: {},
-                },
-            });
+                })
+            );
 
         const node1 = await createNode('node 1');
         const node2 = await createNode('node 2');
@@ -994,8 +949,8 @@ describe('Ontology', () => {
 
     it('can load all models from the store', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'device',
@@ -1004,10 +959,10 @@ describe('Ontology', () => {
                         },
                         name: 'Device Test',
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -1015,10 +970,10 @@ describe('Ontology', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -1026,11 +981,11 @@ describe('Ontology', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            });
+                ])
+            );
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: {
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         type: 'network',
                         version: '2.1',
@@ -1082,10 +1037,10 @@ describe('Ontology', () => {
                             ],
                         },
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         type: 'network',
                         version: '2.1',
@@ -1140,10 +1095,10 @@ describe('Ontology', () => {
                         },
                         '008dddc7-24b7-4be6-a9c8-4b197d845a1f',
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '008dddc7-24b7-4be6-a9c8-4b197d845a1f',
                         version: '2.1',
@@ -1152,10 +1107,10 @@ describe('Ontology', () => {
                     name: 'Device Name',
                     product: 'Device Product',
                     value: [],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: 'f2b19d60-87db-4a4f-9226-8dafa91f36be',
                         version: '2.1',
@@ -1171,10 +1126,10 @@ describe('Ontology', () => {
                         unit: 'c',
                     },
                     state: [],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '6e6e868f-9cd6-4a7c-a324-b5e3225ac849',
                         version: '2.1',
@@ -1183,10 +1138,10 @@ describe('Ontology', () => {
                     type: 'Control',
                     timestamp: '',
                     data: '1',
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: 'd1f5623e-522d-4557-b20d-5629e0f232c5',
                         version: '2.1',
@@ -1219,10 +1174,10 @@ describe('Ontology', () => {
                             ],
                         },
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '7199388e-c90b-4780-83da-ce430d190d9c',
                         version: '2.1',
@@ -1244,10 +1199,10 @@ describe('Ontology', () => {
                             data: '1',
                         },
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: 'd98e784e-0bb3-4693-899c-1071483b857e',
                         type: 'ontology',
@@ -1283,8 +1238,8 @@ describe('Ontology', () => {
                             'c7053fdc-ace2-4cb5-8e61-06fc1d5846f0',
                         ],
                     },
-                },
-            });
+                })
+            );
 
         const network = await createNetwork({ name: 'Ontology 1' });
         const device = await network.createDevice({ name: 'Ontology 2' });
@@ -1302,9 +1257,9 @@ describe('Ontology', () => {
 
     it('can link objects from fetchByName to ontology', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [fullNetworkResponse] })
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(makeResponse([fullNetworkResponse]))
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             id: '8f364a18-34e2-480b-ade5-90f7c146d592',
@@ -1316,8 +1271,8 @@ describe('Ontology', () => {
                             device: ['e65ec3eb-04f1-4253-bd1b-b989b1204b81'],
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const networks = await Network.fetchByName('test');
         const edges = await networks[0].getAllEdges();
@@ -1364,9 +1319,9 @@ describe('Ontology', () => {
 
     it('can link objects from EMS to ontology', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: responses['ems_network'] })
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(makeResponse(responses['ems_network']))
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         from: {
                             network: ['99061ade-2aa1-445d-83cf-868559770026'],
@@ -1381,10 +1336,10 @@ describe('Ontology', () => {
                             version: '2.1',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         from: {
                             device: ['74f15b96-ac61-4550-9970-f957a3281f9a'],
@@ -1413,10 +1368,10 @@ describe('Ontology', () => {
                             version: '2.1',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         from: {
                             device: ['f269650d-d4a8-4745-80f8-5791fadf5e73'],
@@ -1445,21 +1400,21 @@ describe('Ontology', () => {
                             version: '2.1',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [] });
+                ])
+            )
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const networks = await Network.fetchByName('EMS Configurator');
         const network = networks[0];
 
-        const poms: Promise<any>[] = [];
-        poms.push(network.getAllEdges(true));
+        const promises: Promise<any>[] = [];
+        promises.push(network.getAllEdges(true));
         network.device.forEach((dev: Device) => {
-            poms.push(dev.getAllEdges(true));
+            promises.push(dev.getAllEdges(true));
         });
-        await Promise.all(poms);
+        await Promise.all(promises);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(7);
 
@@ -1480,8 +1435,8 @@ describe('Ontology', () => {
 
     it('can handle failing when loading models', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             id: 'd98e784e-0bb3-4693-899c-1071483b857e',
@@ -1513,14 +1468,16 @@ describe('Ontology', () => {
                             state: ['1e5eb75f-0912-4858-9ad5-89fb21787768'],
                         },
                     },
-                ],
-            })
-            .mockRejectedValueOnce({
-                message: 'Invalid state',
-                code: 123,
-            })
-            .mockResolvedValueOnce({
-                data: {
+                ])
+            )
+            .mockRejectedValueOnce(
+                makeErrorResponse({
+                    message: 'Invalid state',
+                    code: 123,
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '7c7171b7-db9c-4418-8e29-2e76c42597b0',
                         version: '2.1',
@@ -1529,10 +1486,10 @@ describe('Ontology', () => {
                     type: 'Control',
                     timestamp: '',
                     data: '1',
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: {
                         id: '1e5eb75f-0912-4858-9ad5-89fb21787768',
                         version: '2.1',
@@ -1541,8 +1498,8 @@ describe('Ontology', () => {
                     type: 'Control',
                     timestamp: '',
                     data: '1',
-                },
-            });
+                })
+            );
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';

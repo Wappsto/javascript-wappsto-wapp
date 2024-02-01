@@ -7,6 +7,8 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { wappStorage } from '../src/index';
+import { after } from './util/stream';
+import { makeResponse } from './util/helpers';
 
 describe('wapp storage', () => {
     const OLD_ENV = process.env;
@@ -18,15 +20,18 @@ describe('wapp storage', () => {
 
     afterAll(() => {
         process.env = OLD_ENV; // Restore old environment
+        after();
     });
 
     it('can not use secrets in browser', async () => {
         console.error = jest.fn();
-        mockedAxios.get.mockResolvedValueOnce({ data: [] });
-        mockedAxios.post.mockResolvedValueOnce({
-            data: { meta: { id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5' } },
-        });
-        mockedAxios.put.mockResolvedValueOnce({ data: [] });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse({
+                meta: { id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5' },
+            })
+        );
+        mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
         const ws = await wappStorage('background_secret');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);

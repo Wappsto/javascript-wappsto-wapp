@@ -6,11 +6,12 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import { Device, Value, ValueTemplate, State, config } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { responses } from './util/response';
+import { makeResponse } from './util/helpers';
 
 const templateHelperStart = () => {
     mockedAxios.post
-        .mockResolvedValueOnce({
-            data: [
+        .mockResolvedValueOnce(
+            makeResponse([
                 {
                     meta: {
                         type: 'value',
@@ -18,10 +19,10 @@ const templateHelperStart = () => {
                         id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     },
                 },
-            ],
-        })
-        .mockResolvedValueOnce({
-            data: [
+            ])
+        )
+        .mockResolvedValueOnce(
+            makeResponse([
                 {
                     meta: {
                         type: 'state',
@@ -29,10 +30,10 @@ const templateHelperStart = () => {
                         id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                     },
                 },
-            ],
-        })
-        .mockResolvedValueOnce({
-            data: [
+            ])
+        )
+        .mockResolvedValueOnce(
+            makeResponse([
                 {
                     meta: {
                         type: 'state',
@@ -40,8 +41,8 @@ const templateHelperStart = () => {
                         id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
                     },
                 },
-            ],
-        });
+            ])
+        );
 };
 
 const templateHelperDone = () => {
@@ -148,7 +149,7 @@ describe('device', () => {
     });
 
     it('can create a device on wappsto', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: response });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse(response));
 
         const device = new Device('test');
         await device.create();
@@ -172,8 +173,8 @@ describe('device', () => {
     });
 
     it('can update a device on wappsto', async () => {
-        mockedAxios.post.mockResolvedValueOnce({ data: response });
-        mockedAxios.put.mockResolvedValueOnce({ data: response });
+        mockedAxios.post.mockResolvedValueOnce(makeResponse(response));
+        mockedAxios.put.mockResolvedValueOnce(makeResponse(response));
 
         const device = new Device('test');
         await device.create();
@@ -195,7 +196,7 @@ describe('device', () => {
     });
 
     it('can create a new device from wappsto', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         const devices = await Device.fetch();
 
@@ -207,7 +208,7 @@ describe('device', () => {
     });
 
     it('can create a new device from wappsto with verbose', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         config({ verbose: true });
         const devices = await Device.fetch();
@@ -222,8 +223,8 @@ describe('device', () => {
 
     it('can find a device by name', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [response] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([response]));
 
         const r = Device.findByName('test');
         await server.connected;
@@ -277,7 +278,7 @@ describe('device', () => {
     });
 
     it('can find a device by product', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: [response] });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         const devices = await Device.findByProduct('test');
 
@@ -301,8 +302,8 @@ describe('device', () => {
 
     it('can reload and get new values', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({
-                data: {
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: { id: '0a4de380-1c16-4b5c-a081-912b931ff891' },
                     name: 'device',
                     value: [
@@ -326,14 +327,14 @@ describe('device', () => {
                             name: 'value 4',
                         },
                     ],
-                },
-            })
-            .mockResolvedValueOnce({
-                data: {
+                })
+            )
+            .mockResolvedValueOnce(
+                makeResponse({
                     meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' },
                     name: 'value 2',
-                },
-            });
+                })
+            );
 
         const value = new Value();
         value.meta.id = '0af35945-f38b-4528-a7c7-3a7d42a2a132';
@@ -402,7 +403,7 @@ describe('device', () => {
     });
 
     it('can reuse a value from a NUMBER template', async () => {
-        mockedAxios.put.mockResolvedValueOnce({});
+        mockedAxios.put.mockResolvedValueOnce(makeResponse({}));
 
         const st = new State('Report', '123');
         st.meta.id = 'bde1b7ed-de87-496a-baf3-7c258ec3db05';
@@ -699,8 +700,8 @@ describe('device', () => {
 
     it('can create a new number value with historical disabled', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -709,10 +710,10 @@ describe('device', () => {
                         },
                         permission: '',
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -720,10 +721,10 @@ describe('device', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -731,8 +732,8 @@ describe('device', () => {
                             id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const device = new Device();
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
@@ -822,8 +823,8 @@ describe('device', () => {
 
     it('can create a new string value as a child', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -831,10 +832,10 @@ describe('device', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -842,10 +843,10 @@ describe('device', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -853,8 +854,8 @@ describe('device', () => {
                             id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const device = new Device();
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
@@ -927,8 +928,8 @@ describe('device', () => {
 
     it('can create a new blob value as a child', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -936,10 +937,10 @@ describe('device', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -947,8 +948,8 @@ describe('device', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const device = new Device();
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
@@ -1008,8 +1009,8 @@ describe('device', () => {
 
     it('can create a new xml value as a child', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -1017,10 +1018,10 @@ describe('device', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -1028,8 +1029,8 @@ describe('device', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const device = new Device();
         device.meta.id = '35a99d31-b51a-4e20-ad54-a93e8eed21a3';
@@ -1089,8 +1090,8 @@ describe('device', () => {
     });
 
     it('can return value as a child', async () => {
-        mockedAxios.put.mockResolvedValueOnce({
-            data: [
+        mockedAxios.put.mockResolvedValueOnce(
+            makeResponse([
                 {
                     permission: 'rw',
                     type: 'type',
@@ -1110,11 +1111,11 @@ describe('device', () => {
                         si_conversion: 'si_conversion',
                     },
                 },
-            ],
-        });
+            ])
+        );
         mockedAxios.post
-            .mockResolvedValueOnce({ data: {} })
-            .mockResolvedValueOnce({ data: {} });
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(makeResponse({}));
 
         const device = new Device();
         device.meta.id = '61e94999-c6c4-4051-8b5d-97ba73bbb312';
@@ -1176,8 +1177,8 @@ describe('device', () => {
     });
 
     it('can update a value when the parameters are changed', async () => {
-        mockedAxios.put.mockResolvedValueOnce({
-            data: [
+        mockedAxios.put.mockResolvedValueOnce(
+            makeResponse([
                 {
                     permission: 'rw',
                     type: 'type',
@@ -1197,11 +1198,11 @@ describe('device', () => {
                         si_conversion: 'si_conversion',
                     },
                 },
-            ],
-        });
+            ])
+        );
         mockedAxios.post
-            .mockResolvedValueOnce({ data: {} })
-            .mockResolvedValueOnce({ data: {} });
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(makeResponse({}));
 
         const device = new Device();
         device.meta.id = '61e94999-c6c4-4051-8b5d-97ba73bbb312';
@@ -1275,7 +1276,7 @@ describe('device', () => {
     });
 
     it('can find all devices by name', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: response2Devices });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse(response2Devices));
 
         const r = Device.findAllByName('test');
         const device = await r;
@@ -1304,7 +1305,7 @@ describe('device', () => {
     });
 
     it('can find all devices by product', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: response2Devices });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse(response2Devices));
 
         const r = Device.findAllByProduct('test');
         const device = await r;
@@ -1333,7 +1334,7 @@ describe('device', () => {
     });
 
     it('can use custom find', async () => {
-        mockedAxios.get.mockResolvedValueOnce({ data: response2Devices });
+        mockedAxios.get.mockResolvedValueOnce(makeResponse(response2Devices));
 
         const r = Device.find({ name: 'test' });
         const device = await r;
@@ -1360,8 +1361,8 @@ describe('device', () => {
 
     it('can use initialState to send the correct value in post', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -1371,10 +1372,10 @@ describe('device', () => {
                         name: 'Test Value',
                         permission: '',
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -1382,8 +1383,8 @@ describe('device', () => {
                             id: '1c067551-799a-4b35-9a75-5eb0b978ee97',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const device = new Device();
         device.meta.id = 'c91500a4-3bc9-486e-a238-5f0614c3d9e0';
@@ -1448,11 +1449,11 @@ describe('device', () => {
     });
 
     it('can delete a value and make sure that it is not valid', async () => {
-        mockedAxios.delete.mockResolvedValueOnce({ data: [] });
+        mockedAxios.delete.mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post
-            .mockResolvedValueOnce({ data: [response] })
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(makeResponse([response]))
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -1462,11 +1463,11 @@ describe('device', () => {
                         name: 'Test Value',
                         permission: '',
                     },
-                ],
-            })
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -1476,9 +1477,9 @@ describe('device', () => {
                         name: 'Test Value',
                         permission: '',
                     },
-                ],
-            })
-            .mockResolvedValueOnce({ data: [] });
+                ])
+            )
+            .mockResolvedValueOnce(makeResponse([]));
 
         const device = new Device();
         await device.create();
@@ -1695,8 +1696,8 @@ describe('device', () => {
 
     it('can find device by id', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: [] })
-            .mockResolvedValueOnce({ data: [response] });
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([response]));
 
         const r = Device.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
 
@@ -1741,8 +1742,8 @@ describe('device', () => {
 
     it('can make a device online', async () => {
         mockedAxios.post
-            .mockResolvedValueOnce({
-                data: [
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'value',
@@ -1750,10 +1751,10 @@ describe('device', () => {
                             id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                         },
                     },
-                ],
-            })
-            .mockResolvedValueOnce({
-                data: [
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
                     {
                         meta: {
                             type: 'state',
@@ -1761,8 +1762,8 @@ describe('device', () => {
                             id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
                         },
                     },
-                ],
-            });
+                ])
+            );
 
         const d = new Device();
         d.meta.id = 'db6ba9ca-ea15-42d3-9c5e-1e1f50110f38';
@@ -1815,9 +1816,9 @@ describe('device', () => {
     });
 
     it('can find using filter', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: responses['fetch_device'],
-        });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(responses['fetch_device'])
+        );
 
         const networks = await Device.findByFilter({
             value: { type: 'energy' },
@@ -1850,9 +1851,9 @@ describe('device', () => {
     });
 
     it('can find all using filter', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-            data: responses['fetch_device'],
-        });
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse(responses['fetch_device'])
+        );
 
         const networks = await Device.findAllByFilter(
             {
@@ -1897,8 +1898,8 @@ describe('device', () => {
 
     it('can create 3 new device from wappsto', async () => {
         mockedAxios.get
-            .mockResolvedValueOnce({ data: response3Devices })
-            .mockResolvedValueOnce({ data: response });
+            .mockResolvedValueOnce(makeResponse(response3Devices))
+            .mockResolvedValueOnce(makeResponse(response));
 
         const devices = await Device.fetch();
 
