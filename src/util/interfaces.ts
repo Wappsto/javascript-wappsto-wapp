@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
-export type Timestamp = string | number | undefined | Date;
+export type Timestamp = string | number | Date;
 export type ValidationType = 'none' | 'normal';
 export interface IConfig {
     verbose?: boolean;

@@ -588,7 +588,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
     public report(
         data: ReportValueInput | LogValues,
-        timestamp: Timestamp = undefined
+        timestamp?: Timestamp
     ): Promise<boolean> {
         this.validate('report', arguments);
 
@@ -600,21 +600,21 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             return this.#sendLogReport(data);
         }
 
-        return this.#sendReport(data, timestamp, false);
+        return this.#sendReport(data, timestamp || 0, false);
     }
 
     public forceReport(
         data: ReportValueInput,
-        timestamp: Timestamp = undefined
+        timestamp?: Timestamp
     ): Promise<boolean> {
         this.validate('forceReport', arguments);
 
-        return this.#sendReport(data, timestamp, true);
+        return this.#sendReport(data, timestamp || 0, true);
     }
 
     async #sendReport(
         data: ReportValueInput,
-        timestamp: Timestamp = undefined,
+        timestamp: Timestamp,
         force: boolean
     ): Promise<boolean> {
         const sendData = this.#convertValueInput(data);
@@ -706,15 +706,15 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
     public control(
         data: ReportValueInput,
-        timestamp: Timestamp = undefined
+        timestamp?: Timestamp
     ): Promise<boolean> {
         this.validate('control', arguments);
-        return this.#findStateAndUpdate('Control', data, timestamp);
+        return this.#findStateAndUpdate('Control', data, timestamp || 0);
     }
 
     public controlWithAck(
         data: ReportValueInput,
-        timestamp: Timestamp = undefined
+        timestamp?: Timestamp
     ): Promise<string | undefined | null> {
         this.validate('controlWithAck', arguments);
 
@@ -743,7 +743,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 const res = await this.#findStateAndUpdate(
                     'Control',
                     data,
-                    timestamp
+                    timestamp || 0
                 );
 
                 if (!res) {

@@ -109,4 +109,9 @@ describe('config', () => {
         const c = config({ reconnectCount: 5 });
         expect(c.reconnectCount).toEqual(5);
     });
+
+    it('can change the stream watchdog timeout', () => {
+        const c = config({ watchdogTimeout: 15 });
+        expect(c.watchdogTimeout).toEqual(15);
+    });
 });

@@ -1857,7 +1857,10 @@ describe('device', () => {
 
         const networks = await Device.findAllByFilter(
             {
-                value: { type: ['energy', 'template'], number: { max: 1 } },
+                value: {
+                    type: ['energy', 'template'],
+                    number: { max: 1, unit: 'C' },
+                },
             },
             {
                 network: { name: 'network name' },
@@ -1875,9 +1878,10 @@ describe('device', () => {
                         'network_name!=network name',
                         'value_type=[energy,template]',
                         'value_number.max=1',
+                        'value_number.unit=C',
                     ],
                 },
-                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=[energy,template]","this_number.max=1"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
+                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=[energy,template]","this_number.max=1","this_number.unit=C"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
             },
             {
                 params: {

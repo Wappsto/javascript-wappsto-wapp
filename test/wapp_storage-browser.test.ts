@@ -6,7 +6,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { wappStorage } from '../src/index';
+import { wappStorage, Data } from '../src/index';
 import { after } from './util/stream';
 import { makeResponse } from './util/helpers';
 
@@ -46,5 +46,13 @@ describe('wapp storage', () => {
         await ws.removeSecret('secret_key');
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(console.error).toHaveBeenCalledTimes(3);
+    });
+
+    it('Secret do not work with data in browser', () => {
+        const d = new Data('test');
+        const t = () => {
+            d.set('secret', 'data', true);
+        };
+        expect(t).toThrow('Secret Storage is only available in the background');
     });
 });

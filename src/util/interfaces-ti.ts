@@ -4,7 +4,7 @@
 import * as t from 'ts-interface-checker';
 // tslint:disable:object-literal-key-quotes
 
-export const Timestamp = t.union('string', 'number', 'undefined', 'Date');
+export const Timestamp = t.union('string', 'number', 'Date');
 
 export const ValidationType = t.union(t.lit('none'), t.lit('normal'));
 
