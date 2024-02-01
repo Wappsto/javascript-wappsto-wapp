@@ -95,7 +95,10 @@ export default wrapper;
 
 export function getErrorResponse(error: any): any {
     /* istanbul ignore next */
-    if (axios.isAxiosError(error)) {
+    if (
+        axios.isAxiosError(error) ||
+        (typeof error === 'object' && error.isAxiosError === true)
+    ) {
         return error?.response?.data;
     } else {
         return error;
