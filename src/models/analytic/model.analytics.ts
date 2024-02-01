@@ -21,13 +21,13 @@ export class AnalyticsModel extends PermissionModel {
         state_ids: string[],
         start: Timestamp,
         end: Timestamp,
-        parameters?: any
+        parameters: any
     ) {
         super('analytics');
         this.access.state_id = state_ids;
         this.parameter.start = start;
         this.parameter.end = end;
-        Object.assign(this.parameter, parameters || {});
+        Object.assign(this.parameter, parameters);
     }
 
     getAttributes(): string[] {
