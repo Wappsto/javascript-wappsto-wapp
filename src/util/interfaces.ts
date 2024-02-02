@@ -158,6 +158,7 @@ export interface ICreateValue {
     delta?: number | 'inf';
     disableLog?: boolean;
     initialState?: IInitialState;
+    disablePeriodAndDelta?: boolean;
 }
 
 export interface IDeviceFunc {
@@ -258,6 +259,7 @@ export interface IValueBase {
     delta?: string;
     disableLog?: boolean;
     initialState?: IInitialState;
+    disablePeriodAndDelta?: boolean;
 }
 
 export interface IValueNumberBase {

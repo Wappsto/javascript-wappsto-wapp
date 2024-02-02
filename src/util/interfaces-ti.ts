@@ -340,6 +340,7 @@ export const IValueBase = t.iface([], {
     delta: t.opt('string'),
     disableLog: t.opt('boolean'),
     initialState: t.opt('IInitialState'),
+    disablePeriodAndDelta: t.opt('boolean'),
 });
 
 export const IValueNumberBase = t.iface([], {

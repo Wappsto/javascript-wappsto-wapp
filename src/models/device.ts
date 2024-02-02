@@ -193,6 +193,9 @@ export class Device extends ConnectionModel implements IDevice {
             value.meta.historical = false;
         }
 
+        const disablePeriodAndDelta = params.disablePeriodAndDelta;
+        delete params.disablePeriodAndDelta;
+
         const oldJson = value.toJSON();
         value.parse(params);
         const newJson = value.toJSON();
@@ -202,6 +205,11 @@ export class Device extends ConnectionModel implements IDevice {
         }
 
         value.parent = this;
+
+        if (disablePeriodAndDelta === true) {
+            value.delta = undefined;
+            value.period = undefined;
+        }
 
         if (!isEqual(oldJson, newJson)) {
             if (oldType !== undefined && params[oldType] === undefined) {
@@ -264,7 +272,8 @@ export class Device extends ConnectionModel implements IDevice {
         valueTemplate?: ValueType,
         period: number | string = 0,
         delta: number | 'inf' = 0,
-        disableLog?: boolean
+        disableLog?: boolean,
+        disablePeriodAndDelta?: boolean
     ): Promise<Value> {
         this.validate('createValue', arguments);
         let template = valueTemplate;
@@ -285,6 +294,7 @@ export class Device extends ConnectionModel implements IDevice {
             template.period = period;
             template.delta = delta?.toString();
             template.disableLog = disableLog;
+            template.disablePeriodAndDelta = disablePeriodAndDelta;
         } else {
             template = name.template;
             template.name = name.name;
@@ -293,6 +303,7 @@ export class Device extends ConnectionModel implements IDevice {
             template.delta = name.delta?.toString() || '0';
             template.disableLog = name.disableLog;
             template.initialState = name.initialState;
+            template.disablePeriodAndDelta = name.disablePeriodAndDelta;
         }
 
         return this.#createValue(template);
@@ -310,6 +321,7 @@ export class Device extends ConnectionModel implements IDevice {
             delta: params.delta,
             disableLog: params.disableLog,
             initialState: params.initialState,
+            disablePeriodAndDelta: params.disablePeriodAndDelta,
         };
     }
 

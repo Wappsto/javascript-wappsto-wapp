@@ -698,6 +698,49 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
+    it('can create a value with period and delta disabled', async () => {
+        templateHelperStart();
+
+        const device = new Device();
+        device.meta.id = 'f589b816-1f2b-412b-ac36-1ca5a6db0273';
+        const value = await device.createValue({
+            name: 'name',
+            permission: 'rw',
+            template: ValueTemplate.NUMBER,
+            disablePeriodAndDelta: true,
+        });
+        templateHelperDone();
+
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/device/f589b816-1f2b-412b-ac36-1ca5a6db0273/value',
+            {
+                meta: {
+                    type: 'value',
+                    version: '2.1',
+                },
+                name: 'name',
+                permission: 'rw',
+                type: 'number',
+                number: {
+                    min: -128,
+                    max: 128,
+                    step: 0.1,
+                    unit: '',
+                },
+            },
+            {}
+        );
+
+        expect(value.name).toEqual('name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('number');
+        expect(value.number?.min).toEqual(-128);
+        expect(value.number?.max).toEqual(128);
+        expect(value.number?.step).toEqual(0.1);
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
     it('can create a new number value with historical disabled', async () => {
         mockedAxios.post
             .mockResolvedValueOnce(
