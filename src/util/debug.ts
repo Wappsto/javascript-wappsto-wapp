@@ -1,5 +1,5 @@
 import { _config } from './config';
-import { toString } from './helpers';
+import { isBrowser, toString } from './helpers';
 
 export function printDebug(message: string): void {
     if (_config.debug) {
@@ -38,5 +38,14 @@ export function printWarning(message: string): void {
 export function printStream(message: string, ...args: any[]): void {
     if (_config.stream) {
         console.log(`WAPPSTO STREAM: ${message}`, ...args);
+    }
+}
+
+export function fatalError(message: string) {
+    if (isBrowser()) {
+        console.error(`WAPPSTO FATAL ERROR: ${message}`);
+    } else {
+        process.stderr.write(`WAPPSTO FATAL ERROR: ${message}\n`);
+        process.exit(11);
     }
 }

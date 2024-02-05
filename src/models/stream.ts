@@ -2,12 +2,13 @@ import WebSocket from 'universal-websocket-client';
 import { baseUrl, extSyncToken, session } from '../session';
 import { _config } from '../util/config';
 import {
+    fatalError,
     printDebug,
     printError,
     printStream,
     printWarning,
 } from '../util/debug';
-import { isBrowser, isUUID, isVersion, toString } from '../util/helpers';
+import { isUUID, isVersion, toString } from '../util/helpers';
 import wappsto, { getErrorMessage } from '../util/http_wrapper';
 import {
     IStreamEvent,
@@ -102,16 +103,12 @@ export class Stream extends Model {
     #getTimeout(): number {
         /* istanbul ignore next */
         if (this.#backOff >= _config.reconnectCount) {
-            printError(
+            fatalError(
                 `Stream failed to connect after ${
                     this.#backOff
                 } attempts, exit!`
             );
-            if (isBrowser()) {
-                return Infinity;
-            } else {
-                process.exit(11);
-            }
+            return Infinity;
         }
         return this.#backOff * 2 * 1000;
     }
