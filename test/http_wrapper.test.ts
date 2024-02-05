@@ -87,6 +87,10 @@ describe('http_wrapper', () => {
             response: {
                 data: 'test',
                 statusText: 'HTTP JEST ERROR',
+                config: {},
+                headers: {},
+                request: {},
+                status: 500,
             },
         });
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);

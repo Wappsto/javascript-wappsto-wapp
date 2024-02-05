@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { baseUrl, session } from '../session';
 import { _config } from '../util/config';
-import { printDebug, printError, printRequest } from './debug';
+import { fatalError, printDebug, printError, printRequest } from './debug';
 import { isBrowser, toString } from './helpers';
 import { VERSION } from './version';
 
@@ -44,10 +44,7 @@ async function wrap(
         if (error instanceof Error) {
             if (axios.isAxiosError(error)) {
                 if (error.response === undefined) {
-                    process.stderr.write(
-                        `WAPPSTO FATAL ERROR: ${error.message}\n`
-                    );
-                    process.exit(11);
+                    fatalError(error.message);
                 }
             }
         }
@@ -150,5 +147,10 @@ export function getErrorMessage(error: any | Error | AxiosError): string {
 export function printHttpError(message: string, error: any): string {
     const msg = getErrorMessage(error);
     printError(`${message}: ${msg}`);
+
+    if (error.status === 503) {
+        fatalError('Got a SERVICE UNAVAILABLE response from the backend');
+    }
+
     return msg;
 }
