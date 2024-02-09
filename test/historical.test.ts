@@ -99,28 +99,35 @@ describe('historical', () => {
             1,
             '/2.1/log/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7/state',
             {
-                params: { limit: 1, end: '1985-11-05T00:53:20.000Z' },
+                params: {
+                    limit: 1,
+                    end: '1985-11-05T00:53:20.000Z',
+                    method: ['retrieve'],
+                },
             }
         );
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             2,
             '/2.1/log/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7/state',
             {
-                params: { operation: 'max' },
+                params: { operation: 'max', method: ['retrieve'] },
             }
         );
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             3,
             '/2.1/log/1b743fa5-85a1-48e9-935c-b98ba27c0ffe/state',
             {
-                params: { start: '1985-11-05T00:53:20.000Z' },
+                params: {
+                    start: '1985-11-05T00:53:20.000Z',
+                    method: ['retrieve'],
+                },
             }
         );
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             4,
             '/2.1/log/1b743fa5-85a1-48e9-935c-b98ba27c0ffe/state',
             {
-                params: { end: '2022-02-02T02:02:02Z' },
+                params: { end: '2022-02-02T02:02:02Z', method: ['retrieve'] },
             }
         );
 

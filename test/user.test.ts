@@ -51,6 +51,7 @@ describe('user', () => {
             params: {
                 expand: 1,
                 go_internal: true,
+                method: ['retrieve'],
             },
         });
         expect(user?.first_name).toEqual('first');
@@ -63,7 +64,12 @@ describe('user', () => {
         config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
-            params: { expand: 1, go_internal: true, verbose: true },
+            params: {
+                expand: 1,
+                go_internal: true,
+                verbose: true,
+                method: ['retrieve'],
+            },
         });
         expect(users[0]?.first_name).toEqual('first');
         expect(users[0]?.last_name).toEqual('last');

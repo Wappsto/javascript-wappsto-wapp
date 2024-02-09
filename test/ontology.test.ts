@@ -398,6 +398,7 @@ describe('Ontology', () => {
                 params: {
                     expand: 1,
                     go_internal: true,
+                    method: ['retrieve'],
                 },
             }
         );
@@ -740,6 +741,7 @@ describe('Ontology', () => {
                 params: {
                     expand: 1,
                     go_internal: true,
+                    method: ['retrieve'],
                 },
             }
         );
@@ -749,6 +751,7 @@ describe('Ontology', () => {
                 params: {
                     expand: 1,
                     go_internal: true,
+                    method: ['retrieve'],
                 },
             }
         );
@@ -926,7 +929,14 @@ describe('Ontology', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(5);
         expect(mockedAxios.get).toHaveBeenLastCalledWith(
             '/2.1/data/09af28b3-0e84-4230-ab96-88990cfa04b8/ontology',
-            { params: { expand: 1, go_internal: true, path: '*' } }
+            {
+                params: {
+                    expand: 1,
+                    go_internal: true,
+                    path: '*',
+                    method: ['retrieve'],
+                },
+            }
         );
 
         const leafs = await node1.transverse('*', true);
@@ -942,6 +952,7 @@ describe('Ontology', () => {
                     go_internal: true,
                     path: '*',
                     all_edge: true,
+                    method: ['retrieve'],
                 },
             }
         );
@@ -1281,12 +1292,17 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
 
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
-            params: { expand: 3, go_internal: true, 'this_name=': 'test' },
+            params: {
+                expand: 3,
+                go_internal: true,
+                'this_name=': 'test',
+                method: ['retrieve'],
+            },
         });
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             2,
             '/2.1/network/b62e285a-5188-4304-85a0-3982dcb575bc/ontology',
-            { params: { expand: 1, go_internal: true } }
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
         );
 
         const d1 = networks[0].device[0];
@@ -1522,6 +1538,7 @@ describe('Ontology', () => {
                 params: {
                     expand: 1,
                     go_internal: true,
+                    method: ['retrieve'],
                 },
             }
         );

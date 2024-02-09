@@ -149,7 +149,7 @@ describe('network', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
-            params: { go_internal: true, expand: 3 },
+            params: { go_internal: true, expand: 3, method: ['retrieve'] },
         });
         expect(networks[0]?.name).toEqual('test');
     });
@@ -243,6 +243,7 @@ describe('network', () => {
                 expand: 3,
                 go_internal: true,
                 'this_name=': 'Wapp Network',
+                method: ['retrieve'],
             },
         });
         expect(mockedAxios.put).toHaveBeenCalledWith(
@@ -309,7 +310,12 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
-            params: { expand: 3, go_internal: true, verbose: true },
+            params: {
+                expand: 3,
+                go_internal: true,
+                verbose: true,
+                method: ['retrieve'],
+            },
         });
         expect(networks[0]?.name).toEqual('test');
     });
@@ -570,6 +576,7 @@ describe('network', () => {
         const network = await createNetwork({
             name: 'Network Name',
             description: 'Description',
+            method: ['retrieve'],
         });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
@@ -579,6 +586,7 @@ describe('network', () => {
                 expand: 3,
                 go_internal: true,
                 'this_name=': 'Network Name',
+                method: ['retrieve'],
             },
         });
         expect(network.name).toEqual('Network Name');
@@ -840,17 +848,31 @@ describe('network', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(4);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
-            params: { expand: 3, go_internal: true },
+            params: { expand: 3, go_internal: true, method: ['retrieve'] },
         });
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             3,
             '/2.1/device/e65ec3eb-04f1-4253-bd1b-b989b1204b81/value',
-            { params: { expand: 1, go_internal: true, offset: 1 } }
+            {
+                params: {
+                    expand: 1,
+                    go_internal: true,
+                    offset: 1,
+                    method: ['retrieve'],
+                },
+            }
         );
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             4,
             '/2.1/network/b62e285a-5188-4304-85a0-3982dcb575bc/device',
-            { params: { expand: 2, go_internal: true, offset: 1 } }
+            {
+                params: {
+                    expand: 2,
+                    go_internal: true,
+                    offset: 1,
+                    method: ['retrieve'],
+                },
+            }
         );
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             2,
@@ -984,6 +1006,7 @@ describe('network', () => {
                 expand: 3,
                 go_internal: true,
                 'this_name=': 'Network Name',
+                method: ['retrieve'],
             },
         });
 

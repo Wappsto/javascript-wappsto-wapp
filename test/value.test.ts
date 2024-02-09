@@ -119,7 +119,7 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
-            params: { go_internal: true, expand: 1 },
+            params: { go_internal: true, expand: 1, method: ['retrieve'] },
         });
         expect(values[0]?.name).toEqual('test');
     });
@@ -134,7 +134,12 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
-            params: { expand: 1, go_internal: true, verbose: true },
+            params: {
+                expand: 1,
+                go_internal: true,
+                verbose: true,
+                method: ['retrieve'],
+            },
         });
         expect(values[0]?.name).toEqual('test');
     });
@@ -1133,6 +1138,7 @@ describe('value', () => {
             {
                 params: {
                     go_internal: true,
+                    method: ['retrieve'],
                 },
             }
         );
@@ -1390,6 +1396,7 @@ describe('value', () => {
                 params: {
                     expand: 1,
                     go_internal: true,
+                    method: ['retrieve'],
                 },
             }
         );
@@ -1404,12 +1411,12 @@ describe('value', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
-            params: { expand: 1, go_internal: true },
+            params: { expand: 1, go_internal: true, method: ['retrieve'] },
         });
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/value/bd1f46f9-f41a-4f59-bdbd-6529d58b91c5',
             {
-                params: { expand: 1, go_internal: true },
+                params: { expand: 1, go_internal: true, method: ['retrieve'] },
             }
         );
         expect(values.length).toEqual(2);

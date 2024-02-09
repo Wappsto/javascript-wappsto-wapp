@@ -279,6 +279,7 @@ export class Model implements IModel {
         try {
             const query = Model.generateOptions(
                 Object.assign(
+                    { method: ['retrieve'] },
                     params.params || {},
                     params.go_internal === false ? {} : { go_internal: true },
                     params.body !== undefined ? { fetch: true } : {}

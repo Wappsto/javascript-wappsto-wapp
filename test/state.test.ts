@@ -87,7 +87,7 @@ describe('state', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
-            params: { go_internal: true },
+            params: { go_internal: true, method: ['retrieve'] },
         });
         expect(states[0]?.type).toEqual('Report');
     });
@@ -101,7 +101,7 @@ describe('state', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
-            params: { verbose: true, go_internal: true },
+            params: { verbose: true, go_internal: true, method: ['retrieve'] },
         });
         expect(states[0]?.type).toEqual('Report');
     });

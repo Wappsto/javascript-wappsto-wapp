@@ -202,7 +202,7 @@ describe('device', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
-            params: { go_internal: true, expand: 2 },
+            params: { go_internal: true, expand: 2, method: ['retrieve'] },
         });
         expect(devices[0]?.name).toEqual('test');
     });
@@ -216,7 +216,12 @@ describe('device', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
-            params: { expand: 2, go_internal: true, verbose: true },
+            params: {
+                expand: 2,
+                go_internal: true,
+                verbose: true,
+                method: ['retrieve'],
+            },
         });
         expect(devices[0]?.name).toEqual('test');
     });
@@ -1952,12 +1957,12 @@ describe('device', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
-            params: { expand: 2, go_internal: true },
+            params: { expand: 2, go_internal: true, method: ['retrieve'] },
         });
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/device/47631c40-b687-4eca-9844-94be7328773f',
             {
-                params: { expand: 2, go_internal: true },
+                params: { expand: 2, go_internal: true, method: ['retrieve'] },
             }
         );
         expect(devices.length).toEqual(3);
