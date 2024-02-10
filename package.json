@@ -99,7 +99,7 @@
         "@types/lodash.isequal": "^4.5.8",
         "@types/lodash.omit": "^4.5.9",
         "@types/lodash.pick": "^4.4.9",
-        "@types/node": "^20.11.13",
+        "@types/node": "^20.11.17",
         "@types/websocket": "^1.0.10",
         "@types/ws": "^8.5.10",
         "browserify": "^17.0.0",
