@@ -36,6 +36,7 @@ In depth documentation can be found on [Github Pages](https://wappsto.github.io/
 -   [Analyzing historical data](#analyzing-historical-data)
 -   [Sending messages to and from the background](#sending-messages-to-and-from-the-background)
 -   [Waiting for the background to be ready](#waiting-for-the-background-to-be-ready)
+-   [Permission updated](#permission-updated)
 -   [Web Hook](#web-hook)
 -   [Wapp Storage](#wapp-storage)
 -   [OAuth](#oauth)
@@ -755,6 +756,19 @@ timeout. And `-1` to wait for ever.
 ```javascript
 const result = await Wappsto.waitForBackground(20);
 ```
+
+### Permission updated
+
+It is possible to get notified when there are a change in the permissions.
+This is helpful when an user adds new items to the Wapp and the Wapp needs to show an updated list of items.
+
+```javascript
+Wappsto.onPermissionUpdate(() => {
+    console.log('Permissions changed');
+});
+```
+
+You can also stop getting notified again, by calling `cancelPermissionUpdate`.
 
 ### Web Hook
 

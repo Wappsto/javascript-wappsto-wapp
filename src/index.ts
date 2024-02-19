@@ -20,6 +20,8 @@ export {
     signalBackground,
     signalForeground,
     waitForBackground,
+    onPermissionUpdate,
+    cancelPermissionUpdate,
 } from './stream_helpers';
 export { getPowerPriceList } from './util/analytics_helpers';
 export { config } from './util/config';

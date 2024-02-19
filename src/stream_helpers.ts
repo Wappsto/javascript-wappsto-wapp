@@ -8,6 +8,7 @@ const openStream: Stream = new Stream();
 let request_handlers: Record<string, RequestHandler> = {};
 let backgroundIsStarted = false;
 let startBackgroundTimer: ReturnType<typeof setTimeout>;
+let permissionUpdateCallback: undefined | (() => void);
 
 export { openStream, startBackgroundTimer };
 
@@ -153,6 +154,30 @@ export async function waitForBackground(timeout = 10): Promise<boolean> {
     } while (count !== 0 && !backgroundIsStarted);
 
     return !!count;
+}
+
+function handlePermissionUpdate(event: any) {
+    if (
+        permissionUpdateCallback &&
+        (event.data.base.code === 1100003 || event.data.base.code === 1100004)
+    ) {
+        permissionUpdateCallback();
+    }
+    return undefined;
+}
+
+export function onPermissionUpdate(callback: () => void) {
+    if (!permissionUpdateCallback) {
+        openStream.subscribeService('/notification', handlePermissionUpdate);
+    }
+    permissionUpdateCallback = callback;
+}
+
+export function cancelPermissionUpdate() {
+    if (permissionUpdateCallback !== undefined) {
+        openStream.subscribeService('/notification', handlePermissionUpdate);
+    }
+    permissionUpdateCallback = undefined;
 }
 
 if (!isBrowser()) {

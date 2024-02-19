@@ -5,6 +5,10 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { Value, State } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
+import {
+    cancelPermissionUpdate,
+    onPermissionUpdate,
+} from '../src/stream_helpers';
 
 describe('stream', () => {
     let server: WS;
@@ -652,5 +656,79 @@ describe('stream', () => {
         await new Promise((r) => setTimeout(r, 100));
 
         expect(result).toEqual(['1', '2']);
+    });
+
+    it('notifies when there is new permissions', async () => {
+        let permissionUpdated = 0;
+        onPermissionUpdate(() => {
+            permissionUpdated += 1;
+        });
+
+        await server.connected;
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/notification',
+                },
+            })
+        );
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                custom: {
+                    data: {
+                        selected: [
+                            {
+                                meta: {
+                                    id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                                },
+                            },
+                        ],
+                    },
+                },
+                base: {
+                    code: 1100004,
+                    identifier: 'network-1-Find 1 network with name test',
+                    ids: [],
+                },
+            },
+        });
+
+        cancelPermissionUpdate();
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
+            data: {
+                custom: {
+                    data: {
+                        selected: [
+                            {
+                                meta: {
+                                    id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                                },
+                            },
+                        ],
+                    },
+                },
+                base: {
+                    code: 1100004,
+                    identifier: 'network-1-Find 1 network with name test',
+                    ids: [],
+                },
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 100));
+        expect(permissionUpdated).toBe(1);
     });
 });
