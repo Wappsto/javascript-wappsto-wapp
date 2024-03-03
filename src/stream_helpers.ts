@@ -186,5 +186,6 @@ if (!isBrowser()) {
             'isBackgroundStarted',
             handleIsBackgroundStarted
         );
-    }, 0);
+    }, 1);
+    printDebug(`startBackgroundTimer is ${startBackgroundTimer}`);
 }
