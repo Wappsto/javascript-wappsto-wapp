@@ -562,6 +562,7 @@ export interface IWappStorageFunc {
     remove(name: string | string[]): Promise<boolean>;
     removeSecret(name: string | string[]): Promise<boolean>;
     onChange(cb: StorageChangeHandler): void;
+    cancelOnChange(): void;
 }
 
 export interface IWappStorage {

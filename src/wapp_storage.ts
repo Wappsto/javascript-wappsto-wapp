@@ -23,6 +23,7 @@ export class WappStorage implements IWappStorage {
     name = '';
     id = '';
     #data: Data;
+    #onChangeCallback?: () => void;
 
     constructor(name: string) {
         WappStorage.#validate('constructor', arguments);
@@ -133,11 +134,23 @@ export class WappStorage implements IWappStorage {
         return this.#data.update();
     }
 
+    async #handleStreamUpdate() {
+        if (this.#onChangeCallback) {
+            await this.#onChangeCallback();
+        }
+    }
+
     onChange(cb: StorageChangeHandler): Promise<boolean> {
         WappStorage.#validate('onChange', arguments);
-        return this.#data.onChange(async () => {
-            await cb();
-        });
+        this.#onChangeCallback = cb;
+        return this.#data.onChange(async () => this.#handleStreamUpdate());
+    }
+
+    cancelOnChange() {
+        WappStorage.#validate('cancelOnChange', arguments);
+        if (this.#onChangeCallback) {
+            this.#data.cancelOnChange(async () => this.#handleStreamUpdate());
+        }
     }
 
     reload(): Promise<boolean> {

@@ -62,6 +62,37 @@ describe('WappStorage', () => {
     });
 
     it('can add a new item', async () => {
+        const streamEvent = {
+            meta: {
+                id: '37eba085-b943-4958-aa78-c1bd4c73defc',
+                type: 'eventstream',
+                version: '2.1',
+            },
+            event: 'update',
+            meta_object: {
+                type: 'data',
+                version: '2.1',
+                id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+            },
+            data: {
+                data_meta: {
+                    type: 'wapp_storage',
+                    id: 'wapp_storage_default',
+                    version: 1,
+                },
+                data: {
+                    new_key: 'new_item',
+                },
+                meta: {
+                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                    type: 'data',
+                    version: '2.1',
+                },
+                path: '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                timestamp: '2022-06-08T14:49:35.349971Z',
+            },
+            path: '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+        };
         mockedAxios.get.mockResolvedValueOnce(
             makeResponse([
                 {
@@ -116,37 +147,7 @@ describe('WappStorage', () => {
 
         await changeP;
 
-        server.send({
-            meta: {
-                id: '37eba085-b943-4958-aa78-c1bd4c73defc',
-                type: 'eventstream',
-                version: '2.1',
-            },
-            event: 'update',
-            meta_object: {
-                type: 'data',
-                version: '2.1',
-                id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-            },
-            data: {
-                data_meta: {
-                    type: 'wapp_storage',
-                    id: 'wapp_storage_default',
-                    version: 1,
-                },
-                data: {
-                    new_key: 'new_item',
-                },
-                meta: {
-                    id: 'be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                    type: 'data',
-                    version: '2.1',
-                },
-                path: '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                timestamp: '2022-06-08T14:49:35.349971Z',
-            },
-            path: '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-        });
+        server.send(streamEvent);
 
         await new Promise((r) => setTimeout(r, 1));
 
@@ -189,6 +190,14 @@ describe('WappStorage', () => {
             },
             {}
         );
+
+        c.cancelOnChange();
+
+        server.send(streamEvent);
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(fun).toHaveBeenCalledTimes(1);
     });
 
     it('can load new data from the server', async () => {

@@ -187,6 +187,7 @@ export const ICreateValue = t.iface([], {
     delta: t.opt(t.union('number', t.lit('inf'))),
     disableLog: t.opt('boolean'),
     initialState: t.opt('IInitialState'),
+    disablePeriodAndDelta: t.opt('boolean'),
 });
 
 export const IDeviceFunc = t.iface([], {
@@ -759,6 +760,7 @@ export const IWappStorageFunc = t.iface([], {
         t.param('name', t.union('string', t.array('string')))
     ),
     onChange: t.func('void', t.param('cb', 'StorageChangeHandler')),
+    cancelOnChange: t.func('void'),
 });
 
 export const IWappStorage = t.iface([], {
