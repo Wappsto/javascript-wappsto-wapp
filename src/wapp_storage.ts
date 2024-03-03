@@ -19,7 +19,7 @@ export async function wappStorage(name?: string) {
     return storages[name];
 }
 
-class WappStorage implements IWappStorage {
+export class WappStorage implements IWappStorage {
     name = '';
     id = '';
     #data: Data;
