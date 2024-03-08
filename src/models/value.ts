@@ -14,6 +14,7 @@ import {
     isPositiveInteger,
     randomIntFromInterval,
     sortByTimestamp,
+    toSafeString,
 } from '../util/helpers';
 import wappsto, { printHttpError } from '../util/http_wrapper';
 import {
@@ -574,7 +575,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 return data ? 'true' : 'false';
             case 'function':
             case 'object':
-                return JSON.stringify(data);
+                return toSafeString(data);
             case 'undefined':
                 return 'NA';
             case 'symbol':

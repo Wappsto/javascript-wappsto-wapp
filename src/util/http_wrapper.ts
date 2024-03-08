@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { baseUrl, session } from '../session';
 import { _config } from '../util/config';
 import { fatalError, printDebug, printError, printRequest } from './debug';
-import { isBrowser, toString } from './helpers';
+import { isBrowser, toSafeString } from './helpers';
 import { VERSION } from './version';
 
 type Methods = 'head' | 'options' | 'put' | 'post' | 'patch' | 'delete' | 'get';
@@ -128,20 +128,20 @@ export function getErrorMessage(error: any | Error | AxiosError): string {
                         printError(
                             `Failed Request: ${error.request?.method} ${
                                 error.request?.path
-                            } ${toString(error.config?.data)} => ${toString(
-                                data
-                            )}`
+                            } ${toSafeString(
+                                error.config?.data
+                            )} => ${toSafeString(data)}`
                         );
                     }
-                    return `${data.message} (${toString(data.data)})`;
+                    return `${data.message} (${toSafeString(data.data)})`;
             }
         }
 
         return `${error.response.statusText} for ${error.config?.url}`;
     }
 
-    printDebug(toString(error));
-    return `Unknown error: ${toString(error)}`;
+    printDebug(toSafeString(error));
+    return `Unknown error: ${toSafeString(error)}`;
 }
 
 export function printHttpError(message: string, error: any): string {

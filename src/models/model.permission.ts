@@ -1,6 +1,6 @@
 import { openStream } from '../stream_helpers';
 import { printDebug, printError } from '../util/debug';
-import { toString } from '../util/helpers';
+import { toSafeString } from '../util/helpers';
 import { getErrorResponse, printHttpError } from '../util/http_wrapper';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';
@@ -42,7 +42,7 @@ export class PermissionModel extends OntologyModel {
                         `Failed to get permission to save ${this.getType()} under users account`
                     );
                     /* istanbul ignore next */
-                    printDebug(toString(e));
+                    printDebug(toSafeString(e));
                 }
                 break;
             case 1100004:
@@ -67,7 +67,7 @@ export class PermissionModel extends OntologyModel {
                         `Failed to get permission to retrieve ${this.getType()}/${this.id()} from user`
                     );
                     /* istanbul ignore next */
-                    printDebug(toString(e));
+                    printDebug(toSafeString(e));
                 }
                 break;
         }
@@ -185,7 +185,7 @@ export class PermissionModel extends OntologyModel {
             } else {
                 if (quantity === 'all' || data.length >= quantity) {
                     printDebug(
-                        `Found permission notification - returning old result: ${toString(
+                        `Found permission notification - returning old result: ${toSafeString(
                             data
                         )}`
                     );
@@ -228,7 +228,7 @@ export class PermissionModel extends OntologyModel {
                             });
                         }
                         printDebug(
-                            `Got permission to ${toString(newParams.id)}`
+                            `Got permission to ${toSafeString(newParams.id)}`
                         );
                         const result = await Model.fetch({
                             endpoint,

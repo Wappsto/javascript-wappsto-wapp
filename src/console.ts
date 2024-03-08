@@ -1,5 +1,5 @@
 import { printError, printWarning } from './util/debug';
-import { isBrowser, toString } from './util/helpers';
+import { isBrowser, toSafeString } from './util/helpers';
 import wappsto from './util/http_wrapper';
 
 const defaultConsole = Object.assign({}, console);
@@ -11,7 +11,7 @@ function generateConsoleMessage(key: string, ...args: any[]): any {
     const time = new Date().toISOString();
     const data = {
         type: key,
-        data: toString({
+        data: toSafeString({
             key: key,
             arguments: args[0],
             time: time,
@@ -27,7 +27,7 @@ async function sendConsoleEvent(event: consoleEvent): Promise<any> {
     } catch (e: any) {
         if (e.response) {
             printError(
-                `Failed to send debug message (${JSON.stringify(e.response)})`,
+                `Failed to send debug message (${toSafeString(e.response)})`,
                 defaultConsole
             );
             if (e.response.data && e.response.data.code === 117000000) {

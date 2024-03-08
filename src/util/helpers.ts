@@ -80,7 +80,7 @@ export function getCircularReplacer() {
     };
 }
 
-export function toString(json: Record<string, any> | unknown): string {
+export function toSafeString(json: Record<string, any> | unknown): string {
     if (!json) {
         return '';
     }

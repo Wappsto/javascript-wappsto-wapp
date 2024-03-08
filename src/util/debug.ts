@@ -1,5 +1,5 @@
 import { _config } from './config';
-import { isBrowser, toString } from './helpers';
+import { isBrowser, toSafeString } from './helpers';
 
 export function printDebug(message: string): void {
     if (_config.debug) {
@@ -15,9 +15,9 @@ export function printRequest(
     response?: Record<string, any>
 ) {
     if (_config.requests && !url.includes('/console')) {
-        const msg = `${func} ${url} ${toString(config)} ${toString(
+        const msg = `${func} ${url} ${toSafeString(config)} ${toSafeString(
             data
-        )} => ${toString(response)}`;
+        )} => ${toSafeString(response)}`;
         console.log(`WAPPSTO REQUEST: ${msg}`);
     }
 }

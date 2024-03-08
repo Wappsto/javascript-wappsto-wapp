@@ -1,6 +1,7 @@
 import { PowerPriceList } from '../models/analytic';
 import { openStream } from '../stream_helpers';
 import { printDebug, printWarning } from './debug';
+import { toSafeString } from './helpers';
 import { Timestamp } from './interfaces';
 
 export function runAnalyticModel(
@@ -30,7 +31,7 @@ export function runAnalyticModel(
                 reject(e.data.response);
             } else {
                 printDebug(
-                    `Unhandled response from analytic: ${JSON.stringify(e)}`
+                    `Unhandled response from analytic: ${toSafeString(e)}`
                 );
                 reject(e);
             }

@@ -8,7 +8,7 @@ import {
     printStream,
     printWarning,
 } from '../util/debug';
-import { isUUID, isVersion, toString } from '../util/helpers';
+import { isUUID, isVersion, toSafeString } from '../util/helpers';
 import wappsto, { getErrorMessage } from '../util/http_wrapper';
 import {
     IStreamEvent,
@@ -318,7 +318,7 @@ export class Stream extends Model {
             /* istanbul ignore next */
             const errorMsg = getErrorMessage(e);
             printError(
-                `Failed to send ${type} event (${toString(
+                `Failed to send ${type} event (${toSafeString(
                     msg
                 )}) because: ${errorMsg}`
             );
@@ -338,7 +338,7 @@ export class Stream extends Model {
             if (e.response.data?.code !== undefined) {
                 const errorMsg = getErrorMessage(e);
                 printError(
-                    `Failed to send request (${toString(
+                    `Failed to send request (${toSafeString(
                         msg
                     )}) because: ${errorMsg}`
                 );
@@ -376,7 +376,7 @@ export class Stream extends Model {
             const errorMsg = getErrorMessage(e);
             /* istanbul ignore next */
             printError(
-                `Failed to send response (${toString(
+                `Failed to send response (${toSafeString(
                     msg
                 )}) with code ${code} because: ${errorMsg}`
             );
@@ -456,7 +456,7 @@ export class Stream extends Model {
             /* istanbul ignore next */
             printError('An error happened when calling request handler');
             /* istanbul ignore next */
-            printError(toString(e));
+            printError(toSafeString(e));
         }
 
         this.#onRequestEvents[type].shift();
@@ -632,12 +632,14 @@ export class Stream extends Model {
             hash.params.data = body;
         }
 
-        printDebug(`Sending a ${method} message to ${url}: ${toString(hash)}`);
+        printDebug(
+            `Sending a ${method} message to ${url}: ${toSafeString(hash)}`
+        );
         try {
             const p = new Promise<boolean>((resolve) => {
                 this.#rpc_response[hash.id] = resolve;
             });
-            this.#socket?.send(toString(hash));
+            this.#socket?.send(toSafeString(hash));
             printStream('Waiting for', hash);
             const timeoutPromise = new Promise<boolean>((resolve) => {
                 setTimeout(resolve, 1000, false);
@@ -663,12 +665,12 @@ export class Stream extends Model {
                 this.#backOff = 1;
 
                 printDebug(
-                    `Stream rpc ${message.id} result: ${toString(
+                    `Stream rpc ${message.id} result: ${toSafeString(
                         message.result.value
                     )}`
                 );
             } else {
-                printError(`Stream rpc error: ${toString(message.error)}`);
+                printError(`Stream rpc error: ${toSafeString(message.error)}`);
             }
             return true;
         }
@@ -677,7 +679,7 @@ export class Stream extends Model {
 
     #handleWappstoMessage(message: any) {
         if (!message.data?.uri?.startsWith('/console')) {
-            printDebug(`Stream message: ${toString(message)}`);
+            printDebug(`Stream message: ${toSafeString(message)}`);
         }
 
         if (message.meta_object?.type === 'extsync') {
