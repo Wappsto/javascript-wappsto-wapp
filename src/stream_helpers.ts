@@ -7,10 +7,8 @@ import { RequestHandler } from './util/interfaces';
 const openStream: Stream = new Stream();
 let request_handlers: Record<string, RequestHandler> = {};
 let backgroundIsStarted = false;
-let startBackgroundTimer: ReturnType<typeof setTimeout>;
+let startBackgroundTimer: ReturnType<typeof setTimeout> | undefined;
 let permissionUpdateCallback: undefined | (() => void);
-
-export { openStream, startBackgroundTimer };
 
 export function streamHelperReset() {
     backgroundIsStarted = false;
@@ -186,6 +184,10 @@ if (!isBrowser()) {
             'isBackgroundStarted',
             handleIsBackgroundStarted
         );
+        startBackgroundTimer = undefined;
     }, 1);
-    printDebug(`startBackgroundTimer is ${startBackgroundTimer}`);
+    // Make sure that the setTimeout is not removed with Tree-Shaking
+    (startBackgroundTimer as any).debug = true;
 }
+
+export { openStream, startBackgroundTimer };
