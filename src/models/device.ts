@@ -270,8 +270,8 @@ export class Device extends ConnectionModel implements IDevice {
         name: string | ICreateValue,
         permission?: ValuePermission,
         valueTemplate?: ValueType,
-        period: number | string = 0,
-        delta: number | 'inf' = 0,
+        period?: number | string,
+        delta?: number | 'inf',
         disableLog?: boolean,
         disablePeriodAndDelta?: boolean
     ): Promise<Value> {
@@ -291,8 +291,8 @@ export class Device extends ConnectionModel implements IDevice {
             }
             template.name = name;
             template.permission = permission;
-            template.period = period;
-            template.delta = delta?.toString();
+            template.period = period || 0;
+            template.delta = delta?.toString() || '0';
             template.disableLog = disableLog;
             template.disablePeriodAndDelta = disablePeriodAndDelta;
         } else {
