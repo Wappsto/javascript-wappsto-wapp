@@ -11,8 +11,11 @@
     ],
     "files": [
         "dist/wappsto-wapp.esm.js",
+        "dist/wappsto-wapp.esm.js.map",
         "dist/wappsto-wapp.cjs.production.min.js",
+        "dist/wappsto-wapp.cjs.production.min.js.map",
         "dist/wappsto-wapp.js",
+        "dist/wappsto-wapp.js.map",
         "dist/*.d.ts",
         "dist/**/*.d.ts"
     ],
