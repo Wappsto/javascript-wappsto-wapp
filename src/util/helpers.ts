@@ -152,7 +152,7 @@ export function convertFilterToJson(
     let strFilter: string[] = [];
     if (filter) {
         strFilter = strFilter.concat(
-            attributesToFilter(type, '=', filter, attributes)
+            attributesToFilter(type, '==', filter, attributes)
         );
     }
     if (omit_filter) {
@@ -171,7 +171,7 @@ export function convertFilterToString(
     let strFilter: string[] = [];
     if (filter) {
         strFilter = strFilter.concat(
-            attributesToFilter('this', '=', filter, attributes)
+            attributesToFilter('this', '==', filter, attributes)
         );
     }
     if (omit_filter) {

@@ -1306,8 +1306,8 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.1/value',
             {
-                filter: { attribute: ['value_type=energy'] },
-                return: '{value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}',
+                filter: { attribute: ['value_type==energy'] },
+                return: '{value (attribute: ["this_type==energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}',
             },
             {
                 params: {
@@ -1349,10 +1349,10 @@ describe('value', () => {
                 filter: {
                     attribute: [
                         'device_name!=device name',
-                        'value_type=energy',
+                        'value_type==energy',
                     ],
                 },
-                return: '{value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}',
+                return: '{value (attribute: ["this_type==energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}',
             },
             {
                 params: {

@@ -1878,8 +1878,8 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.1/device',
             {
-                filter: { attribute: ['value_type=energy'] },
-                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
+                filter: { attribute: ['value_type==energy'] },
+                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type==energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
             },
             {
                 params: {
@@ -1924,12 +1924,12 @@ describe('device', () => {
                 filter: {
                     attribute: [
                         'network_name!=network name',
-                        'value_type=[energy,template]',
-                        'value_number.max=1',
-                        'value_number.unit=C',
+                        'value_type==[energy,template]',
+                        'value_number.max==1',
+                        'value_number.unit==C',
                     ],
                 },
-                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=[energy,template]","this_number.max=1","this_number.unit=C"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
+                return: '{device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type==[energy,template]","this_number.max==1","this_number.unit==C"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}',
             },
             {
                 params: {
