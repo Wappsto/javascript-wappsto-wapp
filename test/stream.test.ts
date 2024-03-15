@@ -681,6 +681,13 @@ describe('stream', () => {
                 type: 'notification',
             },
             path: '/notification/',
+        });
+
+        server.send({
+            meta_object: {
+                type: 'notification',
+            },
+            path: '/notification/',
             data: {
                 custom: {
                     data: {

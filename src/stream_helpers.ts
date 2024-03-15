@@ -157,6 +157,7 @@ export async function waitForBackground(timeout = 10): Promise<boolean> {
 function handlePermissionUpdate(event: any) {
     if (
         permissionUpdateCallback &&
+        event.data?.base?.code &&
         (event.data.base.code === 1100003 || event.data.base.code === 1100004)
     ) {
         permissionUpdateCallback();
