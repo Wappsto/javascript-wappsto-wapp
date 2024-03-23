@@ -1569,27 +1569,27 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@size-limit/esbuild@11.1.0":
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/@size-limit/esbuild/-/esbuild-11.1.0.tgz#5cb1b25b3d2a2bd8e38e65a1c91cbb042fc2d6f7"
-  integrity sha512-7m4HwYtYmh/5RrmjETAkJTCwg3/T8Bdtd6G5/0bmstvo2FXA4hGOeSN++bwRbTEvYCg3ttI/p5rv41CyukD7ag==
+"@size-limit/esbuild@11.1.2":
+  version "11.1.2"
+  resolved "https://registry.yarnpkg.com/@size-limit/esbuild/-/esbuild-11.1.2.tgz#6acbff31a65fc97f963d98531e2174155b73da63"
+  integrity sha512-IGQNaZsS4kP4hwU9C8P+3VvPhtW9PQ9OrwKJsvHDgMsbGX01hz39b9KkVwoI29wOXdwtj0aETaJUZPqoJq588w==
   dependencies:
-    esbuild "^0.20.1"
+    esbuild "^0.20.2"
     nanoid "^5.0.6"
 
-"@size-limit/file@11.1.0":
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/@size-limit/file/-/file-11.1.0.tgz#9fe6497f5782cf4d887439b2ded1daf2ad2da620"
-  integrity sha512-C7Tr9dvw8Jx8If2xyGt0OprB+t03tAf259QJYi4WSl3IRMxH7l8k9qyITa/KCFcmH7tVBduNRSnHAL8Cf90EfQ==
+"@size-limit/file@11.1.2":
+  version "11.1.2"
+  resolved "https://registry.yarnpkg.com/@size-limit/file/-/file-11.1.2.tgz#34dfef49f73d3979e159e3dd0e9fa2995725708a"
+  integrity sha512-zktWwhO7MxVwQXbrZzy0VKfM5mZK3Aza1G3XbWRP8q+/3+irPKCz2fmyYJqJAJVwC9U1jAs6xEPlTJzxKgEAmw==
 
-"@size-limit/preset-small-lib@^11.1.0":
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/@size-limit/preset-small-lib/-/preset-small-lib-11.1.0.tgz#b206adb41ad617e2b114fd0560b7dfaa003c9b84"
-  integrity sha512-WyT0mFy8GG4S7KbS/a18sLZM6facxxzqawfVaY9KdFoIUSWV6jUGx10EVgOZPjD2aER3xP6+ZtNrzqpaKuMjUA==
+"@size-limit/preset-small-lib@^11.1.2":
+  version "11.1.2"
+  resolved "https://registry.yarnpkg.com/@size-limit/preset-small-lib/-/preset-small-lib-11.1.2.tgz#c7ee64a8df770b1c010b301055557fdf76b9aecd"
+  integrity sha512-fxZW3woI6SOYyvq44QhlnYdcYfOfiW7zqFCPf+1Ox0OHbrug7YuMz74JNFlHJcnvB4Z6aErED+afkoYJ7vxohQ==
   dependencies:
-    "@size-limit/esbuild" "11.1.0"
-    "@size-limit/file" "11.1.0"
-    size-limit "11.1.0"
+    "@size-limit/esbuild" "11.1.2"
+    "@size-limit/file" "11.1.2"
+    size-limit "11.1.2"
 
 "@tootallnate/once@2":
   version "2.0.0"
@@ -3058,7 +3058,7 @@ es-to-primitive@^1.2.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
-esbuild@^0.20.1, esbuild@^0.20.2:
+esbuild@^0.20.2:
   version "0.20.2"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.20.2.tgz#9d6b2386561766ee6b5a55196c6d766d28c87ea1"
   integrity sha512-WdOOppmUNU+IbZ0PaDiTst80zjnrOkyJNHoKupIcVyU8Lvla3Ugx94VzkQ32Ijqd7UhHJy75gNWDMUekcrSJ6g==
@@ -5833,7 +5833,20 @@ sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-size-limit@11.1.0, size-limit@^11.1.0:
+size-limit@11.1.2:
+  version "11.1.2"
+  resolved "https://registry.yarnpkg.com/size-limit/-/size-limit-11.1.2.tgz#cef39f51d3557e3e24080528caf2df1856ecaaa7"
+  integrity sha512-W9V/QR98fiLgGg+S77DNy7usExpz7HCdDAqm2t2Q77GWCV//wWUC6hyZA9QXKk1x6bxMMTzq1vmncw5Cve/43w==
+  dependencies:
+    bytes-iec "^3.1.1"
+    chokidar "^3.6.0"
+    globby "^14.0.1"
+    jiti "^1.21.0"
+    lilconfig "^3.1.1"
+    nanospinner "^1.1.0"
+    picocolors "^1.0.0"
+
+size-limit@^11.1.0:
   version "11.1.0"
   resolved "https://registry.yarnpkg.com/size-limit/-/size-limit-11.1.0.tgz#f0386fac40bfc26f4d8940e9d4824135e8391691"
   integrity sha512-HvqVEUDJ3y/XL69pR3vxTavPr6s4S9ScJhHjLEjpctF0Ymgo1StmHgFeQoyQYb/1ip7olkWxJG3wRcZk1hZcPg==
