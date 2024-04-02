@@ -254,25 +254,22 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/device', {
             params: {
                 expand: 2,
-                quantity: 1,
                 go_internal: true,
+                identifier: 'device-1-Find 1 device with name test',
                 manufacturer: false,
                 message: 'Find 1 device with name test',
-                identifier: 'device-1-Find 1 device with name test',
-                this_name: '=test',
                 method: ['retrieve', 'update'],
+                quantity: 1,
+                this_name: '=test',
             },
         });
         expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/device', {
             params: {
                 expand: 2,
                 go_internal: true,
-                manufacturer: false,
                 id: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
-                identifier: 'device-1-Find 1 device with name test',
-                message: 'Find 1 device with name test',
+                manufacturer: false,
                 method: ['retrieve', 'update'],
-                quantity: 1,
                 this_name: '=test',
             },
         });

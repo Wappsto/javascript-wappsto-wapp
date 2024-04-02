@@ -760,7 +760,7 @@ describe('network', () => {
         const network = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: {
                 expand: 3,
                 quantity: 1,
@@ -770,6 +770,16 @@ describe('network', () => {
                 identifier: 'network-1-Find 1 network',
                 this_name: '=test',
                 method: ['retrieve', 'update'],
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/network', {
+            params: {
+                expand: 3,
+                go_internal: true,
+                manufacturer: false,
+                this_name: '=test',
+                method: ['retrieve', 'update'],
+                id: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
             },
         });
         expect(network[0].meta.id).toEqual(

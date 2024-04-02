@@ -1,3 +1,4 @@
+import omit from 'lodash.omit';
 import { openStream } from '../stream_helpers';
 import { printDebug, printError } from '../util/debug';
 import { toSafeString } from '../util/helpers';
@@ -218,28 +219,35 @@ export class PermissionModel extends OntologyModel {
                         ids.length > 0 &&
                         (quantity === 'all' || ids.length >= quantity)
                     ) {
-                        if (quantity === 'all') {
-                            Object.assign(newParams, {
-                                id: ids,
-                            });
-                        } else {
-                            Object.assign(newParams, {
-                                id: ids.reverse().slice(0, quantity),
-                            });
-                        }
+                        const fetchParams = omit(newParams, [
+                            'quantity',
+                            'message',
+                            'identifier',
+                        ]);
+
+                        Object.assign(fetchParams, {
+                            id: ids,
+                        });
+
                         printDebug(
                             `Got permission to ${toSafeString(newParams.id)}`
                         );
                         const result = await Model.fetch({
                             endpoint,
-                            params: newParams,
+                            params: fetchParams,
                             body: body,
                         });
                         const data = PermissionModel.#convertFromFetch(
                             endpoint,
                             result
                         );
-                        resolve(data);
+
+                        if (quantity === 'all') {
+                            resolve(data);
+                        } else {
+                            resolve(data.slice(0, quantity));
+                        }
+
                         return true;
                     }
                 }
