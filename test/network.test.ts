@@ -1172,12 +1172,9 @@ describe('network', () => {
             '/2.1/network',
             {
                 filter: {
-                    attribute: [
-                        'value_type==energy',
-                        'value_number.max==[1,2]',
-                    ],
+                    attribute: ['value_type=energy', 'value_number.max=[1,2]'],
                 },
-                return: '{network  { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type==energy","this_number.max==[1,2]"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+                return: '{network  { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy","this_number.max=[1,2]"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
             },
             {
                 params: {
@@ -1214,8 +1211,8 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.1/network',
             {
-                filter: { attribute: ['value_type==energy'] },
-                return: '{network  { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type==energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+                filter: { attribute: ['value_type=energy'] },
+                return: '{network  { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
             },
             {
                 params: {
@@ -1251,9 +1248,9 @@ describe('network', () => {
             '/2.1/network',
             {
                 filter: {
-                    attribute: ['device_name==test', 'value_type!=energy'],
+                    attribute: ['device_name=test', 'value_type!=energy'],
                 },
-                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_name==test"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type!=energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_name=test"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type!=energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
             },
             {
                 params: {
@@ -1282,7 +1279,10 @@ describe('network', () => {
 
         const networks = await Network.findAllByFilter({
             device: { manufacturer: 'Seluxit' },
-            value: { type: 'temperature', number: { max: 85 } },
+            value: {
+                type: 'temperature',
+                number: { max: 85, min: { operator: '!~', value: 5 } },
+            },
         });
 
         expect(networks[0].device.length).toBe(1);
@@ -1302,12 +1302,13 @@ describe('network', () => {
             {
                 filter: {
                     attribute: [
-                        'device_manufacturer==Seluxit',
-                        'value_type==temperature',
-                        'value_number.max==85',
+                        'device_manufacturer=Seluxit',
+                        'value_type=temperature',
+                        'value_number.max=85',
+                        'value_number.min!~5',
                     ],
                 },
-                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_manufacturer==Seluxit"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type==temperature","this_number.max==85"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_manufacturer=Seluxit"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=temperature","this_number.max=85","this_number.min!~5"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
             },
             {
                 params: {

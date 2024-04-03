@@ -659,46 +659,96 @@ export interface IMail {
     from: string;
 }
 
+export type FilterOperatorType =
+    | '='
+    | '!='
+    | '=='
+    | '<'
+    | '<='
+    | '>'
+    | '>='
+    | '~'
+    | '!~';
+export type FilterValueOperatorType = {
+    operator: FilterOperatorType;
+    value: string | string[] | number | number[];
+};
+export type FilterValueType =
+    | string
+    | string[]
+    | number
+    | number[]
+    | FilterValueOperatorType
+    | undefined;
+export type FilterSubType = Record<
+    string,
+    FilterValueType | Record<string, Record<string, FilterValueType>>
+>;
 export interface Filter {
     network?: {
-        name?: string | string[];
-        description?: string | string[];
+        name?: string | string[] | FilterValueOperatorType;
+        description?: string | string[] | FilterValueOperatorType;
     };
     device?: {
-        name?: string | string[];
-        product?: string | string[];
-        serial?: string | string[];
-        description?: string | string[];
-        protocol?: string | string[];
-        communication?: string | string[];
-        version?: string | string[];
-        manufacturer?: string | string[];
+        name?: string | string[] | FilterValueOperatorType;
+        product?: string | string[] | FilterValueOperatorType;
+        serial?: string | string[] | FilterValueOperatorType;
+        description?: string | string[] | FilterValueOperatorType;
+        protocol?: string | string[] | FilterValueOperatorType;
+        communication?: string | string[] | FilterValueOperatorType;
+        version?: string | string[] | FilterValueOperatorType;
+        manufacturer?: string | string[] | FilterValueOperatorType;
     };
     value?: {
-        name?: string | string[];
-        permission?: string | string[];
-        type?: string | string[];
-        description?: string | string[];
-        period?: string | string[];
-        delta?: string | string[];
+        name?: string | string[] | FilterValueOperatorType;
+        permission?: string | string[] | FilterValueOperatorType;
+        type?: string | string[] | FilterValueOperatorType;
+        description?: string | string[] | FilterValueOperatorType;
+        period?: string | string[] | FilterValueOperatorType;
+        delta?: string | string[] | FilterValueOperatorType;
         number?: {
-            min?: number | number[] | string | string[];
-            max?: number | number[] | string | string[];
-            step?: number | number[] | string | string[];
-            unit?: string | string[];
-            si_conversion?: string | string[];
+            min?:
+                | number
+                | number[]
+                | string
+                | string[]
+                | FilterValueOperatorType;
+            max?:
+                | number
+                | number[]
+                | string
+                | string[]
+                | FilterValueOperatorType;
+            step?:
+                | number
+                | number[]
+                | string
+                | string[]
+                | FilterValueOperatorType;
+            unit?: string | string[] | FilterValueOperatorType;
+            si_conversion?: string | string[] | FilterValueOperatorType;
         };
         string?: {
-            max?: number | number[] | string | string[];
-            encoding?: string | string[];
+            max?:
+                | number
+                | number[]
+                | string
+                | string[]
+                | FilterValueOperatorType;
+            encoding?: string | string[] | FilterValueOperatorType;
         };
         blob?: {
-            max?: number | number[] | string | string[];
-            encoding?: string | string[];
+            max?:
+                | number
+                | number[]
+                | string
+                | string[]
+                | FilterValueOperatorType;
+            encoding?: string | string[] | FilterValueOperatorType;
         };
         xml?: {
-            xsd?: string | string[];
-            namespace?: string | string[];
+            xsd?: string | string[] | FilterValueOperatorType;
+            namespace?: string | string[] | FilterValueOperatorType;
         };
     };
 }

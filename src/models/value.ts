@@ -20,6 +20,7 @@ import wappsto, { printHttpError } from '../util/http_wrapper';
 import {
     EventLogLevel,
     Filter,
+    FilterSubType,
     ILogRequest,
     ILogResponse,
     IModel,
@@ -109,8 +110,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return convertFilterToJson(
             'value',
             Value.attributes,
-            filter?.value,
-            omit_filter?.value
+            filter?.value as FilterSubType,
+            omit_filter?.value as FilterSubType
         ).concat(State.getFilter());
     }
 
@@ -125,8 +126,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
         const strFilter = convertFilterToString(
             Value.attributes,
-            filter?.value,
-            omit_filter?.value
+            filter?.value as FilterSubType,
+            omit_filter?.value as FilterSubType
         );
 
         return `value ${strFilter} { ${fields} ${State.getFilterResult()}}`;

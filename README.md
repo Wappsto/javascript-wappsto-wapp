@@ -20,8 +20,8 @@ In depth documentation can be found on [Github Pages](https://wappsto.github.io/
 -   [To report a change in the value](#to-report-a-change-in-the-value)
 -   [Listing for requests to refresh the value](#listing-for-requests-to-refresh-the-value)
 -   [Reporting events for value](#reporting-events-for-value)
--   [To request access to an existing object from the user](#to-request-access-to-an-existing-object-from-the-user)
-    -   [Using filters to request access to an existing object from the user](#using-filters-to-request-access-to-an-existing-object-from-the-user)
+-   [Accessing Existing Objects](#accessing-existing-objects)
+    -   [Advanced Filtering for Accessing Existing Objects](#advanced-filtering-for-accessing-existing-objects)
 -   [To find a child from an existing object](#to-find-a-child-from-an-existing-object)
 -   [List all objects by type](#list-all-objects-by-type)
 -   [Retrieve object by ID](#retrieve-object-by-id)
@@ -319,18 +319,11 @@ The possible values for level is:
 await value.addEvent('error', 'something went wrong');
 ```
 
-### To request access to an existing object from the user
+### Accessing Existing Objects
 
-To request access to an existing object, a request have to be
-send. You can request a single object or multiple objects of the same
-type. To request access to multiple objects, you can specify the
-amount after fx. the name `findByName('name', 3)`. You can also
-request access to all the possible objects that matches the request by
-calling `findAllByName`. If you only need read access to the data,
-you can set the `readOnly` to true.
+To request access to an existing object, you need to send a request. You can request a single object or multiple objects of the same type. To request access to multiple objects, specify the desired quantity after using the `findByName('name', 3)` syntax. Alternatively, you can request access to all possible objects that match the query by calling `findAllByName`. If you only require read access to the data, you can set the `readOnly` parameter to `true`.
 
-To request access to a network with a specific name, use
-`findByName`.
+To request access to a network with a specific name, utilize the `findByName` function.
 
 ```javascript
 let oneNetwork = await Wappsto.Network.findByName('Network name');
@@ -380,14 +373,17 @@ let allValues = await Wappsto.Value.findAllByType('Type name');
 let allReadOnlyValues = await Wappsto.Value.findAllByType('Type name', true);
 ```
 
-#### Using filters to request access to an existing object from the user
+#### Advanced Filtering for Accessing Existing Objects
 
-It is also possible to use more advanced filters to get more control
-over the specific objects that are requested. It is possible to
-combine any keys in the filter, to narrow down the returned objects.
-If you need to find multiple of the same type, you can use an Array
-with the values. A filter have 3 main entry points `network`, `device`
-and `value`. You can see the possible filters below.
+Enhance your control over the specific objects you request by utilizing advanced filters. Combine various keys in the filter to refine the returned objects. To find multiple objects of the same type, utilize an array with the values. The filter primarily consists of three main entry points: network, device, and value. A filter value can be a string, number, or an array of strings or numbers. Additionally, you can specify the operator used to compare attributes using an object with the 'operator' and 'value' keys. 
+
+```javascript
+{ operator: '==', value: 'test' }
+```
+
+The permitted operators are: '=', '!=', '==', '<', '<=', '>', '>=', '~', '!~'.
+
+ You can see the possible filters below.
 
 ```javascript
 const filter = {
@@ -435,9 +431,7 @@ const filter = {
 }
 ```
 
-When you have defined the filter, you can use it in the function
-`findByFilter` and `findAllByFilter` on `Network`, `Device` and
-`Value`.
+Once you've defined the filter, utilize it with the functions `findByFilter` and `findAllByFilter` on `Network`, `Device`, and `Value`.
 
 ```javascript
 const filter = { value: { type: 'energy' }};
@@ -445,8 +439,7 @@ let oneValue = await Wappsto.Value.findByFilter(filter);
 let allValues = await Wappsto.Value.findAllByFilter(filter);
 ```
 
-It is also possible to use the filter to omit objects by giving a second filter to the `findByFilter` and `findAllByFilter`.
-To specify the number of items to request, a 3rd parameter can be applied. It is also possible to specify that the items is only needed to read from, by setting the 4th paramter to `true`.
+You can also use the filter to exclude objects by providing a second filter to `findByFilter` and `findAllByFilter`. Specify the number of items to request with a third parameter. Additionally, indicate that the items are only needed for reading by setting the fourth parameter to true.
 
 ```javascript
 const filter = { value: { type: 'energy' }};

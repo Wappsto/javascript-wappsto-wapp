@@ -1,4 +1,10 @@
-import { IModel, LogValue } from './interfaces';
+import {
+    FilterValueOperatorType,
+    FilterValueType,
+    FilterSubType,
+    IModel,
+    LogValue,
+} from './interfaces';
 
 export function isBrowser(): boolean {
     return (
@@ -80,7 +86,7 @@ export function getCircularReplacer() {
     };
 }
 
-export function toSafeString(json: Record<string, any> | unknown): string {
+export function toSafeString(json: unknown): string {
     if (!json) {
         return '';
     }
@@ -113,27 +119,55 @@ export function compareDates(
     return d1 >= d2;
 }
 
+function isOperatorValue(
+    obj: FilterValueType | Record<string, Record<string, FilterValueType>>
+) {
+    if (!obj) {
+        return false;
+    }
+    if (typeof obj !== 'object' || 'length' in obj) {
+        return false;
+    }
+    return !!(obj.operator && obj.value);
+}
+
 function attributesToFilter(
     type: string,
     operator: string,
-    filter: Record<string, any>,
+    filter: FilterSubType,
     attributes: string[]
 ) {
     const strFilter: string[] = [];
     attributes.forEach((att: string) => {
-        if (Array.isArray(filter[att])) {
-            strFilter.push(
-                `${type}_${att}${operator}[${filter[att].join(',')}]`
-            );
+        if (filter[att] === undefined) {
+            return;
+        } else if (
+            typeof filter[att] === 'string' ||
+            typeof filter[att] === 'number'
+        ) {
+            strFilter.push(`${type}_${att}${operator}${filter[att]}`);
+        } else if (Array.isArray(filter[att])) {
+            const arr = filter[att] as string[] | number[];
+            strFilter.push(`${type}_${att}${operator}[${arr.join(',')}]`);
+        } else if (isOperatorValue(filter[att])) {
+            const opr = filter[att] as FilterValueOperatorType;
+            strFilter.push(`${type}_${att}${opr.operator}[${opr.value}]`);
         } else if (typeof filter[att] === 'object') {
-            for (const [k, v] of Object.entries(filter[att])) {
-                const str = `${type}_${att}.${k}${operator}`;
-                if (Array.isArray(v)) {
-                    strFilter.push(`${str}[${v.join(',')}]`);
-                } else if (typeof v === 'string') {
-                    strFilter.push(`${str}${v}`);
-                } else if (typeof v === 'number') {
-                    strFilter.push(`${str}${v.toString()}`);
+            for (const [k, v] of Object.entries(filter[att] ?? {})) {
+                if (isOperatorValue(v)) {
+                    const opr = v as FilterValueOperatorType;
+                    strFilter.push(
+                        `${type}_${att}.${k}${opr.operator}${opr.value}`
+                    );
+                } else {
+                    const str = `${type}_${att}.${k}${operator}`;
+                    if (Array.isArray(v)) {
+                        strFilter.push(`${str}[${v.join(',')}]`);
+                    } else if (typeof v === 'string') {
+                        strFilter.push(`${str}${v}`);
+                    } else if (typeof v === 'number') {
+                        strFilter.push(`${str}${v.toString()}`);
+                    }
                 }
             }
         } else if (filter[att] !== undefined) {
@@ -146,13 +180,13 @@ function attributesToFilter(
 export function convertFilterToJson(
     type: string,
     attributes: string[],
-    filter?: Record<string, any>,
-    omit_filter?: Record<string, any>
+    filter?: FilterSubType,
+    omit_filter?: FilterSubType
 ): string[] {
     let strFilter: string[] = [];
     if (filter) {
         strFilter = strFilter.concat(
-            attributesToFilter(type, '==', filter, attributes)
+            attributesToFilter(type, '=', filter, attributes)
         );
     }
     if (omit_filter) {
@@ -165,13 +199,13 @@ export function convertFilterToJson(
 
 export function convertFilterToString(
     attributes: string[],
-    filter?: Record<string, any>,
-    omit_filter?: Record<string, any>
+    filter?: FilterSubType,
+    omit_filter?: FilterSubType
 ): string {
     let strFilter: string[] = [];
     if (filter) {
         strFilter = strFilter.concat(
-            attributesToFilter('this', '==', filter, attributes)
+            attributesToFilter('this', '=', filter, attributes)
         );
     }
     if (omit_filter) {

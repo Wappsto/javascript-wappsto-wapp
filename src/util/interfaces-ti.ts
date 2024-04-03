@@ -905,33 +905,93 @@ export const IMail = t.iface([], {
     from: 'string',
 });
 
+export const FilterOperatorType = t.union(
+    t.lit('='),
+    t.lit('!='),
+    t.lit('=='),
+    t.lit('<'),
+    t.lit('<='),
+    t.lit('>'),
+    t.lit('>='),
+    t.lit('~'),
+    t.lit('!~')
+);
+
+export const FilterValueOperatorType = t.iface([], {
+    operator: 'FilterOperatorType',
+    value: t.union('string', t.array('string'), 'number', t.array('number')),
+});
+
+export const FilterValueType = t.union(
+    'string',
+    t.array('string'),
+    'number',
+    t.array('number'),
+    'FilterValueOperatorType',
+    'undefined'
+);
+
+export const FilterSubType = t.name('any');
+
 export const Filter = t.iface([], {
     network: t.opt(
         t.iface([], {
-            name: t.opt(t.union('string', t.array('string'))),
-            description: t.opt(t.union('string', t.array('string'))),
+            name: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            description: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
         })
     ),
     device: t.opt(
         t.iface([], {
-            name: t.opt(t.union('string', t.array('string'))),
-            product: t.opt(t.union('string', t.array('string'))),
-            serial: t.opt(t.union('string', t.array('string'))),
-            description: t.opt(t.union('string', t.array('string'))),
-            protocol: t.opt(t.union('string', t.array('string'))),
-            communication: t.opt(t.union('string', t.array('string'))),
-            version: t.opt(t.union('string', t.array('string'))),
-            manufacturer: t.opt(t.union('string', t.array('string'))),
+            name: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            product: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            serial: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            description: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            protocol: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            communication: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            version: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            manufacturer: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
         })
     ),
     value: t.opt(
         t.iface([], {
-            name: t.opt(t.union('string', t.array('string'))),
-            permission: t.opt(t.union('string', t.array('string'))),
-            type: t.opt(t.union('string', t.array('string'))),
-            description: t.opt(t.union('string', t.array('string'))),
-            period: t.opt(t.union('string', t.array('string'))),
-            delta: t.opt(t.union('string', t.array('string'))),
+            name: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            permission: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            type: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            description: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            period: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
+            delta: t.opt(
+                t.union('string', t.array('string'), 'FilterValueOperatorType')
+            ),
             number: t.opt(
                 t.iface([], {
                     min: t.opt(
@@ -939,7 +999,8 @@ export const Filter = t.iface([], {
                             'number',
                             t.array('number'),
                             'string',
-                            t.array('string')
+                            t.array('string'),
+                            'FilterValueOperatorType'
                         )
                     ),
                     max: t.opt(
@@ -947,7 +1008,8 @@ export const Filter = t.iface([], {
                             'number',
                             t.array('number'),
                             'string',
-                            t.array('string')
+                            t.array('string'),
+                            'FilterValueOperatorType'
                         )
                     ),
                     step: t.opt(
@@ -955,11 +1017,24 @@ export const Filter = t.iface([], {
                             'number',
                             t.array('number'),
                             'string',
-                            t.array('string')
+                            t.array('string'),
+                            'FilterValueOperatorType'
                         )
                     ),
-                    unit: t.opt(t.union('string', t.array('string'))),
-                    si_conversion: t.opt(t.union('string', t.array('string'))),
+                    unit: t.opt(
+                        t.union(
+                            'string',
+                            t.array('string'),
+                            'FilterValueOperatorType'
+                        )
+                    ),
+                    si_conversion: t.opt(
+                        t.union(
+                            'string',
+                            t.array('string'),
+                            'FilterValueOperatorType'
+                        )
+                    ),
                 })
             ),
             string: t.opt(
@@ -969,10 +1044,17 @@ export const Filter = t.iface([], {
                             'number',
                             t.array('number'),
                             'string',
-                            t.array('string')
+                            t.array('string'),
+                            'FilterValueOperatorType'
                         )
                     ),
-                    encoding: t.opt(t.union('string', t.array('string'))),
+                    encoding: t.opt(
+                        t.union(
+                            'string',
+                            t.array('string'),
+                            'FilterValueOperatorType'
+                        )
+                    ),
                 })
             ),
             blob: t.opt(
@@ -982,16 +1064,35 @@ export const Filter = t.iface([], {
                             'number',
                             t.array('number'),
                             'string',
-                            t.array('string')
+                            t.array('string'),
+                            'FilterValueOperatorType'
                         )
                     ),
-                    encoding: t.opt(t.union('string', t.array('string'))),
+                    encoding: t.opt(
+                        t.union(
+                            'string',
+                            t.array('string'),
+                            'FilterValueOperatorType'
+                        )
+                    ),
                 })
             ),
             xml: t.opt(
                 t.iface([], {
-                    xsd: t.opt(t.union('string', t.array('string'))),
-                    namespace: t.opt(t.union('string', t.array('string'))),
+                    xsd: t.opt(
+                        t.union(
+                            'string',
+                            t.array('string'),
+                            'FilterValueOperatorType'
+                        )
+                    ),
+                    namespace: t.opt(
+                        t.union(
+                            'string',
+                            t.array('string'),
+                            'FilterValueOperatorType'
+                        )
+                    ),
                 })
             ),
         })
@@ -1071,6 +1172,10 @@ const exportedTypeSuite: t.ITypeSuite = {
     IOntologyNode,
     IOntologyNodeFunc,
     IMail,
+    FilterOperatorType,
+    FilterValueOperatorType,
+    FilterValueType,
+    FilterSubType,
     Filter,
 };
 export default exportedTypeSuite;
