@@ -859,8 +859,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                     ...response[0],
                     data: response[0].data.map(
                         (item: Record<string, string>) => ({
-                            data: item[params.operation || 'data'],
-                            timestamp: item.time || item.timestamp,
+                            data: item.data ?? item[params.operation ?? 'data'],
+                            timestamp: item.timestamp ?? item.time,
                         })
                     ),
                 } as ILogResponse;
