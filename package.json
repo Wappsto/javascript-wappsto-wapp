@@ -98,7 +98,7 @@
         "@babel/plugin-syntax-flow": "^7.24.1",
         "@babel/plugin-transform-react-jsx": "^7.23.4",
         "@size-limit/preset-small-lib": "^11.1.2",
-        "@tsconfig/recommended": "^1.0.5",
+        "@tsconfig/recommended": "^1.0.6",
         "@types/lodash.isequal": "^4.5.8",
         "@types/lodash.omit": "^4.5.9",
         "@types/lodash.pick": "^4.4.9",
