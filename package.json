@@ -1,6 +1,6 @@
 {
     "name": "wappsto-wapp",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "license": "MIT",
     "author": "Seluxit A/S",
     "main": "dist/wappsto-wapp.cjs.production.min.js",
@@ -32,25 +32,20 @@
     },
     "scripts": {
         "analyze": "size-limit --why",
-        "prebuild": "node -p \"'export const VERSION = \\'' + require('./package.json').version + '\\';'\" > src/util/version.ts",
-        "build": "dts build",
-        "postbuild": "yarn esbuild dist/wappsto-wapp.cjs.production.min.js --format=iife --global-name=Wappsto --minify --bundle --outfile=dist/wappsto-wapp.js",
         "lint": "dts lint src",
         "lint:fix": "yarn lint --fix",
-        "prepare": "yarn build",
         "size": "size-limit",
         "start": "dts watch",
         "test": "dts test --maxWorkers=50% --coverage",
         "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
-        "prepublish": "yarn build && yarn documentation",
-        "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git ci docs package.json src/util/version.ts -m'Updated to v'$PACKAGE_VERSION'' && git push && git tag v$PACKAGE_VERSION && git push --tags",
         "documentation": "typedoc && yarn documentation:fix",
-        "documentation:fix": "./fix_docs.sh"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "dts lint --fix && dts test && dts build"
-        }
+        "documentation:fix": "./fix_docs.sh",
+        "prebuild": "node -p \"'export const VERSION = \\'' + require('./package.json').version + '\\';'\" > src/util/version.ts",
+        "build": "dts build",
+        "postbuild": "yarn esbuild dist/wappsto-wapp.cjs.production.min.js --format=iife --global-name=Wappsto --minify --bundle --outfile=dist/wappsto-wapp.js",
+        "prepack": "yarn build && yarn documentation",
+        "prepublishOnly": "yarn test",
+        "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git ci docs package.json src/util/version.ts -m'Updated to v'$PACKAGE_VERSION'' && git push && git tag v$PACKAGE_VERSION && git push --tags"
     },
     "prettier": {
         "printWidth": 80,
@@ -107,7 +102,6 @@
         "@types/ws": "^8.5.10",
         "dts-cli": "^2.0.4",
         "esbuild": "^0.20.2",
-        "husky": "^9.0.11",
         "jest": "^29.7.0",
         "jest-websocket-mock": "^2.5.0",
         "size-limit": "^11.1.2",
