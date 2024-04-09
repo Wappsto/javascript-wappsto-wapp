@@ -56,13 +56,13 @@ export class Stream extends Model {
     #openTimeout?: ReturnType<typeof setTimeout> = undefined;
     #lastStreamMessage = 0;
 
-    constructor() {
+    constructor(service?: string) {
         super('stream');
         this.websocketUrl = `${baseUrl}`;
         if (!this.websocketUrl.endsWith('/')) {
             this.websocketUrl += `/`;
         }
-        this.websocketUrl += `2.1/websocket/open`;
+        this.websocketUrl += `2.1/${service ?? 'websocket'}/open`;
 
         /* istanbul ignore next */
         if (
