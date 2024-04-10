@@ -38,6 +38,7 @@ interface StreamServiceHash {
 export class Stream extends Model {
     static endpoint = '/2.1/stream';
     websocketUrl = '';
+    websocketService = '';
 
     #socket?: WebSocket;
     #ignoreReconnect = false;
@@ -51,18 +52,21 @@ export class Stream extends Model {
     #onRequestEvents: Record<number, any[]> = { 0: [], 1: [] };
     #rpc_response: Record<number, any> = {};
     #reconnect_timer: any = undefined;
+    #enableWatchdog = true;
     #watchdogTimer?: ReturnType<typeof setTimeout> = undefined;
     #watchDogTriggerTimeout?: ReturnType<typeof setTimeout> = undefined;
     #openTimeout?: ReturnType<typeof setTimeout> = undefined;
     #lastStreamMessage = 0;
 
-    constructor(service?: string) {
+    constructor(service?: string, startWatchdog = true) {
         super('stream');
+        this.#enableWatchdog = startWatchdog;
+        this.websocketService = service ?? 'websocket';
         this.websocketUrl = `${baseUrl}`;
         if (!this.websocketUrl.endsWith('/')) {
             this.websocketUrl += `/`;
         }
-        this.websocketUrl += `2.1/${service ?? 'websocket'}/open`;
+        this.websocketUrl += `2.1/${this.websocketService}/open`;
 
         /* istanbul ignore next */
         if (
@@ -173,7 +177,7 @@ export class Stream extends Model {
 
         return this.#sendMessage(
             'POST',
-            '/services/2.1/websocket/open/subscription',
+            `/services/2.1/${this.websocketService}/open/subscription`,
             `/2.1${subscription}`
         );
     }
@@ -190,7 +194,7 @@ export class Stream extends Model {
         }
         return this.#sendMessage(
             'DELETE',
-            '/services/2.1/websocket/open/subscription',
+            `/services/2.1/${this.websocketService}/open/subscription`,
             `/2.1${subscription}`
         );
     }
@@ -524,9 +528,13 @@ export class Stream extends Model {
         printDebug(`Stream Reconnecting for the ${this.#backOff} times`);
         this.close();
         this.#open().then(() => {
-            this.#sendMessage('PATCH', '/services/2.1/websocket/open', {
-                subscription: this.#subscriptions.map((s) => `/2.1${s}`),
-            });
+            this.#sendMessage(
+                'PATCH',
+                `/services/2.1/${this.websocketService}/open`,
+                {
+                    subscription: this.#subscriptions.map((s) => `/2.1${s}`),
+                }
+            );
         });
     }
 
@@ -735,6 +743,13 @@ export class Stream extends Model {
     }
 
     #startWatchDog(): void {
+        if (!this.#enableWatchdog) {
+            if (this.#watchdogTimer) {
+                clearTimeout(this.#watchdogTimer);
+            }
+            return;
+        }
+
         this.#lastStreamMessage = Date.now();
 
         if (this.#watchdogTimer) {
