@@ -727,6 +727,10 @@ export const IConnectionModelFunc = t.iface([], {
         'void',
         t.param('callback', 'ConnectionCallback')
     ),
+    cancelOnConnectionChange: t.func(
+        'void',
+        t.param('callback', 'ConnectionCallback')
+    ),
 });
 
 export const OAuthRequestHandler = t.func('void', t.param('url', 'string'));
@@ -843,7 +847,7 @@ export const RefreshStreamCallback = t.func(
 export const ConnectionCallback = t.func(
     t.union('void', 'void'),
     t.param('value', 'IConnectionModel'),
-    t.param('connection', 'boolean')
+    t.param('isOnline', 'boolean')
 );
 
 export const Relationship = t.name('string');

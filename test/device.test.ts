@@ -1737,6 +1737,32 @@ describe('device', () => {
         expect(f).toHaveBeenCalledTimes(2);
         expect(f).toHaveBeenCalledWith(d, true);
         expect(f).toHaveBeenLastCalledWith(d, false);
+
+        d.cancelOnConnectionChange(f);
+
+        server.send({
+            meta_object: {
+                type: 'event',
+            },
+            event: 'update',
+            path: '/device/db6ba9ca-ea15-42d3-9c5e-1e1f50110f38',
+            data: {
+                meta: {
+                    id: '60323236-54bf-499e-a438-608a24619c94',
+                    type: 'value',
+                    connection: {
+                        online: true,
+                    },
+                },
+                name: 'Value Name',
+            },
+        });
+
+        await new Promise((r) => setTimeout(r, 1));
+
+        expect(f).toHaveBeenCalledTimes(2);
+        expect(f).toHaveBeenCalledWith(d, true);
+        expect(f).toHaveBeenLastCalledWith(d, false);
     });
 
     it('can find device by id', async () => {

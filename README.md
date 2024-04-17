@@ -375,7 +375,7 @@ let allReadOnlyValues = await Wappsto.Value.findAllByType('Type name', true);
 
 #### Advanced Filtering for Accessing Existing Objects
 
-Enhance your control over the specific objects you request by utilizing advanced filters. Combine various keys in the filter to refine the returned objects. To find multiple objects of the same type, utilize an array with the values. The filter primarily consists of three main entry points: network, device, and value. A filter value can be a string, number, or an array of strings or numbers. Additionally, you can specify the operator used to compare attributes using an object with the 'operator' and 'value' keys. 
+Enhance your control over the specific objects you request by utilizing advanced filters. Combine various keys in the filter to refine the returned objects. To find multiple objects of the same type, utilize an array with the values. The filter primarily consists of three main entry points: network, device, and value. A filter value can be a string, number, or an array of strings or numbers. Additionally, you can specify the operator used to compare attributes using an object with the 'operator' and 'value' keys.
 
 ```javascript
 { operator: '==', value: 'test' }
@@ -647,6 +647,7 @@ network.onConnectionChange((network, status) => {
     );
 });
 ```
+To remove the registered callback, you must call the `cancelOnConnectionChange` method with the same callback function as a parameter.
 
 If you have a created your own device, you can set it online/offline
 by calling `setConnectionStatus` on the device. This will automatic create

@@ -544,6 +544,7 @@ export interface IConnectionModel {
 
 export interface IConnectionModelFunc {
     onConnectionChange(callback: ConnectionCallback): void;
+    cancelOnConnectionChange(callback: ConnectionCallback): void;
 }
 
 export type OAuthRequestHandler = (url: string) => void;
@@ -608,7 +609,7 @@ export type RefreshStreamCallback = (
 ) => Promise<void> | void;
 export type ConnectionCallback = (
     value: IConnectionModel,
-    connection: boolean
+    isOnline: boolean
 ) => Promise<void> | void;
 
 export type Relationship = string;

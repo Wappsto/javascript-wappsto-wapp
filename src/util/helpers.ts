@@ -28,13 +28,17 @@ export function compareCallback(cb1: any, cb2: any) {
     return cb1 === cb2 || cb1.toString() === cb2.toString();
 }
 
-export function checkList(list: any[], check: any): boolean {
+export function checkListIndex(list: any[], check: any) {
     for (let i = 0; i < list.length; i++) {
         if (compareCallback(list[i], check)) {
-            return true;
+            return i;
         }
     }
-    return false;
+    return -1;
+}
+
+export function checkList(list: any[], check: any) {
+    return checkListIndex(list, check) !== -1;
 }
 
 export function getSecondsToNextPeriod(period: number): number {

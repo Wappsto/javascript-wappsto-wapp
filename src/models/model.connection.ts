@@ -1,4 +1,4 @@
-import { checkList } from '../util/helpers';
+import { checkList, checkListIndex } from '../util/helpers';
 import { ConnectionCallback, IConnectionModel } from '../util/interfaces';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
@@ -39,5 +39,17 @@ export class ConnectionModel extends StreamModel implements IConnectionModel {
             });
         }
         return res;
+    }
+
+    public async cancelOnConnectionChange(callback: ConnectionCallback) {
+        Model.validateMethod(
+            'ConnectionModel',
+            'cancelOnConnectionChange',
+            arguments
+        );
+        const index = checkListIndex(this.connectionCallbacks, callback);
+        if (index > -1) {
+            this.connectionCallbacks.splice(index, 1);
+        }
     }
 }
