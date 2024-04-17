@@ -249,8 +249,10 @@ export type ValueType =
     | (IValueBase & { blob: IValueStringBlobBase })
     | (IValueBase & { xml: IValueXmlBase });
 
+export type IValueType = IValueNumber | IValueString | IValueBlob | IValueXml;
 export interface IValueBase {
     [key: string]: any;
+    meta?: IMeta;
     name: string;
     permission: ValuePermission;
     type: string;
@@ -596,12 +598,12 @@ export type RequestHandler = (
 ) => Promise<any> | any;
 export type StreamCallback = (model: IStreamModel) => Promise<void> | void;
 export type ValueStreamCallback = (
-    value: IValueFunc & IValueBase,
+    value: IValueFunc & IValueType,
     data: string,
     timestamp: string
 ) => Promise<void> | boolean | void;
 export type RefreshStreamCallback = (
-    value: IValueFunc & IValueBase,
+    value: IValueFunc & IValueType,
     origin: 'user' | 'period'
 ) => Promise<void> | void;
 export type ConnectionCallback = (

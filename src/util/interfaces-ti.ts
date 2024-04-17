@@ -331,8 +331,16 @@ export const ValueType = t.union(
     )
 );
 
+export const IValueType = t.union(
+    'IValueNumber',
+    'IValueString',
+    'IValueBlob',
+    'IValueXml'
+);
+
 export const IValueBase = t.iface([], {
     [t.indexKey]: 'any',
+    meta: t.opt('IMeta'),
     name: 'string',
     permission: 'ValuePermission',
     type: 'string',
@@ -821,14 +829,14 @@ export const StreamCallback = t.func(
 
 export const ValueStreamCallback = t.func(
     t.union('void', 'boolean', 'void'),
-    t.param('value', t.intersection('IValueFunc', 'IValueBase')),
+    t.param('value', t.intersection('IValueFunc', 'IValueType')),
     t.param('data', 'string'),
     t.param('timestamp', 'string')
 );
 
 export const RefreshStreamCallback = t.func(
     t.union('void', 'void'),
-    t.param('value', t.intersection('IValueFunc', 'IValueBase')),
+    t.param('value', t.intersection('IValueFunc', 'IValueType')),
     t.param('origin', t.union(t.lit('user'), t.lit('period')))
 );
 
@@ -1120,6 +1128,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     LogValues,
     ValuePermission,
     ValueType,
+    IValueType,
     IValueBase,
     IValueNumberBase,
     IValueStringBlobBase,
