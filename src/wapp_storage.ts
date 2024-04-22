@@ -6,48 +6,52 @@ import { IWappStorage, StorageChangeHandler } from './util/interfaces';
 
 const storages: Record<string, WappStorage> = {};
 
-export async function wappStorage(name?: string) {
+export async function wappStorage<T = unknown>(name?: string) {
     Model.validateMethod('WappStorage', 'wappStorage', arguments);
     if (name === undefined) {
         name = 'default';
     }
     if (storages[name] === undefined) {
-        const storage = new WappStorage(name);
+        const storage = new WappStorage<T>(name);
         await storage.init();
         storages[name] = storage;
     }
-    return storages[name];
+    return storages[name] as WappStorage<T>;
 }
 
-export class WappStorage implements IWappStorage {
+export class WappStorage<T = unknown> implements IWappStorage {
     name = '';
     id = '';
-    #data: Data;
+    #data: Data<T>;
     #onChangeCallback?: () => void;
 
     constructor(name: string) {
         WappStorage.#validate('constructor', arguments);
         this.name = name;
         this.id = `wapp_storage_${this.name}`;
-        this.#data = new Data(this.id, 'wapp_storage');
+        this.#data = new Data<T>(this.id, 'wapp_storage');
     }
 
     async init(): Promise<void> {
         const data = await Data.findByDataId(this.id);
         if (data.length > 0) {
-            this.#data = data[0];
+            this.#data = data[0] as Data<T>;
         } else {
             await this.#data.create();
         }
     }
 
     #set(
-        name: string | Record<string, any>,
-        item?: any,
+        name: string | Record<string, T>,
+        item?: T,
         secret?: boolean
     ): Promise<boolean> {
         if (typeof name === 'string') {
-            this.#data.set(name, item, secret);
+            if (item) {
+                this.#data.set(name, item, secret);
+            } else {
+                throw new Error('Missing parameter "item" in set function');
+            }
         } else {
             Object.keys(name).forEach((key) => {
                 this.#data.set(key, name[key], secret);
@@ -56,14 +60,14 @@ export class WappStorage implements IWappStorage {
         return this.update();
     }
 
-    set(name: string | Record<string, any>, item?: any): Promise<boolean> {
+    set(name: string | Record<string, T>, item?: T): Promise<boolean> {
         WappStorage.#validate('set', arguments);
         return this.#set(name, item);
     }
 
     async setSecret(
-        name: string | Record<string, any>,
-        item?: any
+        name: string | Record<string, T>,
+        item?: T
     ): Promise<boolean> {
         WappStorage.#validate('set', arguments);
         if (isBrowser()) {
@@ -73,7 +77,7 @@ export class WappStorage implements IWappStorage {
         return this.#set(name, item, true);
     }
 
-    #get(name: string | string[], secret?: boolean): any {
+    #get(name: string | string[], secret?: boolean) {
         if (typeof name === 'string') {
             return this.#data.get(name, secret);
         } else {
@@ -81,12 +85,12 @@ export class WappStorage implements IWappStorage {
         }
     }
 
-    get(name: string | string[]): any {
+    get(name: string | string[]) {
         WappStorage.#validate('get', arguments);
         return this.#get(name);
     }
 
-    getSecret(name: string | string[]): any {
+    getSecret(name: string | string[]) {
         WappStorage.#validate('getSecret', arguments);
         if (isBrowser()) {
             printError('You can only get secrets from the background');
@@ -99,11 +103,11 @@ export class WappStorage implements IWappStorage {
         return this.#data.keys();
     }
 
-    values(): Array<any> {
+    values() {
         return this.#data.values();
     }
 
-    entries(): Array<Array<any>> {
+    entries() {
         return this.#data.entries();
     }
 
@@ -163,7 +167,7 @@ export class WappStorage implements IWappStorage {
         await this.#data.create();
     }
 
-    static #validate(name: string, params: any): void {
+    static #validate(name: string, params: IArguments): void {
         Model.validateMethod('WappStorage', name, params);
     }
 }

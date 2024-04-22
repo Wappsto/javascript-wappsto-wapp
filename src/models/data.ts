@@ -11,11 +11,11 @@ interface IDataMeta {
     version?: number;
 }
 
-export class Data extends StreamModel {
+export class Data<T = unknown> extends StreamModel {
     static endpoint = '/2.1/data';
     static attributes = ['meta', 'data_meta', 'data'];
     data_meta: IDataMeta = {};
-    data: any = {};
+    data: Record<string, T> = {};
     _secret_background: any = {};
     clearSecret = false;
     oldKeys: Array<string> = [];
@@ -48,7 +48,7 @@ export class Data extends StreamModel {
         }
     }
 
-    set(name: string, item: any, secret = false): void {
+    set(name: string, item: T, secret = false): void {
         if (secret) {
             this.#checkSecret();
             this._secret_background[name] = item;
@@ -57,7 +57,7 @@ export class Data extends StreamModel {
         }
     }
 
-    get(name: string, secret = false): any {
+    get(name: string, secret = false): T | undefined {
         if (secret) {
             this.#checkSecret();
             return this._secret_background[name];
@@ -76,15 +76,15 @@ export class Data extends StreamModel {
         }
     }
 
-    keys(): Array<string> {
+    keys() {
         return Object.keys(this.data);
     }
 
-    values(): Array<any> {
+    values() {
         return Object.values(this.data);
     }
 
-    entries(): Array<Array<any>> {
+    entries() {
         return Object.entries(this.data);
     }
 

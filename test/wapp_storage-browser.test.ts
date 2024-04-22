@@ -33,7 +33,7 @@ describe('wapp storage', () => {
         );
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
-        const ws = await wappStorage('background_secret');
+        const ws = await wappStorage<string>('background_secret');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
 
@@ -49,7 +49,7 @@ describe('wapp storage', () => {
     });
 
     it('Secret do not work with data in browser', () => {
-        const d = new Data('test');
+        const d = new Data<string>('test');
         const t = () => {
             d.set('secret', 'data', true);
         };

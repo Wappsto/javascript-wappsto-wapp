@@ -811,46 +811,68 @@ You can turn on `Ext Sync` support using the `wappsto-cli` using the
 
 ### Wapp Storage
 
-It is possible to store configuration parameters and other information
-in the Wapp Storage. This data is persisted on Wappsto and can be read
-from the foreground and background wapp. The data can be reload from
-the server by calling `reload` function. The data can be deleted by
-calling the `reset` function. A callback can also be registered to be
-notified when the storage is updated. It is possible to set a single
-or multiple data into the storage. In the same manner it is possible
-to get and remove multiple keys at the same time.
+The Wapp Storage feature allows for the storage of configuration parameters
+and other information within Wappsto.
+This data is persistent across both foreground and background wapps.
 
 ```javascript
 let storage = await Wappsto.wappStorage();
+```
 
-// Signal when storage is changed
-storage.onChange(() => {
-    console.log('Storage is updated');
-});
+If you are using TypeScript, it is possible to define the type of the data in the storage.
 
+```javascript
+let storage = await Wappsto.wappStorage<string>();
+```
+
+#### Data Manipulation:
+* Single or multiple data entries can be stored in the Wapp Storage.
+
+```javascript
 // Set new data into the store
 await storage.set('key', 'item');
 await storage.set({key2: 'item 2', key3: 'item 3'});
+```
 
+* Multiple keys can be retrieved or removed simultaneously, providing efficient data management capabilities.
+
+```javascript
 // Get data from the store
 let data = storage.get('key');
 let data2 = storage.get(['key2', 'key3']);
-
-
-// Reload the data from the server
-await storage.reload();
-
 // Remove data from the store
 await store.remove('key1');
 await store.remove(['key2', 'key3']);
+```
 
+#### Features:
+* Data can be reloaded from the server using the reload function.
+
+```javascript
+// Reload the data from the server
+await storage.reload();
+```
+
+* Data can be deleted by using the reset function.
+
+```javascript
 // Delete all the saved data
 await storage.reset();
 ```
 
-It is possible to store secret information in the Storage from the background
-part of the wapp. This information is only available for the background wapp
-and can't be accessed from the frontend part of the wapp.
+* Callbacks can be registered to receive notifications when the storage is updated.
+
+```javascript
+// Signal when storage is changed
+storage.onChange(() => {
+    console.log('Storage is updated');
+});
+```
+
+#### Background Storage:
+* Secret information can specifically be stored in the background part of the wapp, ensuring its confidentiality.
+
+* This secret data is exclusively accessible within the background wapp and remains isolated from the frontend part of the application.
 
 ```javascript
 await storage.setSecret('key', 'item');

@@ -115,7 +115,7 @@ describe('WappStorage', () => {
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
         const fun = jest.fn();
-        const c = await wappStorage();
+        const c = await wappStorage<string>();
         const changeP = c.onChange(fun);
         const res = c.get('key');
         await c.set('new_key', 'new_item');
@@ -216,7 +216,7 @@ describe('WappStorage', () => {
             ])
         );
 
-        const c = await wappStorage();
+        const c = await wappStorage<string>();
         const oldData = c.get('missing');
         await c.reload();
         const newData = c.get('missing');
@@ -235,7 +235,7 @@ describe('WappStorage', () => {
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
         mockedAxios.delete.mockResolvedValueOnce(makeResponse([]));
 
-        const c = await wappStorage();
+        const c = await wappStorage<string>();
         await c.set('key', 'item');
         const resOld = c.get('key');
         await c.reset();
@@ -271,7 +271,7 @@ describe('WappStorage', () => {
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([]));
 
-        const c = await wappStorage('remove');
+        const c = await wappStorage<string>('remove');
         await c.set('new', 'data');
         const res1 = c.get('new');
 
@@ -345,7 +345,7 @@ describe('WappStorage', () => {
         );
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
-        const c = await wappStorage('convert');
+        const c = await wappStorage<string>('convert');
         const res1 = c.get('old');
         const res2 = c.get('data');
         await c.update();
@@ -399,7 +399,9 @@ describe('WappStorage', () => {
                 },
             })
         );
-        const c = await wappStorage('keys and values');
+        const c = await wappStorage<string | Array<string | object>>(
+            'keys and values'
+        );
 
         expect(c.keys()).toEqual(['key1', 'key2', 'key3']);
         expect(c.values()).toEqual(['data1', ['data2'], { key4: 'data4' }]);
@@ -419,7 +421,7 @@ describe('WappStorage', () => {
         );
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
-        const ws = await wappStorage('test_deep');
+        const ws = await wappStorage<object>('test_deep');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
@@ -446,7 +448,7 @@ describe('WappStorage', () => {
         );
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
-        const ws = await wappStorage('multi_set');
+        const ws = await wappStorage<string>('multi_set');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
@@ -519,7 +521,7 @@ describe('WappStorage', () => {
 
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
-        const ws = await wappStorage('background_secret');
+        const ws = await wappStorage<string>('background_secret');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
 
