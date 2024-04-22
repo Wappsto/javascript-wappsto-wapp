@@ -42,7 +42,7 @@ export interface IMeta {
     size?: number;
     path?: string;
     parent?: string;
-    usage_daily?: Record<string, any>;
+    usage_daily?: Record<string, string | number>;
     product?: string;
     deprecated?: boolean;
     icon?: string;
@@ -54,8 +54,8 @@ export interface IMeta {
 
 export interface FetchRequest {
     endpoint: string;
-    params?: Record<string, any>;
-    body?: Record<string, any>;
+    params?: Record<string, unknown>;
+    body?: Record<string, unknown>;
     throw_error?: boolean;
     go_internal?: boolean;
 }
@@ -73,12 +73,12 @@ export interface IModel {
 }
 
 export interface IModelFunc {
-    create(parameters: Record<string, any>): Promise<void>;
-    fetch(parameters: FetchRequest): Promise<Record<string, any>[]>;
+    create(parameters: Record<string, unknown>): Promise<void>;
+    fetch(parameters: FetchRequest): Promise<Record<string, unknown>[]>;
     reload(reloadAll?: boolean): Promise<boolean>;
     setParent(parent?: IModel): void;
-    parse(json: Record<string, any>): boolean;
-    parseChildren(json: Record<string, any>): boolean;
+    parse(json: Record<string, unknown>): boolean;
+    parseChildren(json: Record<string, unknown>): boolean;
     onEvent(callback: StreamCallback): void;
     onChange(callback: StreamCallback): void;
     onDelete(callback: StreamCallback): void;
@@ -87,7 +87,7 @@ export interface IModelFunc {
 }
 
 export interface INetwork {
-    [key: string]: any;
+    [key: string]: any; //string | undefined;
     name: string;
     description?: string;
 }
@@ -139,7 +139,7 @@ export interface INetworkFunc {
 }
 
 export interface IDevice {
-    [key: string]: any;
+    [key: string]: any; //string | undefined;
     name: string;
     product?: string;
     serial?: string;
@@ -505,15 +505,27 @@ export interface ILogResponse {
     type: string;
 }
 
+export type ExtsyncResponse = {
+    meta?: IMeta;
+    headers: Record<string, string>;
+    body?: unknown;
+    code?: number;
+    request?: string;
+    uri?: string;
+    method?: string;
+};
+
 export type EventType = 'create' | 'update' | 'delete' | 'direct';
+
+export type StreamData = unknown;
 
 export interface IStreamEvent {
     path: string;
     event: EventType;
-    data?: any;
+    data?: StreamData;
     meta_object?: IMeta;
     meta?: IMeta;
-    extsync?: any;
+    extsync?: unknown;
 }
 
 export interface IStreamModel {
@@ -547,6 +559,17 @@ export interface IConnectionModelFunc {
     cancelOnConnectionChange(callback: ConnectionCallback): void;
 }
 
+export type OAuthConnect = {
+    meta?: IMeta;
+    name?: string;
+    api?: string;
+    installation?: string;
+    token?: string;
+    secret_token?: string;
+    params?: Record<string, string>;
+    access_token_creation?: Record<string, string>;
+};
+
 export type OAuthRequestHandler = (url: string) => void;
 
 export interface IOAuthFunc {
@@ -558,10 +581,16 @@ export interface IOAuthFunc {
 export interface IWappStorageFunc {
     wappStorage(name?: string): void;
     constructor(name: string): void;
-    set(name: string | Record<string, any>, item?: any): Promise<boolean>;
-    setSecret(name: string | Record<string, any>, item?: any): Promise<boolean>;
-    get(name: string | string[]): any;
-    getSecret(name: string | string[]): any;
+    set(
+        name: string | Record<string, unknown>,
+        item?: unknown
+    ): Promise<boolean>;
+    setSecret(
+        name: string | Record<string, unknown>,
+        item?: unknown
+    ): Promise<boolean>;
+    get(name: string | string[]): unknown;
+    getSecret(name: string | string[]): unknown;
     remove(name: string | string[]): Promise<boolean>;
     removeSecret(name: string | string[]): Promise<boolean>;
     onChange(cb: StorageChangeHandler): void;
@@ -571,13 +600,19 @@ export interface IWappStorageFunc {
 export interface IWappStorage {
     name: string;
     id: string;
-    set(name: string | Record<string, any>, item?: any): Promise<boolean>;
-    setSecret(name: string | Record<string, any>, item?: any): Promise<boolean>;
-    get(name: string | string[]): any;
-    getSecret(name: string | string[]): any;
+    set(
+        name: string | Record<string, unknown>,
+        item?: unknown
+    ): Promise<boolean>;
+    setSecret(
+        name: string | Record<string, unknown>,
+        item?: unknown
+    ): Promise<boolean>;
+    get(name: string | string[]): unknown;
+    getSecret(name: string | string[]): unknown;
     keys(): Array<string>;
-    values(): Array<any>;
-    entries(): Array<Array<any>>;
+    values(): Array<unknown>;
+    entries(): Array<Array<unknown>>;
     remove(name: string | string[]): Promise<boolean>;
     removeSecret(name: string | string[]): Promise<boolean>;
     update(): Promise<boolean>;
@@ -586,12 +621,22 @@ export interface IWappStorage {
     reset(): Promise<void>;
 }
 
+export type RequestMessageType = string | number | boolean | object;
+
+export type RequestType = {
+    type: 'foreground' | 'background';
+    message: RequestMessageType;
+};
+
 export type StorageChangeHandler = () => void | Promise<void>;
+export type StreamHandler = (
+    event: IStreamEvent
+) => Promise<boolean | undefined> | boolean | undefined;
 export type ServiceHandler = (
-    event: any
+    event: StreamData
 ) => Promise<boolean | undefined> | boolean | undefined;
 export type RequestHandler = (
-    event: any,
+    event: unknown,
     method?: string,
     path?: string,
     query?: Record<string, any>,
@@ -618,7 +663,7 @@ export interface IOntology {
     to: IOntologyModel;
     name?: string;
     description?: string;
-    data?: any;
+    data?: unknown;
 }
 export interface IOntologyModel extends IModel {
     createEdge(params: IOntology): Promise<IOntologyEdge>;
@@ -641,7 +686,7 @@ export interface IOntologyEdge extends IModel {
     to: Record<string, string[]>;
     name?: string;
     description?: string;
-    data?: any;
+    data?: unknown;
 }
 export interface IOntologyEdgeFunc {
     constructor(): void;

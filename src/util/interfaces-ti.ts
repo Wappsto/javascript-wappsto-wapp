@@ -662,6 +662,16 @@ export const ILogResponse = t.iface([], {
     type: 'string',
 });
 
+export const ExtsyncResponse = t.iface([], {
+    meta: t.opt('IMeta'),
+    headers: 'any',
+    body: t.opt('unknown'),
+    code: t.opt('number'),
+    request: t.opt('string'),
+    uri: t.opt('string'),
+    method: t.opt('string'),
+});
+
 export const EventType = t.union(
     t.lit('create'),
     t.lit('update'),
@@ -669,13 +679,15 @@ export const EventType = t.union(
     t.lit('direct')
 );
 
+export const StreamData = t.name('unknown');
+
 export const IStreamEvent = t.iface([], {
     path: 'string',
     event: 'EventType',
-    data: t.opt('any'),
+    data: t.opt('StreamData'),
     meta_object: t.opt('IMeta'),
     meta: t.opt('IMeta'),
-    extsync: t.opt('any'),
+    extsync: t.opt('unknown'),
 });
 
 export const IStreamModel = t.iface([], {
@@ -733,6 +745,17 @@ export const IConnectionModelFunc = t.iface([], {
     ),
 });
 
+export const OAuthConnect = t.iface([], {
+    meta: t.opt('IMeta'),
+    name: t.opt('string'),
+    api: t.opt('string'),
+    installation: t.opt('string'),
+    token: t.opt('string'),
+    secret_token: t.opt('string'),
+    params: t.opt('any'),
+    access_token_creation: t.opt('any'),
+});
+
 export const OAuthRequestHandler = t.func('void', t.param('url', 'string'));
 
 export const IOAuthFunc = t.iface([], {
@@ -751,16 +774,19 @@ export const IWappStorageFunc = t.iface([], {
     set: t.func(
         'boolean',
         t.param('name', t.union('string', 'any')),
-        t.param('item', 'any', true)
+        t.param('item', 'unknown', true)
     ),
     setSecret: t.func(
         'boolean',
         t.param('name', t.union('string', 'any')),
-        t.param('item', 'any', true)
+        t.param('item', 'unknown', true)
     ),
-    get: t.func('any', t.param('name', t.union('string', t.array('string')))),
+    get: t.func(
+        'unknown',
+        t.param('name', t.union('string', t.array('string')))
+    ),
     getSecret: t.func(
-        'any',
+        'unknown',
         t.param('name', t.union('string', t.array('string')))
     ),
     remove: t.func(
@@ -781,21 +807,24 @@ export const IWappStorage = t.iface([], {
     set: t.func(
         'boolean',
         t.param('name', t.union('string', 'any')),
-        t.param('item', 'any', true)
+        t.param('item', 'unknown', true)
     ),
     setSecret: t.func(
         'boolean',
         t.param('name', t.union('string', 'any')),
-        t.param('item', 'any', true)
+        t.param('item', 'unknown', true)
     ),
-    get: t.func('any', t.param('name', t.union('string', t.array('string')))),
+    get: t.func(
+        'unknown',
+        t.param('name', t.union('string', t.array('string')))
+    ),
     getSecret: t.func(
-        'any',
+        'unknown',
         t.param('name', t.union('string', t.array('string')))
     ),
     keys: t.func(t.array('string')),
-    values: t.func(t.array('any')),
-    entries: t.func(t.array(t.array('any'))),
+    values: t.func(t.array('unknown')),
+    entries: t.func(t.array(t.array('unknown'))),
     remove: t.func(
         'boolean',
         t.param('name', t.union('string', t.array('string')))
@@ -810,16 +839,33 @@ export const IWappStorage = t.iface([], {
     reset: t.func('void'),
 });
 
+export const RequestMessageType = t.union(
+    'string',
+    'number',
+    'boolean',
+    'object'
+);
+
+export const RequestType = t.iface([], {
+    type: t.union(t.lit('foreground'), t.lit('background')),
+    message: 'RequestMessageType',
+});
+
 export const StorageChangeHandler = t.func(t.union('void', 'void'));
+
+export const StreamHandler = t.func(
+    t.union(t.union('boolean', 'undefined'), 'boolean', 'undefined'),
+    t.param('event', 'IStreamEvent')
+);
 
 export const ServiceHandler = t.func(
     t.union(t.union('boolean', 'undefined'), 'boolean', 'undefined'),
-    t.param('event', 'any')
+    t.param('event', 'StreamData')
 );
 
 export const RequestHandler = t.func(
     t.union('any', 'any'),
-    t.param('event', 'any'),
+    t.param('event', 'unknown'),
     t.param('method', 'string', true),
     t.param('path', 'string', true),
     t.param('query', 'any', true),
@@ -857,7 +903,7 @@ export const IOntology = t.iface([], {
     to: 'IOntologyModel',
     name: t.opt('string'),
     description: t.opt('string'),
-    data: t.opt('any'),
+    data: t.opt('unknown'),
 });
 
 export const IOntologyModel = t.iface(['IModel'], {
@@ -889,7 +935,7 @@ export const IOntologyEdge = t.iface(['IModel'], {
     to: 'any',
     name: t.opt('string'),
     description: t.opt('string'),
-    data: t.opt('any'),
+    data: t.opt('unknown'),
 });
 
 export const IOntologyEdgeFunc = t.iface([], {
@@ -1159,17 +1205,23 @@ const exportedTypeSuite: t.ITypeSuite = {
     LogGroupBy,
     ILogRequest,
     ILogResponse,
+    ExtsyncResponse,
     EventType,
+    StreamData,
     IStreamEvent,
     IStreamModel,
     IStreamFunc,
     IConnectionModel,
     IConnectionModelFunc,
+    OAuthConnect,
     OAuthRequestHandler,
     IOAuthFunc,
     IWappStorageFunc,
     IWappStorage,
+    RequestMessageType,
+    RequestType,
     StorageChangeHandler,
+    StreamHandler,
     ServiceHandler,
     RequestHandler,
     StreamCallback,

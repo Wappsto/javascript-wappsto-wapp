@@ -1,5 +1,5 @@
 import pick from 'lodash.pick';
-import { Timestamp } from '../../util/interfaces';
+import { StreamData, Timestamp } from '../../util/interfaces';
 import { PermissionModel } from '../model.permission';
 
 export class AnalyticsModel extends PermissionModel {
@@ -13,8 +13,11 @@ export class AnalyticsModel extends PermissionModel {
         'result',
     ];
     result: any = {};
-    access: any = { state_id: [] };
-    parameter: any = { start: '', end: '' };
+    access: { state_id: string[] } = { state_id: [] };
+    parameter: { start: string; end: string; provider?: string } = {
+        start: '',
+        end: '',
+    };
     status = '';
 
     constructor(
@@ -25,8 +28,8 @@ export class AnalyticsModel extends PermissionModel {
     ) {
         super('analytics');
         this.access.state_id = state_ids;
-        this.parameter.start = start;
-        this.parameter.end = end;
+        this.parameter.start = start.toString();
+        this.parameter.end = end.toString();
         Object.assign(this.parameter, parameters);
     }
 
@@ -39,16 +42,17 @@ export class AnalyticsModel extends PermissionModel {
     }
 
     /* istanbul ignore next */
-    public getResult(): any {
+    public getResult() {
         return this.result;
     }
 
-    public handleStreamEvent(event: any, resolve: any): boolean {
-        if (
-            this.id() === event.data.meta?.id &&
-            event.data.status !== 'pending'
-        ) {
-            this.parse(event.data);
+    public handleStreamData(
+        data: StreamData,
+        resolve: (data: any) => void
+    ): boolean {
+        const d = data as AnalyticsModel;
+        if (this.id() === d.meta?.id && d.status !== 'pending') {
+            this.parse(d);
             resolve(this.getResult());
             return true;
         }

@@ -1,8 +1,9 @@
+import { Notification } from './models';
 import { Model } from './models/model';
 import { IgnoreError, Stream } from './models/stream';
 import { printDebug } from './util/debug';
 import { isBrowser } from './util/helpers';
-import { RequestHandler } from './util/interfaces';
+import { RequestHandler, RequestType, StreamData } from './util/interfaces';
 
 const openStream: Stream = new Stream();
 let request_handlers: Record<string, RequestHandler> = {};
@@ -15,7 +16,7 @@ export function streamHelperReset() {
     request_handlers = {};
 }
 
-async function sendRequest(type: string, msg: any): Promise<any> {
+async function sendRequest(type: string, msg: unknown): Promise<unknown> {
     const data = {
         type: type,
         message: msg,
@@ -23,25 +24,25 @@ async function sendRequest(type: string, msg: any): Promise<any> {
     return openStream.sendRequest(data);
 }
 
-export async function sendToForeground(msg: any): Promise<any> {
+export async function sendToForeground(msg: unknown): Promise<unknown> {
     return sendRequest('background', msg);
 }
 
-export async function sendToBackground(msg: any): Promise<any> {
+export async function sendToBackground(msg: unknown): Promise<unknown> {
     return sendRequest('foreground', msg);
 }
 
-export async function signalForeground(msg: any): Promise<void> {
+export async function signalForeground(msg: unknown): Promise<void> {
     await openStream.sendEvent('background', msg);
 }
 
-export async function signalBackground(msg: any): Promise<void> {
+export async function signalBackground(msg: unknown): Promise<void> {
     await openStream.sendEvent('foreground', msg);
 }
 
 async function _handleRequest(event: any): Promise<boolean> {
     let res = true;
-    let data: any = {};
+    let data: RequestType;
     if (typeof event === 'string') {
         try {
             data = JSON.parse(event);
@@ -118,7 +119,7 @@ export function cancelFromForeground(): Promise<boolean> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function handleIsBackgroundStarted(_message: any): undefined {
+function handleIsBackgroundStarted(_message: unknown): undefined {
     if (request_handlers['foreground']) {
         openStream.sendEvent('backgroundIsStarted', '');
     }
@@ -126,7 +127,7 @@ function handleIsBackgroundStarted(_message: any): undefined {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function handleBackgroundIsStarted(_message: any): undefined {
+function handleBackgroundIsStarted(_message: unknown): undefined {
     backgroundIsStarted = true;
     return;
 }
@@ -154,11 +155,12 @@ export async function waitForBackground(timeout = 10): Promise<boolean> {
     return !!count;
 }
 
-function handlePermissionUpdate(event: any) {
+function handlePermissionUpdate(data: StreamData) {
+    const d = data as Notification;
     if (
         permissionUpdateCallback &&
-        event.data?.base?.code &&
-        (event.data.base.code === 1100003 || event.data.base.code === 1100004)
+        d.base?.code &&
+        (d.base.code === 1100003 || d.base.code === 1100004)
     ) {
         permissionUpdateCallback();
     }

@@ -1246,17 +1246,6 @@ describe('value', () => {
 
         await server.connected;
         server.send({
-            path: '/notification/',
-            data: {
-                base: {
-                    code: 1100013,
-                    identifier:
-                        'value-1-Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',
-                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
-                },
-            },
-        });
-        server.send({
             meta_object: {
                 type: 'notification',
             },

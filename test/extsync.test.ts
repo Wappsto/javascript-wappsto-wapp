@@ -620,10 +620,10 @@ describe('ExtSync stream', () => {
 
     it('can handle an error from the background/foreground', async () => {
         const backgroundPromise = fromBackground(async (msg) => {
-            msg.ferror();
+            (msg as any).ferror();
         });
         const foregroundPromise = fromForeground((msg) => {
-            msg.berror();
+            (msg as any).berror();
         });
 
         await server.connected;
@@ -876,11 +876,11 @@ describe('ExtSync stream', () => {
 
         fromForeground(async (event) => {
             let res;
-            if (event.test === 'correct') {
+            if ((event as any).test === 'correct') {
                 await new Promise((r) => setTimeout(r, 10));
                 res = { status: 'ok' };
             }
-            result.push(event.test);
+            result.push((event as any).test);
             return res;
         });
 

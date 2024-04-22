@@ -6,6 +6,7 @@ import { getErrorResponse, printHttpError } from '../util/http_wrapper';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';
 import { Notification } from './notification';
+import { StreamData } from '../util/interfaces';
 
 export class PermissionModel extends OntologyModel {
     static #getPermissionHash(
@@ -17,10 +18,10 @@ export class PermissionModel extends OntologyModel {
     }
 
     async #handleNotification(
-        event: any,
+        data: StreamData,
         options?: Record<string, any>
     ): Promise<boolean | undefined> {
-        const notification = Notification.fromArray([event.data]);
+        const notification = Notification.fromArray([data as any]);
 
         /* istanbul ignore next */
         if (!notification || !notification[0]) {
@@ -101,12 +102,8 @@ export class PermissionModel extends OntologyModel {
                     );
                     openStream.subscribeService(
                         '/notification',
-                        async (event: any) => {
-                            if (event.meta_object?.type !== 'notification') {
-                                return undefined;
-                            }
-
-                            const res = await this.#handleNotification(event);
+                        async (data: StreamData) => {
+                            const res = await this.#handleNotification(data);
                             if (res) {
                                 resolve();
                             }
@@ -203,9 +200,10 @@ export class PermissionModel extends OntologyModel {
                 `Waiting for permission to access users data: ${message}`
             );
 
-            openStream.subscribeService('/notification', async (event: any) => {
-                if (event.meta_object?.type === 'notification') {
-                    const notification = Notification.fromArray([event.data]);
+            openStream.subscribeService(
+                '/notification',
+                async (data: StreamData) => {
+                    const notification = Notification.fromArray([data as any]);
                     /* istanbul ignore next */
                     if (!notification || !notification[0]) {
                         return;
@@ -250,9 +248,10 @@ export class PermissionModel extends OntologyModel {
 
                         return true;
                     }
+
+                    return undefined;
                 }
-                return undefined;
-            });
+            );
         });
     }
 
@@ -285,12 +284,8 @@ export class PermissionModel extends OntologyModel {
                     );
                     openStream.subscribeService(
                         '/notification',
-                        async (event: any) => {
-                            if (event.meta_object?.type !== 'notification') {
-                                return undefined;
-                            }
-
-                            const res = await this.#handleNotification(event, {
+                        async (data: StreamData) => {
+                            const res = await this.#handleNotification(data, {
                                 reloadAll,
                                 defaultExpand,
                             });

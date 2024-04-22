@@ -11,10 +11,12 @@ import {
 import { isUUID, isVersion, toSafeString } from '../util/helpers';
 import wappsto, { getErrorMessage } from '../util/http_wrapper';
 import {
+    ExtsyncResponse,
     IStreamEvent,
     IStreamModel,
     RequestHandler,
     ServiceHandler,
+    StreamData,
 } from '../util/interfaces';
 import { Model } from './model';
 
@@ -49,7 +51,7 @@ export class Stream extends Model {
     #backOff = 1;
     #waiting: any = [];
     #onRequestHandlers: Record<number, RequestHandler[]> = { 0: [], 1: [] };
-    #onRequestEvents: Record<number, any[]> = { 0: [], 1: [] };
+    #onRequestEvents: Record<number, ExtsyncResponse[]> = { 0: [], 1: [] };
     #rpc_response: Record<number, any> = {};
     #reconnect_timer: any = undefined;
     #enableWatchdog = true;
@@ -235,17 +237,18 @@ export class Stream extends Model {
 
     public async subscribeInternal(
         type: string,
-        handler: ServiceHandler
+        handler: RequestHandler
     ): Promise<boolean> {
         this.validate('subscribeInternal', arguments);
-        return this.subscribeService('extsync', async (event) => {
+        return this.subscribeService('extsync', async (data: StreamData) => {
+            const d = data as ExtsyncResponse;
             let res: boolean | undefined = false;
             try {
                 let body;
-                if (typeof event.body === 'string') {
-                    body = JSON.parse(event.body);
+                if (typeof d.body === 'string') {
+                    body = JSON.parse(d.body);
                 } else {
-                    body = event.body;
+                    body = d.body;
                 }
                 if (body.type === type) {
                     res = await handler(body);
@@ -400,13 +403,15 @@ export class Stream extends Model {
                     let path = '';
                     const query: Record<string, string> = {};
                     try {
-                        const arrUri = event.uri.split('?');
-                        path = `/${arrUri[0]}`;
-                        if (arrUri[1]) {
-                            arrUri[1].split('&').forEach((item: string) => {
-                                const items = item.split('=');
-                                query[items[0]] = items[1];
-                            });
+                        const arrUri = event.uri?.split('?');
+                        if (arrUri) {
+                            path = `/${arrUri[0]}`;
+                            if (arrUri[1]) {
+                                arrUri[1].split('&').forEach((item: string) => {
+                                    const items = item.split('=');
+                                    query[items[0]] = items[1];
+                                });
+                            }
                         }
                     } catch (e: any) {
                         printWarning(
@@ -468,10 +473,11 @@ export class Stream extends Model {
         this.#runRequestHandlers(type);
     }
 
-    #onRequestHandler = (event: any): boolean => {
-        const type = Number(event.uri === 'extsync/');
+    #onRequestHandler = (data: StreamData): boolean => {
+        const d = data as ExtsyncResponse;
+        const type = Number(d.uri === 'extsync/');
 
-        this.#onRequestEvents[type].push(event);
+        this.#onRequestEvents[type].push(d);
 
         if (this.#onRequestEvents[type].length === 1) {
             this.#runRequestHandlers(type);
@@ -550,8 +556,11 @@ export class Stream extends Model {
         }
     }
 
-    #handleMessage(type: string, event: IStreamEvent): void {
-        printStream('handleMessage', type, event);
+    #handleService(type: string, event: IStreamEvent, data: StreamData): void {
+        this.#handleStreamService([`/${type}`], [], event, data);
+    }
+
+    #handleMessage(type: string, event: IStreamEvent, data?: StreamData): void {
         const paths: string[] = [];
         const services: string[] = [];
         if (type === 'message' && event.path) {
@@ -583,10 +592,17 @@ export class Stream extends Model {
                     services.push(`/${i}`);
                 }
             });
-        } else {
-            services.push(`/${type}`);
         }
 
+        this.#handleStreamService(services, paths, event, data);
+    }
+
+    #handleStreamService(
+        services: string[],
+        paths: string[],
+        event: IStreamEvent,
+        data?: StreamData
+    ): void {
         printStream('services', services, this.#services);
         printStream('paths', paths, this.#models);
 
@@ -596,10 +612,14 @@ export class Stream extends Model {
             });
         });
 
+        if (!data) {
+            return;
+        }
+
         services.forEach((service: string) => {
             const tmpList = this.#services[service];
             tmpList?.forEach((callback: ServiceHandler) => {
-                const p = callback(event);
+                const p = callback(data);
                 if (p) {
                     if (p === true) {
                         this.#removeCallbackUsingFilter(
@@ -685,28 +705,28 @@ export class Stream extends Model {
         return false;
     }
 
-    #handleWappstoMessage(message: any) {
-        if (!message.data?.uri?.startsWith('/console')) {
+    #handleWappstoMessage(message: IStreamEvent) {
+        const newData = (message.extsync || message.data) as ExtsyncResponse;
+        if (!newData?.uri?.startsWith('/console')) {
             printDebug(`Stream message: ${toSafeString(message)}`);
         }
 
         if (message.meta_object?.type === 'extsync') {
-            const newData = message.extsync || message.data;
             if (newData.body === '{"type":"ping","message":"pong"}') {
                 return;
             }
 
             if (newData.request) {
-                this.#handleMessage('extsync/request', newData);
+                this.#handleService('extsync/request', message, newData);
             } else if (!newData.uri?.startsWith('/console')) {
-                this.#handleMessage('extsync', newData);
+                this.#handleService('extsync', message, newData);
             }
             return;
         }
-        this.#handleMessage('message', message);
+        this.#handleMessage('message', message, message.data);
     }
 
-    async #handleStreamMessage(message: any): Promise<void> {
+    async #handleStreamMessage(message: IStreamEvent): Promise<void> {
         if (this.#handleRPCMessage(message)) {
             return;
         }

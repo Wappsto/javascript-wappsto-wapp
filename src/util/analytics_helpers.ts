@@ -2,7 +2,7 @@ import { PowerPriceList } from '../models/analytic';
 import { openStream } from '../stream_helpers';
 import { printDebug, printWarning } from './debug';
 import { toSafeString } from './helpers';
-import { Timestamp } from './interfaces';
+import { StreamData, Timestamp } from './interfaces';
 
 export function runAnalyticModel(
     model: any,
@@ -16,8 +16,8 @@ export function runAnalyticModel(
 
         await openStream.subscribeService(
             '/analytics',
-            (event: Record<string, any>): boolean => {
-                return analytic.handleStreamEvent(event, resolve);
+            (data: StreamData): boolean => {
+                return analytic.handleStreamData(data, resolve);
             }
         );
 

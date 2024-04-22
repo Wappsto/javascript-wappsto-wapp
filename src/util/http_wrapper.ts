@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { baseUrl, session } from '../session';
 import { _config } from '../util/config';
 import { fatalError, printDebug, printError, printRequest } from './debug';
@@ -29,7 +29,7 @@ async function wrap(
     config?: Record<string, any>
 ) {
     try {
-        let response;
+        let response: AxiosResponse;
         if (config === undefined) {
             response = await axiosInstance[func](url, data);
         } else {
@@ -53,50 +53,50 @@ async function wrap(
 }
 
 const wrapper = {
-    get: async (
-        url: string,
-        config?: Record<string, any>
-    ): Promise<Record<string, any>> => {
+    get: async (url: string, config?: Record<string, any>) => {
         return wrap('get', url, config);
     },
     post: async (
         url: string,
         data?: Record<string, any> | string,
         config?: Record<string, any>
-    ): Promise<Record<string, any>> => {
+    ) => {
         return wrap('post', url, data, config);
     },
     patch: async (
         url: string,
         data?: Record<string, any> | string,
         config?: Record<string, any>
-    ): Promise<Record<string, any>> => {
+    ) => {
         return wrap('patch', url, data, config);
     },
     put: async (
         url: string,
         data?: Record<string, any> | string,
         config?: Record<string, any>
-    ): Promise<Record<string, any>> => {
+    ) => {
         return wrap('put', url, data, config);
     },
-    delete: async (
-        url: string,
-        config?: Record<string, any>
-    ): Promise<Record<string, any>> => {
+    delete: async (url: string, config?: Record<string, any>) => {
         return wrap('delete', url, config);
     },
 };
 
 export default wrapper;
 
-export function getErrorResponse(error: any): any {
+export function getErrorResponse(error: AxiosError | unknown) {
+    if (!error) {
+        return;
+    }
     /* istanbul ignore next */
-    if (
-        axios.isAxiosError(error) ||
-        (typeof error === 'object' && error.isAxiosError === true)
-    ) {
+    if (axios.isAxiosError(error)) {
         return error?.response?.data;
+    } else if (
+        typeof error === 'object' &&
+        'isAxiosError' in error &&
+        error.isAxiosError === true
+    ) {
+        return (error as AxiosError).response?.data;
     } else {
         return error;
     }

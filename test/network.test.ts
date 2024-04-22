@@ -576,7 +576,6 @@ describe('network', () => {
         const network = await createNetwork({
             name: 'Network Name',
             description: 'Description',
-            method: ['retrieve'],
         });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);

@@ -1,6 +1,10 @@
 import { openStream } from '../stream_helpers';
 import { printDebug } from '../util/debug';
-import { OAuthRequestHandler } from '../util/interfaces';
+import {
+    OAuthConnect,
+    OAuthRequestHandler,
+    StreamData,
+} from '../util/interfaces';
 import { Model } from './model';
 
 export class OAuth extends Model {
@@ -21,7 +25,7 @@ export class OAuth extends Model {
 
     public getToken(handler?: OAuthRequestHandler) {
         OAuth.#validate('getToken', arguments);
-        return new Promise<Record<string, any>>(async (resolve, reject) => {
+        return new Promise<Record<string, string>>(async (resolve, reject) => {
             try {
                 const data = await Model.fetch({
                     endpoint: `/2.1/oauth_connect/${this.name}`,
@@ -43,10 +47,11 @@ export class OAuth extends Model {
                 );
                 openStream.subscribeService(
                     '/oauth_connect',
-                    (event: Record<string, any>): boolean => {
-                        if (event.data?.name === this.name) {
+                    (data: StreamData): boolean => {
+                        const d = data as OAuthConnect;
+                        if (d?.name === this.name) {
                             printDebug('Got OAuth token from stream');
-                            resolve(event.data.params);
+                            resolve(d.params ?? {});
                             return true;
                         }
                         return false;

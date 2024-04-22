@@ -171,12 +171,12 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         switch (event.event) {
             case 'create':
                 this.#enqueueEvent('create', event, (event: IStreamEvent) => {
-                    this.parseChildren(event.data);
+                    this.parseChildren(event.data ?? {});
                 });
                 break;
             case 'update':
                 this.#enqueueEvent('change', event, (event: IStreamEvent) => {
-                    return this.parse(event.data);
+                    return this.parse(event.data ?? {});
                 });
                 break;
             case 'delete':
