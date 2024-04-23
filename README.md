@@ -692,27 +692,31 @@ const energy_data = await value.analyzeEnergy('2022-01-01T00:00:00Z', '2023-01-0
 
 ### Sending messages to and from the background
 
-It is possible to send messages to and from the background and the
-foreground. When you register a event handler, it will be called for
-each event send. The return value of your event handler is send back
-to the sender of the event.
+Messages can be exchanged between the foreground and the background of your Wapp, using event handlers. These event handlers are triggered for each message sent and the return value of your event handler is sent back to the sender.
 
+#### Example code for the foreground part
 ```javascript
 Wappsto.fromBackground((msg) => {
-console.log('Message from the background: ' + msg);
-return 'Hello back';
+    console.log('Message from the background: ' + msg);
+    return 'Hello back';
 });
 
+let backgroundResult = await Wappsto.sendToBackground('hello');
+console.log('Result from background: ' + backgroundResult);
+```
+
+#### Example code for the background part
+```javascript
 Wappsto.fromForeground((msg) => {
     console.log('Message from the foreground: ' + msg);
     return 'Hello front';
 });
 
-let backgroundResult = await Wappsto.sendToBackground('hello');
-console.log('Result from background: ' + backgroundResult);
 let foregroundResult = await Wappsto.sendToForeground('hello');
 console.log('Result from foreground: ' + foregroundResult);
 ```
+
+#### Sending signal
 
 If you want to send a message, but do not want a reply, you can use
 `signalBackground`.
@@ -722,12 +726,31 @@ await Wappsto.signalBackground('start');
 await Wappsto.signalForeground('started');
 ```
 
+#### Cancel event handlers
+
 If you do not want to receive anymore messages, you can cancel the
 event handler.
 
 ```javascript
 Wappsto.cancelFromBackground();
 Wappsto.cancelFromForeground();
+```
+
+#### TypeScript - Supplying Generic Types
+
+When using TypeScript, it is possible to supply a generic type for the `fromForeground` and `fromBackground` methods to specify the expected return type. This can be useful when you want to ensure type safety.
+
+```javascript
+Wappsto.fromBackground<string>((msg) => {
+    console.log(`The type is: ${typeof msg}`); // The type is: string
+});
+```
+
+Additionally, you can supply both a generic type and a return type for `sendToBackground` and `sendToForeground` methods. This can be useful when you want to ensure type safety and specify the expected return type.
+
+```javascript
+const response = await Wappsto.sendToBackground<string, number>('return a number');
+console.log(`The type is: ${typeof response}`); // The type is: number
 ```
 
 ### Waiting for the background to be ready
@@ -766,21 +789,26 @@ You can also stop getting notified again, by calling `cancelPermissionUpdate`.
 
 ### Web Hook
 
-If the Ext Sync is enabled for the Wapp, a event handler for WebHooks
-can be registered. If you return something from your handler, it will be returned to the caller.
+If you want to handle WebHooks, it is possible to register an event handler.
+This event handler will be called for each incoming WebHook and can
+return a value to the caller.
+
+The format of the webhook url is `https://wappsto.com/services/extsync/request/<token>`.
+You can get the token from the value `extSyncToken`.
+
+```javascript
+console.log(`WebHook URL: https://wappsto.com/services/extsync/request/${Wappsto.extSyncToken}`);
+```
+
+#### Register WebHook handler
+
+To register the event handler, you can use the `onWebHook` function.
 
 ```javascript
 Wappsto.onWebHook((event, method, uri, headers) => {
     console.log('Web Hook event', event);
     return { status: "ok" };
 });
-```
-
-The webhook url is `https://wappsto.com/services/extsync/request/<wapp_token>`.
-You can get the token from the value `extSyncToken`.
-
-```javascript
-console.log(`WebHook URL: https://wappsto.com/services/extsync/request/${Wappsto.extSyncToken}`);
 ```
 
 It is also possible to change the return code byt returning a object with a `body` and `code`.
@@ -799,6 +827,8 @@ Wappsto.onWebHook((event, method, uri, headers) => {
 });
 ```
 
+#### Cancel WebHook handler
+
 And if you want to cancel the web hook event handler, you can call
 `cancelWebHook`.
 
@@ -806,8 +836,6 @@ And if you want to cancel the web hook event handler, you can call
 Wappsto.cancelOnWebHook(handler);
 ```
 
-You can turn on `Ext Sync` support using the `wappsto-cli` using the
-`npx wapp configure` command.
 
 ### Wapp Storage
 
