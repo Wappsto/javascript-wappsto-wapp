@@ -127,15 +127,15 @@ export function compareDates(
 }
 
 function isOperatorValue(
-    obj: FilterValueType | Record<string, Record<string, FilterValueType>>
-) {
-    if (!obj) {
-        return false;
+    obj:
+        | FilterValueType
+        | Record<string, Record<string, FilterValueType>>
+        | Record<string, FilterValueType>
+): obj is FilterValueOperatorType {
+    if (obj && typeof obj === 'object') {
+        return 'operator' in obj && 'value' in obj;
     }
-    if (typeof obj !== 'object' || 'length' in obj) {
-        return false;
-    }
-    return !!(obj.operator && obj.value);
+    return false;
 }
 
 function attributesToFilter(
@@ -148,6 +148,9 @@ function attributesToFilter(
     attributes.forEach((att: string) => {
         if (filter[att] === undefined) {
             return;
+        } else if (isOperatorValue(filter[att])) {
+            const opr = filter[att] as FilterValueOperatorType;
+            strFilter.push(`${type}_${att}${opr.operator}[${opr.value}]`);
         } else if (
             typeof filter[att] === 'string' ||
             typeof filter[att] === 'number'
@@ -156,13 +159,10 @@ function attributesToFilter(
         } else if (Array.isArray(filter[att])) {
             const arr = filter[att] as string[] | number[];
             strFilter.push(`${type}_${att}${operator}[${arr.join(',')}]`);
-        } else if (isOperatorValue(filter[att])) {
-            const opr = filter[att] as FilterValueOperatorType;
-            strFilter.push(`${type}_${att}${opr.operator}[${opr.value}]`);
         } else if (typeof filter[att] === 'object') {
             for (const [k, v] of Object.entries(filter[att] ?? {})) {
                 if (isOperatorValue(v)) {
-                    const opr = v as FilterValueOperatorType;
+                    const opr = v;
                     strFilter.push(
                         `${type}_${att}.${k}${opr.operator}${opr.value}`
                     );
@@ -173,7 +173,7 @@ function attributesToFilter(
                     } else if (typeof v === 'string') {
                         strFilter.push(`${str}${v}`);
                     } else if (typeof v === 'number') {
-                        strFilter.push(`${str}${v.toString()}`);
+                        strFilter.push(`${str}${(v as number).toString()}`);
                     }
                 }
             }

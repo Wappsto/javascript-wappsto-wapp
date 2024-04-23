@@ -1197,9 +1197,12 @@ describe('network', () => {
             makeResponse(responses['fetch_network'])
         );
 
-        const networks = await Network.findAllByFilter({
-            value: { type: 'energy' },
-        });
+        const networks = await Network.findAllByFilter(
+            { network: { name: { operator: '!=', value: '' } } },
+            {},
+            true,
+            `test`
+        );
 
         expect(networks.length).toEqual(11);
         expect(networks[0].reload).toBeDefined();
@@ -1210,8 +1213,8 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.1/network',
             {
-                filter: { attribute: ['value_type=energy'] },
-                return: '{network  { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+                filter: { attribute: ['network_name!=[]'] },
+                return: '{network (attribute: ["this_name!=[]"]) { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value  { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
             },
             {
                 params: {
@@ -1219,9 +1222,9 @@ describe('network', () => {
                     fetch: true,
                     go_internal: true,
                     manufacturer: false,
-                    identifier: 'network-all-Find all network using filter',
-                    message: 'Find all network using filter',
-                    method: ['retrieve', 'update'],
+                    identifier: 'network-all-test',
+                    message: 'test',
+                    method: ['retrieve'],
                     quantity: 'all',
                 },
             }
