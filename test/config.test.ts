@@ -69,23 +69,23 @@ describe('config', () => {
 
     it('can change validation mode', () => {
         const wrong = { wrong: 'test' } as unknown as IModel;
-        let error1 = undefined;
-        let error2 = undefined;
+        let error1: string | undefined = undefined;
+        let error2: string | undefined = undefined;
         const v = new Value();
 
         try {
             v.setParent(wrong);
             expect(true).toBe(false);
-        } catch (e: any) {
-            error1 = e.message;
+        } catch (e: unknown) {
+            error1 = (e as Error).message;
         }
 
         config({ validation: 'none' });
 
         try {
             v.setParent(wrong);
-        } catch (e: any) {
-            error2 = e.message;
+        } catch (e: unknown) {
+            error2 = (e as Error).message;
         }
 
         expect(error1).toEqual(

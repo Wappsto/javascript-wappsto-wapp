@@ -1,9 +1,16 @@
 import { Type } from 'class-transformer';
 import isEqual from 'lodash.isequal';
-import { printDebug } from '../util/debug';
+import { printDebug, printWarning } from '../util/debug';
 import { generateFilterRequest } from '../util/filter';
 import { convertFilterToJson, convertFilterToString } from '../util/helpers';
-import { Filter, IDevice, IModel, INetwork } from '../util/interfaces';
+import {
+    Filter,
+    IDevice,
+    IModel,
+    INetwork,
+    JSONObject,
+    ValidateParams,
+} from '../util/interfaces';
 import { addModel } from '../util/modelStore';
 import { Device } from './device';
 import { Model } from './model';
@@ -120,16 +127,22 @@ export class Network extends ConnectionModel implements INetwork {
     }
 
     public async loadAllChildren(
-        json: Record<string, any> | null,
+        json: JSONObject | null,
         reloadAll = false
     ): Promise<void> {
-        const proms: any[] = [];
-        let devices: any | undefined;
+        const proms: Promise<void>[] = [];
+        let devices: (Device | string)[] | undefined;
         if (json) {
             if (json.device !== undefined) {
-                devices = json.device;
+                devices = json.device as (Device | string)[];
             } else if (json[0]) {
-                devices = json[0]['device'];
+                if (typeof json[0] === 'object' && 'device' in json[0]) {
+                    devices = json[0].device as (Device | string)[];
+                } else {
+                    printWarning(
+                        `Network: loadAllChildren: device not found in json: ${json}`
+                    );
+                }
             }
 
             if (devices !== undefined) {
@@ -137,14 +150,14 @@ export class Network extends ConnectionModel implements INetwork {
                 this.device = [];
                 for (let i = 0; i < devices.length; i++) {
                     let id: string;
-                    let data: Record<string, any> | undefined = undefined;
+                    let data: JSONObject | undefined = undefined;
                     let newDevice: Device | undefined = undefined;
 
                     if (typeof devices[i] === 'string') {
                         id = devices[i] as string;
                     } else {
-                        id = devices[i].meta.id;
-                        data = devices[i];
+                        data = devices[i] as Device;
+                        id = (data as Device).meta.id ?? '';
                     }
 
                     const dev = oldDevices.find((dev) => dev.meta.id === id);
@@ -167,7 +180,7 @@ export class Network extends ConnectionModel implements INetwork {
                             this.device.push(newDevice);
                             proms.push(newDevice.loadAllChildren(data, false));
                         } else {
-                            this.device.push(devices[i]);
+                            this.device.push(devices[i] as Device);
                         }
                     }
                 }
@@ -218,7 +231,7 @@ export class Network extends ConnectionModel implements INetwork {
         return device;
     }
 
-    public parseChildren(json: Record<string, any>): boolean {
+    public parseChildren(json: JSONObject): boolean {
         let res = false;
         const devices = Device.fromArray([json]);
         if (devices.length) {
@@ -244,11 +257,11 @@ export class Network extends ConnectionModel implements INetwork {
     }
 
     static find = async (
-        params: Record<string, any>,
+        params: JSONObject,
         quantity: number | 'all' = 1,
         readOnly = false,
         usage = '',
-        filterRequest?: Record<string, any>
+        filterRequest?: JSONObject
     ) => {
         Network.#validate('find', [
             params,
@@ -259,7 +272,7 @@ export class Network extends ConnectionModel implements INetwork {
         ]);
 
         usage ||= `Find ${quantity} network`;
-        const query: Record<string, any> = {
+        const query: JSONObject = {
             expand: 3,
         };
         if (!filterRequest) {
@@ -278,7 +291,7 @@ export class Network extends ConnectionModel implements INetwork {
         });
 
         const networks = Network.fromArray(data);
-        const promises: any[] = [];
+        const promises: Promise<void>[] = [];
 
         networks.forEach((net, index) => {
             if (net.loadAllChildren) {
@@ -405,7 +418,7 @@ export class Network extends ConnectionModel implements INetwork {
         const data = await Model.fetch({ endpoint: Network.endpoint, params });
         const networks = Network.fromArray(data);
 
-        const promises: any[] = [];
+        const promises: Promise<void>[] = [];
         networks.forEach((net) => {
             promises.push(net.loadAllChildren(null));
         });
@@ -418,7 +431,7 @@ export class Network extends ConnectionModel implements INetwork {
         const url = Network.endpoint;
         const data = await Model.fetch({ endpoint: url, params });
         const networks = Network.fromArray(data);
-        const promises: any[] = [];
+        const promises: Promise<void>[] = [];
         networks.forEach((network, index) => {
             if (network.loadAllChildren) {
                 promises.push(network.loadAllChildren(null));
@@ -454,9 +467,9 @@ export class Network extends ConnectionModel implements INetwork {
             },
         });
         const devices = Device.fromArray(data);
-        const promises: any[] = [];
+        const promises: Promise<void>[] = [];
 
-        devices.forEach((dev: any, index: number) => {
+        devices.forEach((dev: Device, index: number) => {
             this.device[offset + index] = dev;
         });
 
@@ -476,7 +489,7 @@ export class Network extends ConnectionModel implements INetwork {
         await Promise.all(promises);
     }
 
-    static #validate(name: string, params: any): void {
+    static #validate(name: string, params: ValidateParams): void {
         Model.validateMethod('Network', name, params);
     }
 }

@@ -1,5 +1,6 @@
 import { _config } from './config';
 import { isBrowser, toSafeString } from './helpers';
+import { JSONObject, JSONValue } from './interfaces';
 
 export function printDebug(message: string): void {
     if (_config.debug) {
@@ -10,9 +11,9 @@ export function printDebug(message: string): void {
 export function printRequest(
     func: string,
     url: string,
-    config?: Record<string, any>,
-    data?: Record<string, any> | string,
-    response?: Record<string, any>
+    config?: JSONObject,
+    data?: JSONValue | string,
+    response?: JSONValue
 ) {
     if (_config.requests && !url.includes('/console')) {
         const msg = `${func} ${url} ${toSafeString(config)} ${toSafeString(

@@ -8,7 +8,7 @@ import {
 import { AxiosStatic } from 'axios';
 
 let server: WS;
-let autoTimer: any;
+let autoTimer: ReturnType<typeof setTimeout>;
 let answered = 0;
 
 export function after(mockedAxios?: jest.Mocked<AxiosStatic>) {
@@ -57,7 +57,7 @@ export function sendRpcResponse(server: WS, offset?: number): number {
             offset -= 1;
             return;
         }
-        const obj = msg as unknown as any;
+        const obj = msg as unknown as Record<string, string>;
         server.send({
             jsonrpc: '2.0',
             id: obj.id,

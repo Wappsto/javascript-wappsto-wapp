@@ -1,4 +1,5 @@
 import { printError } from '../util/debug';
+import { JSONObject } from '../util/interfaces';
 import { Model } from './model';
 
 export class User extends Model {
@@ -13,8 +14,8 @@ export class User extends Model {
     language?: string;
     friend?: boolean;
     blocked?: boolean;
-    provider?: any[];
-    public?: any[];
+    provider?: string[];
+    public?: string[];
     verified_email?: boolean;
     installation?: string;
 
@@ -28,7 +29,7 @@ export class User extends Model {
     };
 
     public static fetch = async (): Promise<User[]> => {
-        const data: Record<string, any>[] = await Model.fetch({
+        const data: JSONObject[] = await Model.fetch({
             endpoint: `${User.endpoint}/me`,
             params: {
                 expand: 1,

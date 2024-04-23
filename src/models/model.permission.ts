@@ -6,7 +6,7 @@ import { getErrorResponse, printHttpError } from '../util/http_wrapper';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';
 import { Notification } from './notification';
-import { StreamData } from '../util/interfaces';
+import { JSONObject, StreamData } from '../util/interfaces';
 
 export class PermissionModel extends OntologyModel {
     static #getPermissionHash(
@@ -19,7 +19,7 @@ export class PermissionModel extends OntologyModel {
 
     async #handleNotification(
         data: StreamData,
-        options?: Record<string, any>
+        options?: JSONObject
     ): Promise<boolean | undefined> {
         const notification = Notification.fromArray([data as any]);
 
@@ -59,8 +59,8 @@ export class PermissionModel extends OntologyModel {
                 );
                 try {
                     await this._reload(
-                        options?.reloadAll,
-                        options?.defaultExpand
+                        !!options?.reloadAll,
+                        options?.defaultExpand as number
                     );
                     return true;
                 } catch (e) {
@@ -135,11 +135,11 @@ export class PermissionModel extends OntologyModel {
         endpoint: string;
         quantity: number | 'all';
         message: string;
-        params?: Record<string, any>;
-        body?: Record<string, any>;
+        params?: JSONObject;
+        body?: JSONObject;
         readOnly?: boolean;
         create?: boolean;
-    }): Promise<Record<string, any>[]> {
+    }): Promise<JSONObject[]> {
         const { endpoint, quantity, message, params, body, readOnly, create } =
             options;
         Model.validateMethod('PermissionModel', 'request', [
@@ -151,7 +151,7 @@ export class PermissionModel extends OntologyModel {
             readOnly,
             create,
         ]);
-        return new Promise<Record<string, any>[]>(async (resolve) => {
+        return new Promise<JSONObject[]>(async (resolve) => {
             const newParams = params || {};
             const id = PermissionModel.#getPermissionHash(
                 endpoint.split('/')[2],

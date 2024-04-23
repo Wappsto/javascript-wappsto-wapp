@@ -4,6 +4,7 @@ import pick from 'lodash.pick';
 import { isBrowser } from '../util/helpers';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
+import { JSONObject } from '../util/interfaces';
 
 interface IDataMeta {
     id?: string;
@@ -16,7 +17,7 @@ export class Data<T = unknown> extends StreamModel {
     static attributes = ['meta', 'data_meta', 'data'];
     data_meta: IDataMeta = {};
     data: Record<string, T> = {};
-    _secret_background: any = {};
+    _secret_background: Record<string, T> = {};
     clearSecret = false;
     oldKeys: Array<string> = [];
 
@@ -94,7 +95,7 @@ export class Data<T = unknown> extends StreamModel {
      * @returns {Promise<Data[]>} A Promise that resolves to an array of Data instances matching the provided ID.
      */
     public static async findByDataId(id: string): Promise<Data[]> {
-        const json: any[] = await Model.fetch({
+        const json: JSONObject[] = await Model.fetch({
             endpoint: Data.endpoint,
             params: {
                 'this_data_meta.id': id,
@@ -109,7 +110,7 @@ export class Data<T = unknown> extends StreamModel {
         });
     }
 
-    public parse(json: Record<string, any>): boolean {
+    public parse(json: JSONObject): boolean {
         Model.validateMethod('Model', 'parse', arguments);
         if (Array.isArray(json)) {
             json = json[0];
@@ -131,11 +132,11 @@ export class Data<T = unknown> extends StreamModel {
         return !isEqual(oldModel, newModel);
     }
 
-    public toJSON(): Record<string, any> {
-        const result: Record<string, any> = super.toJSON();
+    public toJSON() {
+        const result = super.toJSON();
 
         this.oldKeys.forEach((k: string) => {
-            result[k] = null;
+            (result as Record<string, unknown>)[k] = null;
         });
 
         return result;

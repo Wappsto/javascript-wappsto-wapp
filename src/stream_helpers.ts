@@ -3,7 +3,13 @@ import { Model } from './models/model';
 import { IgnoreError, Stream } from './models/stream';
 import { printDebug } from './util/debug';
 import { isBrowser } from './util/helpers';
-import { RequestHandler, RequestType, StreamData } from './util/interfaces';
+import {
+    JSONValue,
+    RequestHandler,
+    RequestType,
+    StreamData,
+    WappRequestHandler,
+} from './util/interfaces';
 
 const openStream: Stream = new Stream();
 let request_handlers: Record<string, RequestHandler> = {};
@@ -16,32 +22,32 @@ export function streamHelperReset() {
     request_handlers = {};
 }
 
-async function sendRequest(type: string, msg: unknown): Promise<unknown> {
+async function sendRequest(type: string, msg: JSONValue) {
     const data = {
         type: type,
         message: msg,
-    };
+    } as RequestType;
     return openStream.sendRequest(data);
 }
 
-export async function sendToForeground(msg: unknown): Promise<unknown> {
-    return sendRequest('background', msg);
+export async function sendToForeground<T = JSONValue, R = JSONValue>(msg: T) {
+    return sendRequest('background', msg as JSONValue) as Promise<R>;
 }
 
-export async function sendToBackground(msg: unknown): Promise<unknown> {
-    return sendRequest('foreground', msg);
+export async function sendToBackground<T = JSONValue, R = JSONValue>(msg: T) {
+    return sendRequest('foreground', msg as JSONValue) as Promise<R>;
 }
 
-export async function signalForeground(msg: unknown): Promise<void> {
-    await openStream.sendEvent('background', msg);
+export async function signalForeground<T = JSONValue>(msg: T) {
+    await openStream.sendEvent('background', msg as JSONValue);
 }
 
-export async function signalBackground(msg: unknown): Promise<void> {
-    await openStream.sendEvent('foreground', msg);
+export async function signalBackground<T = JSONValue>(msg: T) {
+    await openStream.sendEvent('foreground', msg as JSONValue);
 }
 
-async function _handleRequest(event: any): Promise<boolean> {
-    let res = true;
+async function _handleRequest(event: JSONValue): Promise<JSONValue> {
+    let res: JSONValue = true;
     let data: RequestType;
     if (typeof event === 'string') {
         try {
@@ -53,7 +59,7 @@ async function _handleRequest(event: any): Promise<boolean> {
             return false;
         }
     } else {
-        data = event;
+        data = event as RequestType;
     }
 
     if (request_handlers[data.type]) {
@@ -80,14 +86,18 @@ async function handleRequest(
     return res;
 }
 
-export function fromForeground(callback: RequestHandler): Promise<boolean> {
+export function fromForeground<T = unknown>(
+    callback: WappRequestHandler<T>
+): Promise<boolean> {
     Model.validateMethod('Stream', 'fromForeground', arguments);
-    return handleRequest('foreground', callback);
+    return handleRequest('foreground', callback as RequestHandler);
 }
 
-export function fromBackground(callback: RequestHandler): Promise<boolean> {
+export function fromBackground<T = unknown>(
+    callback: WappRequestHandler<T>
+): Promise<boolean> {
     Model.validateMethod('Stream', 'fromForeground', arguments);
-    return handleRequest('background', callback);
+    return handleRequest('background', callback as RequestHandler);
 }
 
 export function onWebHook(handler: RequestHandler): Promise<boolean> {

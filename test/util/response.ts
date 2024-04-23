@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { JSONObject } from '../../src';
 
 const directoryPath = path.join(__dirname, 'json');
-const data: Record<string, any> = {};
+const data: Record<string, JSONObject> = {};
 
 fs.readdir(directoryPath, function (err, files) {
     //handling error
@@ -406,7 +407,11 @@ const powerPriceListResponse = {
     },
 };
 
-export function generateStreamEvent(type: string, id: string, data: any): any {
+export function generateStreamEvent(
+    type: string,
+    id: string,
+    data: JSONObject
+): JSONObject {
     return {
         meta: {
             id: '3c49a1aa-1a0f-4d00-92bf-4fbd414c02e0',

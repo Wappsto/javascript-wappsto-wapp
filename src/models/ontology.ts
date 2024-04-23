@@ -3,7 +3,9 @@ import {
     FetchRequest,
     IOntologyEdge,
     IOntologyModel,
+    JSONObject,
     Relationship,
+    ValidateParams,
 } from '../util/interfaces';
 import { getModel } from '../util/modelStore';
 import { Model } from './model';
@@ -13,7 +15,7 @@ export class Ontology extends Model implements IOntologyEdge {
     static attributes = ['name', 'description', 'relationship', 'data', 'to'];
     name?: string;
     description?: string;
-    data?: any;
+    data?: unknown;
     relationship: Relationship = '';
     to: Record<string, string[]> = {};
     models: IOntologyModel[] = [];
@@ -40,15 +42,18 @@ export class Ontology extends Model implements IOntologyEdge {
         return Ontology.attributes;
     }
 
-    public toJSON(): Record<string, any> {
+    public toJSON(): JSONObject {
         const res = super.toJSON();
         res['to'] = {};
         this.models.forEach((m: IOntologyModel) => {
             const type = m.getType();
-            if (res['to'][type] === undefined) {
-                res['to'][type] = [];
+            if (
+                res['to'] &&
+                (res['to'] as Record<string, string[]>)[type] === undefined
+            ) {
+                (res['to'] as Record<string, string[]>)[type] = [];
             }
-            res['to'][type].push(m.id());
+            (res['to'] as Record<string, string[]>)[type].push(m.id());
         });
 
         return res;
@@ -73,11 +78,11 @@ export class Ontology extends Model implements IOntologyEdge {
     }
 
     public async fetchModels(): Promise<void> {
-        const proms: any[] = [];
+        const proms: Promise<void>[] = [];
         Object.keys(this.to).forEach((type: string) => {
             this.to[type].forEach((id: string) => {
                 proms.push(
-                    new Promise(async (resolve: any) => {
+                    new Promise(async (resolve: () => void) => {
                         const m = await getModel(type, id);
                         if (m) {
                             this.addModel(m as IOntologyModel);
@@ -123,7 +128,7 @@ export class Ontology extends Model implements IOntologyEdge {
         const data = await Model.fetch(params);
         const res = Ontology.fromArray(data);
 
-        const proms: any[] = [];
+        const proms: Promise<void>[] = [];
         res.forEach((o) => {
             proms.push(o.fetchModels());
         });
@@ -132,7 +137,7 @@ export class Ontology extends Model implements IOntologyEdge {
         return res;
     };
 
-    static #validate(name: string, params: any): void {
+    static #validate(name: string, params: ValidateParams): void {
         Model.validateMethod('OntologyEdge', name, params);
     }
 }

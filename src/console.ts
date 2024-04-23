@@ -1,10 +1,11 @@
 import { printError, printWarning } from './util/debug';
 import { isBrowser, toSafeString } from './util/helpers';
 import wappsto from './util/http_wrapper';
+import { JSONObject } from './util/interfaces';
 
 const defaultConsole = Object.assign({}, console);
 let stopExtSync = false;
-type consoleEvent = { type: string; data: any };
+type consoleEvent = { type: string; data: string | JSONObject };
 let debugQueue: consoleEvent[] = [];
 
 function generateConsoleMessage(key: string, ...args: any[]): any {

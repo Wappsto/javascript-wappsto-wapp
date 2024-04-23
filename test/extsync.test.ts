@@ -267,12 +267,12 @@ describe('ExtSync stream', () => {
             .mockResolvedValueOnce(makeResponse(res));
 
         const backgroundPromise = fromBackground(funB);
-        sendToForeground(msg).then((result: any) => {
+        sendToForeground<any, any>(msg).then((result) => {
             responseForeground = result;
         });
 
         const foregroundPromise = fromForeground(funF);
-        sendToBackground(msg).then((result: any) => {
+        sendToBackground<any, any>(msg).then((result) => {
             responseBackground = result;
         });
 
@@ -403,7 +403,7 @@ describe('ExtSync stream', () => {
 
         const webPromise = onWebHook(funWeb);
         const backgroundPromise = fromBackground(funFore);
-        sendToForeground(msg).then((result: any) => {
+        sendToForeground<any, any>(msg).then((result) => {
             responseForeground = result;
         });
 
@@ -619,11 +619,11 @@ describe('ExtSync stream', () => {
     });
 
     it('can handle an error from the background/foreground', async () => {
-        const backgroundPromise = fromBackground(async (msg) => {
-            (msg as any).ferror();
+        const backgroundPromise = fromBackground<any>(async (msg) => {
+            msg.ferror();
         });
-        const foregroundPromise = fromForeground((msg) => {
-            (msg as any).berror();
+        const foregroundPromise = fromForeground<any>((msg) => {
+            msg.berror();
         });
 
         await server.connected;
@@ -874,13 +874,13 @@ describe('ExtSync stream', () => {
 
         const result: Array<number> = [];
 
-        fromForeground(async (event) => {
+        fromForeground<any>(async (event) => {
             let res;
-            if ((event as any).test === 'correct') {
+            if (event.test === 'correct') {
                 await new Promise((r) => setTimeout(r, 10));
                 res = { status: 'ok' };
             }
-            result.push((event as any).test);
+            result.push(event.test);
             return res;
         });
 
@@ -971,7 +971,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 500));
 
         expect(mockedAxios.patch).toHaveBeenCalledWith(
             '/2.1/extsync/response/bbe306a7-7216-4d7d-8be1-08d94cd2142d',

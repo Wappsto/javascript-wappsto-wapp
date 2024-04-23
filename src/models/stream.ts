@@ -14,7 +14,10 @@ import {
     ExtsyncResponse,
     IStreamEvent,
     IStreamModel,
+    JSONValue,
     RequestHandler,
+    RPCMessage,
+    RPCResult,
     ServiceHandler,
     StreamData,
 } from '../util/interfaces';
@@ -49,11 +52,14 @@ export class Stream extends Model {
     #subscriptions: string[] = [];
     #opened = false;
     #backOff = 1;
-    #waiting: any = [];
+    #waiting: ((value: void | PromiseLike<void>) => void)[] = [];
     #onRequestHandlers: Record<number, RequestHandler[]> = { 0: [], 1: [] };
     #onRequestEvents: Record<number, ExtsyncResponse[]> = { 0: [], 1: [] };
-    #rpc_response: Record<number, any> = {};
-    #reconnect_timer: any = undefined;
+    #rpc_response: Record<
+        number,
+        (value: boolean | PromiseLike<boolean>) => void
+    > = {};
+    #reconnect_timer?: ReturnType<typeof setTimeout> = undefined;
     #enableWatchdog = true;
     #watchdogTimer?: ReturnType<typeof setTimeout> = undefined;
     #watchDogTriggerTimeout?: ReturnType<typeof setTimeout> = undefined;
@@ -148,7 +154,7 @@ export class Stream extends Model {
                     clearTimeout(this.#openTimeout);
                     this.#addListeners();
                     resolve();
-                    this.#waiting.forEach((r: any) => {
+                    this.#waiting.forEach((r) => {
                         r();
                     });
                     this.#waiting = [];
@@ -241,8 +247,8 @@ export class Stream extends Model {
     ): Promise<boolean> {
         this.validate('subscribeInternal', arguments);
         return this.subscribeService('extsync', async (data: StreamData) => {
-            const d = data as ExtsyncResponse;
-            let res: boolean | undefined = false;
+            const d = data as unknown as ExtsyncResponse;
+            let res: JSONValue = false;
             try {
                 let body;
                 if (typeof d.body === 'string') {
@@ -310,7 +316,7 @@ export class Stream extends Model {
         return res;
     }
 
-    public async sendEvent(type: string, msg: any): Promise<any> {
+    public async sendEvent(type: string, msg: JSONValue): Promise<JSONValue> {
         this.validate('sendEvent', arguments);
 
         let result = {};
@@ -321,7 +327,7 @@ export class Stream extends Model {
             };
             const response = await wappsto.post('/2.1/extsync', data);
             result = response.data;
-        } catch (e: any) {
+        } catch (e: unknown) {
             /* istanbul ignore next */
             const errorMsg = getErrorMessage(e);
             printError(
@@ -333,7 +339,7 @@ export class Stream extends Model {
         return result;
     }
 
-    public async sendRequest(msg: any): Promise<any> {
+    public async sendRequest(msg: JSONValue): Promise<JSONValue> {
         this.validate('sendRequest', arguments);
 
         let result = {};
@@ -357,9 +363,9 @@ export class Stream extends Model {
     }
 
     public async sendResponse(
-        event: any,
+        event: ExtsyncResponse,
         code: number,
-        msg: any,
+        msg: JSONValue,
         headers?: Record<string, string>
     ): Promise<void> {
         this.validate('sendResponse', arguments);
@@ -378,7 +384,7 @@ export class Stream extends Model {
                           body: msg,
                       }
             );
-        } catch (e: any) {
+        } catch (e: unknown) {
             /* istanbul ignore next */
             const errorMsg = getErrorMessage(e);
             /* istanbul ignore next */
@@ -413,9 +419,11 @@ export class Stream extends Model {
                                 });
                             }
                         }
-                    } catch (e: any) {
+                    } catch (e: unknown) {
                         printWarning(
-                            `Failed to decode ExtSync url (${event.uri}): ${e.message}`
+                            `Failed to decode ExtSync url (${event.uri}): ${
+                                (e as Error).message
+                            }`
                         );
                     }
 
@@ -433,35 +441,44 @@ export class Stream extends Model {
                     );
                     let code = 200;
                     let body = res;
-                    let headers;
+                    let headers: Record<string, string> | undefined = undefined;
 
-                    let data;
+                    let data: JSONValue;
                     try {
-                        data = JSON.parse(res);
+                        data = JSON.parse(res as string);
                     } catch (e) {
                         data = res;
                     }
 
-                    if (data?.body) {
+                    if (data && typeof data === 'object' && 'body' in data) {
                         body = data.body;
-                        if (data.code) {
-                            code = data.code;
+                        if ('code' in data) {
+                            code =
+                                typeof data.code === 'number'
+                                    ? data.code
+                                    : parseInt(data.code as string);
                         }
-                        if (data.headers) {
-                            headers = data.headers;
+                        if (
+                            'headers' in data &&
+                            typeof data.headers === 'object' &&
+                            !Array.isArray(data.headers)
+                        ) {
+                            headers = data.headers as Record<string, string>;
                         }
                     }
                     this.sendResponse(event, code, body, headers);
-                } catch (err: any) {
+                } catch (err: unknown) {
                     if (!(err instanceof IgnoreError)) {
                         printError(err);
-                        this.sendResponse(event, 400, { error: err.message });
+                        this.sendResponse(event, 400, {
+                            error: (err as Error).message,
+                        });
                     }
                 }
             }
         } catch (e) {
             /* istanbul ignore next */
-            this.sendResponse(event, 501, e);
+            this.sendResponse(event, 501, e as JSONValue);
             /* istanbul ignore next */
             printError('An error happened when calling request handler');
             /* istanbul ignore next */
@@ -474,7 +491,7 @@ export class Stream extends Model {
     }
 
     #onRequestHandler = (data: StreamData): boolean => {
-        const d = data as ExtsyncResponse;
+        const d = data as unknown as ExtsyncResponse;
         const type = Number(d.uri === 'extsync/');
 
         this.#onRequestEvents[type].push(d);
@@ -621,21 +638,13 @@ export class Stream extends Model {
             tmpList?.forEach((callback: ServiceHandler) => {
                 const p = callback(data);
                 if (p) {
-                    if (p === true) {
+                    Promise.resolve(p).then((res) => {
                         this.#removeCallbackUsingFilter(
                             callback,
                             service,
-                            true
+                            !!res || false
                         );
-                    } else {
-                        p.then((res) => {
-                            this.#removeCallbackUsingFilter(
-                                callback,
-                                service,
-                                res || false
-                            );
-                        });
-                    }
+                    });
                 }
             });
         });
@@ -644,10 +653,10 @@ export class Stream extends Model {
     async #sendMessage(
         method: string,
         url: string,
-        body: any | undefined = undefined
+        body: JSONValue | undefined = undefined
     ): Promise<boolean> {
         let res = false;
-        const hash = {
+        const hash: RPCMessage = {
             jsonrpc: '2.0',
             method: method,
             id: Math.floor(Math.random() * 100000),
@@ -684,7 +693,7 @@ export class Stream extends Model {
         return res;
     }
 
-    #handleRPCMessage(message: any): boolean {
+    #handleRPCMessage(message: RPCResult): boolean {
         if (message.jsonrpc) {
             if (message.result) {
                 if (this.#rpc_response[message.id]) {
@@ -706,7 +715,8 @@ export class Stream extends Model {
     }
 
     #handleWappstoMessage(message: IStreamEvent) {
-        const newData = (message.extsync || message.data) as ExtsyncResponse;
+        const newData = (message.extsync ||
+            message.data) as unknown as ExtsyncResponse;
         if (!newData?.uri?.startsWith('/console')) {
             printDebug(`Stream message: ${toSafeString(message)}`);
         }
@@ -717,23 +727,33 @@ export class Stream extends Model {
             }
 
             if (newData.request) {
-                this.#handleService('extsync/request', message, newData);
+                this.#handleService(
+                    'extsync/request',
+                    message,
+                    newData as unknown as StreamData
+                );
             } else if (!newData.uri?.startsWith('/console')) {
-                this.#handleService('extsync', message, newData);
+                this.#handleService(
+                    'extsync',
+                    message,
+                    newData as unknown as StreamData
+                );
             }
             return;
         }
         this.#handleMessage('message', message, message.data);
     }
 
-    async #handleStreamMessage(message: IStreamEvent): Promise<void> {
-        if (this.#handleRPCMessage(message)) {
+    async #handleStreamMessage(
+        message: IStreamEvent | RPCResult
+    ): Promise<void> {
+        if (this.#handleRPCMessage(message as RPCResult)) {
             return;
         }
 
         let messages: IStreamEvent[] = [];
         if (message.constructor !== Array) {
-            messages = [message];
+            messages = [message as IStreamEvent];
         } else {
             messages = message;
         }
@@ -776,7 +796,7 @@ export class Stream extends Model {
             clearTimeout(this.#watchdogTimer);
         } else {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-            this.subscribeInternal('ping', (_msg: any): undefined => {});
+            this.subscribeInternal('ping', (_msg: unknown): undefined => {});
         }
 
         if (this.#watchDogTriggerTimeout) {
@@ -802,7 +822,7 @@ export class Stream extends Model {
             }, this.#getTimeout());
         };
 
-        this.#socket.onmessage = (ev: any) => {
+        this.#socket.onmessage = (ev: { type: string; data: string }) => {
             this.#startWatchDog();
 
             /* istanbul ignore else */
@@ -822,7 +842,7 @@ export class Stream extends Model {
         };
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        this.#socket.onerror = (_event: any) => {
+        this.#socket.onerror = (_event: unknown) => {
             /* istanbul ignore next */
             printError(`Stream error: ${this.websocketUrl}`);
         };

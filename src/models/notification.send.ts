@@ -1,6 +1,6 @@
 import { Model } from '../models/model';
 import wappsto, { printHttpError } from '../util/http_wrapper';
-import { EventLogLevel, IMail } from '../util/interfaces';
+import { EventLogLevel, IMail, JSONObject } from '../util/interfaces';
 import { PermissionModel } from './model.permission';
 
 export async function sendMail(params: IMail): Promise<boolean> {
@@ -36,7 +36,7 @@ export async function sendSMS(message: string): Promise<boolean> {
 export function notify(
     message: string,
     level?: EventLogLevel,
-    data?: Record<string, any>
+    data?: JSONObject
 ): Promise<void> {
     Model.validateMethod('notification', 'notify', arguments);
     const newNotification = new SendNotification(message, level, data);
@@ -46,17 +46,13 @@ export function notify(
 export class SendNotification extends PermissionModel {
     static endpoint = '/2.1/notification';
     static attributes = ['custom'];
-    custom: { message: string; level: string; data?: Record<string, any> } = {
+    custom: { message: string; level: string; data?: JSONObject } = {
         message: '',
         level: '',
         data: undefined,
     };
 
-    constructor(
-        message: string,
-        level?: EventLogLevel,
-        data?: Record<string, any>
-    ) {
+    constructor(message: string, level?: EventLogLevel, data?: JSONObject) {
         super('notification');
         this.custom.message = message;
         this.custom.level = level || 'info';

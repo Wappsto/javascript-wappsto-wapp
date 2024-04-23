@@ -1,4 +1,4 @@
-import { IOntologyNode } from '../util/interfaces';
+import { IOntologyNode, JSONObject } from '../util/interfaces';
 import { Data } from './data';
 import { Model } from './model';
 
@@ -31,7 +31,7 @@ export async function createNode(name: string): Promise<OntologyNode> {
 }
 
 export async function getAllNodes(): Promise<OntologyNode[]> {
-    const json: any[] = await Model.fetch({
+    const json: JSONObject[] = await Model.fetch({
         endpoint: Data.endpoint,
         params: {
             'this_data_meta.type': 'ontology_node',
@@ -51,7 +51,7 @@ export async function getAllNodes(): Promise<OntologyNode[]> {
 export async function findNode(name: string): Promise<OntologyNode> {
     Model.validateMethod('OntologyNode', 'findNode', arguments);
 
-    const json: any[] = await Model.fetch({
+    const json: JSONObject[] = await Model.fetch({
         endpoint: Data.endpoint,
         params: {
             'this_data_meta.id': `ontology_node_${name}`,

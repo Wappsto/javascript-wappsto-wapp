@@ -1,5 +1,28 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
+export type JSONValue =
+    | string
+    | number
+    | boolean
+    | undefined
+    | { [x: string]: JSONValue }
+    | Array<JSONValue>;
+export type JSONObject = Record<string, JSONValue>;
+
+export type RPCMessage = {
+    jsonrpc: '2.0';
+    method: string;
+    params: JSONObject;
+    id: number;
+};
+export type RPCResult = {
+    jsonrpc: '2.0';
+    result: { value: boolean };
+    id: number;
+    error: JSONObject | JSONValue;
+};
+
+export type ValidateParams = any | any[];
 export type Timestamp = string | number | Date;
 export type ValidationType = 'none' | 'normal';
 export interface IConfig {
@@ -27,7 +50,7 @@ export interface IConnection {
 export interface IMeta {
     id?: string;
     type?: string;
-    version: string;
+    version?: string;
     redirect?: string;
 
     manufacturer?: string;
@@ -54,8 +77,8 @@ export interface IMeta {
 
 export interface FetchRequest {
     endpoint: string;
-    params?: Record<string, unknown>;
-    body?: Record<string, unknown>;
+    params?: JSONObject;
+    body?: JSONObject;
     throw_error?: boolean;
     go_internal?: boolean;
 }
@@ -88,6 +111,7 @@ export interface IModelFunc {
 
 export interface INetwork {
     [key: string]: any; //string | undefined;
+    meta?: IMeta;
     name: string;
     description?: string;
 }
@@ -101,11 +125,11 @@ export interface INetworkFunc {
     findValueByType(type: string): ValueType[];
     createDevice(parameters: IDevice): Promise<IDevice>;
     find(
-        options: Record<string, any>,
+        options: JSONObject,
         quantity: number | 'all',
         readOnly: boolean,
         usage: string,
-        filterRequest?: Record<string, any>
+        filterRequest?: JSONObject
     ): Promise<INetwork[]>;
     findByName(
         name: string,
@@ -140,6 +164,7 @@ export interface INetworkFunc {
 
 export interface IDevice {
     [key: string]: any; //string | undefined;
+    meta?: IMeta;
     name: string;
     product?: string;
     serial?: string;
@@ -178,7 +203,7 @@ export interface IDeviceFunc {
     createBlobValue(parameters: IValueBlob): Promise<IValueBlob>;
     createXmlValue(parameters: IValueXml): Promise<IValueXml>;
     find(
-        options: Record<string, any>,
+        options: JSONObject,
         quantity: number | 'all',
         readOnly: boolean,
         usage: string
@@ -226,11 +251,11 @@ export interface IPermissionModelFunc {
         endpoint: string,
         quantity: number | 'all',
         message: string,
-        options?: Record<string, any>,
-        body?: Record<string, any>,
+        options?: JSONObject,
+        body?: JSONObject,
         readOnly?: boolean,
         create?: boolean
-    ): Promise<Record<string, any>[]>;
+    ): Promise<JSONObject[]>;
 }
 
 export interface LogValue {
@@ -270,7 +295,7 @@ export interface IValueNumberBase {
     step: number;
     unit: string;
     si_conversion?: string;
-    mapping?: Record<string, any>;
+    mapping?: JSONObject;
     ordered_mapping?: boolean;
     meaningful_zero?: boolean;
 }
@@ -293,8 +318,9 @@ export interface IValueBlob extends IValueBase, IValueStringBlobBase {}
 
 export interface IValueXml extends IValueBase, IValueXmlBase {}
 
-export type ReportValueInput = string | number | boolean | Record<string, any>;
+export type ReportValueInput = string | number | boolean | JSONObject;
 
+export type AnalyticsResponse = any;
 export interface IValueFunc {
     createState(parameters: IState): Promise<IState>;
     deleteState(type: StateType): Promise<void>;
@@ -322,17 +348,23 @@ export interface IValueFunc {
     addEvent(
         level: EventLogLevel,
         message: string,
-        info?: Record<string, any>
+        info?: JSONObject
     ): Promise<IEventLog>;
-    analyzeEnergy(start: Timestamp, end: Timestamp): Promise<any>;
-    summarizeEnergy(start: Timestamp, end: Timestamp): Promise<any>;
-    energyPieChart(start: Timestamp, end: Timestamp): Promise<any>;
+    analyzeEnergy(start: Timestamp, end: Timestamp): Promise<AnalyticsResponse>;
+    summarizeEnergy(
+        start: Timestamp,
+        end: Timestamp
+    ): Promise<AnalyticsResponse>;
+    energyPieChart(
+        start: Timestamp,
+        end: Timestamp
+    ): Promise<AnalyticsResponse>;
 }
 
 export interface IValueStaticFunc {
     constructor(name?: string): IValueBase;
     find(
-        options: Record<string, any>,
+        options: JSONObject,
         quantity: number | 'all',
         readOnly: boolean,
         usage: string
@@ -375,6 +407,7 @@ export type StateStatus = 'Send' | 'Pending' | 'Failed';
 
 export interface IState {
     [key: string]: any;
+    meta?: IMeta;
     type: StateType;
     status?: StateStatus;
     data?: string;
@@ -398,7 +431,7 @@ export type EventLogLevel =
 export interface IEventLog {
     message: string;
     level: EventLogLevel;
-    info?: Record<string, any>;
+    info?: JSONObject;
     type?: string;
     timestamp?: Date;
 }
@@ -410,15 +443,19 @@ export interface IEventLogFunc {
 export interface INotificationCustomData {
     all: boolean;
     future: boolean;
-    selected: Record<string, any>[];
+    selected: {
+        meta: {
+            id: string;
+        };
+    }[];
 }
 
 export interface INotificationCustom {
     type: string;
     quantity: number;
-    limitation: Record<string, any>[];
-    method: Record<string, any>[];
-    option: Record<string, any>;
+    limitation: JSONObject[];
+    method: JSONObject[];
+    option: JSONObject;
     message: string;
     name_installation: string;
     title_installation: string | null;
@@ -437,12 +474,16 @@ export interface INotificationBase {
     type_ids: string;
     priority: number;
     ids: string[];
-    info: Record<string, any>[];
+    info: JSONObject[];
     identifier: string;
 }
 
 export interface INotificationFunc {
-    notify(message: string, level?: EventLogLevel, data?: any): Promise<void>;
+    notify(
+        message: string,
+        level?: EventLogLevel,
+        data?: JSONObject
+    ): Promise<void>;
     sendMail(params: IMail): Promise<boolean>;
     sendSMS(msg: string): Promise<boolean>;
 }
@@ -498,6 +539,17 @@ export interface ILogRequest {
     number?: boolean;
 }
 
+export type ExternalLogValues = {
+    meta: IMeta;
+    more: boolean;
+    type: string;
+    data: {
+        timestamp: string;
+        time: string;
+        data: string;
+        [key: string]: string;
+    }[];
+};
 export interface ILogResponse {
     meta: IMeta;
     data: LogValues;
@@ -508,7 +560,7 @@ export interface ILogResponse {
 export type ExtsyncResponse = {
     meta?: IMeta;
     headers: Record<string, string>;
-    body?: unknown;
+    body?: JSONValue;
     code?: number;
     request?: string;
     uri?: string;
@@ -517,7 +569,7 @@ export type ExtsyncResponse = {
 
 export type EventType = 'create' | 'update' | 'delete' | 'direct';
 
-export type StreamData = unknown;
+export type StreamData = JSONObject;
 
 export interface IStreamEvent {
     path: string;
@@ -525,7 +577,7 @@ export interface IStreamEvent {
     data?: StreamData;
     meta_object?: IMeta;
     meta?: IMeta;
-    extsync?: unknown;
+    extsync?: JSONValue;
 }
 
 export interface IStreamModel {
@@ -541,9 +593,13 @@ export interface IStreamFunc {
         handler: ServiceHandler,
         full?: boolean
     ): void;
-    sendRequest(msg: any): Promise<any>;
-    sendEvent(type: string, msg: any): Promise<any>;
-    sendResponse(event: any, code: number, msg: any): Promise<void>;
+    sendRequest(msg: JSONValue): Promise<JSONValue>;
+    sendEvent(type: string, msg: JSONValue): Promise<JSONValue>;
+    sendResponse(
+        event: ExtsyncResponse,
+        code: number,
+        msg: JSONValue
+    ): Promise<void>;
     onRequest(handler: RequestHandler, internal: boolean): void;
     onWebHook(handler: RequestHandler): void;
     fromForeground(callback: RequestHandler): void;
@@ -568,9 +624,12 @@ export type OAuthConnect = {
     secret_token?: string;
     params?: Record<string, string>;
     access_token_creation?: Record<string, string>;
+    data?: {
+        request?: string;
+    };
 };
 
-export type OAuthRequestHandler = (url: string) => void;
+export type OAuthRequestHandler = (url: string | undefined) => void;
 
 export interface IOAuthFunc {
     constructor(name?: string): void;
@@ -621,11 +680,9 @@ export interface IWappStorage {
     reset(): Promise<void>;
 }
 
-export type RequestMessageType = string | number | boolean | object;
-
 export type RequestType = {
     type: 'foreground' | 'background';
-    message: RequestMessageType;
+    message: JSONValue;
 };
 
 export type StorageChangeHandler = () => void | Promise<void>;
@@ -634,14 +691,17 @@ export type StreamHandler = (
 ) => Promise<boolean | undefined> | boolean | undefined;
 export type ServiceHandler = (
     event: StreamData
-) => Promise<boolean | undefined> | boolean | undefined;
+) => Promise<JSONValue | undefined> | JSONValue | undefined;
+export type WappRequestHandler<T = unknown> = (
+    event: T
+) => Promise<JSONValue | void> | JSONValue | void;
 export type RequestHandler = (
-    event: unknown,
+    event: JSONValue,
     method?: string,
     path?: string,
-    query?: Record<string, any>,
+    query?: JSONObject,
     headers?: Record<string, string>
-) => Promise<any> | any;
+) => Promise<JSONValue> | JSONValue;
 export type StreamCallback = (model: IStreamModel) => Promise<void> | void;
 export type ValueStreamCallback = (
     value: IValueFunc & IValueType,

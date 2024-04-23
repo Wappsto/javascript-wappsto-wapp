@@ -1,4 +1,10 @@
-export function makeResponse(data: any, status?: number, statusText?: string) {
+import { JSONObject, JSONValue } from '../../src';
+
+export function makeResponse(
+    data: JSONObject | JSONObject[] | JSONValue,
+    status?: number,
+    statusText?: string
+) {
     const numStatus = status || 200;
     const strStatusText = statusText || (numStatus === 200 ? 'OK' : 'ERROR');
     return {
@@ -11,7 +17,11 @@ export function makeResponse(data: any, status?: number, statusText?: string) {
     };
 }
 
-export function makeErrorResponse(data: any, status?: string, uri?: string) {
+export function makeErrorResponse(
+    data: JSONObject | JSONValue | [],
+    status?: string,
+    uri?: string
+) {
     const statusText = status || 'HTTP JEST ERROR';
     const url = uri || 'JEST URL';
     return {

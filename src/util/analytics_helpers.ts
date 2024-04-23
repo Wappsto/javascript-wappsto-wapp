@@ -1,17 +1,21 @@
 import { PowerPriceList } from '../models/analytic';
+import {
+    AnalyticsModel,
+    AnalyticsParameters,
+    Newable,
+} from '../models/analytic/model.analytics';
 import { openStream } from '../stream_helpers';
-import { printDebug, printWarning } from './debug';
-import { toSafeString } from './helpers';
-import { StreamData, Timestamp } from './interfaces';
+import { printWarning } from './debug';
+import { AnalyticsResponse, StreamData, Timestamp } from './interfaces';
 
 export function runAnalyticModel(
-    model: any,
+    model: Newable<AnalyticsModel>,
     state_ids: string[],
     start: Timestamp,
     end: Timestamp,
-    parameters: any
-): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
+    parameters: AnalyticsParameters
+): Promise<AnalyticsResponse> {
+    return new Promise<AnalyticsResponse>(async (resolve, reject) => {
         const analytic = new model(state_ids, start, end, parameters);
 
         await openStream.subscribeService(
@@ -24,17 +28,12 @@ export function runAnalyticModel(
         try {
             await analytic.create();
         } catch (e: any) {
-            if (e?.data?.response) {
-                if (e.data.response?.message) {
-                    printWarning(e.data.response.message);
-                }
-                reject(e.data.response);
-            } else {
-                printDebug(
-                    `Unhandled response from analytic: ${toSafeString(e)}`
-                );
-                reject(e);
+            const response = e?.data?.response ?? e?.response ?? e;
+
+            if (response?.message) {
+                printWarning(response.message);
             }
+            reject(response);
         }
     });
 }

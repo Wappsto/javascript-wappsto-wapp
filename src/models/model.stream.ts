@@ -8,7 +8,7 @@ import { PermissionModel } from './model.permission';
 export type EventHandler = (event: IStreamEvent) => boolean | void;
 
 interface IStreamCallbacks {
-    [key: string]: any;
+    [key: string]: StreamCallback[];
     event: StreamCallback[];
     change: StreamCallback[];
     delete: StreamCallback[];
@@ -16,7 +16,7 @@ interface IStreamCallbacks {
 }
 
 interface IEventQueue {
-    [key: string]: any;
+    [key: string]: IStreamEvent[];
     event: IStreamEvent[];
     change: IStreamEvent[];
     delete: IStreamEvent[];

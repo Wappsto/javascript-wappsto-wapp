@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import isEqual from 'lodash.isequal';
-import { printDebug } from '../util/debug';
+import { printDebug, printWarning } from '../util/debug';
 import { generateFilterRequest } from '../util/filter';
 import { convertFilterToJson, convertFilterToString } from '../util/helpers';
 import {
@@ -13,6 +13,8 @@ import {
     IValueNumber,
     IValueString,
     IValueXml,
+    JSONObject,
+    ValidateParams,
     ValuePermission,
     ValueType,
 } from '../util/interfaces';
@@ -21,6 +23,7 @@ import { ValueTemplate } from '../util/value_template';
 import { Model } from './model';
 import { ConnectionModel } from './model.connection';
 import { PermissionModel } from './model.permission';
+import { State } from './state';
 import { Value } from './value';
 
 export class Device extends ConnectionModel implements IDevice {
@@ -108,17 +111,23 @@ export class Device extends ConnectionModel implements IDevice {
     }
 
     public async loadAllChildren(
-        json: Record<string, any> | null,
+        json: JSONObject | null,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _reloadAll = false
     ): Promise<void> {
-        const proms: any[] = [];
-        let values: any | undefined;
+        const proms: Promise<void>[] = [];
+        let values: (Value | string)[] | undefined;
         if (json) {
             if (json.value !== undefined) {
-                values = json.value;
+                values = json.value as (Value | string)[];
             } else if (json[0]) {
-                values = json[0]['value'];
+                if (typeof json[0] === 'object' && 'value' in json[0]) {
+                    values = json[0].value as (Value | string)[];
+                } else {
+                    printWarning(
+                        `Device: loadAllChildren: value not found in json: ${json}`
+                    );
+                }
             }
 
             if (values !== undefined) {
@@ -127,14 +136,14 @@ export class Device extends ConnectionModel implements IDevice {
 
                 for (let i = 0; i < values.length; i++) {
                     let id: string;
-                    let data: Record<string, any> | undefined = undefined;
+                    let data: JSONObject | undefined = undefined;
                     let newValue: Value | undefined = undefined;
 
                     if (typeof values[i] === 'string') {
                         id = values[i] as string;
                     } else {
-                        id = values[i].meta.id;
-                        data = values[i];
+                        data = values[i] as Value;
+                        id = (data as Value).meta.id ?? '';
                     }
 
                     const val = oldValues.find((val) => val.meta.id === id);
@@ -152,7 +161,7 @@ export class Device extends ConnectionModel implements IDevice {
                             this.value.push(newValue);
                             proms.push(newValue.loadAllChildren(data, false));
                         } else {
-                            this.value.push(values[i]);
+                            this.value.push(values[i] as Value);
                         }
                     }
                 }
@@ -235,7 +244,7 @@ export class Device extends ConnectionModel implements IDevice {
             }
         }
 
-        const promises: any[] = [];
+        const promises: Promise<void | State>[] = [];
         if (['r', 'rw', 'wr'].includes(params.permission)) {
             promises.push(
                 value.createState({
@@ -380,7 +389,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public parseChildren(json: Record<string, any>): boolean {
+    public parseChildren(json: JSONObject): boolean {
         let res = false;
         const values = Value.fromArray([json]);
         if (values.length) {
@@ -406,11 +415,11 @@ export class Device extends ConnectionModel implements IDevice {
     }
 
     public static find = async (
-        params: Record<string, any>,
+        params: JSONObject,
         quantity: number | 'all' = 1,
         readOnly = false,
         usage = '',
-        filterRequest?: Record<string, any>
+        filterRequest?: JSONObject
     ) => {
         Device.#validate('find', [
             params,
@@ -422,7 +431,7 @@ export class Device extends ConnectionModel implements IDevice {
 
         usage ||= `Find ${quantity} device`;
 
-        const query: Record<string, any> = {
+        const query: JSONObject = {
             expand: 2,
         };
         if (!filterRequest) {
@@ -441,7 +450,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
 
         const devices = Device.fromArray(data);
-        const promises: any[] = [];
+        const promises: Promise<void>[] = [];
 
         devices.forEach((dev, index) => {
             if (dev.loadAllChildren) {
@@ -578,7 +587,7 @@ export class Device extends ConnectionModel implements IDevice {
         const url = Device.endpoint;
         const data = await Model.fetch({ endpoint: url, params });
         const devices = Device.fromArray(data);
-        const promises: any[] = [];
+        const promises: Promise<void>[] = [];
         devices.forEach((dev, index) => {
             if (dev.loadAllChildren) {
                 promises.push(dev.loadAllChildren(null));
@@ -638,9 +647,9 @@ export class Device extends ConnectionModel implements IDevice {
             },
         });
         const values = Value.fromArray(data);
-        const promises: any[] = [];
+        const promises: Promise<void>[] = [];
 
-        values.forEach((val: any, index: number) => {
+        values.forEach((val: Value, index: number) => {
             this.value[offset + index] = val;
         });
 
@@ -659,7 +668,7 @@ export class Device extends ConnectionModel implements IDevice {
         await Promise.all(promises);
     }
 
-    static #validate(name: string, params: any): void {
+    static #validate(name: string, params: ValidateParams): void {
         Model.validateMethod('Device', name, params);
     }
 }

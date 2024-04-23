@@ -50,7 +50,7 @@ describe('console', () => {
     it('will not stop sending messages to wappsto when there is an unknown error', async () => {
         mockedAxios.post
             .mockRejectedValueOnce(makeErrorResponse({ code: 1234 }))
-            .mockRejectedValueOnce({}); // THis must be an invalid error response.
+            .mockRejectedValueOnce({}); // This must be an invalid error response.
         console.log('test 1');
 
         await new Promise((r) => setTimeout(r, 1));

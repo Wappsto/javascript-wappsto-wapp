@@ -48,7 +48,7 @@ describe('oauth', () => {
             ])
         );
 
-        let requestUrl = '';
+        let requestUrl: string | undefined = '';
         OAuth.getToken('test', (url) => {
             requestUrl = url;
         });
@@ -156,7 +156,7 @@ describe('oauth', () => {
     it('can call request handler without data', async () => {
         mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
 
-        let requestUrl = '';
+        let requestUrl: string | undefined = '';
         OAuth.getToken('test', (url) => {
             requestUrl = url;
         });

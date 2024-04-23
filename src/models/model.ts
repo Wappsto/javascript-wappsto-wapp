@@ -7,15 +7,26 @@ import { _config } from '../util/config';
 import { printDebug, printError } from '../util/debug';
 import { isUUID, replaceAll } from '../util/helpers';
 import wappsto, { printHttpError } from '../util/http_wrapper';
-import { FetchRequest, Filter, IMeta, IModel } from '../util/interfaces';
+import {
+    FetchRequest,
+    Filter,
+    IMeta,
+    IModel,
+    JSONObject,
+    ValidateParams,
+} from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
 import { addModel } from '../util/modelStore';
 
 export class Model implements IModel {
+    [x: string]: any;
     meta: IMeta = { version: '2.1' };
     parent?: IModel;
     expand: number;
-    updateQueue: Record<string, any> = [];
+    updateQueue: {
+        data: JSONObject;
+        resolve: (value: boolean | PromiseLike<boolean>) => void;
+    }[] = [];
     static checker = createCheckers(interfaceTI);
 
     constructor(type: string, expand = 0, version = '2.1') {
@@ -33,7 +44,7 @@ export class Model implements IModel {
     }
 
     public getVersion(): string {
-        return this.meta.version;
+        return this.meta.version ?? '2.1';
     }
 
     public url(): string {
@@ -80,7 +91,7 @@ export class Model implements IModel {
         return 'meta{id type version connection name_by_user}';
     }
 
-    protected validate(name: string, params: any): void {
+    protected validate(name: string, params: ValidateParams): void {
         Model.validateMethod(this.getType(), name, params);
     }
 
@@ -93,7 +104,7 @@ export class Model implements IModel {
         return this.url();
     }
 
-    public async _create(params: Record<string, any> = {}): Promise<void> {
+    public async _create(params: JSONObject = {}): Promise<void> {
         Model.validateMethod('Model', 'create', arguments);
         if (this.parent) {
             let valid = false;
@@ -126,7 +137,7 @@ export class Model implements IModel {
         addModel(this);
     }
 
-    public async create(params: Record<string, any> = {}): Promise<void> {
+    public async create(params: JSONObject = {}): Promise<void> {
         Model.validateMethod('Model', 'create', arguments);
         try {
             await this._create(params);
@@ -181,7 +192,7 @@ export class Model implements IModel {
 
     /* istanbul ignore next */
     public async loadAllChildren(
-        json: Record<string, any> | null,
+        json: JSONObject | null,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         reloadAll = false
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
@@ -233,7 +244,7 @@ export class Model implements IModel {
         }
     }
 
-    public parse(json: Record<string, any>): boolean {
+    public parse(json: JSONObject): boolean {
         Model.validateMethod('Model', 'parse', arguments);
         if (Array.isArray(json)) {
             json = json[0];
@@ -249,11 +260,11 @@ export class Model implements IModel {
 
     /* istanbul ignore next */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public parseChildren(json: Record<string, any>): boolean {
+    public parseChildren(json: JSONObject): boolean {
         return false;
     }
 
-    public toJSON(customKeys?: string[]): Record<string, any> {
+    public toJSON(customKeys?: string[]): JSONObject {
         if (customKeys) {
             return Object.assign(
                 {},
@@ -273,9 +284,9 @@ export class Model implements IModel {
 
     public static fetch = async (
         params: FetchRequest
-    ): Promise<Record<string, any>[]> => {
+    ): Promise<JSONObject[]> => {
         Model.validateMethod('Model', 'fetch', [params]);
-        let res: any[] = [];
+        let res: JSONObject[] = [];
         try {
             const query = Model.generateOptions(
                 Object.assign(
@@ -314,7 +325,7 @@ export class Model implements IModel {
 
     public static fromArray<T>(
         this: new () => T,
-        json: Record<string, any>[],
+        json: JSONObject[],
         parent?: IModel
     ): T[] {
         const obj = plainToInstance(this, json) || [];
@@ -331,7 +342,7 @@ export class Model implements IModel {
     public static validateMethod(
         type: string | undefined,
         name: string,
-        params: any,
+        params: ValidateParams,
         isStatic = false
     ): void {
         if (type !== undefined && _config.validation !== 'none') {
@@ -347,9 +358,9 @@ export class Model implements IModel {
                 const m = Model.checker[c].methodArgs(name);
                 try {
                     m.check(Array.from(params));
-                } catch (e: any) {
-                    const err = replaceAll(e.message, 'value.', '');
-                    e.message = `${type}.${name}: ${err}`;
+                } catch (e: unknown) {
+                    const err = replaceAll((e as Error).message, 'value.', '');
+                    (e as Error).message = `${type}.${name}: ${err}`;
                     throw e;
                 }
             } else {
@@ -360,10 +371,8 @@ export class Model implements IModel {
         }
     }
 
-    protected static generateOptions(
-        params?: Record<string, any>
-    ): Record<string, any> {
-        let options: Record<string, any> = {
+    protected static generateOptions(params?: JSONObject): JSONObject {
+        const options: { params: JSONObject } = {
             params: {},
         };
         if (params) {
@@ -373,19 +382,24 @@ export class Model implements IModel {
             options.params['verbose'] = true;
         }
         if (Object.keys(options.params).length === 0) {
-            options = omit(options, 'params');
+            return omit(options, 'params');
         }
         return options;
     }
 
-    #removeUndefined(obj: Record<string, any>, deep = 10) {
+    #removeUndefined(obj: JSONObject, deep = 10) {
         if (obj && deep > 0) {
             Object.keys(obj).forEach((key) => {
                 const value = obj[key];
-                const type = typeof value;
-                if (type === 'object') {
-                    this.#removeUndefined(value, (deep -= 1));
-                } else if (type === 'undefined') {
+                if (typeof value === 'object') {
+                    if (Array.isArray(value)) {
+                        obj[key] = value.filter(
+                            (v) => typeof v !== 'undefined'
+                        );
+                    } else {
+                        this.#removeUndefined(value, (deep -= 1));
+                    }
+                } else if (typeof value === 'undefined') {
                     delete obj[key];
                 }
             });

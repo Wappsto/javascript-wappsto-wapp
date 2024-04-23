@@ -1,5 +1,10 @@
 import { convertFilterToJson, convertFilterToString } from '../util/helpers';
-import { IState, StateStatus, StateType } from '../util/interfaces';
+import {
+    IState,
+    StateStatus,
+    StateType,
+    ValidateParams,
+} from '../util/interfaces';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
 
@@ -38,7 +43,7 @@ export class State extends StreamModel implements IState {
         return false;
     }
 
-    static #validate(name: string, params: any): void {
+    static #validate(name: string, params: ValidateParams): void {
         Model.validateMethod('State', name, params);
     }
 

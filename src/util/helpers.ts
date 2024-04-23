@@ -4,6 +4,7 @@ import {
     FilterSubType,
     IModel,
     LogValue,
+    LogValues,
 } from './interfaces';
 
 export function isBrowser(): boolean {
@@ -24,11 +25,13 @@ export function isVersion(data: string) {
     return reg.test(data);
 }
 
-export function compareCallback(cb1: any, cb2: any) {
-    return cb1 === cb2 || cb1.toString() === cb2.toString();
+export function compareCallback(cb1: unknown, cb2: unknown) {
+    return (
+        cb1 === cb2 || (cb1 as object).toString() === (cb2 as object).toString()
+    );
 }
 
-export function checkListIndex(list: any[], check: any) {
+export function checkListIndex(list: unknown[], check: unknown) {
     for (let i = 0; i < list.length; i++) {
         if (compareCallback(list[i], check)) {
             return i;
@@ -37,11 +40,11 @@ export function checkListIndex(list: any[], check: any) {
     return -1;
 }
 
-export function checkList(list: any[], check: any) {
+export function checkList(list: unknown[], check: unknown) {
     return checkListIndex(list, check) !== -1;
 }
 
-export function getSecondsToNextPeriod(period: number): number {
+export function getSecondsToNextPeriod(period: number) {
     const now = Date.now();
     const midnight = new Date(new Date().setUTCHours(0, 0, 0, 0)).getTime();
 
@@ -79,7 +82,7 @@ export function uniqueModels(value: IModel, index: number, self: IModel[]) {
 
 export function getCircularReplacer() {
     const seen = new WeakSet();
-    return (key: string, value: any) => {
+    return (key: string, value: unknown) => {
         if (typeof value === 'object' && value !== null) {
             if (seen.has(value)) {
                 return 'Circular REF';
@@ -227,4 +230,16 @@ export function sortByTimestamp(a: LogValue, b: LogValue): number {
     const dateA = new Date(a.timestamp);
     const dateB = new Date(b.timestamp);
     return dateA.getTime() - dateB.getTime();
+}
+
+export function isLogValues<T>(data: LogValues | T): data is LogValues {
+    if (Array.isArray(data)) {
+        return data.some((value) => {
+            return (
+                typeof value.data !== 'string' ||
+                typeof value.timestamp !== 'string'
+            );
+        });
+    }
+    return false;
 }

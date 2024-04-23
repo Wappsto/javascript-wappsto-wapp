@@ -4,6 +4,37 @@
 import * as t from 'ts-interface-checker';
 // tslint:disable:object-literal-key-quotes
 
+export const JSONValue = t.union(
+    'string',
+    'number',
+    'boolean',
+    'undefined',
+    t.iface([], {
+        [t.indexKey]: 'JSONValue',
+    }),
+    t.array('JSONValue')
+);
+
+export const JSONObject = t.name('any');
+
+export const RPCMessage = t.iface([], {
+    jsonrpc: t.lit('2.0'),
+    method: 'string',
+    params: 'JSONObject',
+    id: 'number',
+});
+
+export const RPCResult = t.iface([], {
+    jsonrpc: t.lit('2.0'),
+    result: t.iface([], {
+        value: 'boolean',
+    }),
+    id: 'number',
+    error: t.union('JSONObject', 'JSONValue'),
+});
+
+export const ValidateParams = t.union('any', t.array('any'));
+
 export const Timestamp = t.union('string', 'number', 'Date');
 
 export const ValidationType = t.union(t.lit('none'), t.lit('normal'));
@@ -33,7 +64,7 @@ export const IConnection = t.iface([], {
 export const IMeta = t.iface([], {
     id: t.opt('string'),
     type: t.opt('string'),
-    version: 'string',
+    version: t.opt('string'),
     redirect: t.opt('string'),
     manufacturer: t.opt('string'),
     iot: t.opt('boolean'),
@@ -59,8 +90,8 @@ export const IMeta = t.iface([], {
 
 export const FetchRequest = t.iface([], {
     endpoint: 'string',
-    params: t.opt('any'),
-    body: t.opt('any'),
+    params: t.opt('JSONObject'),
+    body: t.opt('JSONObject'),
     throw_error: t.opt('boolean'),
     go_internal: t.opt('boolean'),
 });
@@ -97,6 +128,7 @@ export const IModelFunc = t.iface([], {
 
 export const INetwork = t.iface([], {
     [t.indexKey]: 'any',
+    meta: t.opt('IMeta'),
     name: 'string',
     description: t.opt('string'),
 });
@@ -114,11 +146,11 @@ export const INetworkFunc = t.iface([], {
     createDevice: t.func('IDevice', t.param('parameters', 'IDevice')),
     find: t.func(
         t.array('INetwork'),
-        t.param('options', 'any'),
+        t.param('options', 'JSONObject'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('readOnly', 'boolean'),
         t.param('usage', 'string'),
-        t.param('filterRequest', 'any', true)
+        t.param('filterRequest', 'JSONObject', true)
     ),
     findByName: t.func(
         t.array('INetwork'),
@@ -169,6 +201,7 @@ export const INetworkFunc = t.iface([], {
 
 export const IDevice = t.iface([], {
     [t.indexKey]: 'any',
+    meta: t.opt('IMeta'),
     name: 'string',
     product: t.opt('string'),
     serial: t.opt('string'),
@@ -215,7 +248,7 @@ export const IDeviceFunc = t.iface([], {
     createXmlValue: t.func('IValueXml', t.param('parameters', 'IValueXml')),
     find: t.func(
         t.array('IDevice'),
-        t.param('options', 'any'),
+        t.param('options', 'JSONObject'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
@@ -277,12 +310,12 @@ export const IDeviceFunc = t.iface([], {
 
 export const IPermissionModelFunc = t.iface([], {
     request: t.func(
-        t.array('any'),
+        t.array('JSONObject'),
         t.param('endpoint', 'string'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('message', 'string'),
-        t.param('options', 'any', true),
-        t.param('body', 'any', true),
+        t.param('options', 'JSONObject', true),
+        t.param('body', 'JSONObject', true),
         t.param('readOnly', 'boolean', true),
         t.param('create', 'boolean', true)
     ),
@@ -358,7 +391,7 @@ export const IValueNumberBase = t.iface([], {
     step: 'number',
     unit: 'string',
     si_conversion: t.opt('string'),
-    mapping: t.opt('any'),
+    mapping: t.opt('JSONObject'),
     ordered_mapping: t.opt('boolean'),
     meaningful_zero: t.opt('boolean'),
 });
@@ -381,7 +414,14 @@ export const IValueBlob = t.iface(['IValueBase', 'IValueStringBlobBase'], {});
 
 export const IValueXml = t.iface(['IValueBase', 'IValueXmlBase'], {});
 
-export const ReportValueInput = t.union('string', 'number', 'boolean', 'any');
+export const ReportValueInput = t.union(
+    'string',
+    'number',
+    'boolean',
+    'JSONObject'
+);
+
+export const AnalyticsResponse = t.name('any');
 
 export const IValueFunc = t.iface([], {
     createState: t.func('IState', t.param('parameters', 'IState')),
@@ -419,20 +459,20 @@ export const IValueFunc = t.iface([], {
         'IEventLog',
         t.param('level', 'EventLogLevel'),
         t.param('message', 'string'),
-        t.param('info', 'any', true)
+        t.param('info', 'JSONObject', true)
     ),
     analyzeEnergy: t.func(
-        'any',
+        'AnalyticsResponse',
         t.param('start', 'Timestamp'),
         t.param('end', 'Timestamp')
     ),
     summarizeEnergy: t.func(
-        'any',
+        'AnalyticsResponse',
         t.param('start', 'Timestamp'),
         t.param('end', 'Timestamp')
     ),
     energyPieChart: t.func(
-        'any',
+        'AnalyticsResponse',
         t.param('start', 'Timestamp'),
         t.param('end', 'Timestamp')
     ),
@@ -442,7 +482,7 @@ export const IValueStaticFunc = t.iface([], {
     constructor: t.func('IValueBase', t.param('name', 'string', true)),
     find: t.func(
         t.array('ValueType'),
-        t.param('options', 'any'),
+        t.param('options', 'JSONObject'),
         t.param('quantity', t.union('number', t.lit('all'))),
         t.param('readOnly', 'boolean'),
         t.param('usage', 'string')
@@ -516,6 +556,7 @@ export const StateStatus = t.union(
 
 export const IState = t.iface([], {
     [t.indexKey]: 'any',
+    meta: t.opt('IMeta'),
     type: 'StateType',
     status: t.opt('StateStatus'),
     data: t.opt('string'),
@@ -544,7 +585,7 @@ export const EventLogLevel = t.union(
 export const IEventLog = t.iface([], {
     message: 'string',
     level: 'EventLogLevel',
-    info: t.opt('any'),
+    info: t.opt('JSONObject'),
     type: t.opt('string'),
     timestamp: t.opt('Date'),
 });
@@ -560,15 +601,21 @@ export const IEventLogFunc = t.iface([], {
 export const INotificationCustomData = t.iface([], {
     all: 'boolean',
     future: 'boolean',
-    selected: t.array('any'),
+    selected: t.array(
+        t.iface([], {
+            meta: t.iface([], {
+                id: 'string',
+            }),
+        })
+    ),
 });
 
 export const INotificationCustom = t.iface([], {
     type: 'string',
     quantity: 'number',
-    limitation: t.array('any'),
-    method: t.array('any'),
-    option: 'any',
+    limitation: t.array('JSONObject'),
+    method: t.array('JSONObject'),
+    option: 'JSONObject',
     message: 'string',
     name_installation: 'string',
     title_installation: t.union('string', 'null'),
@@ -587,7 +634,7 @@ export const INotificationBase = t.iface([], {
     type_ids: 'string',
     priority: 'number',
     ids: t.array('string'),
-    info: t.array('any'),
+    info: t.array('JSONObject'),
     identifier: 'string',
 });
 
@@ -596,7 +643,7 @@ export const INotificationFunc = t.iface([], {
         'void',
         t.param('message', 'string'),
         t.param('level', 'EventLogLevel', true),
-        t.param('data', 'any', true)
+        t.param('data', 'JSONObject', true)
     ),
     sendMail: t.func('boolean', t.param('params', 'IMail')),
     sendSMS: t.func('boolean', t.param('msg', 'string')),
@@ -655,6 +702,20 @@ export const ILogRequest = t.iface([], {
     number: t.opt('boolean'),
 });
 
+export const ExternalLogValues = t.iface([], {
+    meta: 'IMeta',
+    more: 'boolean',
+    type: 'string',
+    data: t.array(
+        t.iface([], {
+            timestamp: 'string',
+            time: 'string',
+            data: 'string',
+            [t.indexKey]: 'string',
+        })
+    ),
+});
+
 export const ILogResponse = t.iface([], {
     meta: 'IMeta',
     data: 'LogValues',
@@ -665,7 +726,7 @@ export const ILogResponse = t.iface([], {
 export const ExtsyncResponse = t.iface([], {
     meta: t.opt('IMeta'),
     headers: 'any',
-    body: t.opt('unknown'),
+    body: t.opt('JSONValue'),
     code: t.opt('number'),
     request: t.opt('string'),
     uri: t.opt('string'),
@@ -679,7 +740,7 @@ export const EventType = t.union(
     t.lit('direct')
 );
 
-export const StreamData = t.name('unknown');
+export const StreamData = t.name('JSONObject');
 
 export const IStreamEvent = t.iface([], {
     path: 'string',
@@ -687,7 +748,7 @@ export const IStreamEvent = t.iface([], {
     data: t.opt('StreamData'),
     meta_object: t.opt('IMeta'),
     meta: t.opt('IMeta'),
-    extsync: t.opt('unknown'),
+    extsync: t.opt('JSONValue'),
 });
 
 export const IStreamModel = t.iface([], {
@@ -712,13 +773,17 @@ export const IStreamFunc = t.iface([], {
         t.param('handler', 'ServiceHandler'),
         t.param('full', 'boolean', true)
     ),
-    sendRequest: t.func('any', t.param('msg', 'any')),
-    sendEvent: t.func('any', t.param('type', 'string'), t.param('msg', 'any')),
+    sendRequest: t.func('JSONValue', t.param('msg', 'JSONValue')),
+    sendEvent: t.func(
+        'JSONValue',
+        t.param('type', 'string'),
+        t.param('msg', 'JSONValue')
+    ),
     sendResponse: t.func(
         'void',
-        t.param('event', 'any'),
+        t.param('event', 'ExtsyncResponse'),
         t.param('code', 'number'),
-        t.param('msg', 'any')
+        t.param('msg', 'JSONValue')
     ),
     onRequest: t.func(
         'void',
@@ -754,9 +819,17 @@ export const OAuthConnect = t.iface([], {
     secret_token: t.opt('string'),
     params: t.opt('any'),
     access_token_creation: t.opt('any'),
+    data: t.opt(
+        t.iface([], {
+            request: t.opt('string'),
+        })
+    ),
 });
 
-export const OAuthRequestHandler = t.func('void', t.param('url', 'string'));
+export const OAuthRequestHandler = t.func(
+    'void',
+    t.param('url', t.union('string', 'undefined'))
+);
 
 export const IOAuthFunc = t.iface([], {
     constructor: t.func('void', t.param('name', 'string', true)),
@@ -839,16 +912,9 @@ export const IWappStorage = t.iface([], {
     reset: t.func('void'),
 });
 
-export const RequestMessageType = t.union(
-    'string',
-    'number',
-    'boolean',
-    'object'
-);
-
 export const RequestType = t.iface([], {
     type: t.union(t.lit('foreground'), t.lit('background')),
-    message: 'RequestMessageType',
+    message: 'JSONValue',
 });
 
 export const StorageChangeHandler = t.func(t.union('void', 'void'));
@@ -859,16 +925,21 @@ export const StreamHandler = t.func(
 );
 
 export const ServiceHandler = t.func(
-    t.union(t.union('boolean', 'undefined'), 'boolean', 'undefined'),
+    t.union(t.union('JSONValue', 'undefined'), 'JSONValue', 'undefined'),
     t.param('event', 'StreamData')
 );
 
+export const WappRequestHandler = t.func(
+    t.union(t.union('JSONValue', 'void'), 'JSONValue', 'void'),
+    t.param('event', 'T')
+);
+
 export const RequestHandler = t.func(
-    t.union('any', 'any'),
-    t.param('event', 'unknown'),
+    t.union('JSONValue', 'JSONValue'),
+    t.param('event', 'JSONValue'),
     t.param('method', 'string', true),
     t.param('path', 'string', true),
-    t.param('query', 'any', true),
+    t.param('query', 'JSONObject', true),
     t.param('headers', 'any', true)
 );
 
@@ -1158,6 +1229,11 @@ export const Filter = t.iface([], {
 });
 
 const exportedTypeSuite: t.ITypeSuite = {
+    JSONValue,
+    JSONObject,
+    RPCMessage,
+    RPCResult,
+    ValidateParams,
     Timestamp,
     ValidationType,
     IConfig,
@@ -1188,6 +1264,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IValueBlob,
     IValueXml,
     ReportValueInput,
+    AnalyticsResponse,
     IValueFunc,
     IValueStaticFunc,
     StateType,
@@ -1204,6 +1281,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     LogOperation,
     LogGroupBy,
     ILogRequest,
+    ExternalLogValues,
     ILogResponse,
     ExtsyncResponse,
     EventType,
@@ -1218,11 +1296,11 @@ const exportedTypeSuite: t.ITypeSuite = {
     IOAuthFunc,
     IWappStorageFunc,
     IWappStorage,
-    RequestMessageType,
     RequestType,
     StorageChangeHandler,
     StreamHandler,
     ServiceHandler,
+    WappRequestHandler,
     RequestHandler,
     StreamCallback,
     ValueStreamCallback,

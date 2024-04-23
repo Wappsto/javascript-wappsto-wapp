@@ -4,6 +4,7 @@ import {
     IOntology,
     IOntologyEdge,
     IOntologyModel,
+    JSONObject,
 } from '../util/interfaces';
 import { Model } from './model';
 import { Ontology } from './ontology';
@@ -118,7 +119,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         path: string,
         getAll?: boolean
     ): Promise<IOntologyModel[]> {
-        const params: Record<string, any> = { path: path };
+        const params: JSONObject = { path: path };
 
         if (getAll) {
             params['all_edge'] = true;

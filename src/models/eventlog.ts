@@ -1,4 +1,4 @@
-import { EventLogLevel, IEventLog } from '../util/interfaces';
+import { EventLogLevel, IEventLog, JSONObject } from '../util/interfaces';
 import { Model } from './model';
 
 export class EventLog extends Model implements IEventLog {
@@ -6,7 +6,7 @@ export class EventLog extends Model implements IEventLog {
     static attributes = ['message', 'level', 'info', 'type'];
     message = '';
     level: EventLogLevel = 'info';
-    info?: Record<string, any>;
+    info?: JSONObject;
     type?: string;
     timestamp?: Date;
 

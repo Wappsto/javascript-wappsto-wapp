@@ -4,10 +4,11 @@ import { _config } from '../util/config';
 import { fatalError, printDebug, printError, printRequest } from './debug';
 import { isBrowser, toSafeString } from './helpers';
 import { VERSION } from './version';
+import { JSONObject, JSONValue } from './interfaces';
 
 type Methods = 'head' | 'options' | 'put' | 'post' | 'patch' | 'delete' | 'get';
 
-const HEADERS: any = {
+const HEADERS: Record<string, string> = {
     'X-Session': session,
     'Content-Type': 'application/json',
 };
@@ -25,8 +26,8 @@ const axiosInstance = axios.create({
 async function wrap(
     func: Methods,
     url: string,
-    data?: Record<string, any> | string,
-    config?: Record<string, any>
+    data?: JSONValue,
+    config?: JSONObject
 ) {
     try {
         let response: AxiosResponse;
@@ -53,31 +54,19 @@ async function wrap(
 }
 
 const wrapper = {
-    get: async (url: string, config?: Record<string, any>) => {
+    get: async (url: string, config?: JSONValue) => {
         return wrap('get', url, config);
     },
-    post: async (
-        url: string,
-        data?: Record<string, any> | string,
-        config?: Record<string, any>
-    ) => {
+    post: async (url: string, data?: JSONValue, config?: JSONObject) => {
         return wrap('post', url, data, config);
     },
-    patch: async (
-        url: string,
-        data?: Record<string, any> | string,
-        config?: Record<string, any>
-    ) => {
+    patch: async (url: string, data?: JSONValue, config?: JSONObject) => {
         return wrap('patch', url, data, config);
     },
-    put: async (
-        url: string,
-        data?: Record<string, any> | string,
-        config?: Record<string, any>
-    ) => {
+    put: async (url: string, data?: JSONValue, config?: JSONObject) => {
         return wrap('put', url, data, config);
     },
-    delete: async (url: string, config?: Record<string, any>) => {
+    delete: async (url: string, config?: JSONObject) => {
         return wrap('delete', url, config);
     },
 };
@@ -115,7 +104,7 @@ export function getErrorMessage(error: any | Error | AxiosError): string {
     if (axios.isAxiosError(error) || (error.response && error.response.data)) {
         const data = error.response.data as {
             code: number;
-            data?: Record<string, any>;
+            data?: JSONObject;
             message?: string;
         };
         if (data.code) {

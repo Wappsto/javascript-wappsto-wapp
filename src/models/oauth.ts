@@ -1,9 +1,11 @@
 import { openStream } from '../stream_helpers';
 import { printDebug } from '../util/debug';
 import {
+    JSONObject,
     OAuthConnect,
     OAuthRequestHandler,
     StreamData,
+    ValidateParams,
 } from '../util/interfaces';
 import { Model } from './model';
 
@@ -15,7 +17,7 @@ export class OAuth extends Model {
     installation?: string;
     token?: string;
     secret_token?: string;
-    params?: Record<string, any>;
+    params?: JSONObject;
 
     constructor(name: string) {
         super('oauth');
@@ -32,13 +34,13 @@ export class OAuth extends Model {
                     throw_error: true,
                 });
 
-                const oauth = data[0];
+                const oauth = data[0] as OAuthConnect;
                 if (
                     oauth?.params?.oauth_token ||
                     oauth?.params?.access_token ||
                     oauth?.token
                 ) {
-                    resolve(oauth.params);
+                    resolve(oauth.params ?? {});
                     return;
                 }
 
@@ -73,7 +75,7 @@ export class OAuth extends Model {
         return oauth.getToken(handler);
     };
 
-    static #validate(name: string, params: any): void {
+    static #validate(name: string, params: ValidateParams): void {
         Model.validateMethod('OAuth', name, params);
     }
 }

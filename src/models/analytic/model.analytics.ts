@@ -1,6 +1,20 @@
 import pick from 'lodash.pick';
-import { StreamData, Timestamp } from '../../util/interfaces';
+import {
+    AnalyticsResponse,
+    JSONObject,
+    StreamData,
+    Timestamp,
+} from '../../util/interfaces';
 import { PermissionModel } from '../model.permission';
+
+export type Newable<T> = { new (...args: any[]): T };
+
+export type AnalyticsParameters = {
+    start?: string;
+    end?: string;
+    provider?: string;
+    region?: string;
+};
 
 export class AnalyticsModel extends PermissionModel {
     static endpoint = '/2.1/analytics';
@@ -12,9 +26,9 @@ export class AnalyticsModel extends PermissionModel {
         'version',
         'result',
     ];
-    result: any = {};
+    result: AnalyticsResponse = {};
     access: { state_id: string[] } = { state_id: [] };
-    parameter: { start: string; end: string; provider?: string } = {
+    parameter: AnalyticsParameters = {
         start: '',
         end: '',
     };
@@ -24,7 +38,7 @@ export class AnalyticsModel extends PermissionModel {
         state_ids: string[],
         start: Timestamp,
         end: Timestamp,
-        parameters: any
+        parameters: AnalyticsParameters
     ) {
         super('analytics');
         this.access.state_id = state_ids;
@@ -37,7 +51,7 @@ export class AnalyticsModel extends PermissionModel {
         return AnalyticsModel.attributes;
     }
 
-    public toJSON(): Record<string, any> {
+    public toJSON(): JSONObject {
         return pick(this, ['access', 'parameter']);
     }
 
@@ -48,9 +62,9 @@ export class AnalyticsModel extends PermissionModel {
 
     public handleStreamData(
         data: StreamData,
-        resolve: (data: any) => void
+        resolve: (data: AnalyticsResponse) => void
     ): boolean {
-        const d = data as AnalyticsModel;
+        const d = data as unknown as AnalyticsModel;
         if (this.id() === d.meta?.id && d.status !== 'pending') {
             this.parse(d);
             resolve(this.getResult());
