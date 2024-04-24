@@ -6,6 +6,12 @@ import { IWappStorage, StorageChangeHandler } from './util/interfaces';
 
 const storages: Record<string, WappStorage> = {};
 
+/**
+ * Initializes a WappStorage instance with the given name.
+ *
+ * @param {string} name - The name of the WappStorage instance. If not provided, the default name will be used.
+ * @return {Promise<WappStorage<T>>} A promise that resolves to the initialized WappStorage instance.
+ */
 export async function wappStorage<T = unknown>(name?: string) {
     Model.validateMethod('WappStorage', 'wappStorage', arguments);
     if (name === undefined) {
@@ -19,12 +25,23 @@ export async function wappStorage<T = unknown>(name?: string) {
     return storages[name] as WappStorage<T>;
 }
 
+/**
+ * Class representing a WappStorage instance.
+ *
+ * @implements IWappStorage
+ * @template T - The type of the stored data.
+ */
 export class WappStorage<T = unknown> implements IWappStorage {
     name = '';
     id = '';
     #data: Data<T>;
     #onChangeCallback?: () => void;
 
+    /**
+     * Initializes a WappStorage instance with the provided name.
+     *
+     * @param {string} name - The name of the WappStorage instance.
+     */
     constructor(name: string) {
         WappStorage.#validate('constructor', arguments);
         this.name = name;
@@ -32,6 +49,11 @@ export class WappStorage<T = unknown> implements IWappStorage {
         this.#data = new Data<T>(this.id, 'wapp_storage');
     }
 
+    /**
+     * Initializes the WappStorage instance by fetching data based on the provided name.
+     *
+     * @return {Promise<void>} A Promise that resolves once the initialization is complete.
+     */
     async init(): Promise<void> {
         const data = await Data.findByDataId(this.id);
         if (data.length > 0) {
@@ -60,11 +82,25 @@ export class WappStorage<T = unknown> implements IWappStorage {
         return this.update();
     }
 
+    /**
+     * Sets the value of a key-value pair in the storage.
+     *
+     * @param {string | Record<string, T>} name - The name of the key or an object containing multiple key-value pairs.
+     * @param {T} [item] - The value to set for the specified key. This parameter is optional when setting multiple key-value pairs.
+     * @return {Promise<boolean>} A Promise that resolves to true if the value was successfully set, and false otherwise.
+     */
     set(name: string | Record<string, T>, item?: T): Promise<boolean> {
         WappStorage.#validate('set', arguments);
         return this.#set(name, item);
     }
 
+    /**
+     * Sets the secret value of a key-value pair in the storage.
+     *
+     * @param {string | Record<string, T>} name - The name of the key or an object containing multiple key-value pairs.
+     * @param {T} [item] - The value to set as a secret for the specified key. This parameter is optional when setting multiple key-value pairs.
+     * @return {Promise<boolean>} A Promise that resolves to true if the secret value was successfully set, and false otherwise.
+     */
     async setSecret(
         name: string | Record<string, T>,
         item?: T
@@ -85,11 +121,23 @@ export class WappStorage<T = unknown> implements IWappStorage {
         }
     }
 
+    /**
+     * Retrieves the value associated with the given name.
+     *
+     * @param {string | string[]} name - The name of the value to retrieve.
+     * @return {any} The value associated with the given name.
+     */
     get(name: string | string[]) {
         WappStorage.#validate('get', arguments);
         return this.#get(name);
     }
 
+    /**
+     * Retrieves the secret value associated with the given name.
+     *
+     * @param {string | string[]} name - The name of the secret value to retrieve.
+     * @return {any} The secret value associated with the given name, or undefined if the value is not found.
+     */
     getSecret(name: string | string[]) {
         WappStorage.#validate('getSecret', arguments);
         if (isBrowser()) {
@@ -99,14 +147,29 @@ export class WappStorage<T = unknown> implements IWappStorage {
         return this.#get(name, true);
     }
 
+    /**
+     * Returns an array of all the keys in the storage.
+     *
+     * @return {Array<string>} An array of keys.
+     */
     keys(): Array<string> {
         return this.#data.keys();
     }
 
+    /**
+     * Returns an array of all the values in the storage
+     *
+     * @return {Array<any>} An array of values.
+     */
     values() {
         return this.#data.values();
     }
 
+    /**
+     * Retrieves an iterator of all the key-value pairs in the storage.
+     *
+     * @return {Iterator<[string, T]>} An iterator of key-value pairs.
+     */
     entries() {
         return this.#data.entries();
     }
@@ -120,11 +183,23 @@ export class WappStorage<T = unknown> implements IWappStorage {
         return this.#data.update();
     }
 
+    /**
+     * Removes the specified name(s) from the storage.
+     *
+     * @param {string | string[]} name - The name or an array of names to be removed.
+     * @return {Promise<boolean>} A promise that resolves to true if the name(s) were successfully removed, and false otherwise.
+     */
     remove(name: string | string[]): Promise<boolean> {
         WappStorage.#validate('remove', arguments);
         return this.#remove(name);
     }
 
+    /**
+     * Removes a secret value from the storage.
+     *
+     * @param {string | string[]} name - The name of the secret value to remove, or an array of names.
+     * @return {Promise<boolean>} A promise that resolves to true if the secret value was successfully removed, and false otherwise.
+     */
     async removeSecret(name: string | string[]): Promise<boolean> {
         WappStorage.#validate('removeSecret', arguments);
         if (isBrowser()) {
@@ -134,6 +209,11 @@ export class WappStorage<T = unknown> implements IWappStorage {
         return this.#remove(name, true);
     }
 
+    /**
+     * Updates the data and returns a promise that resolves to a boolean indicating whether the update was successful.
+     *
+     * @return {Promise<boolean>} A promise that resolves to true if the update was successful, and false otherwise.
+     */
     update(): Promise<boolean> {
         return this.#data.update();
     }
@@ -144,12 +224,24 @@ export class WappStorage<T = unknown> implements IWappStorage {
         }
     }
 
+    /**
+     * Registers a callback function to be invoked when the storage changes.
+     *
+     * @param {StorageChangeHandler} cb - The callback function to be invoked.
+     * @return {Promise<boolean>} A promise that resolves to true if the callback was successfully registered, and false otherwise.
+     */
     onChange(cb: StorageChangeHandler): Promise<boolean> {
         WappStorage.#validate('onChange', arguments);
         this.#onChangeCallback = cb;
         return this.#data.onChange(async () => this.#handleStreamUpdate());
     }
 
+    /**
+     * Cancels the onChange callback.
+     *
+     * @param {type} paramName - description of parameter
+     * @return {type} description of return value
+     */
     cancelOnChange() {
         WappStorage.#validate('cancelOnChange', arguments);
         if (this.#onChangeCallback) {
@@ -157,10 +249,20 @@ export class WappStorage<T = unknown> implements IWappStorage {
         }
     }
 
+    /**
+     * Reloads the data from the server.
+     *
+     * @return {Promise<boolean>} A promise that resolves to a boolean indicating whether the reload was successful.
+     */
     reload(): Promise<boolean> {
         return this.#data.reload();
     }
 
+    /**
+     * Resets the state of the wapp storage.
+     *
+     * @return {Promise<void>} A promise that resolves when the reset is complete.
+     */
     async reset(): Promise<void> {
         await this.#data.delete();
         this.#data = new Data(this.id, 'wapp_storage');

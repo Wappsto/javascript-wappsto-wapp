@@ -30,18 +30,42 @@ async function sendRequest(type: string, msg: JSONValue) {
     return openStream.sendRequest(data);
 }
 
+/**
+ * Sends a message to the foreground.
+ *
+ * @param {T} msg - The message to be sent.
+ * @return {Promise<R>} A promise that resolves with the response from the foreground.
+ */
 export async function sendToForeground<T = JSONValue, R = JSONValue>(msg: T) {
     return sendRequest('background', msg as JSONValue) as Promise<R>;
 }
 
+/**
+ * Sends a message to the background.
+ *
+ * @param {T} msg - The message to be sent.
+ * @return {Promise<R>} A promise that resolves with the response from the background.
+ */
 export async function sendToBackground<T = JSONValue, R = JSONValue>(msg: T) {
     return sendRequest('foreground', msg as JSONValue) as Promise<R>;
 }
 
+/**
+ * Signals the foreground with a message.
+ *
+ * @param {T} msg - The message to be sent.
+ * @return {Promise<void>} A promise that resolves when the signal is sent.
+ */
 export async function signalForeground<T = JSONValue>(msg: T) {
     await openStream.sendEvent('background', msg as JSONValue);
 }
 
+/**
+ * Sends a signal to the background with a message.
+ *
+ * @param {T} msg - The message to be sent.
+ * @return {Promise<void>} A promise that resolves when the signal is sent.
+ */
 export async function signalBackground<T = JSONValue>(msg: T) {
     await openStream.sendEvent('foreground', msg as JSONValue);
 }
@@ -86,6 +110,12 @@ async function handleRequest(
     return res;
 }
 
+/**
+ * Register a callback function that handles requests from the foreground.
+ *
+ * @param {WappRequestHandler<T>} callback - The callback function for handling the request.
+ * @return {Promise<boolean>} A Promise that resolves to true if the request was handled successfully, and false otherwise.
+ */
 export function fromForeground<T = unknown>(
     callback: WappRequestHandler<T>
 ): Promise<boolean> {
@@ -93,6 +123,12 @@ export function fromForeground<T = unknown>(
     return handleRequest('foreground', callback as RequestHandler);
 }
 
+/**
+ * Register a callback function that handles requests from the background.
+ *
+ * @param {WappRequestHandler<T>} callback - The callback function for handling the request.
+ * @return {Promise<boolean>} A Promise that resolves to true if the request was handled successfully, and false otherwise.
+ */
 export function fromBackground<T = unknown>(
     callback: WappRequestHandler<T>
 ): Promise<boolean> {
@@ -100,11 +136,23 @@ export function fromBackground<T = unknown>(
     return handleRequest('background', callback as RequestHandler);
 }
 
+/**
+ * Register a callback function that handles requests from the web hook.
+ *
+ * @param {RequestHandler} handler - The request handler function.
+ * @return {Promise<boolean>} A promise that resolves to a boolean value indicating the success of the operation.
+ */
 export function onWebHook(handler: RequestHandler): Promise<boolean> {
     Model.validateMethod('Stream', 'onWebHook', arguments);
     return openStream.onRequest(handler, false);
 }
 
+/**
+ * Removed the callback function that handles requests from the web hook.
+ *
+ * @param {RequestHandler} handler - The handler for the request.
+ * @return {Promise<boolean>} A Promise that resolves to true if the request was cancelled successfully, and false otherwise.
+ */
 export function cancelOnWebHook(handler: RequestHandler): Promise<boolean> {
     Model.validateMethod('Stream', 'onWebHook', arguments);
     return openStream.cancelRequest(handler, false);
@@ -120,10 +168,20 @@ async function cancelFrom(type: string): Promise<boolean> {
     return true;
 }
 
+/**
+ * Removes the callback function that handles requests from the background.
+ *
+ * @return {Promise<boolean>} A Promise that resolves to true if the request was successfully cancelled, and false otherwise.
+ */
 export function cancelFromBackground(): Promise<boolean> {
     return cancelFrom('background');
 }
 
+/**
+ * Removes the callback function that handles requests from the foreground.
+ *
+ * @return {Promise<boolean>} A promise that resolves to true if the request was cancelled successfully, and false otherwise.
+ */
 export function cancelFromForeground(): Promise<boolean> {
     return cancelFrom('foreground');
 }
@@ -142,6 +200,12 @@ function handleBackgroundIsStarted(_message: unknown): undefined {
     return;
 }
 
+/**
+ * Waits for the background to start within a given timeout period.
+ *
+ * @param {number} [timeout=10] - The maximum time to wait for the background to start, in seconds.
+ * @return {Promise<boolean>} A promise that resolves to true if the background has started within the timeout period, and false otherwise.
+ */
 export async function waitForBackground(timeout = 10): Promise<boolean> {
     Model.validateMethod('Stream', 'waitForBackground', arguments);
     if (backgroundIsStarted) {
@@ -177,6 +241,11 @@ function handlePermissionUpdate(data: StreamData) {
     return undefined;
 }
 
+/**
+ * Sets a callback function to be called when a permission update occurs.
+ *
+ * @param {() => void} callback - The callback function to be called when a permission update occurs.
+ */
 export function onPermissionUpdate(callback: () => void) {
     if (!permissionUpdateCallback) {
         openStream.subscribeService('/notification', handlePermissionUpdate);
@@ -184,6 +253,9 @@ export function onPermissionUpdate(callback: () => void) {
     permissionUpdateCallback = callback;
 }
 
+/**
+ * Cancels the permission update callback.
+ */
 export function cancelPermissionUpdate() {
     if (permissionUpdateCallback !== undefined) {
         openStream.subscribeService('/notification', handlePermissionUpdate);
