@@ -562,7 +562,7 @@ export type ExtsyncResponse = {
     headers: Record<string, string>;
     body?: JSONValue;
     code?: number;
-    request?: string;
+    request?: JSONValue | string;
     uri?: string;
     method?: string;
 };

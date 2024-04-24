@@ -896,7 +896,7 @@ describe('ExtSync stream', () => {
                 meta: {
                     id: 'bbe306a7-7216-4d7d-8be1-08d94cd2142d',
                 },
-                request: 'request',
+                request: { type: 'request' },
                 uri: 'extsync/',
                 body: '{"type": "foreground","message": {"test": "correct"}}',
             },

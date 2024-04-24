@@ -728,7 +728,7 @@ export const ExtsyncResponse = t.iface([], {
     headers: 'any',
     body: t.opt('JSONValue'),
     code: t.opt('number'),
-    request: t.opt('string'),
+    request: t.opt(t.union('JSONValue', 'string')),
     uri: t.opt('string'),
     method: t.opt('string'),
 });

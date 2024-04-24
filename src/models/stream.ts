@@ -362,14 +362,12 @@ export class Stream extends Model {
         return result;
     }
 
-    public async sendResponse(
+    async #sendResponse(
         event: ExtsyncResponse,
         code: number,
         msg: JSONValue,
         headers?: Record<string, string>
     ): Promise<void> {
-        this.validate('sendResponse', arguments);
-
         try {
             await wappsto.patch(
                 `/2.1/extsync/response/${event?.meta?.id}`,
@@ -466,11 +464,11 @@ export class Stream extends Model {
                             headers = data.headers as Record<string, string>;
                         }
                     }
-                    this.sendResponse(event, code, body, headers);
+                    this.#sendResponse(event, code, body, headers);
                 } catch (err: unknown) {
                     if (!(err instanceof IgnoreError)) {
                         printError(err);
-                        this.sendResponse(event, 400, {
+                        this.#sendResponse(event, 400, {
                             error: (err as Error).message,
                         });
                     }
@@ -478,7 +476,7 @@ export class Stream extends Model {
             }
         } catch (e) {
             /* istanbul ignore next */
-            this.sendResponse(event, 501, e as JSONValue);
+            this.#sendResponse(event, 501, e as JSONValue);
             /* istanbul ignore next */
             printError('An error happened when calling request handler');
             /* istanbul ignore next */
