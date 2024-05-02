@@ -3,7 +3,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
-import { Value, State } from '../src/index';
+import { Value, State, LogValues } from '../src/index';
 import { before, after } from './util/stream';
 import { makeResponse } from './util/helpers';
 
@@ -213,5 +213,36 @@ describe('historical', () => {
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+    });
+
+    it('can not send invalid log values for Report', async () => {
+        mockedAxios.patch.mockResolvedValueOnce(makeResponse([]));
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const state = new State('Report');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        const data = [
+            { timestamp: '2022-02-02T02:02:01Z' },
+            { data: 4 },
+            {},
+            { timestamp: 1 },
+        ];
+        await value.report(data as unknown as LogValues);
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                data: JSON.stringify(data),
+                type: 'Report',
+            }),
+            {}
+        );
     });
 });

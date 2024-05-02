@@ -235,10 +235,7 @@ export function sortByTimestamp(a: LogValue, b: LogValue): number {
 export function isLogValues<T>(data: LogValues | T): data is LogValues {
     if (Array.isArray(data)) {
         return data.some((value) => {
-            return (
-                typeof value.data !== 'string' ||
-                typeof value.timestamp !== 'string'
-            );
+            return value.data !== undefined && value.timestamp !== undefined;
         });
     }
     return false;
