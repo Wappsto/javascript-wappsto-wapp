@@ -44,18 +44,19 @@ export class Ontology extends Model implements IOntologyEdge {
 
     public toJSON(): JSONObject {
         const res = super.toJSON();
-        res['to'] = {};
+        const toModels: Record<string, string[]> = {};
+
         this.models.forEach((m: IOntologyModel) => {
             const type = m.getType();
-            if (
-                res['to'] &&
-                (res['to'] as Record<string, string[]>)[type] === undefined
-            ) {
-                (res['to'] as Record<string, string[]>)[type] = [];
+
+            try {
+                toModels[type].push(m.id());
+            } catch (e) {
+                toModels[type] = [m.id()];
             }
-            (res['to'] as Record<string, string[]>)[type].push(m.id());
         });
 
+        res['to'] = toModels;
         return res;
     }
 
@@ -69,11 +70,12 @@ export class Ontology extends Model implements IOntologyEdge {
     }
 
     #addFailedModel(type: string, id: string) {
-        if (!this.failedModels[type]) {
-            this.failedModels[type] = [];
-        }
-        if (!this.failedModels[type].includes(id)) {
-            this.failedModels[type].push(id);
+        try {
+            if (!this.failedModels[type].includes(id)) {
+                this.failedModels[type].push(id);
+            }
+        } catch (e) {
+            this.failedModels[type] = [id];
         }
     }
 
