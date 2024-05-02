@@ -6,6 +6,7 @@ import {
     Timestamp,
 } from '../../util/interfaces';
 import { PermissionModel } from '../model.permission';
+import { toISOString } from '../../util/helpers';
 
 export type Newable<T> = { new (...args: any[]): T };
 
@@ -42,8 +43,8 @@ export class AnalyticsModel extends PermissionModel {
     ) {
         super('analytics');
         this.access.state_id = state_ids;
-        this.parameter.start = start.toString();
-        this.parameter.end = end.toString();
+        this.parameter.start = toISOString(start);
+        this.parameter.end = toISOString(end);
         Object.assign(this.parameter, parameters);
     }
 

@@ -5,6 +5,7 @@ import {
     IModel,
     LogValue,
     LogValues,
+    Timestamp,
 } from './interfaces';
 
 export function isBrowser(): boolean {
@@ -103,7 +104,7 @@ export function toSafeString(json: unknown): string {
     return JSON.stringify(json, getCircularReplacer());
 }
 
-export function toTime(date: Date | string | number): number {
+export function toTime(date: Timestamp): number {
     if (typeof date === 'string') {
         return Date.parse(date);
     }
@@ -116,14 +117,25 @@ export function toTime(date: Date | string | number): number {
     return date;
 }
 
-export function compareDates(
-    date1: Date | string | number,
-    date2: Date | string | number
-): boolean {
+export function compareDates(date1: Timestamp, date2: Timestamp): boolean {
     const d1 = toTime(date1);
     const d2 = toTime(date2);
 
     return d1 >= d2;
+}
+
+export function toISOString(date: Timestamp) {
+    if (typeof date === 'string') {
+        return date;
+    }
+
+    if (typeof date === 'number') {
+        return new Date(date).toISOString();
+    }
+
+    if (typeof date === 'object') {
+        return date.toISOString();
+    }
 }
 
 function isOperatorValue(

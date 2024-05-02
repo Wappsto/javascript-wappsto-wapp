@@ -40,10 +40,7 @@ describe('analytics', () => {
         const state = new State('Report');
         state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
-        const dataPromise = value.analyzeEnergy(
-            '2022-01-01T01:01:01Z',
-            '2022-02-02T02:02:02Z'
-        );
+        const dataPromise = value.analyzeEnergy(0, '2022-02-02T02:02:02Z');
 
         await server.connected;
         await expect(server).toReceiveMessage(
@@ -81,8 +78,23 @@ describe('analytics', () => {
 
         const data = await dataPromise;
 
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(data.length).toBe(9);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/analytics/1.0/energy_data',
+            {
+                access: {
+                    state_id: ['6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7'],
+                },
+                parameter: {
+                    end: '2022-02-02T02:02:02Z',
+                    start: '1970-01-01T00:00:00.000Z',
+                },
+            },
+            {}
+        );
     });
 
     it('can load empty energy_data', async () => {
@@ -96,7 +108,7 @@ describe('analytics', () => {
         value.state.push(state);
         const dataPromise = value.analyzeEnergy(
             '2022-01-01T01:01:01Z',
-            '2022-02-02T02:02:02Z'
+            new Date('2022-02-02T02:02:02Z')
         );
 
         await server.connected;
@@ -122,8 +134,22 @@ describe('analytics', () => {
 
         const data = await dataPromise;
 
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(data).toBeUndefined();
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/analytics/1.0/energy_data',
+            {
+                access: {
+                    state_id: ['6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7'],
+                },
+                parameter: {
+                    end: '2022-02-02T02:02:02.000Z',
+                    start: '2022-01-01T01:01:01Z',
+                },
+            },
+            {}
+        );
     });
 
     it('can load energy_summary', async () => {
