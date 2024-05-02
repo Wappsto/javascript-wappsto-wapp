@@ -1,3 +1,4 @@
+import { printWarning } from './debug';
 import {
     FilterValueOperatorType,
     FilterValueType,
@@ -129,12 +130,11 @@ export function toISOString(date: Timestamp) {
         return date;
     }
 
-    if (typeof date === 'number') {
+    try {
         return new Date(date).toISOString();
-    }
-
-    if (typeof date === 'object') {
-        return date.toISOString();
+    } catch (e) {
+        printWarning(`Failed to convert timestamp (${date}) to string`);
+        return '';
     }
 }
 

@@ -15,6 +15,7 @@ import {
     isPositiveInteger,
     randomIntFromInterval,
     sortByTimestamp,
+    toISOString,
     toSafeString,
 } from '../util/helpers';
 import wappsto, { printHttpError } from '../util/http_wrapper';
@@ -336,17 +337,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     #timestampToString(timestamp: Timestamp): string {
         if (!timestamp) {
             return this.#getTime();
-        } else if (typeof timestamp === 'string') {
-            return timestamp;
         } else {
-            try {
-                return new Date(timestamp).toISOString();
-            } catch (e) {
-                printWarning(
-                    `Failed to convert timestamp ($timestamp}) to string`
-                );
-                return '';
-            }
+            return toISOString(timestamp);
         }
     }
 
