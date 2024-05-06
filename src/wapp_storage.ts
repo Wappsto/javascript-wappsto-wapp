@@ -127,6 +127,8 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * @param {string | string[]} name - The name of the value to retrieve.
      * @return {any} The value associated with the given name.
      */
+    get(name: string): T | undefined;
+    get(name: string[]): (T|undefined)[];
     get(name: string | string[]) {
         WappStorage.#validate('get', arguments);
         return this.#get(name);
@@ -138,6 +140,8 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * @param {string | string[]} name - The name of the secret value to retrieve.
      * @return {any} The secret value associated with the given name, or undefined if the value is not found.
      */
+    getSecret(name: string): T | undefined;
+    getSecret(name: string[]): (T|undefined)[];
     getSecret(name: string | string[]) {
         WappStorage.#validate('getSecret', arguments);
         if (isBrowser()) {
