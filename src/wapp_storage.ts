@@ -128,7 +128,7 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * @return {any} The value associated with the given name.
      */
     get(name: string): T | undefined;
-    get(name: string[]): (T|undefined)[];
+    get(name: string[]): (T | undefined)[];
     get(name: string | string[]) {
         WappStorage.#validate('get', arguments);
         return this.#get(name);
@@ -141,7 +141,7 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * @return {any} The secret value associated with the given name, or undefined if the value is not found.
      */
     getSecret(name: string): T | undefined;
-    getSecret(name: string[]): (T|undefined)[];
+    getSecret(name: string[]): (T | undefined)[];
     getSecret(name: string | string[]) {
         WappStorage.#validate('getSecret', arguments);
         if (isBrowser()) {
@@ -237,20 +237,20 @@ export class WappStorage<T = unknown> implements IWappStorage {
     onChange(cb: StorageChangeHandler): Promise<boolean> {
         WappStorage.#validate('onChange', arguments);
         this.#onChangeCallback = cb;
-        return this.#data.onChange(async () => this.#handleStreamUpdate());
+        return this.#data.onChange(this.#handleStreamUpdate.bind(this));
     }
 
     /**
-     * Cancels the onChange callback.
+     * Unregister the callback function that was previously registered with onChange.
      *
-     * @param {type} paramName - description of parameter
-     * @return {type} description of return value
+     * @return {Promise<boolean>} A promise that resolves to true if the callback was successfully unregistered, and false otherwise.
      */
-    cancelOnChange() {
+    async cancelOnChange() {
         WappStorage.#validate('cancelOnChange', arguments);
-        if (this.#onChangeCallback) {
-            this.#data.cancelOnChange(async () => this.#handleStreamUpdate());
+        if (!this.#onChangeCallback) {
+            return false;
         }
+        return this.#data.cancelOnChange(this.#handleStreamUpdate.bind(this));
     }
 
     /**

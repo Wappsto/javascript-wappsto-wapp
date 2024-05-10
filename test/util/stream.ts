@@ -66,5 +66,7 @@ export function sendRpcResponse(server: WS, offset?: number): number {
             },
         });
     });
-    return server.messages.length;
+    const len = server.messages.length;
+    server.messages = [];
+    return len;
 }

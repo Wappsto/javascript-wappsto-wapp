@@ -133,7 +133,9 @@ describe('WappStorage', () => {
                 },
             })
         );
-        /*await expect(server).toReceiveMessage(
+        sendRpcResponse(server);
+
+        await expect(server).toReceiveMessage(
             expect.objectContaining({
                 jsonrpc: '2.0',
                 method: 'POST',
@@ -142,7 +144,7 @@ describe('WappStorage', () => {
                     data: '/2.1/extsync',
                 },
             })
-        );*/
+        );
         sendRpcResponse(server);
 
         await changeP;
@@ -191,7 +193,22 @@ describe('WappStorage', () => {
             {}
         );
 
-        c.cancelOnChange();
+        const removedPromise = c.cancelOnChange();
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'DELETE',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
+                },
+            })
+        );
+        sendRpcResponse(server);
+
+        const removed = await removedPromise;
+        expect(removed).toBeTruthy();
 
         server.send(streamEvent);
 
