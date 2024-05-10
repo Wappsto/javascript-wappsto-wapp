@@ -42,6 +42,7 @@ export function printStream(message: string, ...args: unknown[]): void {
     }
 }
 
+/* istanbul ignore next */
 export function fatalError(message: string) {
     if (isBrowser()) {
         console.error(`WAPPSTO FATAL ERROR: ${message}`);

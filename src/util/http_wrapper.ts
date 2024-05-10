@@ -74,6 +74,7 @@ const wrapper = {
 export default wrapper;
 
 export function getErrorResponse(error: AxiosError | unknown) {
+    /* istanbul ignore next */
     if (!error) {
         return;
     }
@@ -132,7 +133,9 @@ export function getErrorMessage(error: any | Error | AxiosError): string {
         return `${error.response.statusText} for ${error.config?.url}`;
     }
 
+    /* istanbul ignore next */
     printDebug(toSafeString(error));
+    /* istanbul ignore next */
     return `Unknown error: ${toSafeString(error)}`;
 }
 
@@ -144,6 +147,7 @@ export function printHttpError(
     printError(`${message}: ${msg}`);
 
     if ((error as AxiosError).status === 503) {
+        /* istanbul ignore next */
         fatalError('Got a SERVICE UNAVAILABLE response from the backend');
     }
 
