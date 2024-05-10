@@ -6,9 +6,9 @@ export class PowerPriceList extends AnalyticsModel {
         state_ids: string[],
         start: Timestamp,
         end: Timestamp,
-        parameters?: AnalyticsParameters
+        parameters: AnalyticsParameters
     ) {
-        super(state_ids, start, end, parameters ?? {});
+        super(state_ids, start, end, parameters);
         this.parameter.provider = 'energidataservice';
     }
 
