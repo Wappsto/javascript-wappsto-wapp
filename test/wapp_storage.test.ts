@@ -207,14 +207,31 @@ describe('WappStorage', () => {
         );
         sendRpcResponse(server);
 
-        const removed = await removedPromise;
+        let removed = await removedPromise;
         expect(removed).toBeTruthy();
+
+        removed = await c.cancelOnChange();
+        expect(removed).toBeFalsy();
 
         server.send(streamEvent);
 
         await new Promise((r) => setTimeout(r, 1));
 
         expect(fun).toHaveBeenCalledTimes(1);
+    });
+
+    it('will fail to set a missing item', async () => {
+        const c = await wappStorage<string>();
+        let error: Error | undefined = undefined;
+
+        try {
+            const res = await c.set('missing');
+        } catch (e) {
+            error = e as Error;
+        }
+        expect(error?.toString()).toEqual(
+            'Error: Missing parameter "item" in set function'
+        );
     });
 
     it('can load new data from the server', async () => {

@@ -250,6 +250,7 @@ export class WappStorage<T = unknown> implements IWappStorage {
         if (!this.#onChangeCallback) {
             return false;
         }
+        this.#onChangeCallback = undefined;
         return this.#data.cancelOnChange(this.#handleStreamUpdate.bind(this));
     }
 
