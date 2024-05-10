@@ -178,9 +178,16 @@ export class Device extends ConnectionModel implements IDevice {
                 this.value[i].parent = this;
 
                 if (values === undefined) {
-                    await this.value[i].loadAllChildren(null, false);
+                    proms.push(
+                        new Promise(async (resolve) => {
+                            await this.value[i].loadAllChildren(null, false);
+                            this.value[i] = addModel(this.value[i]) as Value;
+                            resolve();
+                        })
+                    );
+                } else {
+                    this.value[i] = addModel(this.value[i]) as Value;
                 }
-                this.value[i] = addModel(this.value[i]) as Value;
             } else if (typeof this.value[i] === 'string') {
                 await this.#fetchMissingValues(i);
                 break;

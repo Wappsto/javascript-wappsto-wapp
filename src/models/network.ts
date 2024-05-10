@@ -196,9 +196,16 @@ export class Network extends ConnectionModel implements INetwork {
             if (typeof this.device[i] === 'object') {
                 this.device[i].parent = this;
                 if (devices === undefined) {
-                    await this.device[i].loadAllChildren(null, false);
+                    proms.push(
+                        new Promise(async (resolve) => {
+                            await this.device[i].loadAllChildren(null, false);
+                            this.device[i] = addModel(this.device[i]) as Device;
+                            resolve();
+                        })
+                    );
+                } else {
+                    this.device[i] = addModel(this.device[i]) as Device;
                 }
-                this.device[i] = addModel(this.device[i]) as Device;
             } else if (typeof this.device[i] === 'string') {
                 await this.#fetchMissingDevices(i);
                 break;
