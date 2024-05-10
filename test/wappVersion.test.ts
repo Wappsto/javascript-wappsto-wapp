@@ -7,11 +7,7 @@ import { makeErrorResponse, makeResponse } from './util/helpers';
 import { after } from './util/stream';
 
 describe('wappVersion', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    afterAll(() => {
+    afterEach(() => {
         after();
     });
 
@@ -22,6 +18,9 @@ describe('wappVersion', () => {
 
         expect(version).toEqual('1.0.0');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
+            params: { expand: 1, go_internal: true, method: ['retrieve'] },
+        });
     });
 
     it('can get default version when user is messing', async () => {
@@ -34,6 +33,9 @@ describe('wappVersion', () => {
 
         expect(version).toEqual('1.0.0');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
+            params: { expand: 1, go_internal: true, method: ['retrieve'] },
+        });
         expect(console.error).toHaveBeenCalledWith(
             'WAPPSTO ERROR: Model.fetch: error for url'
         );
@@ -51,12 +53,15 @@ describe('wappVersion', () => {
 
         expect(version).toEqual('1.0.0');
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
+            params: { expand: 1, go_internal: true, method: ['retrieve'] },
+        });
     });
 
     it('can get version from installation', async () => {
         mockedAxios.get.mockResolvedValueOnce(
             makeResponse({
-                installation: '8c0ac555-054e-4f19-b1db-3c42cd00a729',
+                installation: 'efb7117e-fd4a-4aa8-bafd-950c7ce77e83',
             })
         );
         mockedAxios.get.mockResolvedValueOnce({
