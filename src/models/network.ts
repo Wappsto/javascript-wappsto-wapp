@@ -11,7 +11,7 @@ import {
     JSONObject,
     ValidateParams,
 } from '../util/interfaces';
-import { addModel } from '../util/modelStore';
+import { addModel, getModel } from '../util/modelStore';
 import { Device } from './device';
 import { Model } from './model';
 import { ConnectionModel } from './model.connection';
@@ -173,12 +173,17 @@ export class Network extends ConnectionModel implements INetwork {
                         }
                     } else {
                         if (data) {
-                            newDevice = new Device();
+                            const newModel = await getModel('Device', id);
+                            if (newModel) {
+                                newDevice = newModel as Device;
+                            } else {
+                                newDevice = new Device();
+                            }
                             newDevice.parse(data);
                             newDevice.parent = this;
-                            addModel(newDevice);
                             this.device.push(newDevice);
-                            proms.push(newDevice.loadAllChildren(data, false));
+                            await newDevice.loadAllChildren(data, false);
+                            newDevice = addModel(newDevice) as Device;
                         } else {
                             this.device.push(devices[i] as Device);
                         }
@@ -189,11 +194,11 @@ export class Network extends ConnectionModel implements INetwork {
 
         for (let i = 0; i < this.device.length; i++) {
             if (typeof this.device[i] === 'object') {
-                addModel(this.device[i]);
                 this.device[i].parent = this;
                 if (devices === undefined) {
-                    proms.push(this.device[i].loadAllChildren(null, false));
+                    await this.device[i].loadAllChildren(null, false);
                 }
+                this.device[i] = addModel(this.device[i]) as Device;
             } else if (typeof this.device[i] === 'string') {
                 await this.#fetchMissingDevices(i);
                 break;
@@ -417,7 +422,6 @@ export class Network extends ConnectionModel implements INetwork {
         }
         const data = await Model.fetch({ endpoint: Network.endpoint, params });
         const networks = Network.fromArray(data);
-
         const promises: Promise<void>[] = [];
         networks.forEach((net) => {
             promises.push(net.loadAllChildren(null));

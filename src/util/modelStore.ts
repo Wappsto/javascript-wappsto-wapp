@@ -12,10 +12,20 @@ export function setModelCreateCallback(callback: createCallback): void {
     createModel = callback;
 }
 
-export function addModel(model?: IModel): void {
-    if (model) {
-        models[model.id()] = model;
+export function addModel(model: IModel): IModel;
+export function addModel(model: undefined): undefined;
+export function addModel(model?: IModel) {
+    if (model && model.id()) {
+        if (!models[model.id()]) {
+            models[model.id()] = model;
+        } else {
+            models[model.id()].parse(
+                model as unknown as Record<string, unknown>
+            );
+        }
+        return models[model.id()];
     }
+    return model;
 }
 
 export async function getModel(
@@ -35,4 +45,8 @@ export async function getModel(
     }
     /* istanbul ignore next */
     return undefined;
+}
+
+export function removeModel(model: IModel): void {
+    delete models[model.id()];
 }

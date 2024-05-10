@@ -6,11 +6,12 @@ import { State, config, stopLogging } from '../src/index';
 import { after } from './util/stream';
 import { makeResponse } from './util/helpers';
 
+const stateID = '6be66588-5f65-4257-8026-7f1152824f81';
 const response = {
     meta: {
         type: 'state',
         version: '2.1',
-        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+        id: stateID,
     },
     type: 'Report',
     timestamp: '2021-10-10T10:10:10Z',
@@ -57,7 +58,7 @@ describe('state', () => {
             {}
         );
         expect(state.type).toEqual('Report');
-        expect(state.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(state.meta.id).toEqual(stateID);
     });
 
     it('can update a state on wappsto', async () => {
@@ -113,7 +114,7 @@ describe('state', () => {
                     meta: {
                         type: 'state',
                         version: '2.1',
-                        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        id: stateID,
                         iot: true,
                         size: 100,
                     },
@@ -131,11 +132,11 @@ describe('state', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.1/state/b62e285a-5188-4304-85a0-3982dcb575bc',
+            `/2.1/state/${stateID}`,
             {
                 data: '0',
                 meta: {
-                    id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                    id: stateID,
                     type: 'state',
                     version: '2.1',
                 },

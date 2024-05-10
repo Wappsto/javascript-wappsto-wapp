@@ -16,7 +16,7 @@ import {
     ValidateParams,
 } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
-import { addModel } from '../util/modelStore';
+import { addModel, removeModel } from '../util/modelStore';
 
 export class Model implements IModel {
     [x: string]: any;
@@ -239,6 +239,7 @@ export class Model implements IModel {
             } catch (e) {
                 printHttpError('Model.delete', e);
             }
+            removeModel(this);
             this.parent?.removeChild(this);
             this.meta.id = undefined;
         }
@@ -249,11 +250,10 @@ export class Model implements IModel {
         if (Array.isArray(json)) {
             json = json[0];
         }
+
         const oldModel = this.toJSON();
         Object.assign(this, pick(json, this.getAttributes().concat(['meta'])));
         const newModel = this.toJSON();
-
-        addModel(this);
 
         return !isEqual(oldModel, newModel);
     }
@@ -329,14 +329,14 @@ export class Model implements IModel {
         parent?: IModel
     ): T[] {
         const obj = plainToInstance(this, json) || [];
-        obj.forEach((o: T) => {
+        return obj.map((o: T) => {
             if (o && typeof o !== 'string') {
                 const o2 = o as unknown as IModel;
                 o2.setParent(parent);
-                addModel(o2);
+                return addModel(o2) as T;
             }
+            return o;
         });
-        return obj;
     }
 
     public static validateMethod(

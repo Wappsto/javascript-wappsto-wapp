@@ -6,28 +6,19 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Device, Value, State, config, ValueTemplate } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
-import { responses, generateStreamEvent } from './util/response';
+import {
+    responses,
+    generateStreamEvent,
+    makeValueResponse,
+} from './util/response';
 import { makeErrorResponse, makeResponse } from './util/helpers';
-
-const response = {
-    meta: {
-        type: 'value',
-        version: '2.1',
-        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-    },
-    name: 'test',
-    permission: '',
-    type: '',
-    period: '0',
-    delta: '0',
-};
 
 const response2Values = [
     {
         meta: {
             type: 'value',
             version: '2.1',
-            id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+            id: '9b8c339a-e740-4799-8984-2c34e9f8fed9',
         },
         name: 'test',
         permission: '',
@@ -61,6 +52,7 @@ describe('value', () => {
     });
 
     it('can create a value on wappsto', async () => {
+        const response = makeValueResponse();
         mockedAxios.post.mockResolvedValueOnce(makeResponse(response));
 
         const value = new Value('test');
@@ -83,10 +75,11 @@ describe('value', () => {
         expect(value.name).toEqual('test');
         expect(value.permission).toEqual('r');
         expect(value.states).toEqual([]);
-        expect(value.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(value.meta.id).toEqual(response.meta.id);
     });
 
     it('can update a value on wappsto', async () => {
+        const response = makeValueResponse();
         mockedAxios.post.mockResolvedValueOnce(makeResponse(response));
         mockedAxios.put.mockResolvedValueOnce(makeResponse(response));
 
@@ -102,8 +95,11 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            `/2.1/value/${value.meta.id}`,
-            response,
+            `/2.1/value/${response.meta.id}`,
+            {
+                ...response,
+                state: undefined,
+            },
             {}
         );
 
@@ -112,6 +108,7 @@ describe('value', () => {
     });
 
     it('can create a new value from wappsto', async () => {
+        const response = makeValueResponse();
         mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         const values = await Value.fetch();
@@ -125,6 +122,7 @@ describe('value', () => {
     });
 
     it('can create a new value from wappsto with verbose', async () => {
+        const response = makeValueResponse();
         mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         config({ verbose: true });
@@ -184,6 +182,7 @@ describe('value', () => {
     });
 
     it('can find a value by name', async () => {
+        const response = makeValueResponse();
         mockedAxios.get
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([response]));
@@ -195,7 +194,7 @@ describe('value', () => {
                 base: {
                     code: 1100004,
                     identifier: 'value-1-Find 1 value with name test',
-                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                    ids: [response.meta.id],
                 },
             })
         );
@@ -214,12 +213,11 @@ describe('value', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(value[0].meta.id).toEqual(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
+        expect(value[0].meta.id).toEqual(response.meta.id);
     });
 
     it('can find a value by name and extra parameters', async () => {
+        const response = makeValueResponse();
         mockedAxios.get.mockResolvedValueOnce(
             makeResponse([response, response])
         );
@@ -239,12 +237,11 @@ describe('value', () => {
                 method: ['retrieve'],
             },
         });
-        expect(value[0].meta.id).toEqual(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
+        expect(value[0].meta.id).toEqual(response.meta.id);
     });
 
     it('can find a value by type', async () => {
+        const response = makeValueResponse();
         mockedAxios.get
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([response]));
@@ -261,7 +258,7 @@ describe('value', () => {
                 base: {
                     code: 1100004,
                     identifier: 'value-1-Find 1 value with type test',
-                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                    ids: [response.meta.id],
                 },
             },
         });
@@ -280,9 +277,7 @@ describe('value', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(value[0].meta.id).toEqual(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
+        expect(value[0].meta.id).toEqual(response.meta.id);
     });
 
     it('can send a report', async () => {
@@ -296,7 +291,13 @@ describe('value', () => {
         state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
         value.state.push(state);
         await value.report(10);
+        const orgWarn = console.warn;
+        console.warn = jest.fn();
         await value.report(undefined as unknown as string, new Date('wrong'));
+        expect(console.warn).toHaveBeenCalledWith(
+            'WAPPSTO WARN: Failed to convert timestamp (Invalid Date) to string'
+        );
+        console.warn = orgWarn;
         await value.report({ test: 'test' });
         value.number = {
             min: 0,
@@ -526,7 +527,13 @@ describe('value', () => {
     it('can send a controlWithAck that fails', async () => {
         const fun = jest.fn();
         mockedAxios.patch
-            .mockRejectedValueOnce(makeErrorResponse([]))
+            .mockRejectedValueOnce(
+                makeErrorResponse(
+                    [],
+                    'reject first attempt',
+                    'can send a controlWithAck that fails'
+                )
+            )
             .mockResolvedValueOnce(makeResponse([]));
 
         const value = new Value();
@@ -539,6 +546,9 @@ describe('value', () => {
         value.state.push(state);
 
         await value.onReport(fun);
+
+        const orgError = console.error;
+        console.error = jest.fn();
         const controlPromise = value.controlWithAck(10);
 
         await new Promise((r) => setTimeout(r, 1));
@@ -560,6 +570,11 @@ describe('value', () => {
         });
 
         const res1 = await controlPromise;
+
+        expect(console.error).toHaveBeenLastCalledWith(
+            'WAPPSTO ERROR: Model.update: reject first attempt for can send a controlWithAck that fails'
+        );
+        console.error = orgError;
 
         const controlPromise2 = value.controlWithAck(20);
 
@@ -666,6 +681,7 @@ describe('value', () => {
     });
 
     it('can use custom find', async () => {
+        const response = makeValueResponse();
         mockedAxios.get.mockResolvedValueOnce(makeResponse(response));
 
         const value = await Value.find({ name: 'test' });
@@ -685,12 +701,11 @@ describe('value', () => {
         });
 
         expect(value[0].toJSON).toBeDefined();
-        expect(value[0].meta.id).toEqual(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
+        expect(value[0].meta.id).toEqual(response.meta.id);
     });
 
     it('can find all values by name', async () => {
+        const response = makeValueResponse();
         mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         const value = await Value.findAllByName('test');
@@ -708,12 +723,11 @@ describe('value', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(value[0].meta.id).toEqual(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
+        expect(value[0].meta.id).toEqual(response.meta.id);
     });
 
     it('can find all values by type', async () => {
+        const response = makeValueResponse();
         mockedAxios.get.mockResolvedValueOnce(makeResponse([response]));
 
         const value = await Value.findAllByType('test');
@@ -731,9 +745,7 @@ describe('value', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(value[0].meta.id).toEqual(
-            'b62e285a-5188-4304-85a0-3982dcb575bc'
-        );
+        expect(value[0].meta.id).toEqual(response.meta.id);
     });
 
     it('can handle a state create', async () => {
@@ -1236,11 +1248,12 @@ describe('value', () => {
     });
 
     it('can find value by id', async () => {
+        const response = makeValueResponse();
         mockedAxios.get
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([response]));
 
-        const r = Value.findById('b62e285a-5188-4304-85a0-3982dcb575bc');
+        const r = Value.findById(response.meta.id);
 
         await new Promise((r) => setTimeout(r, 1));
 
@@ -1255,7 +1268,7 @@ describe('value', () => {
                     code: 1100013,
                     identifier:
                         'value-1-Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',
-                    ids: ['b62e285a-5188-4304-85a0-3982dcb575bc'],
+                    ids: [response.meta.id],
                 },
             },
         });
@@ -1268,16 +1281,14 @@ describe('value', () => {
                 quantity: 1,
                 go_internal: true,
                 manufacturer: false,
-                message:
-                    'Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',
-                identifier:
-                    'value-1-Find value with id b62e285a-5188-4304-85a0-3982dcb575bc',
-                'this_meta.id': '=b62e285a-5188-4304-85a0-3982dcb575bc',
+                message: `Find value with id ${response.meta.id}`,
+                identifier: `value-1-Find value with id ${response.meta.id}`,
+                'this_meta.id': `=${response.meta.id}`,
                 method: ['retrieve', 'update'],
             },
         });
         expect(value.toJSON).toBeDefined();
-        expect(value.meta.id).toEqual('b62e285a-5188-4304-85a0-3982dcb575bc');
+        expect(value.meta.id).toEqual(response.meta.id);
     });
 
     it('can find using filter', async () => {
@@ -1392,6 +1403,7 @@ describe('value', () => {
     });
 
     it('can create 2 new values from wappsto', async () => {
+        const response = makeValueResponse();
         mockedAxios.get
             .mockResolvedValueOnce(makeResponse(response2Values))
             .mockResolvedValueOnce(makeResponse(response));

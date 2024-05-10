@@ -18,7 +18,7 @@ import {
     ValuePermission,
     ValueType,
 } from '../util/interfaces';
-import { addModel } from '../util/modelStore';
+import { addModel, getModel } from '../util/modelStore';
 import { ValueTemplate } from '../util/value_template';
 import { Model } from './model';
 import { ConnectionModel } from './model.connection';
@@ -154,12 +154,17 @@ export class Device extends ConnectionModel implements IDevice {
                         }
                     } else {
                         if (data) {
-                            newValue = new Value();
+                            const newModel = await getModel('Value', id);
+                            if (newModel) {
+                                newValue = newModel as Value;
+                            } else {
+                                newValue = new Value();
+                            }
                             newValue.parse(data);
                             newValue.parent = this;
-                            addModel(newValue);
                             this.value.push(newValue);
-                            proms.push(newValue.loadAllChildren(data, false));
+                            await newValue.loadAllChildren(data, false);
+                            newValue = addModel(newValue) as Value;
                         } else {
                             this.value.push(values[i] as Value);
                         }
@@ -171,10 +176,11 @@ export class Device extends ConnectionModel implements IDevice {
         for (let i = 0; i < this.value.length; i++) {
             if (typeof this.value[i] === 'object') {
                 this.value[i].parent = this;
-                addModel(this.value[i]);
+
                 if (values === undefined) {
-                    proms.push(this.value[i].loadAllChildren(null, false));
+                    await this.value[i].loadAllChildren(null, false);
                 }
+                this.value[i] = addModel(this.value[i]) as Value;
             } else if (typeof this.value[i] === 'string') {
                 await this.#fetchMissingValues(i);
                 break;

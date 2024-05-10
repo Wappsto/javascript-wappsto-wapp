@@ -45,7 +45,7 @@ import {
     ValuePermission,
     ValueStreamCallback,
 } from '../util/interfaces';
-import { addModel } from '../util/modelStore';
+import { addModel, getModel } from '../util/modelStore';
 import { EnergyData, EnergyPieChart, EnergySummary } from './analytic';
 import { AnalyticsModel, Newable } from './analytic/model.analytics';
 import { EventLog } from './eventlog';
@@ -298,7 +298,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 if (newState) {
                     if (data) {
                         newState.parse(data);
-                        addModel(newState);
+                        newState = addModel(newState) as State;
                     }
                     newState.parent = this;
                     this.state.push(newState);
@@ -308,14 +308,18 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             for (let i = 0; i < this.state.length; i++) {
                 if (typeof this.state[i] === 'string') {
                     const id: string = this.state[i] as unknown as string;
-                    this.state[i] = new State();
-                    this.state[i].meta.id = id;
+                    const newModel = await getModel('state', id);
+                    if (newModel) {
+                        this.state[i] = newModel as State;
+                    } else {
+                        this.state[i] = new State();
+                        this.state[i].meta.id = id;
+                    }
                     this.state[i].parent = this;
-                    await this.state[i].reload();
                 } else if (reloadAll) {
                     await this.state[i].reload();
                 }
-                addModel(this.state[i]);
+                this.state[i] = addModel(this.state[i]) as State;
             }
         }
     }
