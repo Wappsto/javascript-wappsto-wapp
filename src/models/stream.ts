@@ -681,7 +681,7 @@ export class Stream extends Model {
             });
             res = await Promise.race([p, timeoutPromise]);
             delete this.#rpc_response[hash.id];
-            printStream('ready', hash.id);
+            printStream('RPC response ready for', hash.id, 'with result', res);
         } catch (e) {
             /* istanbul ignore next */
             printError(`Failed to send message on WebSocket: ${e}`);
