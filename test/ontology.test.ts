@@ -15,7 +15,14 @@ import {
 } from '../src/index';
 import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
-import { fullNetworkResponse, responses } from './util/response';
+import {
+    fullNetworkResponse,
+    makeDeviceResponse,
+    makeNetworkResponse,
+    makeStateResponse,
+    makeValueResponse,
+    responses,
+} from './util/response';
 import { makeErrorResponse, makeResponse } from './util/helpers';
 
 describe('Ontology', () => {
@@ -195,6 +202,22 @@ describe('Ontology', () => {
     });
 
     it('can get all edges on a network', async () => {
+        const stateResponse = makeStateResponse({
+            id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
+            data: '0',
+        });
+        const valueResponse = makeValueResponse({
+            id: '75d7d198-7f91-45e2-9b79-754073d7e758',
+            states: [stateResponse],
+        });
+        const deviceResponse = makeDeviceResponse({
+            id: '8a3f67a6-751c-483b-a2ef-ba890948e6e4',
+            values: [valueResponse],
+        });
+        const networkResponse = makeNetworkResponse({
+            id: 'f11fa9d7-3b2b-474e-95e4-f086c5606154',
+            devices: [deviceResponse],
+        });
         mockedAxios.get
             .mockResolvedValueOnce(
                 makeResponse([
@@ -271,108 +294,10 @@ describe('Ontology', () => {
                     },
                 ])
             )
-            .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
-                        type: 'state',
-                        version: '2.1',
-                        id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
-                    },
-                    type: 'Report',
-                    timestamp: '2021-10-10T10:10:10Z',
-                    data: '0',
-                })
-            )
-            .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
-                        type: 'network',
-                        version: '2.1',
-                        id: 'f11fa9d7-3b2b-474e-95e4-f086c5606154',
-                    },
-                    device: [
-                        {
-                            meta: {
-                                type: 'device',
-                                version: '2.1',
-                                id: '8a3f67a6-751c-483b-a2ef-ba890948e6e4',
-                            },
-                            value: [
-                                {
-                                    meta: {
-                                        type: 'value',
-                                        version: '2.1',
-                                        id: '75d7d198-7f91-45e2-9b79-754073d7e758',
-                                    },
-                                    state: [
-                                        {
-                                            meta: {
-                                                type: 'state',
-                                                version: '2.1',
-                                                id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
-                                            },
-                                            type: 'Report',
-                                            timestamp: '2021-10-10T10:10:10Z',
-                                            data: '0',
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
-                    ],
-                })
-            )
-            .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
-                        type: 'device',
-                        version: '2.1',
-                        id: '8a3f67a6-751c-483b-a2ef-ba890948e6e4',
-                    },
-                    value: [
-                        {
-                            meta: {
-                                type: 'value',
-                                version: '2.1',
-                                id: '75d7d198-7f91-45e2-9b79-754073d7e758',
-                            },
-                            state: [
-                                {
-                                    meta: {
-                                        type: 'state',
-                                        version: '2.1',
-                                        id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
-                                    },
-                                    type: 'Report',
-                                    timestamp: '2021-10-10T10:10:10Z',
-                                    data: '0',
-                                },
-                            ],
-                        },
-                    ],
-                })
-            )
-            .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
-                        type: 'value',
-                        version: '2.1',
-                        id: '75d7d198-7f91-45e2-9b79-754073d7e758',
-                    },
-                    state: [
-                        {
-                            meta: {
-                                type: 'state',
-                                version: '2.1',
-                                id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
-                            },
-                            type: 'Report',
-                            timestamp: '2021-10-10T10:10:10Z',
-                            data: '0',
-                        },
-                    ],
-                })
-            )
+            .mockResolvedValueOnce(makeResponse(stateResponse))
+            .mockResolvedValueOnce(makeResponse(networkResponse))
+            .mockResolvedValueOnce(makeResponse(deviceResponse))
+            .mockResolvedValueOnce(makeResponse(valueResponse))
             .mockResolvedValueOnce(
                 makeResponse({
                     meta: {
@@ -381,7 +306,10 @@ describe('Ontology', () => {
                         id: '97e0dd7c-8e22-4263-82f9-d26102643465',
                     },
                 })
-            );
+            )
+            .mockResolvedValueOnce(makeResponse(deviceResponse))
+            .mockResolvedValueOnce(makeResponse(valueResponse))
+            .mockResolvedValueOnce(makeResponse(valueResponse));
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
@@ -391,7 +319,7 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(6);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(9);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
@@ -445,6 +373,33 @@ describe('Ontology', () => {
             {
                 params: {
                     expand: 0,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            7,
+            '/2.1/device/8a3f67a6-751c-483b-a2ef-ba890948e6e4',
+            {
+                params: {
+                    expand: 2,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            8,
+            '/2.1/value/75d7d198-7f91-45e2-9b79-754073d7e758',
+            {
+                params: {
+                    expand: 1,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            9,
+            '/2.1/value/75d7d198-7f91-45e2-9b79-754073d7e758',
+            {
+                params: {
+                    expand: 1,
                 },
             }
         );

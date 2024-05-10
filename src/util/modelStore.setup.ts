@@ -15,7 +15,7 @@ async function loadModel(
 
     printDebug(`ModelStore is loading a ${type} with id ${id}`);
 
-    switch (type) {
+    switch (type.toLowerCase()) {
         case 'network':
             model = new Network();
             break;

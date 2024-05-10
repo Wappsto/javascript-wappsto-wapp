@@ -5,7 +5,11 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { Device, Value, ValueTemplate, State, config } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
-import { responses, makeDeviceResponse } from './util/response';
+import {
+    responses,
+    makeDeviceResponse,
+    makeValueResponse,
+} from './util/response';
 import { makeResponse } from './util/helpers';
 
 const templateHelperStart = () => {
@@ -299,52 +303,102 @@ describe('device', () => {
     });
 
     it('can reload and get new values', async () => {
+        const deviceID = '8fd80c88-f760-4593-96ef-eb1338324a95';
+        const valueID1 = '53052a2b-494b-49c8-8b8e-b08cc69b26ea';
+        const valueID2 = '2f27d5f0-c289-40f5-9331-3dd946ffcc65';
+        const valueID3 = '872dbd66-3530-4797-abd3-53f246a943b3';
+        const valueID4 = 'c30d2175-b748-44b0-b8de-0e15e0ad630d';
         mockedAxios.get
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: { id: '0a4de380-1c16-4b5c-a081-912b931ff891' },
-                    name: 'device',
-                    value: [
-                        {
-                            meta: {
-                                id: '048d2bb4-f0dc-48da-9bb8-f83f48f8bcc4',
-                            },
-                            name: 'value 1',
-                        },
-                        'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        {
-                            meta: {
-                                id: 'b3fb2261-e6d9-48c4-97a2-71bf299736b8',
-                            },
-                            name: 'value 3',
-                        },
-                        {
-                            meta: {
-                                id: '0af35945-f38b-4528-a7c7-3a7d42a2a132',
-                            },
-                            name: 'value 4',
-                        },
-                    ],
-                })
+                makeResponse(
+                    makeDeviceResponse({
+                        name: 'device',
+                        id: deviceID,
+                        values: [
+                            makeValueResponse({
+                                name: 'value 1',
+                                id: valueID1,
+                            }),
+                            valueID2,
+                            makeValueResponse({
+                                name: 'value 3',
+                                id: valueID3,
+                            }),
+                            makeValueResponse({
+                                name: 'value 4',
+                                id: valueID4,
+                            }),
+                        ],
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: { id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273' },
-                    name: 'value 2',
-                })
+                makeResponse(
+                    makeValueResponse({ name: 'value 3', id: valueID3 })
+                )
+            )
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeValueResponse({ name: 'value 4', id: valueID4 })
+                )
+            )
+            .mockResolvedValue(
+                makeResponse([
+                    makeValueResponse({ name: 'value 2', id: valueID2 }),
+                ])
             );
 
         const value = new Value();
-        value.meta.id = '0af35945-f38b-4528-a7c7-3a7d42a2a132';
+        value.meta.id = valueID1;
         value.name = 'value';
 
         const device = new Device();
-        device.meta.id = '0a4de380-1c16-4b5c-a081-912b931ff891';
+        device.meta.id = deviceID;
         device.value.push(value);
 
         await device.reload();
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            `/2.1/device/${deviceID}`,
+            {
+                params: {
+                    expand: 0,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            `/2.1/value/${valueID3}`,
+            {
+                params: {
+                    expand: 1,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            `/2.1/value/${valueID4}`,
+            {
+                params: {
+                    expand: 1,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            4,
+            `/2.1/device/${deviceID}/value`,
+            {
+                params: {
+                    expand: 1,
+                    go_internal: true,
+                    method: ['retrieve'],
+                    offset: 1,
+                },
+            }
+        );
 
         expect(device.name).toEqual('device');
         expect(device.value.length).toEqual(4);

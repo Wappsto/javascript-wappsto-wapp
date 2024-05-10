@@ -433,62 +433,101 @@ describe('network', () => {
     });
 
     it('can reload and get new devices', async () => {
+        const networkID = '4b4c4fd2-0710-481a-8379-f81838e48aa4';
+        const deviceID1 = '05808780-8cc5-44e6-9b69-8bd102cc5b65';
+        const deviceID2 = '4bf79be7-6a0e-4c6d-ac5d-1ee9ddaa4da0';
+        const deviceID3 = 'd67d9d57-97f3-433e-b8cb-a925a2938d4a';
+        const deviceID4 = '89d7f19d-b8b7-4f58-b19b-73869a92aeef';
         mockedAxios.get
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
-                        id: '0a4de380-1c16-4b5c-a081-912b931ff891',
-                        version: '2.1',
-                    },
-                    name: 'network',
-                    device: [
-                        {
-                            meta: {
-                                id: '048d2bb4-f0dc-48da-9bb8-f83f48f8bcc4',
-                                version: '2.1',
-                            },
-                            name: 'device 1',
-                        },
-                        'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        {
-                            meta: {
-                                id: 'b3fb2261-e6d9-48c4-97a2-71bf299736b8',
-                                version: '2.1',
-                            },
-                            name: 'device 3',
-                        },
-                        {
-                            meta: {
-                                id: '0af35945-f38b-4528-a7c7-3a7d42a2a132',
-                                version: '2.1',
-                            },
-                            name: 'device 4',
-                        },
-                    ],
-                })
+                makeResponse(
+                    makeNetworkResponse({
+                        name: 'network',
+                        id: networkID,
+                        devices: [
+                            makeDeviceResponse({
+                                name: 'device 1',
+                                id: deviceID1,
+                            }),
+                            deviceID2,
+                            makeDeviceResponse({
+                                name: 'device 3',
+                                id: deviceID3,
+                            }),
+                            makeDeviceResponse({
+                                name: 'device 4',
+                                id: deviceID4,
+                            }),
+                        ],
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
-                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        version: '2.1',
-                    },
-                    name: 'device 2',
-                })
+                makeResponse(
+                    makeDeviceResponse({ name: 'device 3', id: deviceID3 })
+                )
+            )
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeDeviceResponse({ name: 'device 4', id: deviceID4 })
+                )
+            )
+            .mockResolvedValue(
+                makeResponse([
+                    makeDeviceResponse({ name: 'device 2', id: deviceID2 }),
+                ])
             );
 
         const device = new Device();
-        device.meta.id = '0af35945-f38b-4528-a7c7-3a7d42a2a132';
+        device.meta.id = deviceID1;
         device.name = 'device';
 
         const network = new Network();
-        network.meta.id = '0a4de380-1c16-4b5c-a081-912b931ff891';
+        network.meta.id = networkID;
         network.device.push(device);
 
         await network.reload();
 
-        //expect(mockedAxios.get).toHaveBeenCalledWith('');
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            `/2.1/network/${networkID}`,
+            {
+                params: {
+                    expand: 0,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            `/2.1/device/${deviceID3}`,
+            {
+                params: {
+                    expand: 2,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            `/2.1/device/${deviceID4}`,
+            {
+                params: {
+                    expand: 2,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            4,
+            `/2.1/network/${networkID}/device`,
+            {
+                params: {
+                    expand: 2,
+                    go_internal: true,
+                    method: ['retrieve'],
+                    offset: 1,
+                },
+            }
+        );
 
         expect(network.name).toEqual('network');
         expect(network.device.length).toEqual(4);
@@ -1181,7 +1220,8 @@ describe('network', () => {
         });
         mockedAxios.get
             .mockResolvedValueOnce(makeResponse([response]))
-            .mockResolvedValueOnce(makeResponse([responseUpdated]));
+            .mockResolvedValueOnce(makeResponse([responseUpdated]))
+            .mockResolvedValueOnce(makeResponse({}));
 
         const network = await createNetwork({ name: response.name });
 
@@ -1190,10 +1230,24 @@ describe('network', () => {
 
         await network.reload(true);
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, `/2.1/network`, {
+            params: {
+                expand: 3,
+                go_internal: true,
+                method: ['retrieve'],
+                'this_name=': 'Wapp Name',
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
             `/2.1/network/${response.meta.id}`,
             { params: { expand: 3 } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            `/2.1/device/${deviceID2}`,
+            { params: { expand: 2 } }
         );
 
         expect(network.device.length).toBe(2);
@@ -1318,12 +1372,34 @@ describe('network', () => {
     });
 
     it('can load all items after using a filter', async () => {
-        mockedAxios.post.mockResolvedValue(
+        const networkID = '11c73ade-ddf0-4bd1-8ad5-c3d05dd1dd1f';
+        mockedAxios.post.mockResolvedValueOnce(
             makeResponse(responses['network_filter'])
         );
-        mockedAxios.get.mockResolvedValue(
-            makeResponse(responses['network_reload'])
-        );
+        mockedAxios.get
+            .mockResolvedValueOnce(makeResponse(responses['network_reload']))
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeValueResponse({
+                        id: 'fcd2db59-3a61-482c-b322-a49b35c4c8fe',
+                    })
+                )
+            )
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeValueResponse({
+                        id: '83b28292-c4d6-4126-9b83-8430a000febf',
+                    })
+                )
+            )
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeValueResponse({
+                        id: '3e608a81-02f7-4acc-b02c-74aae728c945',
+                    })
+                )
+            )
+            .mockResolvedValue(makeResponse({ test: 'test' }));
 
         const networks = await Network.findAllByFilter({
             device: { manufacturer: 'Seluxit' },
@@ -1332,18 +1408,42 @@ describe('network', () => {
                 number: { max: 85, min: { operator: '!~', value: 5 } },
             },
         });
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
 
         expect(networks[0].device.length).toBe(1);
         expect(networks[0].device[0].value.length).toBe(1);
 
         const res = await networks[0].reload(true);
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            `/2.1/network/${networkID}`,
+            { params: { expand: 3 } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            `/2.1/value/fcd2db59-3a61-482c-b322-a49b35c4c8fe`,
+            { params: { expand: 1 } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            `/2.1/value/83b28292-c4d6-4126-9b83-8430a000febf`,
+            { params: { expand: 1 } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            4,
+            `/2.1/value/3e608a81-02f7-4acc-b02c-74aae728c945`,
+            { params: { expand: 1 } }
+        );
+        //expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/network');
+
         expect(res).toBe(true);
         expect(networks[0].device.length).toBe(1);
         expect(networks[0].device[0].value.length).toBe(4);
-
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
             '/2.1/network',

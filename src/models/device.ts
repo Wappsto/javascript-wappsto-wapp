@@ -154,17 +154,18 @@ export class Device extends ConnectionModel implements IDevice {
                         }
                     } else {
                         if (data) {
-                            const newModel = await getModel('Value', id);
-                            if (newModel) {
-                                newValue = newModel as Value;
-                            } else {
-                                newValue = new Value();
-                            }
+                            const newValue = ((await getModel('value', id)) ??
+                                new Value()) as Value;
                             newValue.parse(data);
                             newValue.parent = this;
                             this.value.push(newValue);
-                            await newValue.loadAllChildren(data, false);
-                            newValue = addModel(newValue) as Value;
+                            proms.push(
+                                new Promise(async (resolve) => {
+                                    await newValue.loadAllChildren(data, false);
+                                    addModel(newValue);
+                                    resolve();
+                                })
+                            );
                         } else {
                             this.value.push(values[i] as Value);
                         }
@@ -200,13 +201,15 @@ export class Device extends ConnectionModel implements IDevice {
     async #createValue(params: ValueType): Promise<Value> {
         let oldType;
 
-        let value = new Value();
+        let value: Value;
         const values = this.findValueByName(params.name);
         if (values.length !== 0) {
             printDebug(`Using existing value with id ${values[0].id()}`);
             value = values[0];
 
             oldType = value.getValueType();
+        } else {
+            value = new Value();
         }
 
         const disableLog = params.disableLog;

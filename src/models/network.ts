@@ -140,7 +140,7 @@ export class Network extends ConnectionModel implements INetwork {
                     devices = json[0].device as (Device | string)[];
                 } else {
                     printWarning(
-                        `Network: loadAllChildren: device not found in json: ${json}`
+                        `Network: loadAllChildren: the key 'device' not found in json: ${json[0]}`
                     );
                 }
             }
@@ -173,17 +173,21 @@ export class Network extends ConnectionModel implements INetwork {
                         }
                     } else {
                         if (data) {
-                            const newModel = await getModel('Device', id);
-                            if (newModel) {
-                                newDevice = newModel as Device;
-                            } else {
-                                newDevice = new Device();
-                            }
+                            const newDevice = ((await getModel('device', id)) ??
+                                new Device()) as Device;
                             newDevice.parse(data);
                             newDevice.parent = this;
                             this.device.push(newDevice);
-                            await newDevice.loadAllChildren(data, false);
-                            newDevice = addModel(newDevice) as Device;
+                            proms.push(
+                                new Promise(async (resolve) => {
+                                    await newDevice.loadAllChildren(
+                                        data,
+                                        false
+                                    );
+                                    addModel(newDevice);
+                                    resolve();
+                                })
+                            );
                         } else {
                             this.device.push(devices[i] as Device);
                         }
@@ -218,11 +222,13 @@ export class Network extends ConnectionModel implements INetwork {
     public async createDevice(params: IDevice): Promise<Device> {
         this.validate('createDevice', arguments);
 
-        let device = new Device();
+        let device: Device;
         const devices = this.findDeviceByName(params.name);
         if (devices.length !== 0) {
             printDebug(`Using existing device with id ${devices[0].id()}`);
             device = devices[0];
+        } else {
+            device = new Device();
         }
 
         const oldJson = device.toJSON();
