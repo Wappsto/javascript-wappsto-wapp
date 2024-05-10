@@ -1466,6 +1466,7 @@ describe('Ontology', () => {
                         to: {
                             state: [
                                 '0cce27ee-46ad-4296-b61e-7f7765e3edf3',
+                                '7acb2d49-6716-4ea5-b4a6-2a98f5b7715b',
                                 '7c7171b7-db9c-4418-8e29-2e76c42597b0',
                             ],
                         },
@@ -1485,6 +1486,12 @@ describe('Ontology', () => {
                         },
                     },
                 ])
+            )
+            .mockRejectedValueOnce(
+                makeErrorResponse({
+                    message: 'Invalid state',
+                    code: 123,
+                })
             )
             .mockRejectedValueOnce(
                 makeErrorResponse({
@@ -1530,20 +1537,26 @@ describe('Ontology', () => {
             'WAPPSTO ERROR: Permission.reload - Unhandled code: Invalid state ()'
         );
         console.error = orgError;
-        expect(console.warn).toHaveBeenLastCalledWith(
+        expect(console.warn).toHaveBeenNthCalledWith(
+            1,
             'WAPPSTO WARN: Failed to load state model with id 0cce27ee-46ad-4296-b61e-7f7765e3edf3'
+        );
+        expect(console.warn).toHaveBeenNthCalledWith(
+            2,
+            'WAPPSTO WARN: Failed to load state model with id 7acb2d49-6716-4ea5-b4a6-2a98f5b7715b'
         );
         console.warn = orgWarn;
 
-        expect(edges[0].failedModels['state'][0]).toEqual(
-            '0cce27ee-46ad-4296-b61e-7f7765e3edf3'
-        );
+        expect(edges[0].failedModels['state']).toEqual([
+            '0cce27ee-46ad-4296-b61e-7f7765e3edf3',
+            '7acb2d49-6716-4ea5-b4a6-2a98f5b7715b',
+        ]);
         expect(edges[1].failedModels).toEqual({});
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(5);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
@@ -1566,7 +1579,7 @@ describe('Ontology', () => {
         );
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             3,
-            '/2.1/state/7c7171b7-db9c-4418-8e29-2e76c42597b0',
+            '/2.1/state/7acb2d49-6716-4ea5-b4a6-2a98f5b7715b',
             {
                 params: {
                     expand: 0,
@@ -1575,6 +1588,15 @@ describe('Ontology', () => {
         );
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             4,
+            '/2.1/state/7c7171b7-db9c-4418-8e29-2e76c42597b0',
+            {
+                params: {
+                    expand: 0,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            5,
             '/2.1/state/1e5eb75f-0912-4858-9ad5-89fb21787768',
             {
                 params: {
