@@ -37,6 +37,7 @@
         "size": "size-limit",
         "start": "dts watch",
         "test": "dts test --maxWorkers=50% --coverage",
+        "test:nocov": "dts test",
         "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
         "documentation": "typedoc && yarn documentation:fix",
         "documentation:fix": "./fix_docs.sh",
