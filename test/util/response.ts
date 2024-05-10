@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { JSONObject } from '../../src';
+import { randomUUID } from 'crypto';
 
 const directoryPath = path.join(__dirname, 'json');
 const data: Record<string, JSONObject> = {};
@@ -25,20 +26,91 @@ fs.readdir(directoryPath, function (err, files) {
 
 export { data as responses };
 
-const simpleNetworkResponse = {
-    meta: {
-        type: 'network',
-        version: '2.1',
-        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
-    },
-    name: 'test',
-};
+export function makeNetworkResponse(options?: {
+    name?: string;
+    id?: string;
+    connection?: boolean;
+    devices?: (JSONObject | string)[];
+}) {
+    return {
+        meta: {
+            type: 'network',
+            version: '2.1',
+            id: options?.id || randomUUID(),
+            connection: options?.connection
+                ? {
+                      online: true,
+                      timestamp: '',
+                  }
+                : undefined,
+        },
+        name: options?.name || 'test',
+        device: options?.devices || [],
+    };
+}
+
+export function makeDeviceResponse(options?: {
+    name?: string;
+    id?: string;
+    values?: (JSONObject | string)[];
+}) {
+    return {
+        meta: {
+            type: 'device',
+            version: '2.1',
+            id: options?.id || randomUUID(),
+        },
+        name: options?.name || 'test',
+        value: options?.values || [],
+    };
+}
+
+export function makeValueResponse(options?: {
+    name?: string;
+    id?: string;
+    permission?: string;
+    type?: string;
+    unit?: string;
+    states?: (JSONObject | string)[];
+}) {
+    return {
+        meta: {
+            type: 'value',
+            version: '2.1',
+            id: options?.id || randomUUID(),
+        },
+        name: options?.name || 'test',
+        permission: options?.permission || 'rw',
+        type: options?.type || 'number',
+        period: '0',
+        delta: '0',
+        state: options?.states || [],
+    };
+}
+
+export function makeStateResponse(options?: {
+    type?: string;
+    id?: string;
+    data?: string;
+    timestamp?: string;
+}) {
+    return {
+        meta: {
+            type: 'state',
+            version: '2.1',
+            id: options?.id || randomUUID(),
+        },
+        type: options?.type || 'Report',
+        data: options?.data || 'NA',
+        timestamp: options?.timestamp || '0',
+    };
+}
 
 const fullNetworkResponse = {
     meta: {
         type: 'network',
         version: '2.1',
-        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+        id: '9937a47a-d9b8-4fc9-9f29-de79d168ea76',
         connection: {
             online: true,
             timestamp: '',
@@ -98,7 +170,7 @@ const fullNetworkResponseUpdated = {
     meta: {
         type: 'network',
         version: '2.1',
-        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+        id: '9937a47a-d9b8-4fc9-9f29-de79d168ea76',
         connection: {
             online: true,
             timestamp: '',
@@ -439,5 +511,4 @@ export {
     fullNetworkResponseUpdated,
     powerPriceListResponse,
     signalRequest,
-    simpleNetworkResponse,
 };
