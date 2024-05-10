@@ -36,7 +36,7 @@ export function printWarning(message: string): void {
     console.warn(`WAPPSTO WARN: ${message}`);
 }
 
-export function printStream(message: string, ...args: any[]): void {
+export function printStream(message: string, ...args: unknown[]): void {
     if (_config.stream) {
         console.log(`WAPPSTO STREAM: ${message}`, ...args);
     }

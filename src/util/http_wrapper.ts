@@ -93,7 +93,7 @@ export function getErrorResponse(error: AxiosError | unknown) {
 
 export function getErrorMessage(error: any | Error | AxiosError): string {
     /* istanbul ignore next */
-    if (error.errno && error.errno === -111) {
+    if ('errno' in error && 'address' in error && error.errno === -111) {
         return `Failed to connect to ${error.address}`;
     }
 
@@ -101,7 +101,10 @@ export function getErrorMessage(error: any | Error | AxiosError): string {
         return error.toString();
     }
 
-    if (axios.isAxiosError(error) || (error.response && error.response.data)) {
+    if (
+        axios.isAxiosError(error) ||
+        ('response' in error && 'data' in error.response)
+    ) {
         const data = error.response.data as {
             code: number;
             data?: JSONObject;
@@ -133,11 +136,14 @@ export function getErrorMessage(error: any | Error | AxiosError): string {
     return `Unknown error: ${toSafeString(error)}`;
 }
 
-export function printHttpError(message: string, error: any): string {
+export function printHttpError(
+    message: string,
+    error: unknown | AxiosError
+): string {
     const msg = getErrorMessage(error);
     printError(`${message}: ${msg}`);
 
-    if (error.status === 503) {
+    if ((error as AxiosError).status === 503) {
         fatalError('Got a SERVICE UNAVAILABLE response from the backend');
     }
 

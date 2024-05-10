@@ -21,7 +21,7 @@ export class PermissionModel extends OntologyModel {
         data: StreamData,
         options?: JSONObject
     ): Promise<boolean | undefined> {
-        const notification = Notification.fromArray([data as any]);
+        const notification = Notification.fromArray([data]);
 
         /* istanbul ignore next */
         if (!notification || !notification[0]) {
@@ -203,7 +203,7 @@ export class PermissionModel extends OntologyModel {
             openStream.subscribeService(
                 '/notification',
                 async (data: StreamData) => {
-                    const notification = Notification.fromArray([data as any]);
+                    const notification = Notification.fromArray([data]);
                     /* istanbul ignore next */
                     if (!notification || !notification[0]) {
                         return;

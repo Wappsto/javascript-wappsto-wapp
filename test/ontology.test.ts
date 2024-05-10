@@ -11,6 +11,7 @@ import {
     createNode,
     getAllNodes,
     ValueTemplate,
+    IOntologyEdge,
 } from '../src/index';
 import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
@@ -1424,7 +1425,7 @@ describe('Ontology', () => {
         const networks = await Network.fetchByName('EMS Configurator');
         const network = networks[0];
 
-        const promises: Promise<any>[] = [];
+        const promises: Promise<IOntologyEdge[]>[] = [];
         promises.push(network.getAllEdges(true));
         network.device.forEach((dev: Device) => {
             promises.push(dev.getAllEdges(true));

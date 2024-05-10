@@ -15,6 +15,7 @@ import {
     signalBackground,
     signalForeground,
     waitForBackground,
+    JSONObject,
 } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { signalRequest } from './util/response';
@@ -250,8 +251,8 @@ describe('ExtSync stream', () => {
     });
 
     it('can send to background and foreground', async () => {
-        let responseForeground = undefined;
-        let responseBackground = undefined;
+        let responseForeground: JSONObject | undefined = undefined;
+        let responseBackground: JSONObject | undefined = undefined;
         const msg = { test: 'test message' };
         const res = { result: 'true' };
         const funF = jest.fn();
@@ -268,12 +269,12 @@ describe('ExtSync stream', () => {
             .mockResolvedValueOnce(makeResponse(res));
 
         const backgroundPromise = fromBackground(funB);
-        sendToForeground<any, any>(msg).then((result) => {
+        sendToForeground<JSONObject, JSONObject>(msg).then((result) => {
             responseForeground = result;
         });
 
         const foregroundPromise = fromForeground(funF);
-        sendToBackground<any, any>(msg).then((result) => {
+        sendToBackground<JSONObject, JSONObject>(msg).then((result) => {
             responseBackground = result;
         });
 
@@ -386,7 +387,7 @@ describe('ExtSync stream', () => {
     });
 
     it('can use webhook and sendToForeground', async () => {
-        let responseForeground = undefined;
+        let responseForeground: JSONObject | undefined = undefined;
         const msg = { test: 'test message' };
         const res = { result: 'true' };
         const funWeb = jest.fn();
@@ -404,7 +405,7 @@ describe('ExtSync stream', () => {
 
         const webPromise = onWebHook(funWeb);
         const backgroundPromise = fromBackground(funFore);
-        sendToForeground<any, any>(msg).then((result) => {
+        sendToForeground<JSONObject, JSONObject>(msg).then((result) => {
             responseForeground = result;
         });
 
@@ -908,13 +909,13 @@ describe('ExtSync stream', () => {
 
         const result: Array<number> = [];
 
-        fromForeground<any>(async (event) => {
+        fromForeground<JSONObject>(async (event) => {
             let res;
             if (event.test === 'correct') {
                 await new Promise((r) => setTimeout(r, 10));
                 res = { status: 'ok' };
             }
-            result.push(event.test);
+            result.push(event.test as number);
             return res;
         });
 

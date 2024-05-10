@@ -125,7 +125,7 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * Retrieves the value associated with the given name.
      *
      * @param {string | string[]} name - The name of the value to retrieve.
-     * @return {any} The value associated with the given name.
+     * @return {T} The value associated with the given name.
      */
     get(name: string): T | undefined;
     get(name: string[]): (T | undefined)[];
@@ -138,7 +138,7 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * Retrieves the secret value associated with the given name.
      *
      * @param {string | string[]} name - The name of the secret value to retrieve.
-     * @return {any} The secret value associated with the given name, or undefined if the value is not found.
+     * @return {T} The secret value associated with the given name, or undefined if the value is not found.
      */
     getSecret(name: string): T | undefined;
     getSecret(name: string[]): (T | undefined)[];
@@ -163,7 +163,7 @@ export class WappStorage<T = unknown> implements IWappStorage {
     /**
      * Returns an array of all the values in the storage
      *
-     * @return {Array<any>} An array of values.
+     * @return {Array<T>} An array of values.
      */
     values() {
         return this.#data.values();

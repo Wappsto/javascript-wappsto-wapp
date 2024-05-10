@@ -8,7 +8,7 @@ let stopExtSync = false;
 type consoleEvent = { type: string; data: string | JSONObject };
 let debugQueue: consoleEvent[] = [];
 
-function generateConsoleMessage(key: string, ...args: any[]): any {
+function generateConsoleMessage(key: string, ...args: unknown[]) {
     const time = new Date().toISOString();
     const data = {
         type: key,
@@ -21,7 +21,7 @@ function generateConsoleMessage(key: string, ...args: any[]): any {
     return data;
 }
 
-async function sendConsoleEvent(event: consoleEvent): Promise<any> {
+async function sendConsoleEvent(event: consoleEvent) {
     let res;
     try {
         res = await wappsto.post(`/2.1/console/${event.type}`, event.data);
@@ -65,7 +65,7 @@ async function sendDebugQueue() {
 }
 
 function newFunc(name: string) {
-    return function (...args: any[]) {
+    return function (...args: unknown[]) {
         if (process.env.DISABLE_LOG === undefined && !stopExtSync) {
             debugQueue.push(generateConsoleMessage(name, arguments));
             if (debugQueue.length === 1) {

@@ -81,7 +81,7 @@ export class Stream extends Model {
             !this.websocketUrl.startsWith('http') &&
             typeof window === 'object'
         ) {
-            const w = window as any;
+            const w = window;
             if (w.location && w.location.origin) {
                 this.websocketUrl = `${w.location.origin}${this.websocketUrl}`;
             }
@@ -101,7 +101,7 @@ export class Stream extends Model {
         this.#onRequestEvents = { 0: [], 1: [] };
         this.#waiting = [];
         this.#backOff = 1;
-        Object.values(this.#rpc_response).forEach((resolve: any) => {
+        Object.values(this.#rpc_response).forEach((resolve) => {
             printStream('Clean up', resolve);
             resolve(false);
         });
