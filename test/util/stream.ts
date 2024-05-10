@@ -15,6 +15,7 @@ export function after(mockedAxios?: jest.Mocked<AxiosStatic>) {
     // console.log('********* TEST DONE **********');
     clearTimeout(autoTimer);
     jest.clearAllMocks();
+    jest.resetAllMocks();
     if (mockedAxios) {
         mockedAxios.get.mockClear();
         mockedAxios.post.mockClear();
@@ -32,8 +33,6 @@ export function after(mockedAxios?: jest.Mocked<AxiosStatic>) {
 
 export function before() {
     stopLogging();
-    console.error = jest.fn();
-    console.warn = jest.fn();
     openStream.websocketUrl = 'ws://localhost:12345';
 }
 

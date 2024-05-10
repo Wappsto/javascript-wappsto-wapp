@@ -61,6 +61,7 @@ describe('ExtSync stream', () => {
     });
 
     it('can signal that the background is ready', async () => {
+        mockedAxios.post.mockResolvedValueOnce(makeResponse({}));
         await server.connected;
 
         await expect(server).toReceiveMessage(
@@ -632,6 +633,8 @@ describe('ExtSync stream', () => {
 
         await Promise.all([backgroundPromise, foregroundPromise]);
 
+        const orgError = console.error;
+        console.error = jest.fn();
         server.send({
             meta_object: {
                 type: 'extsync',
@@ -646,6 +649,11 @@ describe('ExtSync stream', () => {
             },
         });
         await new Promise((r) => setTimeout(r, 1));
+        expect(console.error).toHaveBeenLastCalledWith(
+            expect.stringContaining(
+                'WAPPSTO ERROR: TypeError: msg.berror is not a function'
+            )
+        );
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
@@ -672,6 +680,13 @@ describe('ExtSync stream', () => {
             },
         });
         await new Promise((r) => setTimeout(r, 1));
+
+        expect(console.error).toHaveBeenLastCalledWith(
+            expect.stringContaining(
+                'WAPPSTO ERROR: TypeError: msg.ferror is not a function'
+            )
+        );
+        console.error = orgError;
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
@@ -700,7 +715,14 @@ describe('ExtSync stream', () => {
             makeErrorResponse({ code: 507000000 })
         );
 
+        const orgError = console.error;
+        console.error = jest.fn();
         const res = await sendToForeground('test');
+
+        expect(console.error).toHaveBeenLastCalledWith(
+            'WAPPSTO ERROR: Failed to send request ({"type":"background","message":"test"}) because: Timeout, waiting for response on extsync request'
+        );
+        console.error = orgError;
 
         expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
             message: 'test',
@@ -768,7 +790,13 @@ describe('ExtSync stream', () => {
     });
 
     it('can timeout waiting for background', async () => {
+        const orgError = console.error;
+        console.error = jest.fn();
         const p = await waitForBackground(1);
+        expect(console.error).toHaveBeenLastCalledWith(
+            "WAPPSTO ERROR: Failed to send isBackgroundStarted event () because: TypeError: Cannot read properties of undefined (reading 'data')"
+        );
+        console.error = orgError;
         expect(p).toBe(false);
     });
 
@@ -830,10 +858,16 @@ describe('ExtSync stream', () => {
             path: '/extsync/direct',
         });
 
+        const orgError = console.error;
+        console.error = jest.fn();
         const res = await p;
 
-        expect(res).toBe(true);
+        expect(console.error).toHaveBeenLastCalledWith(
+            "WAPPSTO ERROR: Failed to send isBackgroundStarted event () because: TypeError: Cannot read properties of undefined (reading 'data')"
+        );
+        console.error = orgError;
 
+        expect(res).toBe(true);
         const p2 = waitForBackground();
 
         server.send({

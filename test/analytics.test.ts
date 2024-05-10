@@ -300,7 +300,11 @@ describe('analytics', () => {
 
     it('can handle error when calling analytics', async () => {
         mockedAxios.post.mockRejectedValueOnce(
-            makeErrorResponse({ message: 'error' })
+            makeErrorResponse(
+                { message: 'error' },
+                'Reject POST',
+                'can handle error when calling analytics'
+            )
         );
 
         const value = new Value('test');
@@ -312,6 +316,8 @@ describe('analytics', () => {
             '2022-02-02T02:02:02Z'
         );
 
+        const orgError = console.error;
+        console.error = jest.fn();
         let data;
         let err;
         try {
@@ -319,6 +325,11 @@ describe('analytics', () => {
         } catch (e) {
             err = e;
         }
+
+        expect(console.error).toHaveBeenLastCalledWith(
+            'WAPPSTO ERROR: Permission.create - Unhandled code: Reject POST for can handle error when calling analytics'
+        );
+        console.error = orgError;
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(data).toBeUndefined();
@@ -326,7 +337,13 @@ describe('analytics', () => {
     });
 
     it('can handle unknown error when calling analytics', async () => {
-        mockedAxios.post.mockRejectedValueOnce(makeErrorResponse({}));
+        mockedAxios.post.mockRejectedValueOnce(
+            makeErrorResponse(
+                {},
+                'Reject POST',
+                'can handle unknown error when calling analytics'
+            )
+        );
 
         const value = new Value('test');
         const state = new State('Report');
@@ -337,6 +354,8 @@ describe('analytics', () => {
             '2022-02-02T02:02:02Z'
         );
 
+        const orgError = console.error;
+        console.error = jest.fn();
         let data;
         let err;
         try {
@@ -344,6 +363,11 @@ describe('analytics', () => {
         } catch (e) {
             err = e;
         }
+
+        expect(console.error).toHaveBeenLastCalledWith(
+            'WAPPSTO ERROR: Permission.create - Unhandled code: Reject POST for can handle unknown error when calling analytics'
+        );
+        console.error = orgError;
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(data).toBeUndefined();

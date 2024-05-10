@@ -199,7 +199,7 @@ describe('Ontology', () => {
                 makeResponse([
                     {
                         meta: {
-                            id: 'd98e784e-0bb3-4693-899c-1071483b857e',
+                            id: 'ee155377-566d-4c7a-a517-6e6d1eb1ff7e',
                             type: 'ontology',
                             version: '2.1',
                         },
@@ -643,7 +643,7 @@ describe('Ontology', () => {
             makeResponse([
                 {
                     meta: {
-                        id: 'd98e784e-0bb3-4693-899c-1071483b857e',
+                        id: '022fcd88-91ba-46cf-b53f-4268e6ce4196',
                         type: 'ontology',
                         version: '2.1',
                     },
@@ -877,7 +877,7 @@ describe('Ontology', () => {
                 makeResponse([
                     {
                         meta: {
-                            id: 'b0553348-deac-4ed8-a546-f72346a60bb0',
+                            id: '38248e1b-4b00-4721-b194-4c6147f6dd4d',
                             type: 'ontology',
                             version: '2.1',
                         },
@@ -940,7 +940,6 @@ describe('Ontology', () => {
         );
 
         const leafs = await node1.transverse('*', true);
-
         expect(leafs.length).toBe(1);
         expect(leafs[0].id()).toBe('f0a9683f-da8b-4fe6-9925-2e6768ddedeb');
         expect(mockedAxios.get).toHaveBeenCalledTimes(6);
@@ -1000,7 +999,7 @@ describe('Ontology', () => {
                     meta: {
                         type: 'network',
                         version: '2.1',
-                        id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                        id: '59ec0368-cacd-4dd6-a633-03402732d1ef',
                         connection: {
                             online: true,
                             timestamp: '',
@@ -1019,7 +1018,7 @@ describe('Ontology', () => {
                             value: [
                                 {
                                     meta: {
-                                        id: 'c5a73d64-b398-434e-a236-df15342339d5',
+                                        id: '9ed44936-96f7-44b4-8880-aa0a197d89f0',
                                         version: '2.1',
                                         type: 'value',
                                     },
@@ -1230,7 +1229,7 @@ describe('Ontology', () => {
                             '6e6e868f-9cd6-4a7c-a324-b5e3225ac849',
                         ],
                         value: [
-                            'c5a73d64-b398-434e-a236-df15342339d5',
+                            '9ed44936-96f7-44b4-8880-aa0a197d89f0',
                             'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                             'f90fa9aa-05e4-434b-99a8-b5790649d2e7',
                             '4f302dae-1d0b-4278-b195-0cb4794f4123',
@@ -1245,7 +1244,7 @@ describe('Ontology', () => {
                             '008dddc7-24b7-4be6-a9c8-4b197d845a1f',
                         ],
                         network: [
-                            'b62e285a-5188-4304-85a0-3982dcb575bc',
+                            '59ec0368-cacd-4dd6-a633-03402732d1ef',
                             'c7053fdc-ace2-4cb5-8e61-06fc1d5846f0',
                         ],
                     },
@@ -1273,13 +1272,13 @@ describe('Ontology', () => {
                 makeResponse([
                     {
                         meta: {
-                            id: '8f364a18-34e2-480b-ade5-90f7c146d592',
+                            id: 'b62eca33-94a2-476e-b594-0c6c0f6ddb67',
                             type: 'ontology',
                             version: '2.1',
                         },
                         relationship: 'child',
                         to: {
-                            device: ['e65ec3eb-04f1-4253-bd1b-b989b1204b81'],
+                            device: [fullNetworkResponse.device[0].meta.id],
                         },
                     },
                 ])
@@ -1301,7 +1300,7 @@ describe('Ontology', () => {
         });
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             2,
-            '/2.1/network/b62e285a-5188-4304-85a0-3982dcb575bc/ontology',
+            `/2.1/network/${fullNetworkResponse.meta.id}/ontology`,
             { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
         );
 
@@ -1455,7 +1454,7 @@ describe('Ontology', () => {
                 makeResponse([
                     {
                         meta: {
-                            id: 'd98e784e-0bb3-4693-899c-1071483b857e',
+                            id: 'e3cc57ed-982d-4fad-9abc-8762ff6a92ef',
                             type: 'ontology',
                             version: '2.1',
                         },
@@ -1520,7 +1519,20 @@ describe('Ontology', () => {
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
 
+        const orgError = console.error;
+        console.error = jest.fn();
+        const orgWarn = console.warn;
+        console.warn = jest.fn();
         const edges = await network.getAllEdges();
+
+        expect(console.error).toHaveBeenLastCalledWith(
+            'WAPPSTO ERROR: Permission.reload - Unhandled code: Invalid state ()'
+        );
+        console.error = orgError;
+        expect(console.warn).toHaveBeenLastCalledWith(
+            'WAPPSTO WARN: Failed to load state model with id 0cce27ee-46ad-4296-b61e-7f7765e3edf3'
+        );
+        console.warn = orgWarn;
 
         expect(edges[0].failedModels['state'][0]).toEqual(
             '0cce27ee-46ad-4296-b61e-7f7765e3edf3'

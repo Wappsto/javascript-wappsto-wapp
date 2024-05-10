@@ -155,10 +155,17 @@ describe('stream', () => {
 
         await Promise.all([p1, p2, p3, p4, p5]);
 
+        const orgError = console.error;
+        console.error = jest.fn();
         server.send({
             jsonrpc: '2.1',
             error: 'stream error',
         });
+
+        expect(console.error).toHaveBeenLastCalledWith(
+            'WAPPSTO ERROR: Stream rpc error: stream error'
+        );
+        console.error = orgError;
 
         server.send([
             {
@@ -498,7 +505,14 @@ describe('stream', () => {
 
         await reportPromise;
 
+        const orgError = console.error;
+        console.error = jest.fn();
         server.error();
+        expect(console.error).toHaveBeenLastCalledWith(
+            'WAPPSTO ERROR: Stream error: ws://localhost:12345'
+        );
+        console.error = orgError;
+
         server = newWServer();
         await server.connected;
 
@@ -694,7 +708,7 @@ describe('stream', () => {
                         selected: [
                             {
                                 meta: {
-                                    id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                                    id: 'bb9defdd-5139-444a-9e32-097936b139dc',
                                 },
                             },
                         ],
@@ -721,7 +735,7 @@ describe('stream', () => {
                         selected: [
                             {
                                 meta: {
-                                    id: 'b62e285a-5188-4304-85a0-3982dcb575bc',
+                                    id: '69e8560f-43b3-4fa6-9c12-4ad1c0e8fdb6',
                                 },
                             },
                         ],

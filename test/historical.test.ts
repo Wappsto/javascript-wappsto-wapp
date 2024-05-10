@@ -5,7 +5,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Value, State, LogValues } from '../src/index';
 import { before, after } from './util/stream';
-import { makeResponse } from './util/helpers';
+import { makeErrorResponse, makeResponse } from './util/helpers';
 
 describe('historical', () => {
     beforeAll(() => {
@@ -69,6 +69,13 @@ describe('historical', () => {
                         type: 'state',
                     },
                 ])
+            )
+            .mockRejectedValueOnce(
+                makeErrorResponse(
+                    {},
+                    'Reject last control log',
+                    'can get log data'
+                )
             );
 
         const value = new Value();
@@ -85,12 +92,19 @@ describe('historical', () => {
         const logsR = await value.getReportLog({ limit: 1, end: d });
         const logsMax = await value.getReportLog({ operation: 'max' });
         const logsC = await value.getControlLog({ start: d });
+
+        const orgError = console.error;
+        console.error = jest.fn();
         let failLog = false;
         try {
             await value.getControlLog({ end: '2022-02-02T02:02:02Z' });
         } catch (e) {
             failLog = true;
         }
+        expect(console.error).toHaveBeenLastCalledWith(
+            'WAPPSTO ERROR: Model.fetch: Reject last control log for can get log data'
+        );
+        console.error = orgError;
 
         expect(failLog).toBe(true);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
