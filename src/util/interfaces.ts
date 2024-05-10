@@ -93,6 +93,8 @@ export interface IModel {
     removeChild(child: IModel): void;
     addChildrenToStore(): void;
     setParent(parent?: IModel): void;
+    parse(json: Record<string, unknown>): boolean;
+    toJSON(customKeys?: string[]): JSONObject;
 }
 
 export interface IModelFunc {

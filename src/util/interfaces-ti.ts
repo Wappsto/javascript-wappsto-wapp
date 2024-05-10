@@ -106,6 +106,11 @@ export const IModel = t.iface([], {
     removeChild: t.func('void', t.param('child', 'IModel')),
     addChildrenToStore: t.func('void'),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
+    parse: t.func('boolean', t.param('json', 'any')),
+    toJSON: t.func(
+        'JSONObject',
+        t.param('customKeys', t.array('string'), true)
+    ),
 });
 
 export const IModelFunc = t.iface([], {
