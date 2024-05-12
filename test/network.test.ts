@@ -1,20 +1,19 @@
-import WS from 'jest-websocket-mock';
 import axios from 'axios';
+import WS from 'jest-websocket-mock';
+import { Device, Network, Value, config, createNetwork } from '../src/index';
+import { makeErrorResponse, makeResponse } from './util/helpers';
+import {
+    fullNetworkResponse,
+    makeDeviceResponse,
+    makeNetworkResponse,
+    makeStateResponse,
+    makeValueResponse,
+    responses,
+} from './util/response';
+import { after, before, newWServer, sendRpcResponse } from './util/stream';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { createNetwork, Network, Device, Value, config } from '../src/index';
-import { before, after, newWServer, sendRpcResponse } from './util/stream';
-import {
-    makeNetworkResponse,
-    fullNetworkResponse,
-    fullNetworkResponseUpdated,
-    responses,
-    makeDeviceResponse,
-    makeStateResponse,
-    makeValueResponse,
-} from './util/response';
-import { makeErrorResponse, makeResponse } from './util/helpers';
 
 const responseOffline = {
     meta: {
@@ -44,58 +43,6 @@ const response2Networks = [
         name: 'test',
     },
 ];
-const responseHalf = {
-    meta: {
-        type: 'network',
-        version: '2.1',
-        id: '678d8081-31d3-47e2-8ed2-d5a26eef942e',
-    },
-    name: 'Network Name',
-    device: [
-        {
-            meta: {
-                id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
-                version: '2.1',
-                type: 'device',
-            },
-            name: 'Device Name',
-            product: 'Device Product',
-            value: [
-                {
-                    meta: {
-                        id: 'c5a73d64-b398-434e-a236-df15342339d5',
-                        version: '2.1',
-                        type: 'value',
-                    },
-                    name: 'Value Name',
-                    state: [
-                        {
-                            meta: {
-                                id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
-                                version: '2.1',
-                                type: 'state',
-                            },
-                            type: 'Report',
-                        },
-                        '9ee509d7-07ce-4e71-9016-340d53867af4',
-                    ],
-                },
-                'ffeed32d-c8f4-47f9-b12b-ce7d9f2342ca',
-            ],
-        },
-        'd9fd72a2-fd2e-4079-b114-d8927f88d9ab',
-        'b8b4864c-1da5-41db-8fd3-22191176b266',
-        {
-            meta: {
-                id: '9d46c607-9800-475c-8115-e7d32b8f56ec',
-                version: '2.1',
-                type: 'device',
-            },
-            name: 'Device Name',
-            product: 'Device Product',
-        },
-    ],
-};
 
 describe('network', () => {
     let server: WS;
