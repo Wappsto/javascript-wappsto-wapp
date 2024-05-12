@@ -137,7 +137,6 @@ export class Device extends ConnectionModel implements IDevice {
                 for (let i = 0; i < values.length; i++) {
                     let id: string;
                     let data: JSONObject | undefined = undefined;
-                    let newValue: Value | undefined = undefined;
 
                     if (typeof values[i] === 'string') {
                         id = values[i] as string;

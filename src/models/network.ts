@@ -151,7 +151,6 @@ export class Network extends ConnectionModel implements INetwork {
                 for (let i = 0; i < devices.length; i++) {
                     let id: string;
                     let data: JSONObject | undefined = undefined;
-                    let newDevice: Device | undefined = undefined;
 
                     if (typeof devices[i] === 'string') {
                         id = devices[i] as string;

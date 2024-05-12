@@ -1,4 +1,7 @@
 import axios from 'axios';
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.create = jest.fn(() => mockedAxios);
 import WS from 'jest-websocket-mock';
 import { Device, Network, Value, config, createNetwork } from '../src/index';
 import { makeErrorResponse, makeResponse } from './util/helpers';
@@ -11,9 +14,6 @@ import {
     responses,
 } from './util/response';
 import { after, before, newWServer, sendRpcResponse } from './util/stream';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
 
 const responseOffline = {
     meta: {
