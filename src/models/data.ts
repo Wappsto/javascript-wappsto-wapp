@@ -91,10 +91,10 @@ export class Data<T = unknown> extends StreamModel {
 
     /**
      * Finds instances of the Data model with a specific ID.
-     * @param {string} id - The ID to search for.
-     * @returns {Promise<Data[]>} A Promise that resolves to an array of Data instances matching the provided ID.
+     * @param id - The ID to search for.
+     * @returns A Promise that resolves to an array of Data instances matching the provided ID.
      */
-    public static async findByDataId(id: string): Promise<Data[]> {
+    static async findByDataId(id: string): Promise<Data[]> {
         const json: JSONObject[] = await Model.fetch({
             endpoint: Data.endpoint,
             params: {
@@ -110,7 +110,7 @@ export class Data<T = unknown> extends StreamModel {
         });
     }
 
-    public parse(json: JSONObject): boolean {
+    parse(json: JSONObject): boolean {
         Model.validateMethod('Model', 'parse', arguments);
         if (Array.isArray(json)) {
             json = json[0];
@@ -132,7 +132,7 @@ export class Data<T = unknown> extends StreamModel {
         return !isEqual(oldModel, newModel);
     }
 
-    public toJSON() {
+    toJSON() {
         const result = super.toJSON();
 
         this.oldKeys.forEach((k: string) => {
