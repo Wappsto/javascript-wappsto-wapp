@@ -36,7 +36,7 @@
         "lint:fix": "yarn lint --fix",
         "size": "size-limit",
         "start": "dts watch",
-        "test": "dts test --maxWorkers=50% --coverage",
+        "test": "dts test --coverage",
         "test:nocov": "dts test",
         "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
         "documentation": "typedoc",
