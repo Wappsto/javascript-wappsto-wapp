@@ -160,7 +160,10 @@ export class Device extends ConnectionModel implements IDevice {
                             this.value.push(newValue);
                             proms.push(
                                 new Promise(async (resolve) => {
-                                    await newValue.loadAllChildren(data, false);
+                                    await newValue.loadAllChildren(
+                                        data,
+                                        _reloadAll
+                                    );
                                     addModel(newValue);
                                     resolve();
                                 })

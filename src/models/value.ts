@@ -261,8 +261,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public async reload(_reloadAll = false): Promise<boolean> {
-        return super.reload(false, 1);
+    async reload(_reloadAll = false): Promise<boolean> {
+        return super.reload(_reloadAll, 1);
     }
 
     public async loadAllChildren(
