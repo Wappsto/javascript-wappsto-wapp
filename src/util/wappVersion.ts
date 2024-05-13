@@ -1,6 +1,13 @@
 import { User } from '../models/user';
 import wappsto from '../util/http_wrapper';
 
+/**
+ * Retrieves the version of the installed application.
+ *
+ * @async
+ * @return The version of the installed application. If the installation information is not available,
+ *         the default version '1.0.0' is returned.
+ */
 export default async function getWappVersion(): Promise<string> {
     const me = await User.me();
     if (me?.installation) {

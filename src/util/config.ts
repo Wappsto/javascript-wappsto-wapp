@@ -20,6 +20,12 @@ const _config = new Config();
 
 export { _config };
 
+/**
+ * Configures the behavior of the library.
+ *
+ * @param param - The configuration parameters to set.
+ * @return The updated configuration object.
+ */
 export function config(param: IConfig): Config {
     const m = _checker.IConfigFunc.methodArgs('config');
     if (_config.validation === 'normal') {

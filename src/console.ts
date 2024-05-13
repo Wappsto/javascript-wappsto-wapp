@@ -108,6 +108,13 @@ export function backgroundLogging(): void {
     });
 }
 
+/**
+ * Starts the background logging.
+ *
+ * @deprecated
+ *
+ * @return This function does not return anything.
+ */
 export function startLogging(): void {
     if (console.error === defaultConsole.error && !isBrowser()) {
         backgroundLogging();
@@ -118,6 +125,11 @@ export function startLogging(): void {
     }
 }
 
+/**
+ * Stops the background logging.
+ *
+ * @return This function does not return anything.
+ */
 export function stopLogging(): void {
     Object.assign(console, defaultConsole);
 }
