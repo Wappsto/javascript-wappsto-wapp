@@ -58,7 +58,7 @@ export class Network extends ConnectionModel implements INetwork {
         return Network.attributes;
     }
 
-    public static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
+    static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
         Network.#validate('getFilter', [filter, omit_filter]);
         return convertFilterToJson(
             'network',
@@ -68,10 +68,7 @@ export class Network extends ConnectionModel implements INetwork {
         ).concat(Device.getFilter(filter, omit_filter));
     }
 
-    public static getFilterResult(
-        filter?: Filter,
-        omit_filter?: Filter
-    ): string {
+    static getFilterResult(filter?: Filter, omit_filter?: Filter): string {
         Network.#validate('getFilterResult', [filter, omit_filter]);
         const fields = [Model.getMetaFilterResult()]
             .concat(Network.attributes)
@@ -89,7 +86,7 @@ export class Network extends ConnectionModel implements INetwork {
         )}}`;
     }
 
-    public addChildrenToStore(): void {
+    addChildrenToStore(): void {
         super.addChildrenToStore();
         this.device.forEach((dev: IModel) => {
             if (dev?.addChildrenToStore) {
@@ -98,17 +95,17 @@ export class Network extends ConnectionModel implements INetwork {
         });
     }
 
-    public findDeviceByName(name: string): Device[] {
+    findDeviceByName(name: string): Device[] {
         this.validate('findDeviceByName', arguments);
         return this.device.filter((dev) => dev.name === name);
     }
 
-    public findDeviceByProduct(product: string): Device[] {
+    findDeviceByProduct(product: string): Device[] {
         this.validate('findDeviceByProduct', arguments);
         return this.device.filter((dev) => dev.product === product);
     }
 
-    public findValueByName(name: string): Value[] {
+    findValueByName(name: string): Value[] {
         this.validate('findValueByName', arguments);
         let values: Value[] = [];
         this.device.forEach((dev) => {
@@ -117,7 +114,7 @@ export class Network extends ConnectionModel implements INetwork {
         return values;
     }
 
-    public findValueByType(type: string): Value[] {
+    findValueByType(type: string): Value[] {
         this.validate('findValueByType', arguments);
         let values: Value[] = [];
         this.device.forEach((dev) => {
@@ -126,7 +123,7 @@ export class Network extends ConnectionModel implements INetwork {
         return values;
     }
 
-    public async loadAllChildren(
+    async loadAllChildren(
         json: JSONObject | null,
         reloadAll = false
     ): Promise<void> {
@@ -218,7 +215,7 @@ export class Network extends ConnectionModel implements INetwork {
         await Promise.all(proms);
     }
 
-    public async createDevice(params: IDevice): Promise<Device> {
+    async createDevice(params: IDevice): Promise<Device> {
         this.validate('createDevice', arguments);
 
         let device: Device;
@@ -248,7 +245,7 @@ export class Network extends ConnectionModel implements INetwork {
         return device;
     }
 
-    public parseChildren(json: JSONObject): boolean {
+    parseChildren(json: JSONObject): boolean {
         let res = false;
         const devices = Device.fromArray([json]);
         if (devices.length) {
@@ -258,13 +255,13 @@ export class Network extends ConnectionModel implements INetwork {
         return res;
     }
 
-    public removeChild(child: IModel): void {
+    removeChild(child: IModel): void {
         this.device = this.device.filter((device: Device) => {
             return child !== device;
         });
     }
 
-    public setParent(parent: IModel | undefined): void {
+    setParent(parent: IModel | undefined): void {
         this.parent = parent;
         this.device.forEach((dev) => {
             if (typeof dev === 'object') {
@@ -409,7 +406,7 @@ export class Network extends ConnectionModel implements INetwork {
         );
     };
 
-    public static fetchById = async (id: string) => {
+    static fetchById = async (id: string) => {
         Network.#validate('fetchById', [id]);
         const data = await Model.fetch({
             endpoint: `${Network.endpoint}/${id}`,
@@ -418,9 +415,11 @@ export class Network extends ConnectionModel implements INetwork {
             },
         });
         const networks = Network.fromArray(data);
+        const promises: Promise<void>[] = [];
         for (let i = 0; i < networks.length; i++) {
-            await networks[i].loadAllChildren(null);
+            promises.push(networks[i].loadAllChildren(null));
         }
+        await Promise.all(promises);
         return networks[0];
     };
 
@@ -442,7 +441,7 @@ export class Network extends ConnectionModel implements INetwork {
         return networks;
     };
 
-    public static fetch = async () => {
+    static fetch = async () => {
         const params = { expand: 3 };
         const url = Network.endpoint;
         const data = await Model.fetch({ endpoint: url, params });

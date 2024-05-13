@@ -12,11 +12,11 @@ export class PowerPriceList extends AnalyticsModel {
         this.parameter.provider = 'energidataservice';
     }
 
-    public getUrl(): string {
+    getUrl(): string {
         return '/2.1/analytics/1.0/power_price_list';
     }
 
-    public getResult() {
+    getResult() {
         return this.result.prices;
     }
 }

@@ -91,7 +91,7 @@ export class Stream extends Model {
         this.websocketUrl += `?X-Session=${session}`;
     }
 
-    public reset(): void {
+    reset(): void {
         this.#ignoreReconnect = false;
         this.#opened = false;
         this.#models = {};
@@ -166,7 +166,7 @@ export class Stream extends Model {
         });
     }
 
-    public close(): void {
+    close(): void {
         if (this.#socket) {
             printDebug(`Closing WebSocket on ${this.url()}`);
             this.#ignoreReconnect = true;
@@ -207,10 +207,7 @@ export class Stream extends Model {
         );
     }
 
-    public async subscribe(
-        model: IStreamModel,
-        full = false
-    ): Promise<boolean> {
+    async subscribe(model: IStreamModel, full = false): Promise<boolean> {
         this.validate('subscribe', arguments);
         const path = this.#generatePathFromService(model.path(), full);
 
@@ -228,7 +225,7 @@ export class Stream extends Model {
         return false;
     }
 
-    public async unsubscribe(model: IStreamModel): Promise<boolean> {
+    async unsubscribe(model: IStreamModel): Promise<boolean> {
         this.validate('subscribe', arguments);
         if (this.#models[model.path()]) {
             const index = this.#models[model.path()].indexOf(model);
@@ -241,7 +238,7 @@ export class Stream extends Model {
         return true;
     }
 
-    public async subscribeInternal(
+    async subscribeInternal(
         type: string,
         handler: RequestHandler
     ): Promise<boolean> {
@@ -275,7 +272,7 @@ export class Stream extends Model {
         return path;
     }
 
-    public async subscribeService(
+    async subscribeService(
         service: string,
         handler: ServiceHandler,
         full = false
@@ -294,7 +291,7 @@ export class Stream extends Model {
         return this.#addSubscription(path);
     }
 
-    public async unsubscribeService(
+    async unsubscribeService(
         service: string,
         handler: ServiceHandler,
         full = false
@@ -316,7 +313,7 @@ export class Stream extends Model {
         return res;
     }
 
-    public async sendEvent(type: string, msg: JSONValue): Promise<JSONValue> {
+    async sendEvent(type: string, msg: JSONValue): Promise<JSONValue> {
         this.validate('sendEvent', arguments);
 
         let result = {};
@@ -339,7 +336,7 @@ export class Stream extends Model {
         return result;
     }
 
-    public async sendRequest(msg: JSONValue): Promise<JSONValue> {
+    async sendRequest(msg: JSONValue): Promise<JSONValue> {
         this.validate('sendRequest', arguments);
 
         let result = {};
@@ -500,7 +497,7 @@ export class Stream extends Model {
         return false;
     };
 
-    public async onRequest(
+    async onRequest(
         handler: RequestHandler,
         internal: boolean
     ): Promise<boolean> {
@@ -519,7 +516,7 @@ export class Stream extends Model {
         return true;
     }
 
-    public async cancelRequest(
+    async cancelRequest(
         handler: RequestHandler,
         internal: boolean
     ): Promise<boolean> {

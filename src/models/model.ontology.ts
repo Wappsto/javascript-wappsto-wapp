@@ -13,7 +13,7 @@ export class OntologyModel extends Model implements IOntologyModel {
     ontology: Ontology[] = [];
     ontologyLoaded = false;
 
-    public async createEdge(params: IOntology): Promise<Ontology> {
+    async createEdge(params: IOntology): Promise<Ontology> {
         Model.validateMethod('OntologyModel', 'createEdge', arguments);
 
         await this.getAllEdges();
@@ -43,7 +43,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         return onto;
     }
 
-    public async deleteEdges(): Promise<void> {
+    async deleteEdges(): Promise<void> {
         await this.getAllEdges();
 
         while (this.ontology.length) {
@@ -51,7 +51,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
     }
 
-    public async deleteEdge(params: IOntology): Promise<void> {
+    async deleteEdge(params: IOntology): Promise<void> {
         Model.validateMethod('OntologyModel', 'deleteEdge', arguments);
 
         const edge = await this.findEdge(params);
@@ -60,7 +60,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
     }
 
-    public removeEdge(edge: IModel): void {
+    removeEdge(edge: IModel): void {
         Model.validateMethod('OntologyModel', 'removeEdge', arguments);
 
         for (let i = 0; i < this.ontology.length; i++) {
@@ -71,7 +71,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
     }
 
-    public async findEdge(params: IOntology): Promise<Ontology | undefined> {
+    async findEdge(params: IOntology): Promise<Ontology | undefined> {
         await this.getAllEdges();
 
         for (let i = 0; i < this.ontology.length; i++) {
@@ -85,7 +85,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         return undefined;
     }
 
-    public async deleteBranch(): Promise<void> {
+    async deleteBranch(): Promise<void> {
         await this.getAllEdges();
 
         const onto = this.ontology;
@@ -100,7 +100,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
     }
 
-    public async getAllEdges(force?: boolean): Promise<IOntologyEdge[]> {
+    async getAllEdges(force?: boolean): Promise<IOntologyEdge[]> {
         Model.validateMethod('OntologyModel', 'getAllEdges', arguments);
 
         if (!this.ontologyLoaded || force) {
@@ -115,7 +115,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         return this.ontology;
     }
 
-    public async transverse(
+    async transverse(
         path: string,
         getAll?: boolean
     ): Promise<IOntologyModel[]> {

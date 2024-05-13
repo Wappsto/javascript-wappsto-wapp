@@ -78,7 +78,7 @@ export class PermissionModel extends OntologyModel {
         return undefined;
     }
 
-    public create(): Promise<void> {
+    create(): Promise<void> {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 await this._create();
@@ -131,7 +131,7 @@ export class PermissionModel extends OntologyModel {
         return data;
     }
 
-    public static request(options: {
+    static request(options: {
         endpoint: string;
         quantity: number | 'all';
         message: string;
@@ -255,7 +255,7 @@ export class PermissionModel extends OntologyModel {
         });
     }
 
-    public reload(
+    reload(
         reloadAll?: boolean | undefined,
         defaultExpand?: number
     ): Promise<boolean> {

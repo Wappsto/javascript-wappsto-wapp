@@ -7,16 +7,14 @@ export class ConnectionModel extends StreamModel implements IConnectionModel {
     connectionCallbacks: ConnectionCallback[] = [];
     currentStatus = false;
 
-    public isOnline(): boolean {
+    isOnline(): boolean {
         if (this.meta.connection?.online === true) {
             return true;
         }
         return false;
     }
 
-    public async onConnectionChange(
-        callback: ConnectionCallback
-    ): Promise<boolean> {
+    async onConnectionChange(callback: ConnectionCallback): Promise<boolean> {
         Model.validateMethod(
             'ConnectionModel',
             'onConnectionChange',
@@ -41,7 +39,7 @@ export class ConnectionModel extends StreamModel implements IConnectionModel {
         return res;
     }
 
-    public async cancelOnConnectionChange(callback: ConnectionCallback) {
+    async cancelOnConnectionChange(callback: ConnectionCallback) {
         Model.validateMethod(
             'ConnectionModel',
             'cancelOnConnectionChange',

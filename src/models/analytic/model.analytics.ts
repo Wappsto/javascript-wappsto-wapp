@@ -52,16 +52,16 @@ export class AnalyticsModel extends PermissionModel {
         return AnalyticsModel.attributes;
     }
 
-    public toJSON(): JSONObject {
+    toJSON(): JSONObject {
         return pick(this, ['access', 'parameter']);
     }
 
     /* istanbul ignore next */
-    public getResult() {
+    getResult() {
         return this.result;
     }
 
-    public handleStreamData(
+    handleStreamData(
         data: StreamData,
         resolve: (data: AnalyticsResponse) => void
     ): boolean {

@@ -23,12 +23,12 @@ export class User extends Model {
         super('user');
     }
 
-    public static me = async (): Promise<User | undefined> => {
+    static me = async (): Promise<User | undefined> => {
         const users = await User.fetch();
         return users[0];
     };
 
-    public static fetch = async (): Promise<User[]> => {
+    static fetch = async (): Promise<User[]> => {
         const data: JSONObject[] = await Model.fetch({
             endpoint: `${User.endpoint}/me`,
             params: {
@@ -39,11 +39,11 @@ export class User extends Model {
     };
 
     /* eslint-disable @typescript-eslint/require-await */
-    public async create(): Promise<void> {
+    async create(): Promise<void> {
         printError("User can't be created");
     }
 
-    public async update(): Promise<boolean> {
+    async update(): Promise<boolean> {
         printError("User can't be updated");
         return false;
     }

@@ -7,7 +7,7 @@ export class OntologyNode extends Data implements IOntologyNode {
         super(`ontology_node_${name || 'default'}`, 'ontology_node');
     }
 
-    public getClass(): string {
+    getClass(): string {
         if (this.data_meta.type) {
             return this.data_meta.type;
         }

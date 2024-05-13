@@ -14,7 +14,7 @@ export class Notification extends Model {
         super('notification');
     }
 
-    public getIds(): string[] {
+    getIds(): string[] {
         let ids: string[] = [];
         if (this.base?.ids) {
             ids = this.base.ids;

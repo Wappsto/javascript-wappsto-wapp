@@ -35,27 +35,27 @@ export class Model implements IModel {
         this.expand = expand;
     }
 
-    public id(): string {
+    id(): string {
         return this.meta.id || '';
     }
 
-    public getType(): string {
+    getType(): string {
         return this.meta.type || '';
     }
 
-    public getVersion(): string {
+    getVersion(): string {
         return this.meta.version ?? '2.1';
     }
 
-    public url(): string {
+    url(): string {
         return `/${this.getVersion()}/${this.getType()}`;
     }
 
-    public path(): string {
+    path(): string {
         return `/${this.getType()}/${this.id()}`;
     }
 
-    public getClass(): string {
+    getClass(): string {
         return this.getType();
     }
 
@@ -64,30 +64,30 @@ export class Model implements IModel {
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
-    public removeChild(_: IModel): void {}
+    removeChild(_: IModel): void {}
 
     /* istanbul ignore next */
-    public getAttributes(): string[] {
+    getAttributes(): string[] {
         return [];
     }
 
-    public addChildrenToStore(): void {
+    addChildrenToStore(): void {
         addModel(this);
     }
 
-    public setParent(parent?: IModel): void {
+    setParent(parent?: IModel): void {
         Model.validateMethod('Model', 'setParent', arguments);
         this.parent = parent;
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-    public preserve(): void {}
+    preserve(): void {}
 
     /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-    public restore(): void {}
+    restore(): void {}
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public static getMetaFilterResult(_filter?: Filter): string {
+    static getMetaFilterResult(_filter?: Filter): string {
         return 'meta{id type version connection name_by_user}';
     }
 
@@ -95,7 +95,7 @@ export class Model implements IModel {
         Model.validateMethod(this.getType(), name, params);
     }
 
-    public getUrl(): string {
+    getUrl(): string {
         if (this.meta.id) {
             return `${this.url()}/${this.id()}`;
         } else if (this.parent) {
@@ -104,7 +104,7 @@ export class Model implements IModel {
         return this.url();
     }
 
-    public async _create(params: JSONObject = {}): Promise<void> {
+    async _create(params: JSONObject = {}): Promise<void> {
         Model.validateMethod('Model', 'create', arguments);
         if (this.parent) {
             let valid = false;
@@ -137,7 +137,7 @@ export class Model implements IModel {
         addModel(this);
     }
 
-    public async create(params: JSONObject = {}): Promise<void> {
+    async create(params: JSONObject = {}): Promise<void> {
         Model.validateMethod('Model', 'create', arguments);
         try {
             await this._create(params);
@@ -172,7 +172,7 @@ export class Model implements IModel {
         this.#update();
     }
 
-    public async update(customKeys?: string[]): Promise<boolean> {
+    async update(customKeys?: string[]): Promise<boolean> {
         if (this.meta.id !== undefined) {
             return new Promise<boolean>((resolve) => {
                 printDebug(
@@ -191,7 +191,7 @@ export class Model implements IModel {
     }
 
     /* istanbul ignore next */
-    public async loadAllChildren(
+    async loadAllChildren(
         json: JSONObject | null,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         reloadAll = false
@@ -216,10 +216,7 @@ export class Model implements IModel {
         return true;
     }
 
-    public async reload(
-        reloadAll?: boolean,
-        defaultExpand = 0
-    ): Promise<boolean> {
+    async reload(reloadAll?: boolean, defaultExpand = 0): Promise<boolean> {
         Model.validateMethod('Model', 'reload', arguments);
 
         let res = false;
@@ -232,7 +229,7 @@ export class Model implements IModel {
         return res;
     }
 
-    public async delete(): Promise<void> {
+    async delete(): Promise<void> {
         if (this.meta.id !== undefined) {
             try {
                 await wappsto.delete(this.getUrl(), Model.generateOptions());
@@ -245,7 +242,7 @@ export class Model implements IModel {
         }
     }
 
-    public parse(json: JSONObject): boolean {
+    parse(json: JSONObject): boolean {
         Model.validateMethod('Model', 'parse', arguments);
         if (Array.isArray(json)) {
             json = json[0];
@@ -260,11 +257,11 @@ export class Model implements IModel {
 
     /* istanbul ignore next */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public parseChildren(json: JSONObject): boolean {
+    parseChildren(json: JSONObject): boolean {
         return false;
     }
 
-    public toJSON(customKeys?: string[]): JSONObject {
+    toJSON(customKeys?: string[]): JSONObject {
         if (customKeys) {
             return Object.assign(
                 {},
@@ -282,9 +279,7 @@ export class Model implements IModel {
         );
     }
 
-    public static fetch = async (
-        params: FetchRequest
-    ): Promise<JSONObject[]> => {
+    static fetch = async (params: FetchRequest): Promise<JSONObject[]> => {
         Model.validateMethod('Model', 'fetch', [params]);
         let res: JSONObject[] = [];
         try {
@@ -323,7 +318,7 @@ export class Model implements IModel {
         return res;
     };
 
-    public static fromArray<T>(
+    static fromArray<T>(
         this: new () => T,
         json: JSONObject[],
         parent?: IModel
@@ -339,7 +334,7 @@ export class Model implements IModel {
         });
     }
 
-    public static validateMethod(
+    static validateMethod(
         type: string | undefined,
         name: string,
         params: ValidateParams,

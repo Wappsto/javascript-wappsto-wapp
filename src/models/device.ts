@@ -63,7 +63,7 @@ export class Device extends ConnectionModel implements IDevice {
         return Device.attributes;
     }
 
-    public static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
+    static getFilter(filter?: Filter, omit_filter?: Filter): string[] {
         Device.#validate('getFilter', [filter, omit_filter]);
         return convertFilterToJson(
             'device',
@@ -73,10 +73,7 @@ export class Device extends ConnectionModel implements IDevice {
         ).concat(Value.getFilter(filter, omit_filter));
     }
 
-    public static getFilterResult(
-        filter?: Filter,
-        omit_filter?: Filter
-    ): string {
+    static getFilterResult(filter?: Filter, omit_filter?: Filter): string {
         Device.#validate('getFilterResult', [filter, omit_filter]);
         const fields = [Model.getMetaFilterResult()].concat(Device.attributes);
 
@@ -91,7 +88,7 @@ export class Device extends ConnectionModel implements IDevice {
         )} ${Value.getFilterResult(filter, omit_filter)}}`;
     }
 
-    public addChildrenToStore(): void {
+    addChildrenToStore(): void {
         super.addChildrenToStore();
         this.value.forEach((val: IModel) => {
             if (val?.addChildrenToStore) {
@@ -100,17 +97,17 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public findValueByName(name: string): Value[] {
+    findValueByName(name: string): Value[] {
         this.validate('findValueByName', arguments);
         return this.value.filter((val) => val.name === name);
     }
 
-    public findValueByType(type: string): Value[] {
+    findValueByType(type: string): Value[] {
         this.validate('findValueByType', arguments);
         return this.value.filter((val) => val.type === type);
     }
 
-    public async loadAllChildren(
+    async loadAllChildren(
         json: JSONObject | null,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _reloadAll = false
@@ -293,7 +290,7 @@ export class Device extends ConnectionModel implements IDevice {
         return value;
     }
 
-    public createValue(
+    createValue(
         name: string | ICreateValue,
         permission?: ValuePermission,
         valueTemplate?: ValueType,
@@ -352,7 +349,7 @@ export class Device extends ConnectionModel implements IDevice {
         };
     }
 
-    public createNumberValue(params: IValueNumber): Promise<Value> {
+    createNumberValue(params: IValueNumber): Promise<Value> {
         this.validate('createNumberValue', arguments);
         const base = this.#getValueBase(params);
         base.delta = params.delta ?? '0';
@@ -371,7 +368,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public createStringValue(params: IValueString): Promise<Value> {
+    createStringValue(params: IValueString): Promise<Value> {
         this.validate('createStringValue', arguments);
         const base = this.#getValueBase(params);
         return this.#createValue({
@@ -383,7 +380,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public createBlobValue(params: IValueBlob): Promise<Value> {
+    createBlobValue(params: IValueBlob): Promise<Value> {
         this.validate('createBlobValue', arguments);
         const base = this.#getValueBase(params);
         return this.#createValue({
@@ -395,7 +392,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public createXmlValue(params: IValueXml): Promise<Value> {
+    createXmlValue(params: IValueXml): Promise<Value> {
         this.validate('createXmlValue', arguments);
         const base = this.#getValueBase(params);
         return this.#createValue({
@@ -407,7 +404,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public parseChildren(json: JSONObject): boolean {
+    parseChildren(json: JSONObject): boolean {
         let res = false;
         const values = Value.fromArray([json]);
         if (values.length) {
@@ -417,13 +414,13 @@ export class Device extends ConnectionModel implements IDevice {
         return res;
     }
 
-    public removeChild(child: IModel): void {
+    removeChild(child: IModel): void {
         this.value = this.value.filter((value: Value) => {
             return child !== value;
         });
     }
 
-    public setParent(parent?: IModel): void {
+    setParent(parent?: IModel): void {
         super.setParent(parent);
         this.value.forEach((val) => {
             if (typeof val === 'object') {
@@ -432,7 +429,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    public static find = async (
+    static find = async (
         params: JSONObject,
         quantity: number | 'all' = 1,
         readOnly = false,
@@ -495,7 +492,7 @@ export class Device extends ConnectionModel implements IDevice {
         return devices;
     };
 
-    public static findByName(
+    static findByName(
         name: string,
         quantity: number | 'all' = 1,
         readOnly = false,
@@ -507,13 +504,13 @@ export class Device extends ConnectionModel implements IDevice {
         return Device.find({ name: name }, quantity, readOnly, usage);
     }
 
-    public static findAllByName(name: string, readOnly = false, usage = '') {
+    static findAllByName(name: string, readOnly = false, usage = '') {
         Device.#validate('findAllByName', [name, readOnly, usage]);
 
         return Device.findByName(name, 'all', readOnly, usage);
     }
 
-    public static findByProduct(
+    static findByProduct(
         product: string,
         quantity: number | 'all' = 1,
         readOnly = false,
@@ -525,17 +522,13 @@ export class Device extends ConnectionModel implements IDevice {
         return Device.find({ product: product }, quantity, readOnly, usage);
     }
 
-    public static findAllByProduct(
-        product: string,
-        readOnly = false,
-        usage = ''
-    ) {
+    static findAllByProduct(product: string, readOnly = false, usage = '') {
         Device.#validate('findAllByProduct', [product, readOnly, usage]);
 
         return Device.findByProduct(product, 'all', readOnly, usage);
     }
 
-    public static findById = async (id: string, readOnly = false) => {
+    static findById = async (id: string, readOnly = false) => {
         Device.#validate('findById', [id, readOnly]);
         const devices = await Device.find(
             { 'meta.id': id },
@@ -585,7 +578,7 @@ export class Device extends ConnectionModel implements IDevice {
         return Device.findByFilter(filter, omit_filter, 'all', readOnly, usage);
     };
 
-    public static fetchById = async (id: string) => {
+    static fetchById = async (id: string) => {
         Device.#validate('fetchById', [id]);
         const data = await Model.fetch({
             endpoint: `${Device.endpoint}/${id}`,
@@ -594,13 +587,15 @@ export class Device extends ConnectionModel implements IDevice {
             },
         });
         const res = Device.fromArray(data);
+        const promises = [];
         for (let i = 0; i < res.length; i++) {
-            await res[i].loadAllChildren(null);
+            promises.push(res[i].loadAllChildren(null));
         }
+        await Promise.all(promises);
         return res[0];
     };
 
-    public static fetch = async () => {
+    static fetch = async () => {
         const params = { expand: 2 };
         const url = Device.endpoint;
         const data = await Model.fetch({ endpoint: url, params });
@@ -632,9 +627,7 @@ export class Device extends ConnectionModel implements IDevice {
         return devices;
     };
 
-    public async setConnectionStatus(
-        state: boolean | number
-    ): Promise<boolean> {
+    async setConnectionStatus(state: boolean | number): Promise<boolean> {
         Device.#validate('setConnectionStatus', [state]);
         let res = false;
         const value = this.findValueByType(

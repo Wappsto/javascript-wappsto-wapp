@@ -37,7 +37,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         change: [],
     };
 
-    public async onEvent(callback: StreamCallback): Promise<boolean> {
+    async onEvent(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onEvent', arguments);
         const res = await openStream.subscribe(this);
         if (!checkList(this.streamCallback.event, callback)) {
@@ -48,7 +48,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         return res;
     }
 
-    public async onChange(callback: StreamCallback): Promise<boolean> {
+    async onChange(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onChange', arguments);
         const res = await openStream.subscribe(this);
         if (!checkList(this.streamCallback.change, callback)) {
@@ -59,7 +59,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         return res;
     }
 
-    public async onDelete(callback: StreamCallback): Promise<boolean> {
+    async onDelete(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onDelete', arguments);
         const res = await openStream.subscribe(this);
         if (!checkList(this.streamCallback.delete, callback)) {
@@ -70,7 +70,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         return res;
     }
 
-    public async onCreate(callback: StreamCallback): Promise<boolean> {
+    async onCreate(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onDelete', arguments);
         const res = await openStream.subscribe(this);
         if (this.streamCallback.create.indexOf(callback) === -1) {
@@ -81,19 +81,19 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         return res;
     }
 
-    public async cancelOnEvent(callback: StreamCallback): Promise<boolean> {
+    async cancelOnEvent(callback: StreamCallback): Promise<boolean> {
         return this.#cancelCallback(this.streamCallback.event, callback);
     }
 
-    public async cancelOnChange(callback: StreamCallback): Promise<boolean> {
+    async cancelOnChange(callback: StreamCallback): Promise<boolean> {
         return this.#cancelCallback(this.streamCallback.change, callback);
     }
 
-    public async cancelOnDelete(callback: StreamCallback): Promise<boolean> {
+    async cancelOnDelete(callback: StreamCallback): Promise<boolean> {
         return this.#cancelCallback(this.streamCallback.delete, callback);
     }
 
-    public async cancelOnCreate(callback: StreamCallback): Promise<boolean> {
+    async cancelOnCreate(callback: StreamCallback): Promise<boolean> {
         return this.#cancelCallback(this.streamCallback.create, callback);
     }
 
@@ -120,7 +120,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         return res;
     }
 
-    public async clearAllCallbacks(): Promise<boolean> {
+    async clearAllCallbacks(): Promise<boolean> {
         const res = await openStream.unsubscribe(this);
         this.streamCallback.event = [];
         this.streamCallback.change = [];

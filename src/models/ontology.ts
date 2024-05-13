@@ -42,7 +42,7 @@ export class Ontology extends Model implements IOntologyEdge {
         return Ontology.attributes;
     }
 
-    public toJSON(): JSONObject {
+    toJSON(): JSONObject {
         const res = super.toJSON();
         const toModels: Record<string, string[]> = {};
 
@@ -79,7 +79,7 @@ export class Ontology extends Model implements IOntologyEdge {
         }
     }
 
-    public async fetchModels(): Promise<void> {
+    async fetchModels(): Promise<void> {
         const proms: Promise<void>[] = [];
         Object.keys(this.to).forEach((type: string) => {
             this.to[type].forEach((id: string) => {
@@ -99,7 +99,7 @@ export class Ontology extends Model implements IOntologyEdge {
         await Promise.all(proms);
     }
 
-    public async delete(): Promise<void> {
+    async delete(): Promise<void> {
         await super.delete();
         if (this.parent) {
             const p = this.parent as IOntologyModel;
@@ -107,7 +107,7 @@ export class Ontology extends Model implements IOntologyEdge {
         }
     }
 
-    public async deleteBranch(): Promise<void> {
+    async deleteBranch(): Promise<void> {
         const models = this.models;
         this.models = [];
 

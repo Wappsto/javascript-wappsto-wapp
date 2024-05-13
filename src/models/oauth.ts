@@ -25,7 +25,7 @@ export class OAuth extends Model {
         this.name = name;
     }
 
-    public getToken(handler?: OAuthRequestHandler) {
+    getToken(handler?: OAuthRequestHandler) {
         OAuth.#validate('getToken', arguments);
         return new Promise<Record<string, string>>(async (resolve, reject) => {
             try {
