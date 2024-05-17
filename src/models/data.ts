@@ -12,12 +12,14 @@ interface IDataMeta {
     version?: number;
 }
 
-export class Data<T = unknown> extends StreamModel {
+export class Data<
+    T extends Record<string, Omit<unknown, 'undefined'>>
+> extends StreamModel {
     static endpoint = '/2.1/data';
     static attributes = ['meta', 'data_meta', 'data'];
     data_meta: IDataMeta = {};
-    data: Record<string, T> = {};
-    _secret_background: Record<string, T> = {};
+    data: T = {} as T;
+    _secret_background: T = {} as T;
     clearSecret = false;
     oldKeys: Array<string> = [];
 
@@ -49,7 +51,7 @@ export class Data<T = unknown> extends StreamModel {
         }
     }
 
-    set(name: string, item: T, secret = false): void {
+    set<K extends keyof T>(name: K, item: T[K], secret = false): void {
         if (secret) {
             this.#checkSecret();
             this._secret_background[name] = item;
@@ -58,7 +60,7 @@ export class Data<T = unknown> extends StreamModel {
         }
     }
 
-    get(name: string, secret = false): T | undefined {
+    get<K extends keyof T>(name: K, secret = false): T[K] | undefined {
         if (secret) {
             this.#checkSecret();
             return this._secret_background[name];
@@ -67,7 +69,7 @@ export class Data<T = unknown> extends StreamModel {
         }
     }
 
-    remove(name: string, secret = false): void {
+    remove<K extends keyof T>(name: K, secret = false): void {
         if (secret) {
             this.#checkSecret();
             this.clearSecret = true;
@@ -89,12 +91,26 @@ export class Data<T = unknown> extends StreamModel {
         return Object.entries(this.data);
     }
 
+    static fetchById = async (id: string) => {
+        Data.#validate('fetchById', [id]);
+        const data = await Model.fetch({
+            endpoint: `${Data.endpoint}/${id}`,
+        });
+        const res = Data.fromArray(data);
+        const promises = [];
+        for (let i = 0; i < res.length; i++) {
+            promises.push(res[i].loadAllChildren(null));
+        }
+        await Promise.all(promises);
+        return res[0];
+    };
+
     /**
      * Finds instances of the Data model with a specific ID.
      * @param id - The ID to search for.
      * @returns A Promise that resolves to an array of Data instances matching the provided ID.
      */
-    static async findByDataId(id: string): Promise<Data[]> {
+    static async findByDataId(id: string) {
         const json: JSONObject[] = await Model.fetch({
             endpoint: Data.endpoint,
             params: {
@@ -121,7 +137,7 @@ export class Data<T = unknown> extends StreamModel {
 
         if (this.data_meta.version !== 1) {
             this.data_meta.version = 1;
-            this.data = {};
+            this.data = {} as T;
             Object.assign(this.data, omit(json, ['meta', 'data_meta']));
             this.oldKeys = Object.keys(
                 omit(this.data, ['meta', 'data_meta', 'data'])
@@ -140,5 +156,9 @@ export class Data<T = unknown> extends StreamModel {
         });
 
         return result;
+    }
+
+    static #validate(method: string, args: unknown[]) {
+        Model.validateMethod('Data', method, args);
     }
 }

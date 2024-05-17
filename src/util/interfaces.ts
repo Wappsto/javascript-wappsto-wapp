@@ -111,6 +111,10 @@ export interface IModelFunc {
     getFilterResult(filter?: Filter, omit_filter?: Filter): string;
 }
 
+export interface IDataFunc {
+    fetchById(id: string): IModel;
+}
+
 export interface INetwork {
     [key: string]: any; //string | undefined;
     meta?: IMeta;
@@ -658,22 +662,20 @@ export interface IWappStorageFunc {
     cancelOnChange(): void;
 }
 
-export interface IWappStorage {
+export interface IWappStorage<
+    T extends Record<string, Omit<unknown, 'undefined'>>
+> {
     name: string;
     id: string;
-    set(
-        name: string | Record<string, unknown>,
-        item?: unknown
-    ): Promise<boolean>;
-    setSecret(
-        name: string | Record<string, unknown>,
-        item?: unknown
-    ): Promise<boolean>;
-    get(name: string | string[]): unknown;
-    getSecret(name: string | string[]): unknown;
+    set<K extends keyof T>(name: K | T, item?: unknown): Promise<boolean>;
+    setSecret<K extends keyof T>(name: K | T, item?: unknown): Promise<boolean>;
+    get<K extends keyof T>(name: K | K[]): unknown | [unknown] | undefined;
+    getSecret<K extends keyof T>(
+        name: K | K[]
+    ): unknown | [unknown] | undefined;
     keys(): Array<string>;
-    values(): Array<unknown>;
-    entries(): Array<Array<unknown>>;
+    values(): Array<Omit<unknown, 'undefined'>>;
+    entries(): Array<[key: string, value: unknown]>;
     remove(name: string | string[]): Promise<boolean>;
     removeSecret(name: string | string[]): Promise<boolean>;
     update(): Promise<boolean>;

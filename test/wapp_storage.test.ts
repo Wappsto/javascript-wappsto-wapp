@@ -115,7 +115,7 @@ describe('WappStorage', () => {
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
         const fun = jest.fn();
-        const c = await wappStorage<string>();
+        const c = await wappStorage<Record<string, string>>();
         const changeP = c.onChange(fun);
         const res = c.get('key');
         await c.set('new_key', 'new_item');
@@ -221,7 +221,7 @@ describe('WappStorage', () => {
     });
 
     it('will fail to set a missing item', async () => {
-        const c = await wappStorage<string>();
+        const c = await wappStorage<Record<string, string>>();
         let error: Error | undefined = undefined;
 
         try {
@@ -250,7 +250,7 @@ describe('WappStorage', () => {
             ])
         );
 
-        const c = await wappStorage<string>();
+        const c = await wappStorage<Record<string, string>>();
         const oldData = c.get('missing');
         await c.reload();
         const newData = c.get('missing');
@@ -269,7 +269,7 @@ describe('WappStorage', () => {
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
         mockedAxios.delete.mockResolvedValueOnce(makeResponse([]));
 
-        const c = await wappStorage<string>();
+        const c = await wappStorage<Record<string, string>>();
         await c.set('key', 'item');
         const resOld = c.get('key');
         await c.reset();
@@ -305,7 +305,7 @@ describe('WappStorage', () => {
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([]));
 
-        const c = await wappStorage<string>('remove');
+        const c = await wappStorage<Record<string, string>>('remove');
         await c.set('new', 'data');
         const res1 = c.get('new');
 
@@ -379,7 +379,7 @@ describe('WappStorage', () => {
         );
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
-        const c = await wappStorage<string>('convert');
+        const c = await wappStorage<Record<string, string>>('convert');
         const res1 = c.get('old');
         const res2 = c.get('data');
         await c.update();
@@ -433,7 +433,7 @@ describe('WappStorage', () => {
                 },
             })
         );
-        const c = await wappStorage<string | Array<string | object>>(
+        const c = await wappStorage<Record<string, string | object>>(
             'keys and values'
         );
 
@@ -455,7 +455,7 @@ describe('WappStorage', () => {
         );
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
-        const ws = await wappStorage<object>('test_deep');
+        const ws = await wappStorage<Record<string, object>>('test_deep');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
@@ -482,7 +482,7 @@ describe('WappStorage', () => {
         );
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
-        const ws = await wappStorage<string>('multi_set');
+        const ws = await wappStorage<Record<string, string>>('multi_set');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
@@ -555,7 +555,9 @@ describe('WappStorage', () => {
 
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
-        const ws = await wappStorage<string>('background_secret');
+        const ws = await wappStorage<Record<string, string>>(
+            'background_secret'
+        );
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
 
@@ -662,5 +664,50 @@ describe('WappStorage', () => {
         expect(value).toEqual(undefined);
         values = ws.getSecret(['secret_key2', 'secret_key3']);
         expect(values).toEqual([undefined, undefined]);
+    });
+
+    it('works with the correct types', async () => {
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([
+                {
+                    meta: { id: 'bd5e3c4c-2957-429c-b39a-b5523f1b18e5' },
+                    _secret_background: {
+                        old_secret_key: 'old_secret_value',
+                    },
+                    data_meta: {
+                        id: 'wapp_storage_background_secret',
+                        type: 'wapp_storage',
+                        version: 1,
+                    },
+                    data: {
+                        key1: 'item',
+                        key2: 1,
+                        key3: true,
+                    },
+                },
+            ])
+        );
+        type MyData = {
+            key1: string;
+            key2: number;
+            key3: boolean;
+        };
+        const w = await wappStorage<MyData>('with types');
+
+        const k1 = w.get('key1');
+        const k2 = w.get('key2');
+        const k3 = w.get('key3');
+
+        w.set('key1', 'new');
+        w.set('key2', 2);
+        w.set('key3', true);
+
+        expect(k1).toEqual('item');
+        expect(k2).toEqual(1);
+        expect(k3).toEqual(true);
+
+        expect(typeof k1).toEqual('string');
+        expect(typeof k2).toEqual('number');
+        expect(typeof k3).toEqual('boolean');
     });
 });

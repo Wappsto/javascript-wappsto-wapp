@@ -2,7 +2,10 @@ import { IOntologyNode, JSONObject } from '../util/interfaces';
 import { Data } from './data';
 import { Model } from './model';
 
-export class OntologyNode extends Data implements IOntologyNode {
+export class OntologyNode
+    extends Data<Record<string, string>>
+    implements IOntologyNode
+{
     constructor(name?: string) {
         super(`ontology_node_${name || 'default'}`, 'ontology_node');
     }

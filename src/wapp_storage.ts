@@ -12,7 +12,9 @@ const storages: Record<string, WappStorage> = {};
  * @param name - The name of the WappStorage instance. If not provided, the default name will be used.
  * @return A promise that resolves to the initialized WappStorage instance.
  */
-export async function wappStorage<T = unknown>(name?: string) {
+export async function wappStorage<
+    T extends Record<string, Omit<unknown, 'undefined'>>
+>(name?: string) {
     Model.validateMethod('WappStorage', 'wappStorage', arguments);
     if (name === undefined) {
         name = 'default';
@@ -20,7 +22,7 @@ export async function wappStorage<T = unknown>(name?: string) {
     if (storages[name] === undefined) {
         const storage = new WappStorage<T>(name);
         await storage.init();
-        storages[name] = storage;
+        storages[name] = storage as WappStorage;
     }
     return storages[name] as WappStorage<T>;
 }
@@ -31,7 +33,13 @@ export async function wappStorage<T = unknown>(name?: string) {
  * @implements IWappStorage
  * @template T - The type of the stored data.
  */
-export class WappStorage<T = unknown> implements IWappStorage {
+export class WappStorage<
+    T extends Record<string, Omit<unknown, 'undefined'>> = Record<
+        string,
+        Omit<unknown, 'undefined'>
+    >
+> implements IWappStorage<T>
+{
     name = '';
     id = '';
     #data: Data<T>;
@@ -63,9 +71,9 @@ export class WappStorage<T = unknown> implements IWappStorage {
         }
     }
 
-    #set(
-        name: string | Record<string, T>,
-        item?: T,
+    #set<K extends keyof T>(
+        name: K | T,
+        item?: T[K],
         secret?: boolean
     ): Promise<boolean> {
         if (typeof name === 'string') {
@@ -74,9 +82,9 @@ export class WappStorage<T = unknown> implements IWappStorage {
             } else {
                 throw new Error('Missing parameter "item" in set function');
             }
-        } else {
-            Object.keys(name).forEach((key) => {
-                this.#data.set(key, name[key], secret);
+        } else if (typeof name === 'object') {
+            Object.entries(name).forEach(([key, value]) => {
+                this.#data.set(key, value as T[keyof T], secret);
             });
         }
         return this.update();
@@ -89,7 +97,7 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * @param item - The value to set for the specified key. This parameter is optional when setting multiple key-value pairs.
      * @return A Promise that resolves to true if the value was successfully set, and false otherwise.
      */
-    set(name: string | Record<string, T>, item?: T): Promise<boolean> {
+    set<K extends keyof T>(name: K | T, item?: T[K]): Promise<boolean> {
         WappStorage.#validate('set', arguments);
         return this.#set(name, item);
     }
@@ -101,9 +109,9 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * @param item - The value to set as a secret for the specified key. This parameter is optional when setting multiple key-value pairs.
      * @return A Promise that resolves to true if the secret value was successfully set, and false otherwise.
      */
-    async setSecret(
-        name: string | Record<string, T>,
-        item?: T
+    async setSecret<K extends keyof T>(
+        name: K | T,
+        item?: T[K]
     ): Promise<boolean> {
         WappStorage.#validate('set', arguments);
         if (isBrowser()) {
@@ -127,8 +135,8 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * @param name - The name of the value to retrieve.
      * @return The value associated with the given name.
      */
-    get(name: string): T | undefined;
-    get(name: string[]): (T | undefined)[];
+    get<K extends keyof T>(name: K): T[K] | undefined;
+    get<K extends keyof T>(name: K[]): (T[K] | undefined)[];
     get(name: string | string[]) {
         WappStorage.#validate('get', arguments);
         return this.#get(name);
@@ -140,8 +148,8 @@ export class WappStorage<T = unknown> implements IWappStorage {
      * @param name - The name of the secret value to retrieve.
      * @return The secret value associated with the given name, or undefined if the value is not found.
      */
-    getSecret(name: string): T | undefined;
-    getSecret(name: string[]): (T | undefined)[];
+    getSecret<K extends keyof T>(name: K): T[K] | undefined;
+    getSecret<K extends keyof T>(name: K[]): (T[K] | undefined)[];
     getSecret(name: string | string[]) {
         WappStorage.#validate('getSecret', arguments);
         if (isBrowser()) {

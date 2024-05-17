@@ -131,6 +131,10 @@ export const IModelFunc = t.iface([], {
     ),
 });
 
+export const IDataFunc = t.iface([], {
+    fetchById: t.func('IModel', t.param('id', 'string')),
+});
+
 export const INetwork = t.iface([], {
     [t.indexKey]: 'any',
     meta: t.opt('IMeta'),
@@ -884,37 +888,27 @@ export const IWappStorage = t.iface([], {
     id: 'string',
     set: t.func(
         'boolean',
-        t.param('name', t.union('string', 'any')),
+        t.param('name', t.union('K', 'T')),
         t.param('item', 'unknown', true)
     ),
     setSecret: t.func(
         'boolean',
-        t.param('name', t.union('string', 'any')),
+        t.param('name', t.union('K', 'T')),
         t.param('item', 'unknown', true)
     ),
     get: t.func(
-        'unknown',
-        t.param('name', t.union('string', t.array('string')))
+        t.union('unknown', t.tuple('unknown'), 'undefined'),
+        t.param('name', t.union('K', t.array('K')))
     ),
     getSecret: t.func(
-        'unknown',
-        t.param('name', t.union('string', t.array('string')))
+        t.union('unknown', t.tuple('unknown'), 'undefined'),
+        t.param('name', t.union('K', t.array('K')))
     ),
     keys: t.func(t.array('string')),
-    values: t.func(t.array('unknown')),
-    entries: t.func(t.array(t.array('unknown'))),
-    remove: t.func(
-        'boolean',
-        t.param('name', t.union('string', t.array('string')))
-    ),
-    removeSecret: t.func(
-        'boolean',
-        t.param('name', t.union('string', t.array('string')))
-    ),
-    update: t.func('boolean'),
-    onChange: t.func('boolean', t.param('cb', 'StorageChangeHandler')),
-    reload: t.func('boolean'),
-    reset: t.func('void'),
+    values: t.func(t.array('any')),
+    entries: t.func(t.array(t.tuple('key'))),
+    string: 'any',
+    value: 'unknown',
 });
 
 export const RequestType = t.iface([], {
@@ -1248,6 +1242,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     FetchRequest,
     IModel,
     IModelFunc,
+    IDataFunc,
     INetwork,
     INetworkFunc,
     IDevice,
