@@ -1,4 +1,5 @@
 # Wappsto Wapp API
+
 [![CI](https://github.com/Wappsto/wappsto-wapp/actions/workflows/main.yml/badge.svg)](https://github.com/Wappsto/wappsto-wapp/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/Wappsto/javascript-wappsto-wapp/branch/main/graph/badge.svg?token=Y7SPYV4G97)](https://codecov.io/gh/Wappsto/javascript-wappsto-wapp)
 [![DeepScan grade](https://deepscan.io/api/teams/18594/projects/21916/branches/639550/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=18594&pid=21916&bid=639550)
@@ -135,7 +136,7 @@ The list of available value templates can be seen in the
 let value = await device.createValue({
     name: 'Temperature',
     permission: 'r',
-    template: Wappsto.ValueTemplate.TEMPERATURE_CELSIUS
+    template: Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
 });
 ```
 
@@ -155,7 +156,7 @@ let value = await device.createValue({
     permission: 'r',
     template: Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
     period: 3600,
-    delta: '2'
+    delta: '2',
 });
 ```
 
@@ -169,7 +170,7 @@ let value = await device.createValue({
     name: 'Temperature',
     permission: 'r',
     template: Wappsto.ValueTemplate.TEMPERATURE_CELSIUS,
-    disableLog: true
+    disableLog: true,
 });
 ```
 
@@ -242,7 +243,7 @@ It is possible to send number, string, boolean and objects.
 await value.report(1);
 await value.report('1', '2022-02-02T02:02:02Z');
 await value.report(true);
-await value.report({"my_data":"is updated"});
+await value.report({ my_data: 'is updated' });
 ```
 
 And to get the last reported data and timestamp.
@@ -256,9 +257,9 @@ If you need to report multiple historical data, you can specify an array of data
 
 ```javascript
 await value.report([
-	{ data: 1, timestamp: '2022-02-02T02:02:01Z' },
-	{ data: 2, timestamp: '2022-02-02T02:02:02Z' },
-	{ data: 3, timestamp: '2022-02-02T02:02:03Z' },
+    { data: 1, timestamp: '2022-02-02T02:02:01Z' },
+    { data: 2, timestamp: '2022-02-02T02:02:02Z' },
+    { data: 3, timestamp: '2022-02-02T02:02:03Z' },
 ]);
 ```
 
@@ -266,12 +267,11 @@ If you do not want the current report state to change, you can use the `sendLogR
 
 ```javascript
 await value.sendLogReports([
-	{ data: 1, timestamp: '2022-02-02T02:02:01Z' },
-	{ data: 2, timestamp: '2022-02-02T02:02:02Z' },
-	{ data: 3, timestamp: '2022-02-02T02:02:03Z' },
+    { data: 1, timestamp: '2022-02-02T02:02:01Z' },
+    { data: 2, timestamp: '2022-02-02T02:02:02Z' },
+    { data: 3, timestamp: '2022-02-02T02:02:03Z' },
 ]);
 ```
-
 
 ### Listing for requests to refresh the value
 
@@ -327,10 +327,17 @@ To request access to a network with a specific name, utilize the `findByName` fu
 
 ```javascript
 let oneNetwork = await Wappsto.Network.findByName('Network name');
-let oneReadOnlyNetwork = await Wappsto.Network.findByName('Network name', 1, true);
+let oneReadOnlyNetwork = await Wappsto.Network.findByName(
+    'Network name',
+    1,
+    true
+);
 let multipleNetworks = await Wappsto.Network.findByName('Network name', 3);
 let allNetworks = await Wappsto.Network.findAllByName('Network name');
-let allReadOnlyNetworks = await Wappsto.Network.findAllByName('Network name', true);
+let allReadOnlyNetworks = await Wappsto.Network.findAllByName(
+    'Network name',
+    true
+);
 ```
 
 To request access to a device with a specific name, use `findByName`.
@@ -340,17 +347,27 @@ let oneDevice = await Wappsto.Device.findByName('Device name');
 let oneReadOnlyDevice = await Wappsto.Device.findByName('Device name', 1, true);
 let multipleDevices = await Wappsto.Device.findByName('Device name', 3);
 let allDevices = await Wappsto.Device.findAllByName('Device name');
-let allReadOnlyDevices = await Wappsto.Device.findAllByName('Device name', true);
+let allReadOnlyDevices = await Wappsto.Device.findAllByName(
+    'Device name',
+    true
+);
 ```
 
 To request access to a device with a specific product, use `findByProduct`.
 
 ```javascript
 let oneDevice = await Wappsto.Device.findByProduct('Product name');
-let oneReadOnlyDevice = await Wappsto.Device.findByProduct('Product name', 1, true);
+let oneReadOnlyDevice = await Wappsto.Device.findByProduct(
+    'Product name',
+    1,
+    true
+);
 let multipleDevices = await Wappsto.Device.findByProduct('Product name', 3);
 let allDevices = await Wappsto.Device.findAllByProduct('Product name');
-let allReadOnlyDevices = await Wappsto.Device.findAllByProduct('Product name', true);
+let allReadOnlyDevices = await Wappsto.Device.findAllByProduct(
+    'Product name',
+    true
+);
 ```
 
 To request access to a value with a specific name, use `findByName`.
@@ -383,23 +400,23 @@ Enhance your control over the specific objects you request by utilizing advanced
 
 The permitted operators are: '=', '!=', '==', '<', '<=', '>', '>=', '~', '!~'.
 
- You can see the possible filters below.
+You can see the possible filters below.
 
 ```javascript
 const filter = {
     network: {
         name: '',
-        description: ''
+        description: '',
     },
     device: {
         name: '',
-        product: ['',''],
+        product: ['', ''],
         serial: '',
         description: '',
         protocol: '',
         communication: '',
         version: '',
-        manufacturer: ''
+        manufacturer: '',
     },
     value: {
         name: '',
@@ -413,7 +430,7 @@ const filter = {
             max: '',
             step: '',
             unit: '',
-            si_conversion: ''
+            si_conversion: '',
         },
         string: {
             max: '',
@@ -425,16 +442,16 @@ const filter = {
         },
         xml: {
             xsd: '',
-            namespace: ''
-        }
-    }
-}
+            namespace: '',
+        },
+    },
+};
 ```
 
 Once you've defined the filter, utilize it with the functions `findByFilter` and `findAllByFilter` on `Network`, `Device`, and `Value`.
 
 ```javascript
-const filter = { value: { type: 'energy' }};
+const filter = { value: { type: 'energy' } };
 let oneValue = await Wappsto.Value.findByFilter(filter);
 let allValues = await Wappsto.Value.findAllByFilter(filter);
 ```
@@ -442,13 +459,22 @@ let allValues = await Wappsto.Value.findAllByFilter(filter);
 You can also use the filter to exclude objects by providing a second filter to `findByFilter` and `findAllByFilter`. Specify the number of items to request with a third parameter. Additionally, indicate that the items are only needed for reading by setting the fourth parameter to true.
 
 ```javascript
-const filter = { value: { type: 'energy' }};
-const omit_filter = { device: { name: 'Wrong' }};
+const filter = { value: { type: 'energy' } };
+const omit_filter = { device: { name: 'Wrong' } };
 let oneValue = await Wappsto.Device.findByFilter(filter, omit_filter);
 let multipleValues = await Wappsto.Value.findByFilter(filter, omit_filter, 3);
-let multipleReadOnlyValues = await Wappsto.Value.findByFilter(filter, omit_filter, 3, true);
+let multipleReadOnlyValues = await Wappsto.Value.findByFilter(
+    filter,
+    omit_filter,
+    3,
+    true
+);
 let allValues = await Wappsto.Value.findAllByFilter(filter, omit_filter);
-let allReadOnlyValues = await Wappsto.Value.findAllByFilter(filter, omit_filter, true);
+let allReadOnlyValues = await Wappsto.Value.findAllByFilter(
+    filter,
+    omit_filter,
+    true
+);
 ```
 
 ### To find a child from an existing object
@@ -610,7 +636,7 @@ const historicalControlData = await value.getControlLog({});
 The `LogRequest` object is defined like this:
 
 | **Key**          | **Type** | **Meaning**                                                        |
-|------------------|----------|--------------------------------------------------------------------|
+| ---------------- | -------- | ------------------------------------------------------------------ |
 | start            | date     | The start time for the log request                                 |
 | end              | date     | The end time for the log request                                   |
 | limit            | number   | The maximum number of items in the result                          |
@@ -647,6 +673,7 @@ network.onConnectionChange((network, status) => {
     );
 });
 ```
+
 To remove the registered callback, you must call the `cancelOnConnectionChange` method with the same callback function as a parameter.
 
 If you have a created your own device, you can set it online/offline
@@ -687,7 +714,10 @@ data of a value.
 To convert the total energy value into a load curve value, call `analyzeEnergy` with a start and end time on the value that you want to analyze.
 
 ```javascript
-const energy_data = await value.analyzeEnergy('2022-01-01T00:00:00Z', '2023-01-01T00:00:00Z');
+const energy_data = await value.analyzeEnergy(
+    '2022-01-01T00:00:00Z',
+    '2023-01-01T00:00:00Z'
+);
 ```
 
 ### Sending messages to and from the background
@@ -695,6 +725,7 @@ const energy_data = await value.analyzeEnergy('2022-01-01T00:00:00Z', '2023-01-0
 Messages can be exchanged between the foreground and the background of your Wapp, using event handlers. These event handlers are triggered for each message sent and the return value of your event handler is sent back to the sender.
 
 #### Example code for the foreground part
+
 ```javascript
 Wappsto.fromBackground((msg) => {
     console.log('Message from the background: ' + msg);
@@ -706,6 +737,7 @@ console.log('Result from background: ' + backgroundResult);
 ```
 
 #### Example code for the background part
+
 ```javascript
 Wappsto.fromForeground((msg) => {
     console.log('Message from the foreground: ' + msg);
@@ -741,9 +773,11 @@ Wappsto.cancelFromForeground();
 When using TypeScript, it is possible to supply a generic type for the `fromForeground` and `fromBackground` methods to specify the expected return type. This can be useful when you want to ensure type safety.
 
 ```javascript
-Wappsto.fromBackground<string>((msg) => {
-    console.log(`The type is: ${typeof msg}`); // The type is: string
-});
+Wappsto.fromBackground <
+    string >
+    ((msg) => {
+        console.log(`The type is: ${typeof msg}`); // The type is: string
+    });
 ```
 
 Additionally, you can supply both a generic type and a return type for `sendToBackground` and `sendToForeground` methods. This can be useful when you want to ensure type safety and specify the expected return type.
@@ -797,7 +831,9 @@ The format of the webhook url is `https://wappsto.com/services/extsync/request/<
 You can get the token from the value `extSyncToken`.
 
 ```javascript
-console.log(`WebHook URL: https://wappsto.com/services/extsync/request/${Wappsto.extSyncToken}`);
+console.log(
+    `WebHook URL: https://wappsto.com/services/extsync/request/${Wappsto.extSyncToken}`
+);
 ```
 
 #### Register WebHook handler
@@ -807,7 +843,7 @@ To register the event handler, you can use the `onWebHook` function.
 ```javascript
 Wappsto.onWebHook((event, method, uri, headers) => {
     console.log('Web Hook event', event);
-    return { status: "ok" };
+    return { status: 'ok' };
 });
 ```
 
@@ -836,7 +872,6 @@ And if you want to cancel the web hook event handler, you can call
 Wappsto.cancelOnWebHook(handler);
 ```
 
-
 ### Wapp Storage
 
 The Wapp Storage feature allows for the storage of configuration parameters
@@ -850,19 +885,20 @@ let storage = await Wappsto.wappStorage();
 If you are using TypeScript, it is possible to define the type of the data in the storage.
 
 ```javascript
-let storage = await Wappsto.wappStorage<string>();
+let storage = await Wappsto.wappStorage<Record<string, string>>();
 ```
 
 #### Data Manipulation:
-* Single or multiple data entries can be stored in the Wapp Storage.
+
+-   Single or multiple data entries can be stored in the Wapp Storage.
 
 ```javascript
 // Set new data into the store
 await storage.set('key', 'item');
-await storage.set({key2: 'item 2', key3: 'item 3'});
+await storage.set({ key2: 'item 2', key3: 'item 3' });
 ```
 
-* Multiple keys can be retrieved or removed simultaneously, providing efficient data management capabilities.
+-   Multiple keys can be retrieved or removed simultaneously, providing efficient data management capabilities.
 
 ```javascript
 // Get data from the store
@@ -874,21 +910,22 @@ await store.remove(['key2', 'key3']);
 ```
 
 #### Features:
-* Data can be reloaded from the server using the reload function.
+
+-   Data can be reloaded from the server using the reload function.
 
 ```javascript
 // Reload the data from the server
 await storage.reload();
 ```
 
-* Data can be deleted by using the reset function.
+-   Data can be deleted by using the reset function.
 
 ```javascript
 // Delete all the saved data
 await storage.reset();
 ```
 
-* Callbacks can be registered to receive notifications when the storage is updated.
+-   Callbacks can be registered to receive notifications when the storage is updated.
 
 ```javascript
 // Signal when storage is changed
@@ -898,9 +935,10 @@ storage.onChange(() => {
 ```
 
 #### Background Storage:
-* Secret information can specifically be stored in the background part of the wapp, ensuring its confidentiality.
 
-* This secret data is exclusively accessible within the background wapp and remains isolated from the frontend part of the application.
+-   Secret information can specifically be stored in the background part of the wapp, ensuring its confidentiality.
+
+-   This secret data is exclusively accessible within the background wapp and remains isolated from the frontend part of the application.
 
 ```javascript
 await storage.setSecret('key', 'item');
@@ -1012,9 +1050,9 @@ To the models that the edge points to is available in the `models` attribute.
 
 ```javascript
 edges.forEach((edge) => {
-	edge.models.forEach((model) => {
-		console.log(`The edge points to ${model.name}`);
-	});
+    edge.models.forEach((model) => {
+        console.log(`The edge points to ${model.name}`);
+    });
 });
 ```
 
@@ -1063,6 +1101,7 @@ await Wappsto.request.post('/network', { name: 'Network Name' });
 ### Wapp Version
 
 To get the current version of the installed application, call `getWappVersion`.
+
 ```javascript
 const version = await Wappsto.getWappVersion();
 console.log(`Current Installed Wapp Version: ${version}`);
