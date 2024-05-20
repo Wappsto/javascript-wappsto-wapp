@@ -12,9 +12,9 @@ const storages: Record<string, WappStorage> = {};
  * @param name - The name of the WappStorage instance. If not provided, the default name will be used.
  * @return A promise that resolves to the initialized WappStorage instance.
  */
-export async function wappStorage<
-    T extends Record<string, Omit<unknown, 'undefined'>>
->(name?: string) {
+export async function wappStorage<T extends Record<string, unknown>>(
+    name?: string
+) {
     Model.validateMethod('WappStorage', 'wappStorage', arguments);
     if (name === undefined) {
         name = 'default';
@@ -34,10 +34,7 @@ export async function wappStorage<
  * @template T - The type of the stored data.
  */
 export class WappStorage<
-    T extends Record<string, Omit<unknown, 'undefined'>> = Record<
-        string,
-        Omit<unknown, 'undefined'>
-    >
+    T extends Record<string, unknown> = Record<string, unknown>
 > implements IWappStorage<T>
 {
     name = '';
@@ -78,13 +75,17 @@ export class WappStorage<
     ): Promise<boolean> {
         if (typeof name === 'string') {
             if (item) {
-                this.#data.set(name, item, secret);
+                this.#data.set(name, item as T[K & string], secret);
             } else {
-                throw new Error('Missing parameter "item" in set function');
+                this.#data.remove(name, secret);
             }
         } else if (typeof name === 'object') {
             Object.entries(name).forEach(([key, value]) => {
-                this.#data.set(key, value as T[keyof T], secret);
+                if (value) {
+                    this.#data.set(key, value as T[string], secret);
+                } else {
+                    this.#data.remove(key, secret);
+                }
             });
         }
         return this.update();

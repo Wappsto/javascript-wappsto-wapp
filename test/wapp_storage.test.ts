@@ -220,17 +220,56 @@ describe('WappStorage', () => {
         expect(fun).toHaveBeenCalledTimes(1);
     });
 
-    it('will fail to set a missing item', async () => {
-        const c = await wappStorage<Record<string, string>>();
-        let error: Error | undefined = undefined;
+    it('will remove when setting with missing item', async () => {
+        mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
+        const c = await wappStorage<Record<string, string>>('test removing');
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
 
-        try {
-            const res = await c.set('missing');
-        } catch (e) {
-            error = e as Error;
-        }
-        expect(error?.toString()).toEqual(
-            'Error: Missing parameter "item" in set function'
+        let res = await c.set('missing', 'will be removed');
+        await new Promise((r) => setTimeout(r, 100));
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/data',
+            {
+                _secret_background: {},
+                data: {
+                    missing: 'will be removed',
+                },
+                data_meta: {
+                    id: 'wapp_storage_test removing',
+                    type: 'wapp_storage',
+                    version: 1,
+                },
+                meta: {
+                    type: 'data',
+                    version: '2.1',
+                },
+            },
+            {}
+        );
+
+        res = await c.set('missing');
+        await new Promise((r) => setTimeout(r, 100));
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            '/2.1/data',
+            {
+                _secret_background: {},
+                data: {},
+                data_meta: {
+                    id: 'wapp_storage_test removing',
+                    type: 'wapp_storage',
+                    version: 1,
+                },
+                meta: {
+                    type: 'data',
+                    version: '2.1',
+                },
+            },
+            {}
         );
     });
 
@@ -691,20 +730,24 @@ describe('WappStorage', () => {
             key1: string;
             key2: number;
             key3: boolean;
+            key4?: string;
         };
         const w = await wappStorage<MyData>('with types');
 
         const k1 = w.get('key1');
         const k2 = w.get('key2');
         const k3 = w.get('key3');
+        const k4 = w.get('key4');
 
         w.set('key1', 'new');
         w.set('key2', 2);
         w.set('key3', true);
+        w.set('key4', 'new2');
 
         expect(k1).toEqual('item');
         expect(k2).toEqual(1);
         expect(k3).toEqual(true);
+        expect(k4).toBeUndefined();
 
         expect(typeof k1).toEqual('string');
         expect(typeof k2).toEqual('number');

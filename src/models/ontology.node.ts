@@ -2,8 +2,10 @@ import { IOntologyNode, JSONObject } from '../util/interfaces';
 import { Data } from './data';
 import { Model } from './model';
 
-export class OntologyNode
-    extends Data<Record<string, string>>
+export class OntologyNode<
+        T extends Record<string, unknown> = Record<string, string>
+    >
+    extends Data<T>
     implements IOntologyNode
 {
     constructor(name?: string) {

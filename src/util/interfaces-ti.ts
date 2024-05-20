@@ -905,7 +905,7 @@ export const IWappStorage = t.iface([], {
         t.param('name', t.union('K', t.array('K')))
     ),
     keys: t.func(t.array('string')),
-    values: t.func(t.array('any')),
+    values: t.func(t.array('unknown')),
     entries: t.func(t.array(t.tuple('key'))),
     string: 'any',
     value: 'unknown',

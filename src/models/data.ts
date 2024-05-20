@@ -12,9 +12,7 @@ interface IDataMeta {
     version?: number;
 }
 
-export class Data<
-    T extends Record<string, Omit<unknown, 'undefined'>>
-> extends StreamModel {
+export class Data<T extends Record<string, unknown>> extends StreamModel {
     static endpoint = '/2.1/data';
     static attributes = ['meta', 'data_meta', 'data'];
     data_meta: IDataMeta = {};

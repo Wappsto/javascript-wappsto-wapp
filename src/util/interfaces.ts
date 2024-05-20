@@ -662,9 +662,7 @@ export interface IWappStorageFunc {
     cancelOnChange(): void;
 }
 
-export interface IWappStorage<
-    T extends Record<string, Omit<unknown, 'undefined'>>
-> {
+export interface IWappStorage<T extends Record<string, unknown>> {
     name: string;
     id: string;
     set<K extends keyof T>(name: K | T, item?: unknown): Promise<boolean>;
@@ -674,7 +672,7 @@ export interface IWappStorage<
         name: K | K[]
     ): unknown | [unknown] | undefined;
     keys(): Array<string>;
-    values(): Array<Omit<unknown, 'undefined'>>;
+    values(): Array<unknown>;
     entries(): Array<[key: string, value: unknown]>;
     remove(name: string | string[]): Promise<boolean>;
     removeSecret(name: string | string[]): Promise<boolean>;
