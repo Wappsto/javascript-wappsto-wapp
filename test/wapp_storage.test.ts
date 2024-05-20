@@ -731,6 +731,7 @@ describe('WappStorage', () => {
             key2: number;
             key3: boolean;
             key4?: string;
+            key5: number | undefined;
         };
         const w = await wappStorage<MyData>('with types');
 
@@ -738,16 +739,26 @@ describe('WappStorage', () => {
         const k2 = w.get('key2');
         const k3 = w.get('key3');
         const k4 = w.get('key4');
+        const k5 = w.get('key5');
 
         w.set('key1', 'new');
         w.set('key2', 2);
         w.set('key3', true);
         w.set('key4', 'new2');
+        w.set('key5', 3);
+
+        w.set({
+            key1: 'new',
+            key2: 2,
+            key3: true,
+            key5: undefined,
+        });
 
         expect(k1).toEqual('item');
         expect(k2).toEqual(1);
         expect(k3).toEqual(true);
         expect(k4).toBeUndefined();
+        expect(k5).toBeUndefined();
 
         expect(typeof k1).toEqual('string');
         expect(typeof k2).toEqual('number');
