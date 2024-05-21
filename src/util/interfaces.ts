@@ -65,6 +65,11 @@ export interface IMeta {
     size?: number;
     path?: string;
     parent?: string;
+    parent_name?: {
+        network?: string;
+        device?: string;
+        value?: string;
+    };
     usage_daily?: Record<string, string | number>;
     product?: string;
     deprecated?: boolean;
