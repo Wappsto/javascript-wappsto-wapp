@@ -78,6 +78,20 @@ export const IMeta = t.iface([], {
     size: t.opt('number'),
     path: t.opt('string'),
     parent: t.opt('string'),
+    parent_name: t.opt(
+        t.iface([], {
+            network: t.opt('string'),
+            device: t.opt('string'),
+            value: t.opt('string'),
+        })
+    ),
+    parent_name_by_user: t.opt(
+        t.iface([], {
+            network: t.opt('string'),
+            device: t.opt('string'),
+            value: t.opt('string'),
+        })
+    ),
     usage_daily: t.opt('any'),
     product: t.opt('string'),
     deprecated: t.opt('boolean'),
@@ -129,6 +143,11 @@ export const IModelFunc = t.iface([], {
         t.param('filter', 'Filter', true),
         t.param('omit_filter', 'Filter', true)
     ),
+});
+
+export const IData = t.iface([], {
+    [t.indexKey]: 'any',
+    meta: t.opt('IMeta'),
 });
 
 export const IDataFunc = t.iface([], {
@@ -1242,6 +1261,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     FetchRequest,
     IModel,
     IModelFunc,
+    IData,
     IDataFunc,
     INetwork,
     INetworkFunc,

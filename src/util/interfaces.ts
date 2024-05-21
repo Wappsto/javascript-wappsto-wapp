@@ -70,6 +70,11 @@ export interface IMeta {
         device?: string;
         value?: string;
     };
+    parent_name_by_user?: {
+        network?: string;
+        device?: string;
+        value?: string;
+    };
     usage_daily?: Record<string, string | number>;
     product?: string;
     deprecated?: boolean;
