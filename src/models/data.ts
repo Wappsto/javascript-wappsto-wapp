@@ -92,26 +92,30 @@ export class Data<T extends Record<string, unknown>>
         return Object.entries(this.data);
     }
 
-    static fetchById = async (id: string) => {
+    static async fetchById<
+        T extends Record<string, unknown> = Record<string, unknown>
+    >(id: string) {
         Data.#validate('fetchById', [id]);
         const data = await Model.fetch({
             endpoint: `${Data.endpoint}/${id}`,
         });
-        const res = Data.fromArray(data);
+        const res = Data.fromArray<Data<T>>(data);
         const promises = [];
         for (let i = 0; i < res.length; i++) {
             promises.push(res[i].loadAllChildren(null));
         }
         await Promise.all(promises);
         return res[0];
-    };
+    }
 
     /**
      * Finds instances of the Data model with a specific ID.
      * @param id - The ID to search for.
      * @returns A Promise that resolves to an array of Data instances matching the provided ID.
      */
-    static async findByDataId(id: string) {
+    static async findByDataId<
+        T extends Record<string, unknown> = Record<string, unknown>
+    >(id: string) {
         const json: JSONObject[] = await Model.fetch({
             endpoint: Data.endpoint,
             params: {
@@ -121,7 +125,7 @@ export class Data<T extends Record<string, unknown>>
         });
 
         return json.map((item) => {
-            const data = new Data();
+            const data = new Data<T>();
             data.parse(item);
             return data;
         });

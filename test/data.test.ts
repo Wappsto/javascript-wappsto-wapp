@@ -28,12 +28,20 @@ describe('data', () => {
                     type: 'data',
                     version: '2.1',
                 },
+                data: {
+                    key1: 'value1',
+                },
             })
         );
-        const data = await Data.fetchById(
+
+        type MyData = {
+            key1: string;
+        };
+        const data = await Data.fetchById<MyData>(
             '1d75a50b-5e41-4a8c-9436-b2193e604697'
         );
 
+        expect(data.get('key1')).toEqual('value1');
         expect(data.meta.id).toEqual('1d75a50b-5e41-4a8c-9436-b2193e604697');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
