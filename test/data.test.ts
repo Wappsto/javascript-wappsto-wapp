@@ -1,16 +1,10 @@
-import WS from 'jest-websocket-mock';
 import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { Data } from '../src/index';
-import { before, after, sendRpcResponse } from './util/stream';
-import {
-    responses,
-    makeDeviceResponse,
-    makeValueResponse,
-} from './util/response';
 import { makeResponse } from './util/helpers';
+import { after, before } from './util/stream';
 
 describe('data', () => {
     beforeAll(() => {

@@ -143,6 +143,7 @@ export class Model implements IModel {
             await this._create(params);
         } catch (e) {
             printHttpError('Model.create', e);
+            throw e;
         }
     }
 

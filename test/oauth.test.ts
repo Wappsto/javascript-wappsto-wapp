@@ -196,4 +196,33 @@ describe('oauth', () => {
         );
         expect(requestUrl).toBe(undefined);
     });
+
+    it('can handle a failed create', async () => {
+        mockedAxios.post.mockRejectedValueOnce(
+            makeErrorResponse({}, 'Reject create', 'can handle a failed create')
+        );
+        const oauth = new OAuth('test');
+        let error;
+        const orgError = console.error;
+        console.error = jest.fn();
+        try {
+            await oauth.create();
+        } catch (e) {
+            error = e;
+        }
+        expect(console.error).toHaveBeenCalledWith(
+            'WAPPSTO ERROR: Model.create: Reject create for can handle a failed create'
+        );
+        console.error = orgError;
+
+        expect(error).toEqual(
+            expect.objectContaining({
+                response: expect.objectContaining({
+                    status: 500,
+                    statusText: 'Reject create',
+                }),
+            })
+        );
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+    });
 });

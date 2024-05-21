@@ -111,6 +111,11 @@ export interface IModelFunc {
     getFilterResult(filter?: Filter, omit_filter?: Filter): string;
 }
 
+export interface IData {
+    [key: string]: any;
+    meta?: IMeta;
+}
+
 export interface IDataFunc {
     fetchById(id: string): IModel;
 }

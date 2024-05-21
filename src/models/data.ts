@@ -4,7 +4,7 @@ import pick from 'lodash.pick';
 import { isBrowser } from '../util/helpers';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
-import { JSONObject } from '../util/interfaces';
+import { IData, JSONObject } from '../util/interfaces';
 
 interface IDataMeta {
     id?: string;
@@ -12,7 +12,10 @@ interface IDataMeta {
     version?: number;
 }
 
-export class Data<T extends Record<string, unknown>> extends StreamModel {
+export class Data<T extends Record<string, unknown>>
+    extends StreamModel
+    implements IData
+{
     static endpoint = '/2.1/data';
     static attributes = ['meta', 'data_meta', 'data'];
     data_meta: IDataMeta = {};
