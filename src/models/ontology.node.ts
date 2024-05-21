@@ -21,12 +21,14 @@ export class OntologyNode<
     }
 }
 
-export async function createNode(name: string): Promise<OntologyNode> {
+export async function createNode<
+    T extends Record<string, unknown> = Record<string, string>
+>(name: string): Promise<OntologyNode<T>> {
     Model.validateMethod('OntologyNode', 'createNode', arguments);
 
-    let node = await findNode(name);
+    let node = await findNode<T>(name);
     if (node === undefined) {
-        node = new OntologyNode(name);
+        node = new OntologyNode<T>(name);
         await node.create();
     }
 
@@ -35,7 +37,9 @@ export async function createNode(name: string): Promise<OntologyNode> {
     return node;
 }
 
-export async function getAllNodes(): Promise<OntologyNode[]> {
+export async function getAllNodes<
+    T extends Record<string, unknown> = Record<string, string>
+>(): Promise<OntologyNode<T>[]> {
     const json: JSONObject[] = await Model.fetch({
         endpoint: Data.endpoint,
         params: {
@@ -44,16 +48,18 @@ export async function getAllNodes(): Promise<OntologyNode[]> {
         },
     });
 
-    const res: OntologyNode[] = [];
+    const res: OntologyNode<T>[] = [];
     json.forEach((item) => {
-        const node = new OntologyNode();
+        const node = new OntologyNode<T>();
         node.parse(item);
         res.push(node);
     });
     return res;
 }
 
-export async function findNode(name: string): Promise<OntologyNode> {
+export async function findNode<
+    T extends Record<string, unknown> = Record<string, string>
+>(name: string): Promise<OntologyNode<T>> {
     Model.validateMethod('OntologyNode', 'findNode', arguments);
 
     const json: JSONObject[] = await Model.fetch({
@@ -64,9 +70,9 @@ export async function findNode(name: string): Promise<OntologyNode> {
         },
     });
 
-    const res: OntologyNode[] = [];
+    const res: OntologyNode<T>[] = [];
     json.forEach((item) => {
-        const node = new OntologyNode();
+        const node = new OntologyNode<T>();
         node.parse(item);
         res.push(node);
     });
