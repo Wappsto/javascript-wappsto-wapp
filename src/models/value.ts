@@ -217,12 +217,12 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             },
         });
         const values = Value.fromArray(data);
-        const promises: Promise<void>[] = [];
-        values.forEach((val) => {
-            promises.push(val.loadAllChildren(null));
-        });
-        await Promise.all(promises);
-        return values[0];
+        if (values[0]) {
+            const value = values[0] as Value;
+            await value.loadAllChildren(null);
+            return value;
+        }
+        return undefined;
     };
 
     static fetch = async () => {
@@ -233,28 +233,31 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         const values = Value.fromArray(data);
         const promises: Promise<void>[] = [];
         values.forEach((val, index) => {
-            if (val.loadAllChildren) {
-                promises.push(val.loadAllChildren(null));
-            } else if (typeof val === 'string') {
+            if (typeof val === 'string') {
                 promises.push(
                     new Promise<void>((resolve) => {
                         const id = val as unknown as string;
                         Value.fetchById(id).then((value) => {
-                            values[index] = value;
+                            if (value) {
+                                values[index] = value;
+                            }
                             resolve();
                         });
                     })
                 );
+            } else if (val.loadAllChildren) {
+                promises.push(val.loadAllChildren(null));
             }
         });
         await Promise.all(promises);
 
         values.forEach((value) => {
-            if (value?.addChildrenToStore) {
+            if (typeof value !== 'string' && value?.addChildrenToStore) {
                 value.addChildrenToStore();
             }
         });
-        return values;
+
+        return values as Value[];
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -520,11 +523,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return json;
     }
 
-    parseChildren(json: JSONObject): boolean {
+    parseChild(json: JSONObject): boolean {
         let res = false;
         const states = State.fromArray([json]);
         if (states.length) {
-            this.state.push(states[0]);
+            this.state.push(states[0] as State);
             res = true;
         }
         return res;
@@ -961,24 +964,26 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         const promises: Promise<void>[] = [];
 
         values.forEach((val, index) => {
-            if (val.loadAllChildren) {
-                promises.push(val.loadAllChildren(null));
-            } else if (typeof val === 'string') {
+            if (typeof val === 'string') {
                 promises.push(
                     new Promise<void>((resolve) => {
                         const id = val as unknown as string;
                         Value.fetchById(id).then((value) => {
-                            values[index] = value;
+                            if (value) {
+                                values[index] = value;
+                            }
                             resolve();
                         });
                     })
                 );
+            } else if (val.loadAllChildren) {
+                promises.push(val.loadAllChildren(null));
             }
         });
         await Promise.all(promises);
 
         values.forEach((value) => {
-            if (value?.addChildrenToStore) {
+            if (typeof value !== 'string' && value?.addChildrenToStore) {
                 value.addChildrenToStore();
             }
         });

@@ -258,7 +258,7 @@ export class Model implements IModel {
 
     /* istanbul ignore next */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    parseChildren(json: JSONObject): boolean {
+    parseChild(json: JSONObject): boolean {
         return false;
     }
 
@@ -323,7 +323,7 @@ export class Model implements IModel {
         this: new () => T,
         json: JSONObject[],
         parent?: IModel
-    ): T[] {
+    ): (T | string)[] {
         const obj = plainToInstance(this, json) || [];
         return obj.map((o: T) => {
             if (o && typeof o !== 'string') {
@@ -349,7 +349,6 @@ export class Model implements IModel {
                 (k) => k.toLowerCase() === funcName
             );
 
-            /* istanbul ignore else */
             if (c) {
                 const m = Model.checker[c].methodArgs(name);
                 try {

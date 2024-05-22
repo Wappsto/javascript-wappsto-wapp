@@ -100,12 +100,12 @@ export class Data<T extends Record<string, unknown>>
             endpoint: `${Data.endpoint}/${id}`,
         });
         const res = Data.fromArray<Data<T>>(data);
-        const promises = [];
-        for (let i = 0; i < res.length; i++) {
-            promises.push(res[i].loadAllChildren(null));
+        if (res[0]) {
+            const data = res[0] as Data<T>;
+            await data.loadAllChildren(null);
+            return data;
         }
-        await Promise.all(promises);
-        return res[0];
+        return undefined;
     }
 
     /**

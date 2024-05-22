@@ -344,7 +344,7 @@ export class Stream extends Model {
             const response = await wappsto.post('/2.1/extsync/request', msg);
             result = response.data;
         } catch (e: any) {
-            /* 1istanbul ignore next */
+            /* istanbul ignore next */
             if (e.response.data?.code !== undefined) {
                 const errorMsg = getErrorMessage(e);
                 printError(
@@ -820,7 +820,7 @@ export class Stream extends Model {
         this.#socket.onmessage = (ev: { type: string; data: string }) => {
             this.#startWatchDog();
 
-            /* istanbul ignore else */
+            /* istanbul ignore next */
             if (ev.type !== 'message') {
                 /* istanbul ignore next */
                 printError("Can't handle binary stream data");

@@ -35,7 +35,7 @@ export class User extends Model {
                 expand: 1,
             },
         });
-        return User.fromArray(data);
+        return User.fromArray(data) as User[];
     };
 
     /* eslint-disable @typescript-eslint/require-await */

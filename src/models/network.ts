@@ -17,15 +17,17 @@ import { Model } from './model';
 import { ConnectionModel } from './model.connection';
 import { PermissionModel } from './model.permission';
 import { Value } from './value';
+import { resolve } from 'path';
 
 export async function createNetwork(params: INetwork): Promise<Network> {
     Model.validateMethod('Network', 'createNetwork', arguments);
 
     const networks = await Network.fetchByName(params.name);
     if (networks.length !== 0) {
-        printDebug(`Using existing network with id ${networks[0].id()}`);
-        networks[0].addChildrenToStore();
-        return networks[0];
+        const network = networks[0] as Network;
+        printDebug(`Using existing network with id ${network.id()}`);
+        network.addChildrenToStore();
+        return network;
     }
 
     const network = new Network();
@@ -136,6 +138,7 @@ export class Network extends ConnectionModel implements INetwork {
                 if (typeof json[0] === 'object' && 'device' in json[0]) {
                     devices = json[0].device as (Device | string)[];
                 } else {
+                    /* istanbul ignore next */
                     printWarning(
                         `Network: loadAllChildren: the key 'device' not found in json: ${json[0]}`
                     );
@@ -245,11 +248,11 @@ export class Network extends ConnectionModel implements INetwork {
         return device;
     }
 
-    parseChildren(json: JSONObject): boolean {
+    parseChild(json: JSONObject): boolean {
         let res = false;
         const devices = Device.fromArray([json]);
         if (devices.length) {
-            this.device.push(devices[0]);
+            this.device.push(devices[0] as Device);
             res = true;
         }
         return res;
@@ -308,24 +311,26 @@ export class Network extends ConnectionModel implements INetwork {
         const promises: Promise<void>[] = [];
 
         networks.forEach((net, index) => {
-            if (net.loadAllChildren) {
-                promises.push(net.loadAllChildren(null));
-            } else if (typeof net === 'string') {
+            if (typeof net === 'string') {
                 promises.push(
                     new Promise<void>((resolve) => {
                         const id = net as unknown as string;
                         Network.fetchById(id).then((network) => {
-                            networks[index] = network;
+                            if (network) {
+                                networks[index] = network;
+                            }
                             resolve();
                         });
                     })
                 );
+            } else if (net.loadAllChildren) {
+                promises.push(net.loadAllChildren(null));
             }
         });
         await Promise.all(promises);
 
         networks.forEach((network) => {
-            if (network?.addChildrenToStore) {
+            if (typeof network !== 'string' && network?.addChildrenToStore) {
                 network.addChildrenToStore();
             }
         });
@@ -415,12 +420,13 @@ export class Network extends ConnectionModel implements INetwork {
             },
         });
         const networks = Network.fromArray(data);
-        const promises: Promise<void>[] = [];
-        for (let i = 0; i < networks.length; i++) {
-            promises.push(networks[i].loadAllChildren(null));
+
+        if (networks[0]) {
+            const network = networks[0] as Network;
+            await network.loadAllChildren(null);
+            return network;
         }
-        await Promise.all(promises);
-        return networks[0];
+        return undefined;
     };
 
     static fetchByName = async (name = '') => {
@@ -434,11 +440,26 @@ export class Network extends ConnectionModel implements INetwork {
         const data = await Model.fetch({ endpoint: Network.endpoint, params });
         const networks = Network.fromArray(data);
         const promises: Promise<void>[] = [];
-        networks.forEach((net) => {
-            promises.push(net.loadAllChildren(null));
+        networks.forEach((network, index) => {
+            if (typeof network === 'string') {
+                promises.push(
+                    new Promise(async (resolve) => {
+                        const newNetwork = await Network.fetchById(
+                            network as string
+                        );
+                        if (newNetwork) {
+                            networks[index] = newNetwork;
+                        }
+                        resolve();
+                    })
+                );
+            } else {
+                promises.push(network.loadAllChildren(null));
+            }
         });
         await Promise.all(promises);
-        return networks;
+
+        return networks as Network[];
     };
 
     static fetch = async () => {
@@ -448,29 +469,31 @@ export class Network extends ConnectionModel implements INetwork {
         const networks = Network.fromArray(data);
         const promises: Promise<void>[] = [];
         networks.forEach((network, index) => {
-            if (network.loadAllChildren) {
-                promises.push(network.loadAllChildren(null));
-            } else if (typeof network === 'string') {
+            if (typeof network === 'string') {
                 promises.push(
                     new Promise<void>((resolve) => {
                         const id = network as unknown as string;
-                        Network.fetchById(id).then((net) => {
-                            networks[index] = net;
+                        Network.fetchById(id).then((network) => {
+                            if (network) {
+                                networks[index] = network;
+                            }
                             resolve();
                         });
                     })
                 );
+            } else if (network.loadAllChildren) {
+                promises.push(network.loadAllChildren(null));
             }
         });
         await Promise.all(promises);
 
         networks.forEach((network) => {
-            if (network?.addChildrenToStore) {
+            if (typeof network !== 'string' && network?.addChildrenToStore) {
                 network.addChildrenToStore();
             }
         });
 
-        return networks;
+        return networks as Network[];
     };
 
     async #fetchMissingDevices(offset: number): Promise<void> {
@@ -484,15 +507,19 @@ export class Network extends ConnectionModel implements INetwork {
         const devices = Device.fromArray(data);
         const promises: Promise<void>[] = [];
 
-        devices.forEach((dev: Device, index: number) => {
-            this.device[offset + index] = dev;
+        let stringIdsOffset = -1;
+        devices.forEach((dev, index: number) => {
+            if (typeof dev === 'string') {
+                if (stringIdsOffset === -1) {
+                    stringIdsOffset = index;
+                }
+            } else {
+                this.device[offset + index] = dev;
+            }
         });
 
-        for (let i = 0; i < this.device.length; i++) {
-            if (typeof this.device[i] === 'string') {
-                promises.push(this.#fetchMissingDevices(i));
-                break;
-            }
+        if (stringIdsOffset !== -1) {
+            promises.push(this.#fetchMissingDevices(stringIdsOffset));
         }
 
         devices.forEach((dev) => {

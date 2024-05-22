@@ -404,11 +404,11 @@ export class Device extends ConnectionModel implements IDevice {
         });
     }
 
-    parseChildren(json: JSONObject): boolean {
+    parseChild(json: JSONObject): boolean {
         let res = false;
         const values = Value.fromArray([json]);
         if (values.length) {
-            this.value.push(values[0]);
+            this.value.push(values[0] as Value);
             res = true;
         }
         return res;
@@ -468,24 +468,26 @@ export class Device extends ConnectionModel implements IDevice {
         const promises: Promise<void>[] = [];
 
         devices.forEach((dev, index) => {
-            if (dev.loadAllChildren) {
-                promises.push(dev.loadAllChildren(null));
-            } else if (typeof dev === 'string') {
+            if (typeof dev === 'string') {
                 promises.push(
                     new Promise<void>((resolve) => {
                         const id = dev as unknown as string;
                         Device.fetchById(id).then((device) => {
-                            devices[index] = device;
+                            if (device) {
+                                devices[index] = device;
+                            }
                             resolve();
                         });
                     })
                 );
+            } else if (dev.loadAllChildren) {
+                promises.push(dev.loadAllChildren(null));
             }
         });
         await Promise.all(promises);
 
         devices.forEach((device) => {
-            if (device?.addChildrenToStore) {
+            if (typeof device !== 'string' && device?.addChildrenToStore) {
                 device.addChildrenToStore();
             }
         });
@@ -587,12 +589,12 @@ export class Device extends ConnectionModel implements IDevice {
             },
         });
         const res = Device.fromArray(data);
-        const promises = [];
-        for (let i = 0; i < res.length; i++) {
-            promises.push(res[i].loadAllChildren(null));
+        if (res[0]) {
+            const device = res[0] as Device;
+            await device.loadAllChildren(null);
+            return device;
         }
-        await Promise.all(promises);
-        return res[0];
+        return undefined;
     };
 
     static fetch = async () => {
@@ -602,29 +604,31 @@ export class Device extends ConnectionModel implements IDevice {
         const devices = Device.fromArray(data);
         const promises: Promise<void>[] = [];
         devices.forEach((dev, index) => {
-            if (dev.loadAllChildren) {
-                promises.push(dev.loadAllChildren(null));
-            } else if (typeof dev === 'string') {
+            if (typeof dev === 'string') {
                 promises.push(
                     new Promise<void>((resolve) => {
                         const id = dev as unknown as string;
                         Device.fetchById(id).then((device) => {
-                            devices[index] = device;
+                            if (device) {
+                                devices[index] = device;
+                            }
                             resolve();
                         });
                     })
                 );
+            } else if (dev.loadAllChildren) {
+                promises.push(dev.loadAllChildren(null));
             }
         });
         await Promise.all(promises);
 
         devices.forEach((device) => {
-            if (device?.addChildrenToStore) {
+            if (typeof device !== 'string' && device?.addChildrenToStore) {
                 device.addChildrenToStore();
             }
         });
 
-        return devices;
+        return devices as Device[];
     };
 
     async setConnectionStatus(state: boolean | number): Promise<boolean> {
@@ -660,15 +664,19 @@ export class Device extends ConnectionModel implements IDevice {
         const values = Value.fromArray(data);
         const promises: Promise<void>[] = [];
 
-        values.forEach((val: Value, index: number) => {
-            this.value[offset + index] = val;
+        let stringIdsOffset = -1;
+        values.forEach((val, index: number) => {
+            if (typeof val === 'string') {
+                if (stringIdsOffset === -1) {
+                    stringIdsOffset = index;
+                }
+            } else {
+                this.value[offset + index] = val;
+            }
         });
 
-        for (let i = 0; i < this.value.length; i++) {
-            if (typeof this.value[i] === 'string') {
-                promises.push(this.#fetchMissingValues(i));
-                break;
-            }
+        if (stringIdsOffset !== -1) {
+            promises.push(this.#fetchMissingValues(stringIdsOffset));
         }
 
         values.forEach((val) => {

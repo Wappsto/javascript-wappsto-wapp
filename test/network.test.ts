@@ -92,15 +92,31 @@ describe('network', () => {
     });
 
     it('can create a new networks from wappsto', async () => {
-        mockedAxios.get.mockResolvedValueOnce(makeResponse(response2Networks));
+        mockedAxios.get
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeNetworkResponse({ name: 'test 1' }),
+                    'd16ac42f-dedf-496f-a935-87ae9f29fb61',
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeNetworkResponse({
+                        name: 'test 2',
+                        id: 'd16ac42f-dedf-496f-a935-87ae9f29fb61',
+                    }),
+                    ,
+                ])
+            );
 
         const networks = await Network.fetch();
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: { go_internal: true, expand: 3, method: ['retrieve'] },
         });
-        expect(networks[0]?.name).toEqual('test');
+        expect(networks[0]?.name).toEqual('test 1');
+        expect(networks[1]?.name).toEqual('test 2');
     });
 
     it('can update a network on wappsto', async () => {
@@ -649,9 +665,23 @@ describe('network', () => {
     });
 
     it('can find all network by name', async () => {
+        const networkID1 = '59afce73-f161-4fb8-bae2-789be920be88';
+        const networkID2 = 'df59953d-1b3c-44f5-9597-7714dd83a5f3';
+
         mockedAxios.get
             .mockResolvedValueOnce(makeResponse([]))
-            .mockResolvedValueOnce(makeResponse(response2Networks));
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeNetworkResponse({ name: 'test 1', id: networkID1 }),
+                    networkID2,
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeNetworkResponse({ name: 'test 2', id: networkID2 }),
+                ])
+            );
+
         const r = Network.findAllByName('test');
         await server.connected;
 
@@ -666,17 +696,14 @@ describe('network', () => {
                 base: {
                     code: 1100004,
                     identifier: 'network-all-Find all network with name test',
-                    ids: [
-                        response2Networks[0].meta.id,
-                        response2Networks[1].meta.id,
-                    ],
+                    ids: [networkID1, networkID2],
                 },
             },
         });
 
         const network = await r;
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
         expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
             params: {
                 expand: 3,
@@ -689,8 +716,8 @@ describe('network', () => {
                 method: ['retrieve', 'update'],
             },
         });
-        expect(network[0].meta.id).toEqual(response2Networks[0].meta.id);
-        expect(network[1].meta.id).toEqual(response2Networks[1].meta.id);
+        expect(network[0].meta.id).toEqual(networkID1);
+        expect(network[1].meta.id).toEqual(networkID2);
     });
 
     it('can use custom find', async () => {

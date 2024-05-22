@@ -21,14 +21,15 @@ export class PermissionModel extends OntologyModel {
         data: StreamData,
         options?: JSONObject
     ): Promise<boolean | undefined> {
-        const notification = Notification.fromArray([data]);
+        const notifications = Notification.fromArray([data]);
 
         /* istanbul ignore next */
-        if (!notification || !notification[0]) {
+        if (!notifications || !notifications[0]) {
             return undefined;
         }
 
-        switch (notification[0].base?.code) {
+        const notification = notifications[0] as Notification;
+        switch (notification.base?.code) {
             case 1100013:
                 printDebug(
                     `Got permission to create ${this.getType()} under users account`
@@ -48,9 +49,9 @@ export class PermissionModel extends OntologyModel {
                 }
                 break;
             case 1100004:
-                if (!notification[0].base?.ids.includes(this.id())) {
+                if (!notification.base?.ids.includes(this.id())) {
                     printDebug(
-                        `Got permission for wrong uuid ${notification[0].base?.ids[0]}`
+                        `Got permission for wrong uuid ${notification.base?.ids[0]}`
                     );
                     return undefined;
                 }
@@ -203,16 +204,17 @@ export class PermissionModel extends OntologyModel {
             openStream.subscribeService(
                 '/notification',
                 async (data: StreamData) => {
-                    const notification = Notification.fromArray([data]);
+                    const notifications = Notification.fromArray([data]);
                     /* istanbul ignore next */
-                    if (!notification || !notification[0]) {
+                    if (!notifications || !notifications[0]) {
                         return;
                     }
 
-                    const ids = notification[0].getIds();
+                    const notification = notifications[0] as Notification;
+                    const ids = notification.getIds();
                     if (
-                        (notification[0].base?.code === 1100004 ||
-                            notification[0].base?.code === 1100013) &&
+                        (notification.base?.code === 1100004 ||
+                            notification.base?.code === 1100013) &&
                         //notification[0].base?.identifier === id &&
                         ids.length > 0 &&
                         (quantity === 'all' || ids.length >= quantity)

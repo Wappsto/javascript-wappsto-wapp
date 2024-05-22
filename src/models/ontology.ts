@@ -118,6 +118,21 @@ export class Ontology extends Model implements IOntologyEdge {
         await this.delete();
     }
 
+    static fetchById = async (id: string) => {
+        Ontology.#validate('fetchById', [id]);
+        const data = await Model.fetch({
+            endpoint: `${Ontology.endpoint}/${id}`,
+        });
+        const ontologies = Ontology.fromArray(data);
+
+        if (ontologies[0]) {
+            const ontology = ontologies[0] as Ontology;
+            await ontology.loadAllChildren(null);
+            return ontology;
+        }
+        return undefined;
+    };
+
     static fetch = async (parameters: FetchRequest): Promise<Ontology[]> => {
         Ontology.#validate('fetch', [parameters]);
 
@@ -131,12 +146,24 @@ export class Ontology extends Model implements IOntologyEdge {
         const res = Ontology.fromArray(data);
 
         const proms: Promise<void>[] = [];
-        res.forEach((o) => {
-            proms.push(o.fetchModels());
+        res.forEach((o, index) => {
+            if (typeof o === 'string') {
+                proms.push(
+                    new Promise(async (resolve) => {
+                        const onto = await Ontology.fetchById(o);
+                        if (onto) {
+                            res[index] = onto;
+                        }
+                        resolve();
+                    })
+                );
+            } else {
+                proms.push(o.fetchModels());
+            }
         });
 
         await Promise.all(proms);
-        return res;
+        return res as Ontology[];
     };
 
     static #validate(name: string, params: ValidateParams): void {

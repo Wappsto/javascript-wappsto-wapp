@@ -21,18 +21,20 @@ describe('data', () => {
     });
 
     it('can fetch it by ID', async () => {
-        mockedAxios.get.mockResolvedValueOnce(
-            makeResponse({
-                meta: {
-                    id: '1d75a50b-5e41-4a8c-9436-b2193e604697',
-                    type: 'data',
-                    version: '2.1',
-                },
-                data: {
-                    key1: 'value1',
-                },
-            })
-        );
+        mockedAxios.get
+            .mockResolvedValueOnce(
+                makeResponse({
+                    meta: {
+                        id: '1d75a50b-5e41-4a8c-9436-b2193e604697',
+                        type: 'data',
+                        version: '2.1',
+                    },
+                    data: {
+                        key1: 'value1',
+                    },
+                })
+            )
+            .mockResolvedValueOnce(makeResponse([]));
 
         type MyData = {
             key1: string;
@@ -40,10 +42,12 @@ describe('data', () => {
         const data = await Data.fetchById<MyData>(
             '1d75a50b-5e41-4a8c-9436-b2193e604697'
         );
+        const emptyData = await Data.fetchById<MyData>('');
 
-        expect(data.get('key1')).toEqual('value1');
-        expect(data.meta.id).toEqual('1d75a50b-5e41-4a8c-9436-b2193e604697');
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(data?.get('key1')).toEqual('value1');
+        expect(data?.meta.id).toEqual('1d75a50b-5e41-4a8c-9436-b2193e604697');
+        expect(emptyData).toBeUndefined();
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/2.1/data/1d75a50b-5e41-4a8c-9436-b2193e604697',
             {
