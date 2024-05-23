@@ -192,9 +192,9 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
     addChildrenToStore(): void {
         super.addChildrenToStore();
-        this.state.forEach((sta: IModel) => {
-            if (sta?.addChildrenToStore) {
-                sta.addChildrenToStore();
+        this.state.forEach((state: IModel) => {
+            if (state?.addChildrenToStore) {
+                state.addChildrenToStore();
             }
         });
     }
