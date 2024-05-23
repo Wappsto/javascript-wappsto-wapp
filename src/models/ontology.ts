@@ -69,6 +69,15 @@ export class Ontology extends Model implements IOntologyEdge {
         return res;
     }
 
+    removeModel(to: IOntologyModel): boolean {
+        let res = false;
+        if (this.models.find((o) => compareModels(o, to)) !== undefined) {
+            this.models.splice(this.models.indexOf(to), 1);
+            res = true;
+        }
+        return res;
+    }
+
     #addFailedModel(type: string, id: string) {
         try {
             if (!this.failedModels[type].includes(id)) {

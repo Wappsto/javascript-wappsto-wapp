@@ -60,6 +60,19 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
     }
 
+    async deleteModelFromEdge(params: IOntology): Promise<void> {
+        Model.validateMethod('OntologyModel', 'deleteModelFromEdge', arguments);
+        const edge = await this.findEdge(params);
+        if (edge) {
+            edge.removeModel(params.to);
+            if (edge.models.length === 0) {
+                await edge.delete();
+            } else {
+                await edge.update();
+            }
+        }
+    }
+
     removeEdge(edge: IModel): void {
         Model.validateMethod('OntologyModel', 'removeEdge', arguments);
 

@@ -748,6 +748,7 @@ export interface IOntologyModel extends IModel {
     deleteBranch(): Promise<void>;
     deleteEdge(params: IOntology): Promise<void>;
     removeEdge(edge: IModel): void;
+    deleteModelFromEdge(params: IOntology): Promise<void>;
 }
 export interface IOntologyModelFunc {
     createEdge(params: IOntology): Promise<IOntologyEdge>;
@@ -755,6 +756,7 @@ export interface IOntologyModelFunc {
     deleteBranch(): Promise<void>;
     deleteEdge(params: IOntology): Promise<void>;
     removeEdge(edge: IModel): void;
+    deleteModelFromEdge(params: IOntology): Promise<void>;
 }
 export interface IOntologyEdge extends IModel {
     relationship: Relationship;
