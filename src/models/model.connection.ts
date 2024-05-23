@@ -4,8 +4,8 @@ import { Model } from './model';
 import { StreamModel } from './model.stream';
 
 export class ConnectionModel extends StreamModel implements IConnectionModel {
-    connectionCallbacks: ConnectionCallback[] = [];
-    currentStatus = false;
+    #connectionCallbacks: ConnectionCallback[] = [];
+    #currentStatus = false;
 
     isOnline(): boolean {
         if (this.meta.connection?.online === true) {
@@ -21,14 +21,14 @@ export class ConnectionModel extends StreamModel implements IConnectionModel {
             arguments
         );
         let res = true;
-        this.currentStatus = this.isOnline();
-        if (!checkList(this.connectionCallbacks, callback)) {
-            this.connectionCallbacks.push(callback);
+        this.#currentStatus = this.isOnline();
+        if (!checkList(this.#connectionCallbacks, callback)) {
+            this.#connectionCallbacks.push(callback);
             res = await this.onEvent(async () => {
-                if (this.isOnline() !== this.currentStatus) {
-                    this.currentStatus = this.isOnline();
-                    for (let i = 0; i < this.connectionCallbacks.length; i++) {
-                        await this.connectionCallbacks[i](
+                if (this.isOnline() !== this.#currentStatus) {
+                    this.#currentStatus = this.isOnline();
+                    for (let i = 0; i < this.#connectionCallbacks.length; i++) {
+                        await this.#connectionCallbacks[i](
                             this,
                             this.isOnline()
                         );
@@ -45,9 +45,9 @@ export class ConnectionModel extends StreamModel implements IConnectionModel {
             'cancelOnConnectionChange',
             arguments
         );
-        const index = checkListIndex(this.connectionCallbacks, callback);
+        const index = checkListIndex(this.#connectionCallbacks, callback);
         if (index > -1) {
-            this.connectionCallbacks.splice(index, 1);
+            this.#connectionCallbacks.splice(index, 1);
         }
     }
 }

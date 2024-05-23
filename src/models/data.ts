@@ -21,8 +21,8 @@ export class Data<T extends Record<string, unknown>>
     data_meta: IDataMeta = {};
     data: T = {} as T;
     _secret_background: T = {} as T;
-    clearSecret = false;
-    oldKeys: Array<string> = [];
+    #clearSecret = false;
+    #oldKeys: Array<string> = [];
 
     constructor(id?: string, type?: string) {
         super('data');
@@ -73,7 +73,7 @@ export class Data<T extends Record<string, unknown>>
     remove<K extends keyof T>(name: K, secret = false): void {
         if (secret) {
             this.#checkSecret();
-            this.clearSecret = true;
+            this.#clearSecret = true;
             delete this._secret_background[name];
         } else {
             delete this.data[name];
@@ -144,7 +144,7 @@ export class Data<T extends Record<string, unknown>>
             this.data_meta.version = 1;
             this.data = {} as T;
             Object.assign(this.data, omit(json, ['meta', 'data_meta']));
-            this.oldKeys = Object.keys(
+            this.#oldKeys = Object.keys(
                 omit(this.data, ['meta', 'data_meta', 'data'])
             );
         }
@@ -156,7 +156,7 @@ export class Data<T extends Record<string, unknown>>
     toJSON() {
         const result = super.toJSON();
 
-        this.oldKeys.forEach((k: string) => {
+        this.#oldKeys.forEach((k: string) => {
             (result as Record<string, unknown>)[k] = null;
         });
 

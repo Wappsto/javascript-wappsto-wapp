@@ -88,16 +88,16 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     state: State[] = [];
     @Type(() => EventLog)
     eventlog: EventLog[] = [];
-    stateCallbacks: Record<string, ValueStreamCallback[]> = {
+    #stateCallbacks: Record<string, ValueStreamCallback[]> = {
         Control: [],
         Report: [],
     };
-    reportIsForced = false;
-    sendReportWithJitter = false;
-    periodTimer?: ReturnType<typeof setTimeout>;
-    refreshCallbacks: RefreshStreamCallback[] = [];
-    jitterTimer?: ReturnType<typeof setTimeout>;
-    callbackFunc: Record<string, () => Promise<void>> = {};
+    #reportIsForced = false;
+    #sendReportWithJitter = false;
+    #periodTimer?: ReturnType<typeof setTimeout>;
+    #refreshCallbacks: RefreshStreamCallback[] = [];
+    #jitterTimer?: ReturnType<typeof setTimeout>;
+    #callbackFunc: Record<string, () => Promise<void>> = {};
 
     constructor(name?: string) {
         super('value', 1);
@@ -354,11 +354,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         state.data = this.#convertValueInput(data);
         state.timestamp = this.#timestampToString(timestamp);
 
-        if (type !== 'Report' || !this.sendReportWithJitter) {
+        if (type !== 'Report' || !this.#sendReportWithJitter) {
             return await state.update(State.attributes);
         }
 
-        this.sendReportWithJitter = false;
+        this.#sendReportWithJitter = false;
         const eventTimestamp = state.timestamp;
 
         const timeout = randomIntFromInterval(
@@ -366,7 +366,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             _config.jitterMax * 10
         );
         await new Promise((r) => {
-            this.jitterTimer = setTimeout(r, timeout * 100);
+            this.#jitterTimer = setTimeout(r, timeout * 100);
         });
 
         const oldData = state.data;
@@ -395,9 +395,9 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 callback(this, state.data, state.timestamp);
             }
 
-            if (!this.callbackFunc[type]) {
-                this.callbackFunc[type] = async () => {
-                    const callbacks = this.stateCallbacks?.[state.type] || [];
+            if (!this.#callbackFunc[type]) {
+                this.#callbackFunc[type] = async () => {
+                    const callbacks = this.#stateCallbacks?.[state.type] || [];
                     for (let i = 0; i < callbacks.length; i++) {
                         const cb = callbacks[i];
                         await cb(this, state.data, state.timestamp);
@@ -405,10 +405,10 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 };
             }
 
-            if (!checkList(this.stateCallbacks[type], callback)) {
-                this.stateCallbacks[type].push(callback);
-                if (this.stateCallbacks[type].length === 1) {
-                    res = await state.onChange(this.callbackFunc[type]);
+            if (!checkList(this.#stateCallbacks[type], callback)) {
+                this.#stateCallbacks[type].push(callback);
+                if (this.#stateCallbacks[type].length === 1) {
+                    res = await state.onChange(this.#callbackFunc[type]);
                 }
             } else {
                 printDebug(
@@ -424,21 +424,21 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         callback?: ValueStreamCallback
     ): Promise<boolean> {
         if (callback) {
-            const index = this.stateCallbacks[type].findIndex((c) =>
+            const index = this.#stateCallbacks[type].findIndex((c) =>
                 compareCallback(c, callback)
             );
             if (index !== -1) {
-                this.stateCallbacks[type].splice(index, 1);
+                this.#stateCallbacks[type].splice(index, 1);
             } else {
                 printDebug(`Failed to find and remove ${type} callback`);
             }
         } else {
-            this.stateCallbacks[type] = [];
+            this.#stateCallbacks[type] = [];
         }
-        if (this.stateCallbacks[type].length === 0) {
+        if (this.#stateCallbacks[type].length === 0) {
             const state = this.#findState(type);
-            if (state && this.callbackFunc[type]) {
-                return state.cancelOnChange(this.callbackFunc[type]);
+            if (state && this.#callbackFunc[type]) {
+                return state.cancelOnChange(this.#callbackFunc[type]);
             }
         }
         return false;
@@ -622,7 +622,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         if (
             this.delta &&
             this.delta !== '0' &&
-            !this.reportIsForced &&
+            !this.#reportIsForced &&
             !force &&
             compareDates(timestamp || new Date(), oldState.timestamp)
         ) {
@@ -651,7 +651,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             }
         }
 
-        this.reportIsForced = false;
+        this.#reportIsForced = false;
         return this.#findStateAndUpdate('Report', sendData, timestamp);
     }
 
@@ -774,15 +774,19 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     async onRefresh(callback: RefreshStreamCallback): Promise<boolean> {
         this.validate('onRefresh', arguments);
         this.status = undefined;
-        if (!checkList(this.refreshCallbacks, callback)) {
-            this.refreshCallbacks.push(callback);
-            if (this.refreshCallbacks.length === 1) {
+        if (!checkList(this.#refreshCallbacks, callback)) {
+            this.#refreshCallbacks.push(callback);
+            if (this.#refreshCallbacks.length === 1) {
                 return this.onChange(async () => {
                     if (this.status === 'update') {
-                        this.reportIsForced = true;
+                        this.#reportIsForced = true;
                         this.status = undefined;
-                        for (let i = 0; i < this.refreshCallbacks.length; i++) {
-                            await this.refreshCallbacks[i](this, 'user');
+                        for (
+                            let i = 0;
+                            i < this.#refreshCallbacks.length;
+                            i++
+                        ) {
+                            await this.#refreshCallbacks[i](this, 'user');
                         }
                     }
                 });
@@ -800,7 +804,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     }
 
     cancelOnRefresh(): Promise<boolean> {
-        this.refreshCallbacks = [];
+        this.#refreshCallbacks = [];
         return this.clearAllCallbacks();
     }
 
@@ -1106,32 +1110,32 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     }
 
     #startPeriodHandler(): void {
-        clearTimeout(this.periodTimer);
+        clearTimeout(this.#periodTimer);
 
         if (this.#getPeriodTimeout() === 0) {
             return;
         }
 
-        this.periodTimer = setTimeout(() => {
+        this.#periodTimer = setTimeout(() => {
             this.#triggerPeriodUpdate();
         }, this.#getPeriodTimeout());
     }
 
     #triggerPeriodUpdate() {
-        this.refreshCallbacks.forEach((cb) => {
-            this.sendReportWithJitter = true;
-            this.reportIsForced = true;
+        this.#refreshCallbacks.forEach((cb) => {
+            this.#sendReportWithJitter = true;
+            this.#reportIsForced = true;
             cb(this, 'period');
         });
 
-        this.periodTimer = setTimeout(() => {
+        this.#periodTimer = setTimeout(() => {
             this.#triggerPeriodUpdate();
         }, this.#getPeriodTimeout());
     }
 
     cancelPeriod(): void {
-        clearTimeout(this.periodTimer);
-        clearTimeout(this.jitterTimer);
+        clearTimeout(this.#periodTimer);
+        clearTimeout(this.#jitterTimer);
     }
 
     async clearAllCallbacks(): Promise<boolean> {

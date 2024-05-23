@@ -24,13 +24,13 @@ interface IEventQueue {
 }
 
 export class StreamModel extends PermissionModel implements IStreamModel {
-    streamCallback: IStreamCallbacks = {
+    #streamCallback: IStreamCallbacks = {
         event: [],
         change: [],
         delete: [],
         create: [],
     } as IStreamCallbacks;
-    eventQueue: IEventQueue = {
+    #eventQueue: IEventQueue = {
         event: [],
         create: [],
         delete: [],
@@ -40,8 +40,8 @@ export class StreamModel extends PermissionModel implements IStreamModel {
     async onEvent(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onEvent', arguments);
         const res = await openStream.subscribe(this);
-        if (!checkList(this.streamCallback.event, callback)) {
-            this.streamCallback.event.push(callback);
+        if (!checkList(this.#streamCallback.event, callback)) {
+            this.#streamCallback.event.push(callback);
         } else {
             printDebug(`Skipping duplicate event callback for ${this.id()}`);
         }
@@ -51,8 +51,8 @@ export class StreamModel extends PermissionModel implements IStreamModel {
     async onChange(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onChange', arguments);
         const res = await openStream.subscribe(this);
-        if (!checkList(this.streamCallback.change, callback)) {
-            this.streamCallback.change.push(callback);
+        if (!checkList(this.#streamCallback.change, callback)) {
+            this.#streamCallback.change.push(callback);
         } else {
             printDebug(`Skipping duplicate change callback for ${this.id()}`);
         }
@@ -62,8 +62,8 @@ export class StreamModel extends PermissionModel implements IStreamModel {
     async onDelete(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onDelete', arguments);
         const res = await openStream.subscribe(this);
-        if (!checkList(this.streamCallback.delete, callback)) {
-            this.streamCallback.delete.push(callback);
+        if (!checkList(this.#streamCallback.delete, callback)) {
+            this.#streamCallback.delete.push(callback);
         } else {
             printDebug(`Skipping duplicate delete callback for ${this.id()}`);
         }
@@ -73,8 +73,8 @@ export class StreamModel extends PermissionModel implements IStreamModel {
     async onCreate(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onDelete', arguments);
         const res = await openStream.subscribe(this);
-        if (this.streamCallback.create.indexOf(callback) === -1) {
-            this.streamCallback.create.push(callback);
+        if (this.#streamCallback.create.indexOf(callback) === -1) {
+            this.#streamCallback.create.push(callback);
         } else {
             printDebug(`Skipping duplicate create callback for ${this.id()}`);
         }
@@ -82,19 +82,19 @@ export class StreamModel extends PermissionModel implements IStreamModel {
     }
 
     async cancelOnEvent(callback: StreamCallback): Promise<boolean> {
-        return this.#cancelCallback(this.streamCallback.event, callback);
+        return this.#cancelCallback(this.#streamCallback.event, callback);
     }
 
     async cancelOnChange(callback: StreamCallback): Promise<boolean> {
-        return this.#cancelCallback(this.streamCallback.change, callback);
+        return this.#cancelCallback(this.#streamCallback.change, callback);
     }
 
     async cancelOnDelete(callback: StreamCallback): Promise<boolean> {
-        return this.#cancelCallback(this.streamCallback.delete, callback);
+        return this.#cancelCallback(this.#streamCallback.delete, callback);
     }
 
     async cancelOnCreate(callback: StreamCallback): Promise<boolean> {
-        return this.#cancelCallback(this.streamCallback.create, callback);
+        return this.#cancelCallback(this.#streamCallback.create, callback);
     }
 
     async #cancelCallback(
@@ -110,10 +110,10 @@ export class StreamModel extends PermissionModel implements IStreamModel {
             printDebug('Failed to find callback to remove');
         }
         if (
-            this.streamCallback.event.length === 0 &&
-            this.streamCallback.change.length === 0 &&
-            this.streamCallback.delete.length === 0 &&
-            this.streamCallback.create.length === 0
+            this.#streamCallback.event.length === 0 &&
+            this.#streamCallback.change.length === 0 &&
+            this.#streamCallback.delete.length === 0 &&
+            this.#streamCallback.create.length === 0
         ) {
             res = await openStream.unsubscribe(this);
         }
@@ -122,10 +122,10 @@ export class StreamModel extends PermissionModel implements IStreamModel {
 
     async clearAllCallbacks(): Promise<boolean> {
         const res = await openStream.unsubscribe(this);
-        this.streamCallback.event = [];
-        this.streamCallback.change = [];
-        this.streamCallback.delete = [];
-        this.streamCallback.create = [];
+        this.#streamCallback.event = [];
+        this.#streamCallback.change = [];
+        this.#streamCallback.delete = [];
+        this.#streamCallback.create = [];
         return res;
     }
 
@@ -134,23 +134,26 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         handlers: StreamCallback[],
         eventHandler?: EventHandler
     ): Promise<void> {
-        if (this.eventQueue[type].length === 0) {
+        if (this.#eventQueue[type].length === 0) {
             return;
         }
 
-        if (!eventHandler || eventHandler(this.eventQueue[type][0]) !== false) {
+        if (
+            !eventHandler ||
+            eventHandler(this.#eventQueue[type][0]) !== false
+        ) {
             for (let i = 0; i < handlers.length; i++) {
                 await handlers[i](this);
             }
         }
 
         if (type === 'change') {
-            for (let i = 0; i < this.streamCallback.event.length; i++) {
-                await this.streamCallback.event[i](this);
+            for (let i = 0; i < this.#streamCallback.event.length; i++) {
+                await this.#streamCallback.event[i](this);
             }
         }
 
-        this.eventQueue[type].shift();
+        this.#eventQueue[type].shift();
 
         this.#runQueue(type, handlers, eventHandler);
     }
@@ -160,10 +163,10 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         event: IStreamEvent,
         eventHandler?: EventHandler
     ): void {
-        this.eventQueue[type].push(event);
+        this.#eventQueue[type].push(event);
 
-        if (this.eventQueue[type].length === 1) {
-            this.#runQueue(type, this.streamCallback[type], eventHandler);
+        if (this.#eventQueue[type].length === 1) {
+            this.#runQueue(type, this.#streamCallback[type], eventHandler);
         }
     }
 

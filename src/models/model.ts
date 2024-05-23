@@ -23,7 +23,7 @@ export class Model implements IModel {
     meta: IMeta = { version: '2.1' };
     parent?: IModel;
     expand: number;
-    updateQueue: {
+    #updateQueue: {
         data: JSONObject;
         resolve: (value: boolean | PromiseLike<boolean>) => void;
     }[] = [];
@@ -148,12 +148,12 @@ export class Model implements IModel {
     }
 
     async #update(): Promise<void> {
-        if (!this.updateQueue.length) {
+        if (!this.#updateQueue.length) {
             return;
         }
 
-        printDebug(`Processing update queue: ${this.updateQueue.length}`);
-        const event = this.updateQueue[0];
+        printDebug(`Processing update queue: ${this.#updateQueue.length}`);
+        const event = this.#updateQueue[0];
         try {
             const func = this.usePutForUpdate() ? wappsto.put : wappsto.patch;
             const response = await func(
@@ -168,7 +168,7 @@ export class Model implements IModel {
             event.resolve(false);
         }
 
-        this.updateQueue.shift();
+        this.#updateQueue.shift();
 
         this.#update();
     }
@@ -177,13 +177,13 @@ export class Model implements IModel {
         if (this.meta.id !== undefined) {
             return new Promise<boolean>((resolve) => {
                 printDebug(
-                    `Adding to update queue: ${this.updateQueue.length}`
+                    `Adding to update queue: ${this.#updateQueue.length}`
                 );
-                this.updateQueue.push({
+                this.#updateQueue.push({
                     data: this.toJSON(customKeys),
                     resolve,
                 });
-                if (this.updateQueue.length === 1) {
+                if (this.#updateQueue.length === 1) {
                     this.#update();
                 }
             });
