@@ -772,12 +772,10 @@ Wappsto.cancelFromForeground();
 
 When using TypeScript, it is possible to supply a generic type for the `fromForeground` and `fromBackground` methods to specify the expected return type. This can be useful when you want to ensure type safety.
 
-```javascript
-Wappsto.fromBackground <
-    string >
-    ((msg) => {
-        console.log(`The type is: ${typeof msg}`); // The type is: string
-    });
+```typescript
+Wappsto.fromBackground<string>((msg) => {
+    console.log(`The type is: ${typeof msg}`); // The type is: string
+});
 ```
 
 Additionally, you can supply both a generic type and a return type for `sendToBackground` and `sendToForeground` methods. This can be useful when you want to ensure type safety and specify the expected return type.
@@ -884,7 +882,7 @@ let storage = await Wappsto.wappStorage();
 
 If you are using TypeScript, it is possible to define the type of the data in the storage.
 
-```javascript
+```typescript
 let storage = await Wappsto.wappStorage<Record<string, string>>();
 ```
 
@@ -1020,6 +1018,16 @@ function.
 
 ```javascript
 const startNode = await Wappsto.createNode('start node');
+```
+
+If you are using TypeScript, you can add a type to the node, like this:
+
+```typescript
+type CustomNode = {
+    name: string;
+    age: number;
+};
+const startNode = await Wappsto.createNode<CustomNode>('start node');
 ```
 
 When you have created your ontology, you can `transverse` the graph
