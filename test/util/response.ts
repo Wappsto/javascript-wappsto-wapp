@@ -106,6 +106,16 @@ export function makeStateResponse(options?: {
     };
 }
 
+export function makeDataResponse(options?: {id?: string}) {
+    return {
+        meta: {
+            type: 'data',
+            version: '2.1',
+            id: options?.id || randomUUID(),
+        },
+    };
+}
+
 const fullNetworkResponse = {
     meta: {
         type: 'network',

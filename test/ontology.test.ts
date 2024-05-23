@@ -17,6 +17,7 @@ import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
 import {
     fullNetworkResponse,
+    makeDataResponse,
     makeDeviceResponse,
     makeNetworkResponse,
     makeStateResponse,
@@ -1558,6 +1559,115 @@ describe('Ontology', () => {
                     expand: 0,
                 },
             }
+        );
+    });
+
+    it('can remove a node and edge', async () => {
+        mockedAxios.post
+            .mockResolvedValueOnce(makeResponse(makeDataResponse()))
+            .mockResolvedValueOnce(makeResponse(makeDataResponse()))
+            .mockResolvedValueOnce(makeResponse(makeDataResponse()))
+            .mockResolvedValueOnce(makeResponse(makeDataResponse()))
+            .mockResolvedValueOnce(makeResponse(makeDataResponse()));
+        mockedAxios.get
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
+
+        const parent = await createNode('Parent');
+        const child = await createNode('Child');
+        const leaf = await createNode('Leaf');
+
+        const parentID = parent.meta.id;
+        const childID = child.meta.id;
+        const leafID = leaf.meta.id;
+
+        const edge1 = await parent.createEdge({
+            relationship: 'child',
+            to: child,
+        });
+        const edge2 = await child.createEdge({
+            relationship: 'child',
+            to: leaf,
+        });
+        const edge1ID = edge1.meta.id;
+        const edge2ID = edge2.meta.id;
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(6);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/data', {
+            params: {
+                expand: 1,
+                go_internal: true,
+                method: ['retrieve'],
+                'this_data_meta.id': 'ontology_node_Parent',
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            `/2.1/data/${parentID}/ontology`,
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(3, '/2.1/data', {
+            params: {
+                expand: 1,
+                go_internal: true,
+                method: ['retrieve'],
+                'this_data_meta.id': 'ontology_node_Child',
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            4,
+            `/2.1/data/${childID}/ontology`,
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(5, '/2.1/data', {
+            params: {
+                expand: 1,
+                go_internal: true,
+                method: ['retrieve'],
+                'this_data_meta.id': 'ontology_node_Leaf',
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            6,
+            `/2.1/data/${leafID}/ontology`,
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+
+        parent.deleteModelFromEdge({
+            relationship: 'child',
+            to: child,
+        });
+        await child.deleteBranch();
+
+        expect(parent.ontology.length).toBe(0);
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(6);
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
+            `/2.1/data/${edge1ID}`,
+            {}
+        );
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            2,
+            `/2.1/data/${leafID}`,
+            {}
+        );
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            3,
+            `/2.1/data/${edge2ID}`,
+            {}
+        );
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            4,
+            `/2.1/data/${childID}`,
+            {}
         );
     });
 });
