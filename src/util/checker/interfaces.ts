@@ -1,16 +1,19 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
 import {
+    AnalyticsResponse,
     EventLogLevel,
     EventType,
+    FetchRequest,
     FilterValueOperatorType,
     FilterValueType,
     InitialState,
     JSONObject,
     JSONValue,
-    LogOperation,
+    LogRequest,
     LogValues,
     Mail,
+    Meta,
     StateStatus,
     StateType,
     Timestamp,
@@ -33,57 +36,6 @@ export interface IConfig {
 
 export interface IConfigFunc {
     config(param: IConfig): IConfig;
-}
-
-export interface IConnection {
-    timestamp: string;
-    online: boolean;
-}
-
-export type Meta = {
-    id?: string;
-    type?: string;
-    version?: string;
-    redirect?: string;
-
-    manufacturer?: string;
-    iot?: boolean;
-    upgradable?: boolean;
-    connection?: IConnection;
-    created?: string;
-    updated?: string;
-    revision?: number;
-    changed?: string;
-    owner?: string;
-    size?: number;
-    path?: string;
-    parent?: string;
-    parent_name?: {
-        network?: string;
-        device?: string;
-        value?: string;
-    };
-    parent_name_by_user?: {
-        network?: string;
-        device?: string;
-        value?: string;
-    };
-    usage_daily?: Record<string, string | number>;
-    product?: string;
-    deprecated?: boolean;
-    icon?: string;
-    historical?: boolean;
-    name_by_user?: string;
-    tag?: string[];
-    tag_by_user?: string[];
-};
-
-export interface FetchRequest {
-    endpoint: string;
-    params?: JSONObject;
-    body?: JSONObject;
-    throw_error?: boolean;
-    go_internal?: boolean;
 }
 
 export interface IModel {
@@ -324,7 +276,6 @@ export interface IValueXml extends IValueBase, IValueXmlBase {}
 
 export type ReportValueInput = string | number | boolean | JSONObject;
 
-export type AnalyticsResponse = any;
 export interface IValueFunc {
     createState(parameters: IState): Promise<IState>;
     deleteState(type: StateType): Promise<void>;
@@ -347,8 +298,8 @@ export interface IValueFunc {
         callOnInit?: boolean
     ): Promise<boolean>;
     onRefresh(callback: RefreshStreamCallback): Promise<boolean>;
-    getReportLog(request: ILogRequest): Promise<ILogResponse>;
-    getControlLog(request: ILogRequest): Promise<ILogResponse>;
+    getReportLog(request: LogRequest): Promise<ILogResponse>;
+    getControlLog(request: LogRequest): Promise<ILogResponse>;
     addEvent(
         level: EventLogLevel,
         message: string,
@@ -433,44 +384,6 @@ export interface IEventLogFunc {
     constructor(level: EventLogLevel, message: string): IEventLog;
 }
 
-export interface INotificationCustomData {
-    all: boolean;
-    future: boolean;
-    selected: {
-        meta: {
-            id: string;
-        };
-    }[];
-}
-
-export interface INotificationCustom {
-    type: string;
-    quantity: number;
-    limitation: JSONObject[];
-    method: JSONObject[];
-    option: JSONObject;
-    message: string;
-    name_installation: string;
-    title_installation: string | null;
-    data?: INotificationCustomData;
-}
-
-export interface INotificationBase {
-    action: string;
-    code: number;
-    type: string;
-    from: string;
-    to: string;
-    from_type: string;
-    from_name: string;
-    to_type: string;
-    type_ids: string;
-    priority: number;
-    ids: string[];
-    info: JSONObject[];
-    identifier: string;
-}
-
 export interface INotificationFunc {
     notify(
         message: string,
@@ -481,45 +394,6 @@ export interface INotificationFunc {
     sendSMS(msg: string): Promise<boolean>;
 }
 
-export type LogGroupBy =
-    | 'year'
-    | 'quarter'
-    | 'month'
-    | 'week'
-    | 'day'
-    | 'hour'
-    | 'minute'
-    | 'second'
-    | 'millisecond'
-    | 'microsecond'
-    | 'dow'
-    | 'doy';
-
-export interface ILogRequest {
-    start?: Date | string;
-    end?: Date | string;
-    limit?: number;
-    offset?: number;
-    operation?: LogOperation;
-    group_by?: LogGroupBy;
-    timestamp_format?: string;
-    timezone?: string;
-    order?: 'ascending' | 'descending';
-    order_by?: string;
-    number?: boolean;
-}
-
-export type ExternalLogValues = {
-    meta: Meta;
-    more: boolean;
-    type: string;
-    data: {
-        timestamp: string;
-        time: string;
-        data: string;
-        [key: string]: string;
-    }[];
-};
 export interface ILogResponse {
     meta: Meta;
     data: LogValues;

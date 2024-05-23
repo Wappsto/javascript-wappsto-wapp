@@ -1,11 +1,11 @@
-import { INotificationBase, INotificationCustom } from '../util/types';
+import { NotificationBase, NotificationCustom } from '../util/types';
 import { Model } from './model';
 
 export class Notification extends Model {
     static endpoint = '/2.1/notification';
     read?: string;
-    base?: INotificationBase;
-    custom?: INotificationCustom;
+    base?: NotificationBase;
+    custom?: NotificationCustom;
     times?: number;
     timestamp?: string;
     identifier?: string;

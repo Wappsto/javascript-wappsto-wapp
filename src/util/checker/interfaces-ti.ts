@@ -21,60 +21,6 @@ export const IConfigFunc = t.iface([], {
     config: t.func('IConfig', t.param('param', 'IConfig')),
 });
 
-export const IConnection = t.iface([], {
-    timestamp: 'string',
-    online: 'boolean',
-});
-
-export const Meta = t.iface([], {
-    id: t.opt('string'),
-    type: t.opt('string'),
-    version: t.opt('string'),
-    redirect: t.opt('string'),
-    manufacturer: t.opt('string'),
-    iot: t.opt('boolean'),
-    upgradable: t.opt('boolean'),
-    connection: t.opt('IConnection'),
-    created: t.opt('string'),
-    updated: t.opt('string'),
-    revision: t.opt('number'),
-    changed: t.opt('string'),
-    owner: t.opt('string'),
-    size: t.opt('number'),
-    path: t.opt('string'),
-    parent: t.opt('string'),
-    parent_name: t.opt(
-        t.iface([], {
-            network: t.opt('string'),
-            device: t.opt('string'),
-            value: t.opt('string'),
-        })
-    ),
-    parent_name_by_user: t.opt(
-        t.iface([], {
-            network: t.opt('string'),
-            device: t.opt('string'),
-            value: t.opt('string'),
-        })
-    ),
-    usage_daily: t.opt('any'),
-    product: t.opt('string'),
-    deprecated: t.opt('boolean'),
-    icon: t.opt('string'),
-    historical: t.opt('boolean'),
-    name_by_user: t.opt('string'),
-    tag: t.opt(t.array('string')),
-    tag_by_user: t.opt(t.array('string')),
-});
-
-export const FetchRequest = t.iface([], {
-    endpoint: 'string',
-    params: t.opt('JSONObject'),
-    body: t.opt('JSONObject'),
-    throw_error: t.opt('boolean'),
-    go_internal: t.opt('boolean'),
-});
-
 export const IModel = t.iface([], {
     meta: 'Meta',
     id: t.func('string'),
@@ -398,8 +344,6 @@ export const ReportValueInput = t.union(
     'JSONObject'
 );
 
-export const AnalyticsResponse = t.name('any');
-
 export const IValueFunc = t.iface([], {
     createState: t.func('IState', t.param('parameters', 'IState')),
     deleteState: t.func('void', t.param('type', 'StateType')),
@@ -430,8 +374,8 @@ export const IValueFunc = t.iface([], {
         t.param('callOnInit', 'boolean', true)
     ),
     onRefresh: t.func('boolean', t.param('callback', 'RefreshStreamCallback')),
-    getReportLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
-    getControlLog: t.func('ILogResponse', t.param('request', 'ILogRequest')),
+    getReportLog: t.func('ILogResponse', t.param('request', 'LogRequest')),
+    getControlLog: t.func('ILogResponse', t.param('request', 'LogRequest')),
     addEvent: t.func(
         'IEventLog',
         t.param('level', 'EventLogLevel'),
@@ -558,46 +502,6 @@ export const IEventLogFunc = t.iface([], {
     ),
 });
 
-export const INotificationCustomData = t.iface([], {
-    all: 'boolean',
-    future: 'boolean',
-    selected: t.array(
-        t.iface([], {
-            meta: t.iface([], {
-                id: 'string',
-            }),
-        })
-    ),
-});
-
-export const INotificationCustom = t.iface([], {
-    type: 'string',
-    quantity: 'number',
-    limitation: t.array('JSONObject'),
-    method: t.array('JSONObject'),
-    option: 'JSONObject',
-    message: 'string',
-    name_installation: 'string',
-    title_installation: t.union('string', 'null'),
-    data: t.opt('INotificationCustomData'),
-});
-
-export const INotificationBase = t.iface([], {
-    action: 'string',
-    code: 'number',
-    type: 'string',
-    from: 'string',
-    to: 'string',
-    from_type: 'string',
-    from_name: 'string',
-    to_type: 'string',
-    type_ids: 'string',
-    priority: 'number',
-    ids: t.array('string'),
-    info: t.array('JSONObject'),
-    identifier: 'string',
-});
-
 export const INotificationFunc = t.iface([], {
     notify: t.func(
         'void',
@@ -607,49 +511,6 @@ export const INotificationFunc = t.iface([], {
     ),
     sendMail: t.func('boolean', t.param('params', 'Mail')),
     sendSMS: t.func('boolean', t.param('msg', 'string')),
-});
-
-export const LogGroupBy = t.union(
-    t.lit('year'),
-    t.lit('quarter'),
-    t.lit('month'),
-    t.lit('week'),
-    t.lit('day'),
-    t.lit('hour'),
-    t.lit('minute'),
-    t.lit('second'),
-    t.lit('millisecond'),
-    t.lit('microsecond'),
-    t.lit('dow'),
-    t.lit('doy')
-);
-
-export const ILogRequest = t.iface([], {
-    start: t.opt(t.union('Date', 'string')),
-    end: t.opt(t.union('Date', 'string')),
-    limit: t.opt('number'),
-    offset: t.opt('number'),
-    operation: t.opt('LogOperation'),
-    group_by: t.opt('LogGroupBy'),
-    timestamp_format: t.opt('string'),
-    timezone: t.opt('string'),
-    order: t.opt(t.union(t.lit('ascending'), t.lit('descending'))),
-    order_by: t.opt('string'),
-    number: t.opt('boolean'),
-});
-
-export const ExternalLogValues = t.iface([], {
-    meta: 'Meta',
-    more: 'boolean',
-    type: 'string',
-    data: t.array(
-        t.iface([], {
-            timestamp: 'string',
-            time: 'string',
-            data: 'string',
-            [t.indexKey]: 'string',
-        })
-    ),
 });
 
 export const ILogResponse = t.iface([], {
@@ -1132,9 +993,6 @@ export const Filter = t.iface([], {
 const exportedTypeSuite: t.ITypeSuite = {
     IConfig,
     IConfigFunc,
-    IConnection,
-    Meta,
-    FetchRequest,
     IModel,
     IModelFunc,
     IData,
@@ -1156,20 +1014,13 @@ const exportedTypeSuite: t.ITypeSuite = {
     IValueBlob,
     IValueXml,
     ReportValueInput,
-    AnalyticsResponse,
     IValueFunc,
     IValueStaticFunc,
     IState,
     IStateFunc,
     IEventLog,
     IEventLogFunc,
-    INotificationCustomData,
-    INotificationCustom,
-    INotificationBase,
     INotificationFunc,
-    LogGroupBy,
-    ILogRequest,
-    ExternalLogValues,
     ILogResponse,
     ExtsyncResponse,
     StreamData,

@@ -25,7 +25,7 @@ import {
     ExternalLogValues,
     Filter,
     FilterSubType,
-    ILogRequest,
+    LogRequest,
     ILogResponse,
     IModel,
     IState,
@@ -832,7 +832,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
     async #findStateAndLog(
         type: StateType,
-        request: ILogRequest
+        request: LogRequest
     ): Promise<ILogResponse> {
         const state = this.#findState(type);
         if (state) {
@@ -880,13 +880,13 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         };
     }
 
-    getReportLog(request: ILogRequest): Promise<ILogResponse> {
+    getReportLog(request: LogRequest): Promise<ILogResponse> {
         this.validate('getReportLog', arguments);
 
         return this.#findStateAndLog('Report', request);
     }
 
-    getControlLog(request: ILogRequest): Promise<ILogResponse> {
+    getControlLog(request: LogRequest): Promise<ILogResponse> {
         this.validate('getControlLog', arguments);
 
         return this.#findStateAndLog('Control', request);

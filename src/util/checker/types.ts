@@ -90,3 +90,132 @@ export type FilterValueType =
     | number[]
     | FilterValueOperatorType
     | undefined;
+
+export type Connection = {
+    timestamp: string;
+    online: boolean;
+};
+
+export type ParentName = {
+    network?: string;
+    device?: string;
+    value?: string;
+};
+
+export type Meta = {
+    id?: string;
+    type?: string;
+    version?: string;
+    redirect?: string;
+    manufacturer?: string;
+    iot?: boolean;
+    upgradable?: boolean;
+    connection?: Connection;
+    stable_connection?: Connection;
+    created?: string;
+    updated?: string;
+    revision?: number;
+    changed?: string;
+    owner?: string;
+    size?: number;
+    path?: string;
+    parent?: string;
+    parent_name?: ParentName;
+    parent_name_by_user?: ParentName;
+    usage_daily?: Record<string, string | number>;
+    product?: string;
+    deprecated?: boolean;
+    icon?: string;
+    historical?: boolean;
+    name_by_user?: string;
+    tag?: string[];
+    tag_by_user?: string[];
+};
+
+export type FetchRequest = {
+    endpoint: string;
+    params?: JSONObject;
+    body?: JSONObject;
+    throw_error?: boolean;
+    go_internal?: boolean;
+};
+
+export type AnalyticsResponse = any;
+
+export type NotificationCustomData = {
+    all: boolean;
+    future: boolean;
+    selected: {
+        meta: {
+            id: string;
+        };
+    }[];
+};
+
+export type NotificationCustom = {
+    type: string;
+    quantity: number;
+    limitation: JSONObject[];
+    method: JSONObject[];
+    option: JSONObject;
+    message: string;
+    name_installation: string;
+    title_installation: string | null;
+    data?: NotificationCustomData;
+};
+
+export type NotificationBase = {
+    action: string;
+    code: number;
+    type: string;
+    from: string;
+    to: string;
+    from_type: string;
+    from_name: string;
+    to_type: string;
+    type_ids: string;
+    priority: number;
+    ids: string[];
+    info: JSONObject[];
+    identifier: string;
+};
+
+export type LogGroupBy =
+    | 'year'
+    | 'quarter'
+    | 'month'
+    | 'week'
+    | 'day'
+    | 'hour'
+    | 'minute'
+    | 'second'
+    | 'millisecond'
+    | 'microsecond'
+    | 'dow'
+    | 'doy';
+
+export type LogRequest = {
+    start?: Date | string;
+    end?: Date | string;
+    limit?: number;
+    offset?: number;
+    operation?: LogOperation;
+    group_by?: LogGroupBy;
+    timestamp_format?: string;
+    timezone?: string;
+    order?: 'ascending' | 'descending';
+    order_by?: string;
+    number?: boolean;
+};
+
+export type ExternalLogValues = {
+    meta: Meta;
+    more: boolean;
+    type: string;
+    data: {
+        timestamp: string;
+        time: string;
+        data: string;
+        [key: string]: string;
+    }[];
+};

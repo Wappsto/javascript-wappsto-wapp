@@ -135,6 +135,140 @@ export const FilterValueType = t.union(
     'undefined'
 );
 
+export const Connection = t.iface([], {
+    timestamp: 'string',
+    online: 'boolean',
+});
+
+export const ParentName = t.iface([], {
+    network: t.opt('string'),
+    device: t.opt('string'),
+    value: t.opt('string'),
+});
+
+export const Meta = t.iface([], {
+    id: t.opt('string'),
+    type: t.opt('string'),
+    version: t.opt('string'),
+    redirect: t.opt('string'),
+    manufacturer: t.opt('string'),
+    iot: t.opt('boolean'),
+    upgradable: t.opt('boolean'),
+    connection: t.opt('Connection'),
+    stable_connection: t.opt('Connection'),
+    created: t.opt('string'),
+    updated: t.opt('string'),
+    revision: t.opt('number'),
+    changed: t.opt('string'),
+    owner: t.opt('string'),
+    size: t.opt('number'),
+    path: t.opt('string'),
+    parent: t.opt('string'),
+    parent_name: t.opt('ParentName'),
+    parent_name_by_user: t.opt('ParentName'),
+    usage_daily: t.opt('any'),
+    product: t.opt('string'),
+    deprecated: t.opt('boolean'),
+    icon: t.opt('string'),
+    historical: t.opt('boolean'),
+    name_by_user: t.opt('string'),
+    tag: t.opt(t.array('string')),
+    tag_by_user: t.opt(t.array('string')),
+});
+
+export const FetchRequest = t.iface([], {
+    endpoint: 'string',
+    params: t.opt('JSONObject'),
+    body: t.opt('JSONObject'),
+    throw_error: t.opt('boolean'),
+    go_internal: t.opt('boolean'),
+});
+
+export const AnalyticsResponse = t.name('any');
+
+export const NotificationCustomData = t.iface([], {
+    all: 'boolean',
+    future: 'boolean',
+    selected: t.array(
+        t.iface([], {
+            meta: t.iface([], {
+                id: 'string',
+            }),
+        })
+    ),
+});
+
+export const NotificationCustom = t.iface([], {
+    type: 'string',
+    quantity: 'number',
+    limitation: t.array('JSONObject'),
+    method: t.array('JSONObject'),
+    option: 'JSONObject',
+    message: 'string',
+    name_installation: 'string',
+    title_installation: t.union('string', 'null'),
+    data: t.opt('NotificationCustomData'),
+});
+
+export const NotificationBase = t.iface([], {
+    action: 'string',
+    code: 'number',
+    type: 'string',
+    from: 'string',
+    to: 'string',
+    from_type: 'string',
+    from_name: 'string',
+    to_type: 'string',
+    type_ids: 'string',
+    priority: 'number',
+    ids: t.array('string'),
+    info: t.array('JSONObject'),
+    identifier: 'string',
+});
+
+export const LogGroupBy = t.union(
+    t.lit('year'),
+    t.lit('quarter'),
+    t.lit('month'),
+    t.lit('week'),
+    t.lit('day'),
+    t.lit('hour'),
+    t.lit('minute'),
+    t.lit('second'),
+    t.lit('millisecond'),
+    t.lit('microsecond'),
+    t.lit('dow'),
+    t.lit('doy')
+);
+
+export const LogRequest = t.iface([], {
+    start: t.opt(t.union('Date', 'string')),
+    end: t.opt(t.union('Date', 'string')),
+    limit: t.opt('number'),
+    offset: t.opt('number'),
+    operation: t.opt('LogOperation'),
+    group_by: t.opt('LogGroupBy'),
+    timestamp_format: t.opt('string'),
+    timezone: t.opt('string'),
+    order: t.opt(t.union(t.lit('ascending'), t.lit('descending'))),
+    order_by: t.opt('string'),
+    number: t.opt('boolean'),
+});
+
+export const ExternalLogValues = t.iface([], {
+    meta: 'Meta',
+    more: 'boolean',
+    type: 'string',
+    data: t.array(
+        t.iface([], {
+            timestamp: 'string',
+            time: 'string',
+            data: 'string',
+            [t.indexKey]: 'string',
+        })
+    ),
+});
+
 const exportedTypeSuite: t.ITypeSuite = {
     JSONValue,
     JSONObject,
@@ -156,5 +290,16 @@ const exportedTypeSuite: t.ITypeSuite = {
     FilterOperatorType,
     FilterValueOperatorType,
     FilterValueType,
+    Connection,
+    ParentName,
+    Meta,
+    FetchRequest,
+    AnalyticsResponse,
+    NotificationCustomData,
+    NotificationCustom,
+    NotificationBase,
+    LogGroupBy,
+    LogRequest,
+    ExternalLogValues,
 };
 export default exportedTypeSuite;
