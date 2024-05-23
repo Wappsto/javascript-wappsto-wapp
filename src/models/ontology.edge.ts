@@ -10,7 +10,7 @@ import {
 import { getModel } from '../util/modelStore';
 import { Model } from './model';
 
-export class Ontology extends Model implements IOntologyEdge {
+export class OntologyEdge extends Model implements IOntologyEdge {
     static endpoint = '/2.1/ontology';
     static attributes = ['name', 'description', 'relationship', 'data', 'to'];
     name?: string;
@@ -39,7 +39,7 @@ export class Ontology extends Model implements IOntologyEdge {
     }
 
     getAttributes(): string[] {
-        return Ontology.attributes;
+        return OntologyEdge.attributes;
     }
 
     toJSON(): JSONObject {
@@ -128,22 +128,24 @@ export class Ontology extends Model implements IOntologyEdge {
     }
 
     static fetchById = async (id: string) => {
-        Ontology.#validate('fetchById', [id]);
+        OntologyEdge.#validate('fetchById', [id]);
         const data = await Model.fetch({
-            endpoint: `${Ontology.endpoint}/${id}`,
+            endpoint: `${OntologyEdge.endpoint}/${id}`,
         });
-        const ontologies = Ontology.fromArray(data);
+        const ontologies = OntologyEdge.fromArray(data);
 
         if (ontologies[0]) {
-            const ontology = ontologies[0] as Ontology;
+            const ontology = ontologies[0] as OntologyEdge;
             await ontology.loadAllChildren(null);
             return ontology;
         }
         return undefined;
     };
 
-    static fetch = async (parameters: FetchRequest): Promise<Ontology[]> => {
-        Ontology.#validate('fetch', [parameters]);
+    static fetch = async (
+        parameters: FetchRequest
+    ): Promise<OntologyEdge[]> => {
+        OntologyEdge.#validate('fetch', [parameters]);
 
         const params = parameters;
         if (!params.params) {
@@ -152,14 +154,14 @@ export class Ontology extends Model implements IOntologyEdge {
             params.params['expand'] = 1;
         }
         const data = await Model.fetch(params);
-        const res = Ontology.fromArray(data);
+        const res = OntologyEdge.fromArray(data);
 
         const proms: Promise<void>[] = [];
         res.forEach((o, index) => {
             if (typeof o === 'string') {
                 proms.push(
                     new Promise(async (resolve) => {
-                        const onto = await Ontology.fetchById(o);
+                        const onto = await OntologyEdge.fetchById(o);
                         if (onto) {
                             res[index] = onto;
                         }
@@ -172,7 +174,7 @@ export class Ontology extends Model implements IOntologyEdge {
         });
 
         await Promise.all(proms);
-        return res as Ontology[];
+        return res as OntologyEdge[];
     };
 
     static #validate(name: string, params: ValidateParams): void {

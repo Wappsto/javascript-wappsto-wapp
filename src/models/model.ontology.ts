@@ -1,19 +1,42 @@
 import { compareModels, uniqueModels } from '../util/helpers';
 import {
+    IEdge,
     IModel,
-    IOntology,
     IOntologyEdge,
     IOntologyModel,
     JSONObject,
 } from '../util/interfaces';
 import { Model } from './model';
-import { Ontology } from './ontology';
+import { OntologyEdge } from './ontology.edge';
 
 export class OntologyModel extends Model implements IOntologyModel {
-    ontology: Ontology[] = [];
-    ontologyLoaded = false;
+    edges: OntologyEdge[] = [];
+    parentEdges: OntologyEdge[] = [];
+    #ontologyLoaded = false;
 
-    async createEdge(params: IOntology): Promise<Ontology> {
+    /**
+     * Get the ontology edges of the current object.
+     *
+     * @note This is here for backwards compatibility.
+     * @deprecated Should use edges instead.
+     * @return The ontology edges of the current object.
+     */
+    get ontology() {
+        return this.edges;
+    }
+
+    /**
+     * Set the ontology edges of the current object.
+     *
+     * @note This is here for backwards compatibility.
+     * @deprecated Should use edges instead.
+     * @param edges - The ontology edges to set.
+     */
+    set ontology(edges: OntologyEdge[]) {
+        this.edges = edges;
+    }
+
+    async createEdge(params: IEdge): Promise<OntologyEdge> {
         Model.validateMethod('OntologyModel', 'createEdge', arguments);
 
         await this.getAllEdges();
@@ -21,8 +44,8 @@ export class OntologyModel extends Model implements IOntologyModel {
         let create = false;
         let onto = await this.findEdge(params);
         if (!onto) {
-            onto = new Ontology(this, params.relationship, params.to);
-            this.ontology.push(onto);
+            onto = new OntologyEdge(this, params.relationship, params.to);
+            this.edges.push(onto);
             create = true;
         }
 
@@ -46,12 +69,12 @@ export class OntologyModel extends Model implements IOntologyModel {
     async deleteEdges(): Promise<void> {
         await this.getAllEdges();
 
-        while (this.ontology.length) {
-            await this.ontology[0].delete();
+        while (this.edges.length) {
+            await this.edges[0].delete();
         }
     }
 
-    async deleteEdge(params: IOntology): Promise<void> {
+    async deleteEdge(params: IEdge): Promise<void> {
         Model.validateMethod('OntologyModel', 'deleteEdge', arguments);
 
         const edge = await this.findEdge(params);
@@ -60,7 +83,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
     }
 
-    async deleteModelFromEdge(params: IOntology): Promise<void> {
+    async deleteModelFromEdge(params: IEdge): Promise<void> {
         Model.validateMethod('OntologyModel', 'deleteModelFromEdge', arguments);
         const edge = await this.findEdge(params);
         if (edge) {
@@ -76,19 +99,19 @@ export class OntologyModel extends Model implements IOntologyModel {
     removeEdge(edge: IModel): void {
         Model.validateMethod('OntologyModel', 'removeEdge', arguments);
 
-        for (let i = 0; i < this.ontology.length; i++) {
-            if (compareModels(this.ontology[i], edge)) {
-                this.ontology.splice(i, 1);
+        for (let i = 0; i < this.edges.length; i++) {
+            if (compareModels(this.edges[i], edge)) {
+                this.edges.splice(i, 1);
                 return;
             }
         }
     }
 
-    async findEdge(params: IOntology): Promise<Ontology | undefined> {
+    async findEdge(params: IEdge): Promise<OntologyEdge | undefined> {
         await this.getAllEdges();
 
-        for (let i = 0; i < this.ontology.length; i++) {
-            const o = this.ontology[i];
+        for (let i = 0; i < this.edges.length; i++) {
+            const o = this.edges[i];
             if (o.relationship === params.relationship) {
                 if (o.models.find((m) => compareModels(m, params.to))) {
                     return o;
@@ -101,8 +124,8 @@ export class OntologyModel extends Model implements IOntologyModel {
     async deleteBranch(): Promise<void> {
         await this.getAllEdges();
 
-        const onto = this.ontology;
-        this.ontology = [];
+        const onto = this.edges;
+        this.edges = [];
 
         for (let i = 0; i < onto.length; i++) {
             await onto[i].deleteBranch();
@@ -116,16 +139,16 @@ export class OntologyModel extends Model implements IOntologyModel {
     async getAllEdges(force?: boolean): Promise<IOntologyEdge[]> {
         Model.validateMethod('OntologyModel', 'getAllEdges', arguments);
 
-        if (!this.ontologyLoaded || force) {
-            this.ontologyLoaded = true;
-            this.ontology = await Ontology.fetch({
+        if (!this.#ontologyLoaded || force) {
+            this.#ontologyLoaded = true;
+            this.edges = await OntologyEdge.fetch({
                 endpoint: `${this.getUrl()}/ontology`,
             });
-            this.ontology.forEach((o) => {
+            this.edges.forEach((o) => {
                 o.setParent(this);
             });
         }
-        return this.ontology;
+        return this.edges;
     }
 
     async transverse(
@@ -139,7 +162,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
 
         const models: IOntologyModel[] = [];
-        const leafs = await Ontology.fetch({
+        const leafs = await OntologyEdge.fetch({
             endpoint: `${this.getUrl()}/ontology`,
             params,
         });

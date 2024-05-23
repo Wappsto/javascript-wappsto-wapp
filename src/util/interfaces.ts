@@ -735,7 +735,7 @@ export type ConnectionCallback = (
 ) => Promise<void> | void;
 
 export type Relationship = string;
-export interface IOntology {
+export interface IEdge {
     relationship: Relationship;
     to: IOntologyModel;
     name?: string;
@@ -743,20 +743,20 @@ export interface IOntology {
     data?: unknown;
 }
 export interface IOntologyModel extends IModel {
-    createEdge(params: IOntology): Promise<IOntologyEdge>;
+    createEdge(params: IEdge): Promise<IOntologyEdge>;
     getAllEdges(force?: boolean): Promise<IOntologyEdge[]>;
     deleteBranch(): Promise<void>;
-    deleteEdge(params: IOntology): Promise<void>;
+    deleteEdge(params: IEdge): Promise<void>;
     removeEdge(edge: IModel): void;
-    deleteModelFromEdge(params: IOntology): Promise<void>;
+    deleteModelFromEdge(params: IEdge): Promise<void>;
 }
 export interface IOntologyModelFunc {
-    createEdge(params: IOntology): Promise<IOntologyEdge>;
+    createEdge(params: IEdge): Promise<IOntologyEdge>;
     getAllEdges(force?: boolean): Promise<IOntologyEdge[]>;
     deleteBranch(): Promise<void>;
-    deleteEdge(params: IOntology): Promise<void>;
+    deleteEdge(params: IEdge): Promise<void>;
     removeEdge(edge: IModel): void;
-    deleteModelFromEdge(params: IOntology): Promise<void>;
+    deleteModelFromEdge(params: IEdge): Promise<void>;
 }
 export interface IOntologyEdge extends IModel {
     relationship: Relationship;

@@ -987,7 +987,7 @@ export const ConnectionCallback = t.func(
 
 export const Relationship = t.name('string');
 
-export const IOntology = t.iface([], {
+export const IEdge = t.iface([], {
     relationship: 'Relationship',
     to: 'IOntologyModel',
     name: t.opt('string'),
@@ -996,27 +996,27 @@ export const IOntology = t.iface([], {
 });
 
 export const IOntologyModel = t.iface(['IModel'], {
-    createEdge: t.func('IOntologyEdge', t.param('params', 'IOntology')),
+    createEdge: t.func('IOntologyEdge', t.param('params', 'IEdge')),
     getAllEdges: t.func(
         t.array('IOntologyEdge'),
         t.param('force', 'boolean', true)
     ),
     deleteBranch: t.func('void'),
-    deleteEdge: t.func('void', t.param('params', 'IOntology')),
+    deleteEdge: t.func('void', t.param('params', 'IEdge')),
     removeEdge: t.func('void', t.param('edge', 'IModel')),
-    deleteModelFromEdge: t.func('void', t.param('params', 'IOntology')),
+    deleteModelFromEdge: t.func('void', t.param('params', 'IEdge')),
 });
 
 export const IOntologyModelFunc = t.iface([], {
-    createEdge: t.func('IOntologyEdge', t.param('params', 'IOntology')),
+    createEdge: t.func('IOntologyEdge', t.param('params', 'IEdge')),
     getAllEdges: t.func(
         t.array('IOntologyEdge'),
         t.param('force', 'boolean', true)
     ),
     deleteBranch: t.func('void'),
-    deleteEdge: t.func('void', t.param('params', 'IOntology')),
+    deleteEdge: t.func('void', t.param('params', 'IEdge')),
     removeEdge: t.func('void', t.param('edge', 'IModel')),
-    deleteModelFromEdge: t.func('void', t.param('params', 'IOntology')),
+    deleteModelFromEdge: t.func('void', t.param('params', 'IEdge')),
 });
 
 export const IOntologyEdge = t.iface(['IModel'], {
@@ -1329,7 +1329,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     RefreshStreamCallback,
     ConnectionCallback,
     Relationship,
-    IOntology,
+    IEdge,
     IOntologyModel,
     IOntologyModelFunc,
     IOntologyEdge,

@@ -123,9 +123,9 @@ describe('Ontology', () => {
 
         expect(edge2).toBe(edge3);
 
-        expect(network.ontology.length).toBe(2);
-        expect(network.ontology[0]).toBe(edge1);
-        expect(network.ontology[1]).toBe(edge2);
+        expect(network.edges.length).toBe(2);
+        expect(network.edges[0]).toBe(edge1);
+        expect(network.edges[1]).toBe(edge2);
 
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
@@ -527,8 +527,8 @@ describe('Ontology', () => {
             to: state1,
         });
 
-        expect(network.ontology.length).toBe(1);
-        expect(network.ontology[0].models.length).toBe(1);
+        expect(network.edges.length).toBe(1);
+        expect(network.edges[0].models.length).toBe(1);
 
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
@@ -536,7 +536,7 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
 
         await edge1.delete();
-        expect(network.ontology.length).toBe(0);
+        expect(network.edges.length).toBe(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
             '/2.1/ontology/75f43647-bf73-44df-a04e-4d04e47cd0fc',
@@ -574,8 +574,8 @@ describe('Ontology', () => {
             to: state1,
         });
 
-        expect(network.ontology.length).toBe(1);
-        expect(network.ontology[0].models.length).toBe(1);
+        expect(network.edges.length).toBe(1);
+        expect(network.edges[0].models.length).toBe(1);
 
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
@@ -587,7 +587,7 @@ describe('Ontology', () => {
             to: state1,
         });
 
-        expect(network.ontology.length).toBe(0);
+        expect(network.edges.length).toBe(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
             '/2.1/ontology/75f43647-bf73-44df-a04e-4d04e47cd0fc',
@@ -638,7 +638,7 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(2);
 
-        expect(network.ontology.length).toBe(0);
+        expect(network.edges.length).toBe(0);
     });
 
     it('can remove an branch', async () => {
@@ -717,12 +717,12 @@ describe('Ontology', () => {
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(network.ontology.length).toBe(1);
-        expect(state1.ontology.length).toBe(1);
+        expect(network.edges.length).toBe(1);
+        expect(state1.edges.length).toBe(1);
 
         await network.deleteBranch();
-        expect(network.ontology.length).toBe(0);
-        expect(state1.ontology.length).toBe(0);
+        expect(network.edges.length).toBe(0);
+        expect(state1.edges.length).toBe(0);
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenCalledTimes(3);
@@ -792,7 +792,7 @@ describe('Ontology', () => {
 
         await edge1.deleteBranch();
 
-        expect(node1.ontology.length).toBe(0);
+        expect(node1.edges.length).toBe(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(4);
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
@@ -1278,7 +1278,7 @@ describe('Ontology', () => {
 
         const names: string[] = [];
         networks.forEach((net) => {
-            net.ontology.forEach((edge) => {
+            net.edges.forEach((edge) => {
                 edge.models.forEach((model) => {
                     if (model.meta.type === 'device') {
                         names.push((model as Device).name);
@@ -1396,7 +1396,7 @@ describe('Ontology', () => {
 
         const names: string[] = [];
         network.device.forEach((dev) => {
-            dev.ontology.forEach((edge) => {
+            dev.edges.forEach((edge) => {
                 edge.models.forEach((model) => {
                     names.push((model as Device).name);
                 });
@@ -1644,7 +1644,7 @@ describe('Ontology', () => {
         });
         await child.deleteBranch();
 
-        expect(parent.ontology.length).toBe(0);
+        expect(parent.edges.length).toBe(0);
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(5);
         expect(mockedAxios.get).toHaveBeenCalledTimes(6);
