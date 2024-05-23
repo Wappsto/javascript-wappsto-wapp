@@ -9,6 +9,7 @@ import {
 } from '../util/interfaces';
 import { getModel } from '../util/modelStore';
 import { Model } from './model';
+import { OntologyModel } from './model.ontology';
 
 export class OntologyEdge extends Model implements IOntologyEdge {
     static endpoint = '/2.1/ontology';
@@ -18,7 +19,7 @@ export class OntologyEdge extends Model implements IOntologyEdge {
     data?: unknown;
     relationship: Relationship = '';
     to: Record<string, string[]> = {};
-    models: IOntologyModel[] = [];
+    models: OntologyModel[] = [];
     failedModels: Record<string, string[]> = {};
 
     constructor(
@@ -34,7 +35,8 @@ export class OntologyEdge extends Model implements IOntologyEdge {
             this.relationship = relationship;
         }
         if (to) {
-            this.models.push(to);
+            this.models.push(to as OntologyModel);
+            to.addParentEdge(this, to);
         }
     }
 
@@ -63,7 +65,7 @@ export class OntologyEdge extends Model implements IOntologyEdge {
     addModel(to: IOntologyModel): boolean {
         let res = false;
         if (this.models.find((o) => compareModels(o, to)) === undefined) {
-            this.models.push(to);
+            this.models.push(to as OntologyModel);
             res = true;
         }
         return res;
@@ -72,7 +74,7 @@ export class OntologyEdge extends Model implements IOntologyEdge {
     removeModel(to: IOntologyModel): boolean {
         let res = false;
         if (this.models.find((o) => compareModels(o, to)) !== undefined) {
-            this.models.splice(this.models.indexOf(to), 1);
+            this.models.splice(this.models.indexOf(to as OntologyModel), 1);
             res = true;
         }
         return res;
@@ -110,6 +112,7 @@ export class OntologyEdge extends Model implements IOntologyEdge {
 
     async delete(): Promise<void> {
         await super.delete();
+        this.models.forEach((m) => m.removeParentEdge(this));
         if (this.parent) {
             const p = this.parent as IOntologyModel;
             p.removeEdge(this);

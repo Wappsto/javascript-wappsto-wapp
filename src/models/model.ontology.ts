@@ -66,6 +66,27 @@ export class OntologyModel extends Model implements IOntologyModel {
         return onto;
     }
 
+    async addParentEdge(
+        params: IOntologyEdge,
+        to: IOntologyModel
+    ): Promise<void> {
+        Model.validateMethod('OntologyModel', 'addParentEdge', arguments);
+
+        const edge = await this.findEdge({
+            relationship: params.relationship,
+            to,
+        });
+        if (!edge) {
+            this.parentEdges.push(params as OntologyEdge);
+        }
+    }
+
+    removeParentEdge(edge: IOntologyEdge): void {
+        this.parentEdges = this.parentEdges.filter((e) => {
+            return !compareModels(e, edge);
+        });
+    }
+
     async deleteEdges(): Promise<void> {
         await this.getAllEdges();
 
@@ -88,6 +109,7 @@ export class OntologyModel extends Model implements IOntologyModel {
         const edge = await this.findEdge(params);
         if (edge) {
             edge.removeModel(params.to);
+            params.to.removeParentEdge(edge);
             if (edge.models.length === 0) {
                 await edge.delete();
             } else {
@@ -114,7 +136,7 @@ export class OntologyModel extends Model implements IOntologyModel {
             const o = this.edges[i];
             if (o.relationship === params.relationship) {
                 if (o.models.find((m) => compareModels(m, params.to))) {
-                    return o;
+                    return o as OntologyEdge;
                 }
             }
         }
@@ -124,11 +146,21 @@ export class OntologyModel extends Model implements IOntologyModel {
     async deleteBranch(): Promise<void> {
         await this.getAllEdges();
 
-        const onto = this.edges;
+        let edges = this.edges;
         this.edges = [];
 
-        for (let i = 0; i < onto.length; i++) {
-            await onto[i].deleteBranch();
+        for (let i = 0; i < edges.length; i++) {
+            await edges[i].deleteBranch();
+        }
+
+        edges = this.parentEdges;
+        this.parentEdges = [];
+
+        for (let i = 0; i < edges.length; i++) {
+            await (edges[i].parent as OntologyModel)?.deleteModelFromEdge({
+                relationship: edges[i].relationship,
+                to: this,
+            });
         }
 
         if (this.getClass() === 'ontology_node') {
