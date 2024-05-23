@@ -1,5 +1,5 @@
 import { checkList, checkListIndex } from '../util/helpers';
-import { ConnectionCallback, IConnectionModel } from '../util/interfaces';
+import { ConnectionCallback, IConnectionModel } from '../util/types';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
 

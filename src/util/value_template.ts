@@ -1,4 +1,4 @@
-import { ValueType } from './interfaces';
+import { ValueType } from './types';
 
 export class ValueTemplate {
     [key: string]: ValueType;

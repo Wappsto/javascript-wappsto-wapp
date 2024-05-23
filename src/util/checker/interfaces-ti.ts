@@ -4,41 +4,6 @@
 import * as t from 'ts-interface-checker';
 // tslint:disable:object-literal-key-quotes
 
-export const JSONValue = t.union(
-    'string',
-    'number',
-    'boolean',
-    'undefined',
-    t.iface([], {
-        [t.indexKey]: 'JSONValue',
-    }),
-    t.array('JSONValue')
-);
-
-export const JSONObject = t.name('any');
-
-export const RPCMessage = t.iface([], {
-    jsonrpc: t.lit('2.0'),
-    method: 'string',
-    params: 'JSONObject',
-    id: 'number',
-});
-
-export const RPCResult = t.iface([], {
-    jsonrpc: t.lit('2.0'),
-    result: t.iface([], {
-        value: 'boolean',
-    }),
-    id: 'number',
-    error: t.union('JSONObject', 'JSONValue'),
-});
-
-export const ValidateParams = t.union('any', t.array('any'));
-
-export const Timestamp = t.union('string', 'number', 'Date');
-
-export const ValidationType = t.union(t.lit('none'), t.lit('normal'));
-
 export const IConfig = t.iface([], {
     verbose: t.opt('boolean'),
     requests: t.opt('boolean'),
@@ -247,7 +212,7 @@ export const ICreateValue = t.iface([], {
     period: t.opt(t.union('number', 'string')),
     delta: t.opt(t.union('number', t.lit('inf'))),
     disableLog: t.opt('boolean'),
-    initialState: t.opt('IInitialState'),
+    initialState: t.opt('InitialState'),
     disablePeriodAndDelta: t.opt('boolean'),
 });
 
@@ -349,22 +314,6 @@ export const IPermissionModelFunc = t.iface([], {
     ),
 });
 
-export const LogValue = t.iface([], {
-    timestamp: 'Timestamp',
-    data: t.union('string', 'number'),
-});
-
-export const IInitialState = t.union('string', 'number', 'LogValue');
-
-export const LogValues = t.array('LogValue');
-
-export const ValuePermission = t.union(
-    t.lit('r'),
-    t.lit('w'),
-    t.lit('rw'),
-    t.lit('wr')
-);
-
 export const ValueType = t.union(
     t.intersection(
         'IValueBase',
@@ -409,7 +358,7 @@ export const IValueBase = t.iface([], {
     period: t.opt(t.union('number', 'string')),
     delta: t.opt('string'),
     disableLog: t.opt('boolean'),
-    initialState: t.opt('IInitialState'),
+    initialState: t.opt('InitialState'),
     disablePeriodAndDelta: t.opt('boolean'),
 });
 
@@ -574,14 +523,6 @@ export const IValueStaticFunc = t.iface([], {
     ),
 });
 
-export const StateType = t.union(t.lit('Report'), t.lit('Control'));
-
-export const StateStatus = t.union(
-    t.lit('Send'),
-    t.lit('Pending'),
-    t.lit('Failed')
-);
-
 export const IState = t.iface([], {
     [t.indexKey]: 'any',
     meta: t.opt('Meta'),
@@ -600,15 +541,6 @@ export const IStateFunc = t.iface([], {
     findById: t.func('IState', t.param('id', 'string')),
     fetchById: t.func('IState', t.param('id', 'string')),
 });
-
-export const EventLogLevel = t.union(
-    t.lit('important'),
-    t.lit('error'),
-    t.lit('success'),
-    t.lit('warning'),
-    t.lit('info'),
-    t.lit('debug')
-);
 
 export const IEventLog = t.iface([], {
     message: 'string',
@@ -677,30 +609,6 @@ export const INotificationFunc = t.iface([], {
     sendSMS: t.func('boolean', t.param('msg', 'string')),
 });
 
-export const LogOperation = t.union(
-    t.lit('arbitrary'),
-    t.lit('array_agg'),
-    t.lit('avg'),
-    t.lit('mean'),
-    t.lit('count'),
-    t.lit('geometric_mean'),
-    t.lit('max'),
-    t.lit('min'),
-    t.lit('sqrdiff'),
-    t.lit('stddev'),
-    t.lit('sum'),
-    t.lit('variance'),
-    t.lit('harmonic_mean'),
-    t.lit('first'),
-    t.lit('last'),
-    t.lit('count_distinct'),
-    t.lit('median'),
-    t.lit('percentile'),
-    t.lit('lower_quartile'),
-    t.lit('upper_quartile'),
-    t.lit('mode')
-);
-
 export const LogGroupBy = t.union(
     t.lit('year'),
     t.lit('quarter'),
@@ -760,13 +668,6 @@ export const ExtsyncResponse = t.iface([], {
     uri: t.opt('string'),
     method: t.opt('string'),
 });
-
-export const EventType = t.union(
-    t.lit('create'),
-    t.lit('update'),
-    t.lit('delete'),
-    t.lit('direct')
-);
 
 export const StreamData = t.name('JSONObject');
 
@@ -1060,38 +961,6 @@ export const IOntologyNodeFunc = t.iface(['IOntologyModelFunc'], {
     findNode: t.func('IOntologyNode', t.param('name', 'string')),
 });
 
-export const Mail = t.iface([], {
-    body: 'string',
-    subject: 'string',
-    from: 'string',
-});
-
-export const FilterOperatorType = t.union(
-    t.lit('='),
-    t.lit('!='),
-    t.lit('=='),
-    t.lit('<'),
-    t.lit('<='),
-    t.lit('>'),
-    t.lit('>='),
-    t.lit('~'),
-    t.lit('!~')
-);
-
-export const FilterValueOperatorType = t.iface([], {
-    operator: 'FilterOperatorType',
-    value: t.union('string', t.array('string'), 'number', t.array('number')),
-});
-
-export const FilterValueType = t.union(
-    'string',
-    t.array('string'),
-    'number',
-    t.array('number'),
-    'FilterValueOperatorType',
-    'undefined'
-);
-
 export const FilterSubType = t.name('any');
 
 export const Filter = t.iface([], {
@@ -1261,13 +1130,6 @@ export const Filter = t.iface([], {
 });
 
 const exportedTypeSuite: t.ITypeSuite = {
-    JSONValue,
-    JSONObject,
-    RPCMessage,
-    RPCResult,
-    ValidateParams,
-    Timestamp,
-    ValidationType,
     IConfig,
     IConfigFunc,
     IConnection,
@@ -1283,10 +1145,6 @@ const exportedTypeSuite: t.ITypeSuite = {
     ICreateValue,
     IDeviceFunc,
     IPermissionModelFunc,
-    LogValue,
-    IInitialState,
-    LogValues,
-    ValuePermission,
     ValueType,
     IValueType,
     IValueBase,
@@ -1301,24 +1159,19 @@ const exportedTypeSuite: t.ITypeSuite = {
     AnalyticsResponse,
     IValueFunc,
     IValueStaticFunc,
-    StateType,
-    StateStatus,
     IState,
     IStateFunc,
-    EventLogLevel,
     IEventLog,
     IEventLogFunc,
     INotificationCustomData,
     INotificationCustom,
     INotificationBase,
     INotificationFunc,
-    LogOperation,
     LogGroupBy,
     ILogRequest,
     ExternalLogValues,
     ILogResponse,
     ExtsyncResponse,
-    EventType,
     StreamData,
     StreamEvent,
     IStreamModel,
@@ -1348,10 +1201,6 @@ const exportedTypeSuite: t.ITypeSuite = {
     IOntologyEdgeFunc,
     IOntologyNode,
     IOntologyNodeFunc,
-    Mail,
-    FilterOperatorType,
-    FilterValueOperatorType,
-    FilterValueType,
     FilterSubType,
     Filter,
 };

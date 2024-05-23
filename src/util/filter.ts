@@ -1,5 +1,5 @@
 import { Network } from '../models/network';
-import { Filter } from './interfaces';
+import { Filter } from './types';
 
 export function generateFilterRequest(
     getFilterResult: (filter: Filter, omit_filter: Filter) => string,

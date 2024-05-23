@@ -1,10 +1,5 @@
 import { convertFilterToJson, convertFilterToString } from '../util/helpers';
-import {
-    IState,
-    StateStatus,
-    StateType,
-    ValidateParams,
-} from '../util/interfaces';
+import { IState, StateStatus, StateType, ValidateParams } from '../util/types';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
 

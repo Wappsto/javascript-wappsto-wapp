@@ -1,6 +1,6 @@
 import { Model } from '../models/model';
 import wappsto, { printHttpError } from '../util/http_wrapper';
-import { EventLogLevel, JSONObject, Mail } from '../util/interfaces';
+import { EventLogLevel, JSONObject, Mail } from '../util/types';
 import { PermissionModel } from './model.permission';
 
 /**

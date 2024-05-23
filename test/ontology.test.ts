@@ -1666,14 +1666,10 @@ describe('Ontology', () => {
             { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
         );
 
-        await parent.deleteModelFromEdge({
-            relationship: 'child',
-            to: child,
-        });
+        await child.deleteBranch();
+
         expect(parent.edges.length).toBe(0);
         expect(child.parentEdges.length).toBe(0);
-
-        await child.deleteBranch();
         expect(child.meta.id).toBeUndefined();
         expect(child.edges.length).toBe(0);
         expect(leaf.meta.id).toBeUndefined();
@@ -1685,17 +1681,17 @@ describe('Ontology', () => {
         expect(mockedAxios.delete).toHaveBeenCalledTimes(4);
         expect(mockedAxios.delete).toHaveBeenNthCalledWith(
             1,
-            `/2.1/data/${edge1ID}`,
-            {}
-        );
-        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
-            2,
             `/2.1/data/${leafID}`,
             {}
         );
         expect(mockedAxios.delete).toHaveBeenNthCalledWith(
-            3,
+            2,
             `/2.1/data/${edge2ID}`,
+            {}
+        );
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            3,
+            `/2.1/data/${edge1ID}`,
             {}
         );
         expect(mockedAxios.delete).toHaveBeenNthCalledWith(

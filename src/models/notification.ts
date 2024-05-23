@@ -1,4 +1,4 @@
-import { INotificationBase, INotificationCustom } from '../util/interfaces';
+import { INotificationBase, INotificationCustom } from '../util/types';
 import { Model } from './model';
 
 export class Notification extends Model {

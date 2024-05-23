@@ -38,7 +38,7 @@
         "start": "dts watch",
         "test": "dts test --coverage",
         "test:nocov": "dts test",
-        "generate-types": "ts-interface-builder -v -g -c src/util/interfaces.ts; yarn lint:fix",
+        "generate-types": "ts-interface-builder -v -g -c src/util/checker/interfaces.ts src/util/checker/types.ts; yarn lint:fix",
         "documentation": "typedoc",
         "prebuild": "node -p \"'export const VERSION = \\'' + require('./package.json').version + '\\';'\" > src/util/version.ts",
         "build": "dts build",

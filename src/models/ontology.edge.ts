@@ -6,7 +6,7 @@ import {
     JSONObject,
     Relationship,
     ValidateParams,
-} from '../util/interfaces';
+} from '../util/types';
 import { getModel } from '../util/modelStore';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';

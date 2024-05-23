@@ -1,4 +1,4 @@
-import { EventLogLevel, IEventLog, JSONObject } from '../util/interfaces';
+import { EventLogLevel, IEventLog, JSONObject } from '../util/types';
 import { Model } from './model';
 
 export class EventLog extends Model implements IEventLog {

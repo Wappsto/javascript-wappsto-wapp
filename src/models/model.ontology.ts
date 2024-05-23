@@ -5,7 +5,7 @@ import {
     IOntologyEdge,
     IOntologyModel,
     JSONObject,
-} from '../util/interfaces';
+} from '../util/types';
 import { Model } from './model';
 import { OntologyEdge } from './ontology.edge';
 

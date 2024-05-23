@@ -1,5 +1,5 @@
 import { printError } from '../util/debug';
-import { JSONObject } from '../util/interfaces';
+import { JSONObject } from '../util/types';
 import { Model } from './model';
 
 export class User extends Model {

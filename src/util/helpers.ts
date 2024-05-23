@@ -7,7 +7,7 @@ import {
     LogValue,
     LogValues,
     Timestamp,
-} from './interfaces';
+} from './types';
 
 export function isBrowser(): boolean {
     return (

@@ -9,7 +9,7 @@ import {
     RequestType,
     StreamData,
     WappRequestHandler,
-} from './util/interfaces';
+} from './util/types';
 
 const openStream: Stream = new Stream();
 let request_handlers: Record<string, RequestHandler> = {};

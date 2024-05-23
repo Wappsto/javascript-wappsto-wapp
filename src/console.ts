@@ -1,7 +1,7 @@
 import { printError, printWarning } from './util/debug';
 import { isBrowser, toSafeString } from './util/helpers';
 import wappsto from './util/http_wrapper';
-import { JSONObject } from './util/interfaces';
+import { JSONObject } from './util/types';
 
 const defaultConsole = Object.assign({}, console);
 let stopExtSync = false;

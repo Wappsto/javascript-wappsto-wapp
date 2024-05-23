@@ -20,7 +20,7 @@ import {
     ServiceHandler,
     StreamData,
     StreamEvent,
-} from '../util/interfaces';
+} from '../util/types';
 import { Model } from './model';
 
 export class IgnoreError extends Error {

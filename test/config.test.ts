@@ -2,7 +2,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { config, Value, request } from '../src/index';
+import { config, Value, request, IModel } from '../src/index';
 import {
     printDebug,
     printWarning,
@@ -10,7 +10,6 @@ import {
     printRequest,
     printStream,
 } from '../src/util/debug';
-import { IModel } from '../src/util/interfaces';
 import { after } from './util/stream';
 import { makeResponse } from './util/helpers';
 console.log = jest.fn();

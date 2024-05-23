@@ -1,6 +1,6 @@
 import { _config } from './config';
 import { isBrowser, toSafeString } from './helpers';
-import { JSONObject, JSONValue } from './interfaces';
+import { JSONObject, JSONValue } from './types';
 
 export function printDebug(message: string): void {
     if (_config.debug) {

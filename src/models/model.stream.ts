@@ -1,7 +1,7 @@
 import { openStream } from '../stream_helpers';
 import { printDebug, printError } from '../util/debug';
 import { checkList, compareCallback } from '../util/helpers';
-import { StreamEvent, IStreamModel, StreamCallback } from '../util/interfaces';
+import { StreamEvent, IStreamModel, StreamCallback } from '../util/types';
 import { Model } from './model';
 import { PermissionModel } from './model.permission';
 

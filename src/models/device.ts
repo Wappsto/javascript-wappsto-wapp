@@ -17,7 +17,7 @@ import {
     ValidateParams,
     ValuePermission,
     ValueType,
-} from '../util/interfaces';
+} from '../util/types';
 import { addModel, getModel } from '../util/modelStore';
 import { ValueTemplate } from '../util/value_template';
 import { Model } from './model';

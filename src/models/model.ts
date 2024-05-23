@@ -2,7 +2,6 @@ import { plainToInstance } from 'class-transformer';
 import isEqual from 'lodash.isequal';
 import omit from 'lodash.omit';
 import pick from 'lodash.pick';
-import { createCheckers } from 'ts-interface-checker';
 import { _config } from '../util/config';
 import { printDebug, printError } from '../util/debug';
 import { isUUID, replaceAll } from '../util/helpers';
@@ -14,11 +13,12 @@ import {
     JSONObject,
     Meta,
     ValidateParams,
-} from '../util/interfaces';
-import interfaceTI from '../util/interfaces-ti';
+} from '../util/types';
 import { addModel, removeModel } from '../util/modelStore';
+import { getTypeChecker } from '../util/checker';
 
 export class Model implements IModel {
+    static checker = getTypeChecker();
     [x: string]: any;
     meta: Meta = { version: '2.1' };
     parent?: IModel;
@@ -27,7 +27,6 @@ export class Model implements IModel {
         data: JSONObject;
         resolve: (value: boolean | PromiseLike<boolean>) => void;
     }[] = [];
-    static checker = createCheckers(interfaceTI);
 
     constructor(type: string, expand = 0, version = '2.1') {
         this.meta.type = type;

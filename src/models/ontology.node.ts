@@ -1,4 +1,4 @@
-import { IOntologyNode, JSONObject } from '../util/interfaces';
+import { IOntologyNode, JSONObject } from '../util/types';
 import { Data } from './data';
 import { Model } from './model';
 

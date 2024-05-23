@@ -44,7 +44,7 @@ import {
     ValidateParams,
     ValuePermission,
     ValueStreamCallback,
-} from '../util/interfaces';
+} from '../util/types';
 import { addModel, getModel } from '../util/modelStore';
 import { EnergyData, EnergyPieChart, EnergySummary } from './analytic';
 import { AnalyticsModel, Newable } from './analytic/model.analytics';

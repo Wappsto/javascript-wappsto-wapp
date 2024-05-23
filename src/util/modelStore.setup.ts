@@ -4,7 +4,7 @@ import { OntologyNode } from '../models/ontology.node';
 import { State } from '../models/state';
 import { Value } from '../models/value';
 import { printDebug, printWarning } from './debug';
-import { IModel } from './interfaces';
+import { IModel } from './types';
 import { setModelCreateCallback } from './modelStore';
 
 async function loadModel(

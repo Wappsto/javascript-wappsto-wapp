@@ -6,7 +6,7 @@ import {
     OAuthRequestHandler,
     StreamData,
     ValidateParams,
-} from '../util/interfaces';
+} from '../util/types';
 import { Model } from './model';
 
 export class OAuth extends Model {

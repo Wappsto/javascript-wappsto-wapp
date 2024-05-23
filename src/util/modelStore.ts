@@ -1,4 +1,4 @@
-import { IModel } from './interfaces';
+import { IModel } from './types';
 
 type createCallback = (
     type: string,

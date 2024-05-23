@@ -4,7 +4,7 @@ import {
     JSONObject,
     StreamData,
     Timestamp,
-} from '../../util/interfaces';
+} from '../../util/types';
 import { PermissionModel } from '../model.permission';
 import { toISOString } from '../../util/helpers';
 

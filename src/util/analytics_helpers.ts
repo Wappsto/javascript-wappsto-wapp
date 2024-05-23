@@ -6,7 +6,7 @@ import {
 } from '../models/analytic/model.analytics';
 import { openStream } from '../stream_helpers';
 import { printWarning } from './debug';
-import { AnalyticsResponse, StreamData, Timestamp } from './interfaces';
+import { AnalyticsResponse, StreamData, Timestamp } from './types';
 
 export function runAnalyticModel(
     model: Newable<AnalyticsModel>,

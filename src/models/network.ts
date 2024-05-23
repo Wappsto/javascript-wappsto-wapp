@@ -10,7 +10,7 @@ import {
     INetwork,
     JSONObject,
     ValidateParams,
-} from '../util/interfaces';
+} from '../util/types';
 import { addModel, getModel } from '../util/modelStore';
 import { Device } from './device';
 import { Model } from './model';

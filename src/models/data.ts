@@ -4,7 +4,7 @@ import pick from 'lodash.pick';
 import { isBrowser } from '../util/helpers';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
-import { IData, JSONObject } from '../util/interfaces';
+import { IData, JSONObject } from '../util/types';
 
 type DataMeta = {
     id?: string;

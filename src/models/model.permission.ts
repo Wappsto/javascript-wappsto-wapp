@@ -3,7 +3,7 @@ import { openStream } from '../stream_helpers';
 import { printDebug, printError } from '../util/debug';
 import { toSafeString } from '../util/helpers';
 import { getErrorResponse, printHttpError } from '../util/http_wrapper';
-import { JSONObject, StreamData } from '../util/interfaces';
+import { JSONObject, StreamData } from '../util/types';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';
 import { Notification } from './notification';

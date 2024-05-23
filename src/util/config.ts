@@ -1,6 +1,6 @@
-import { createCheckers } from 'ts-interface-checker';
-import interfaceTI from '../util/interfaces-ti';
-import { IConfig, ValidationType } from './interfaces';
+import { IConfig } from './types';
+import { getTypeChecker } from './checker';
+import { ValidationType } from './checker/types';
 
 class Config implements IConfig {
     debug = false;
@@ -15,7 +15,7 @@ class Config implements IConfig {
     jitterMax = 10;
 }
 
-const _checker = createCheckers(interfaceTI);
+const _checker = getTypeChecker();
 const _config = new Config();
 
 export { _config };

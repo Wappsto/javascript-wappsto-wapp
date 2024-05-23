@@ -2,7 +2,7 @@ import { Data } from './models/data';
 import { Model } from './models/model';
 import { printError } from './util/debug';
 import { isBrowser } from './util/helpers';
-import { IWappStorage, StorageChangeHandler } from './util/interfaces';
+import { IWappStorage, StorageChangeHandler } from './util/types';
 
 const storages: Record<string, WappStorage> = {};
 

@@ -1,30 +1,23 @@
 /* eslint-disable @typescript-eslint/no-misused-new */
 
-export type JSONValue =
-    | string
-    | number
-    | boolean
-    | undefined
-    | { [x: string]: JSONValue }
-    | Array<JSONValue>;
-export type JSONObject = Record<string, JSONValue>;
+import {
+    EventLogLevel,
+    EventType,
+    FilterValueOperatorType,
+    FilterValueType,
+    InitialState,
+    JSONObject,
+    JSONValue,
+    LogOperation,
+    LogValues,
+    Mail,
+    StateStatus,
+    StateType,
+    Timestamp,
+    ValidationType,
+    ValuePermission,
+} from './types';
 
-export type RPCMessage = {
-    jsonrpc: '2.0';
-    method: string;
-    params: JSONObject;
-    id: number;
-};
-export type RPCResult = {
-    jsonrpc: '2.0';
-    result: { value: boolean };
-    id: number;
-    error: JSONObject | JSONValue;
-};
-
-export type ValidateParams = any | any[];
-export type Timestamp = string | number | Date;
-export type ValidationType = 'none' | 'normal';
 export interface IConfig {
     verbose?: boolean;
     requests?: boolean;
@@ -203,7 +196,7 @@ export interface ICreateValue {
     period?: number | string;
     delta?: number | 'inf';
     disableLog?: boolean;
-    initialState?: IInitialState;
+    initialState?: InitialState;
     disablePeriodAndDelta?: boolean;
 }
 
@@ -279,16 +272,6 @@ export interface IPermissionModelFunc {
     ): Promise<JSONObject[]>;
 }
 
-export interface LogValue {
-    timestamp: Timestamp;
-    data: string | number;
-}
-
-export type IInitialState = string | number | LogValue;
-
-export type LogValues = LogValue[];
-export type ValuePermission = 'r' | 'w' | 'rw' | 'wr';
-
 export type ValueType =
     | (IValueBase & { number: IValueNumberBase })
     | (IValueBase & { string: IValueStringBlobBase })
@@ -306,7 +289,7 @@ export interface IValueBase {
     period?: number | string;
     delta?: string;
     disableLog?: boolean;
-    initialState?: IInitialState;
+    initialState?: InitialState;
     disablePeriodAndDelta?: boolean;
 }
 
@@ -423,9 +406,6 @@ export interface IValueStaticFunc {
     getFilterResult(filter?: Filter, omit_filter?: Filter): string;
 }
 
-export type StateType = 'Report' | 'Control';
-export type StateStatus = 'Send' | 'Pending' | 'Failed';
-
 export interface IState {
     [key: string]: any;
     meta?: Meta;
@@ -440,14 +420,6 @@ export interface IStateFunc {
     findById(id: string): IState;
     fetchById(id: string): IState;
 }
-
-export type EventLogLevel =
-    | 'important'
-    | 'error'
-    | 'success'
-    | 'warning'
-    | 'info'
-    | 'debug';
 
 export interface IEventLog {
     message: string;
@@ -509,29 +481,6 @@ export interface INotificationFunc {
     sendSMS(msg: string): Promise<boolean>;
 }
 
-export type LogOperation =
-    | 'arbitrary'
-    | 'array_agg'
-    | 'avg'
-    | 'mean'
-    | 'count'
-    | 'geometric_mean'
-    | 'max'
-    | 'min'
-    | 'sqrdiff'
-    | 'stddev'
-    | 'sum'
-    | 'variance'
-    | 'harmonic_mean'
-    | 'first'
-    | 'last'
-    | 'count_distinct'
-    | 'median'
-    | 'percentile'
-    | 'lower_quartile'
-    | 'upper_quartile'
-    | 'mode';
-
 export type LogGroupBy =
     | 'year'
     | 'quarter'
@@ -587,8 +536,6 @@ export type ExtsyncResponse = {
     uri?: string;
     method?: string;
 };
-
-export type EventType = 'create' | 'update' | 'delete' | 'direct';
 
 export type StreamData = JSONObject;
 
@@ -784,33 +731,7 @@ export interface IOntologyNodeFunc extends IOntologyModelFunc {
     createNode(name: string): Promise<IOntologyNode>;
     findNode(name: string): Promise<IOntologyNode>;
 }
-export type Mail = {
-    body: string;
-    subject: string;
-    from: string;
-};
 
-export type FilterOperatorType =
-    | '='
-    | '!='
-    | '=='
-    | '<'
-    | '<='
-    | '>'
-    | '>='
-    | '~'
-    | '!~';
-export type FilterValueOperatorType = {
-    operator: FilterOperatorType;
-    value: string | string[] | number | number[];
-};
-export type FilterValueType =
-    | string
-    | string[]
-    | number
-    | number[]
-    | FilterValueOperatorType
-    | undefined;
 export type FilterSubType = Record<
     string,
     FilterValueType | Record<string, Record<string, FilterValueType>>
