@@ -1,36 +1,36 @@
 import { openStream } from '../stream_helpers';
 import { printDebug, printError } from '../util/debug';
 import { checkList, compareCallback } from '../util/helpers';
-import { IStreamEvent, IStreamModel, StreamCallback } from '../util/interfaces';
+import { StreamEvent, IStreamModel, StreamCallback } from '../util/interfaces';
 import { Model } from './model';
 import { PermissionModel } from './model.permission';
 
-export type EventHandler = (event: IStreamEvent) => boolean | void;
+export type EventHandler = (event: StreamEvent) => boolean | void;
 
-interface IStreamCallbacks {
+type StreamCallbacks = {
     [key: string]: StreamCallback[];
     event: StreamCallback[];
     change: StreamCallback[];
     delete: StreamCallback[];
     create: StreamCallback[];
-}
+};
 
-interface IEventQueue {
-    [key: string]: IStreamEvent[];
-    event: IStreamEvent[];
-    change: IStreamEvent[];
-    delete: IStreamEvent[];
-    create: IStreamEvent[];
-}
+type EventQueue = {
+    [key: string]: StreamEvent[];
+    event: StreamEvent[];
+    change: StreamEvent[];
+    delete: StreamEvent[];
+    create: StreamEvent[];
+};
 
 export class StreamModel extends PermissionModel implements IStreamModel {
-    #streamCallback: IStreamCallbacks = {
+    #streamCallback: StreamCallbacks = {
         event: [],
         change: [],
         delete: [],
         create: [],
-    } as IStreamCallbacks;
-    #eventQueue: IEventQueue = {
+    } as StreamCallbacks;
+    #eventQueue: EventQueue = {
         event: [],
         create: [],
         delete: [],
@@ -160,7 +160,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
 
     #enqueueEvent(
         type: string,
-        event: IStreamEvent,
+        event: StreamEvent,
         eventHandler?: EventHandler
     ): void {
         this.#eventQueue[type].push(event);
@@ -170,15 +170,15 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         }
     }
 
-    async handleStream(event: IStreamEvent): Promise<void> {
+    async handleStream(event: StreamEvent): Promise<void> {
         switch (event.event) {
             case 'create':
-                this.#enqueueEvent('create', event, (event: IStreamEvent) => {
+                this.#enqueueEvent('create', event, (event: StreamEvent) => {
                     this.parseChild(event.data ?? {});
                 });
                 break;
             case 'update':
-                this.#enqueueEvent('change', event, (event: IStreamEvent) => {
+                this.#enqueueEvent('change', event, (event: StreamEvent) => {
                     return this.parse(event.data ?? {});
                 });
                 break;

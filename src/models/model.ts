@@ -10,9 +10,9 @@ import wappsto, { printHttpError } from '../util/http_wrapper';
 import {
     FetchRequest,
     Filter,
-    IMeta,
     IModel,
     JSONObject,
+    Meta,
     ValidateParams,
 } from '../util/interfaces';
 import interfaceTI from '../util/interfaces-ti';
@@ -20,7 +20,7 @@ import { addModel, removeModel } from '../util/modelStore';
 
 export class Model implements IModel {
     [x: string]: any;
-    meta: IMeta = { version: '2.1' };
+    meta: Meta = { version: '2.1' };
     parent?: IModel;
     expand: number;
     #updateQueue: {

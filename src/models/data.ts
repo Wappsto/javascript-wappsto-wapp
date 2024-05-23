@@ -6,11 +6,11 @@ import { Model } from './model';
 import { StreamModel } from './model.stream';
 import { IData, JSONObject } from '../util/interfaces';
 
-interface IDataMeta {
+type DataMeta = {
     id?: string;
     type?: string;
     version?: number;
-}
+};
 
 export class Data<T extends Record<string, unknown>>
     extends StreamModel
@@ -18,7 +18,7 @@ export class Data<T extends Record<string, unknown>>
 {
     static endpoint = '/2.1/data';
     static attributes = ['meta', 'data_meta', 'data'];
-    data_meta: IDataMeta = {};
+    data_meta: DataMeta = {};
     data: T = {} as T;
     _secret_background: T = {} as T;
     #clearSecret = false;

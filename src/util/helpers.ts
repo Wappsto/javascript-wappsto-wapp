@@ -1,8 +1,8 @@
 import { printWarning } from './debug';
 import {
+    FilterSubType,
     FilterValueOperatorType,
     FilterValueType,
-    FilterSubType,
     IModel,
     LogValue,
     LogValues,

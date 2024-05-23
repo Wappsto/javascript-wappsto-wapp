@@ -61,7 +61,7 @@ export const IConnection = t.iface([], {
     online: 'boolean',
 });
 
-export const IMeta = t.iface([], {
+export const Meta = t.iface([], {
     id: t.opt('string'),
     type: t.opt('string'),
     version: t.opt('string'),
@@ -111,7 +111,7 @@ export const FetchRequest = t.iface([], {
 });
 
 export const IModel = t.iface([], {
-    meta: 'IMeta',
+    meta: 'Meta',
     id: t.func('string'),
     getType: t.func('string'),
     getUrl: t.func('string'),
@@ -147,7 +147,7 @@ export const IModelFunc = t.iface([], {
 
 export const IData = t.iface([], {
     [t.indexKey]: 'any',
-    meta: t.opt('IMeta'),
+    meta: t.opt('Meta'),
 });
 
 export const IDataFunc = t.iface([], {
@@ -156,7 +156,7 @@ export const IDataFunc = t.iface([], {
 
 export const INetwork = t.iface([], {
     [t.indexKey]: 'any',
-    meta: t.opt('IMeta'),
+    meta: t.opt('Meta'),
     name: 'string',
     description: t.opt('string'),
 });
@@ -229,7 +229,7 @@ export const INetworkFunc = t.iface([], {
 
 export const IDevice = t.iface([], {
     [t.indexKey]: 'any',
-    meta: t.opt('IMeta'),
+    meta: t.opt('Meta'),
     name: 'string',
     product: t.opt('string'),
     serial: t.opt('string'),
@@ -401,7 +401,7 @@ export const IValueType = t.union(
 
 export const IValueBase = t.iface([], {
     [t.indexKey]: 'any',
-    meta: t.opt('IMeta'),
+    meta: t.opt('Meta'),
     name: 'string',
     permission: 'ValuePermission',
     type: 'string',
@@ -584,7 +584,7 @@ export const StateStatus = t.union(
 
 export const IState = t.iface([], {
     [t.indexKey]: 'any',
-    meta: t.opt('IMeta'),
+    meta: t.opt('Meta'),
     type: 'StateType',
     status: t.opt('StateStatus'),
     data: t.opt('string'),
@@ -673,7 +673,7 @@ export const INotificationFunc = t.iface([], {
         t.param('level', 'EventLogLevel', true),
         t.param('data', 'JSONObject', true)
     ),
-    sendMail: t.func('boolean', t.param('params', 'IMail')),
+    sendMail: t.func('boolean', t.param('params', 'Mail')),
     sendSMS: t.func('boolean', t.param('msg', 'string')),
 });
 
@@ -731,7 +731,7 @@ export const ILogRequest = t.iface([], {
 });
 
 export const ExternalLogValues = t.iface([], {
-    meta: 'IMeta',
+    meta: 'Meta',
     more: 'boolean',
     type: 'string',
     data: t.array(
@@ -745,14 +745,14 @@ export const ExternalLogValues = t.iface([], {
 });
 
 export const ILogResponse = t.iface([], {
-    meta: 'IMeta',
+    meta: 'Meta',
     data: 'LogValues',
     more: 'boolean',
     type: 'string',
 });
 
 export const ExtsyncResponse = t.iface([], {
-    meta: t.opt('IMeta'),
+    meta: t.opt('Meta'),
     headers: 'any',
     body: t.opt('JSONValue'),
     code: t.opt('number'),
@@ -770,18 +770,18 @@ export const EventType = t.union(
 
 export const StreamData = t.name('JSONObject');
 
-export const IStreamEvent = t.iface([], {
+export const StreamEvent = t.iface([], {
     path: 'string',
     event: 'EventType',
     data: t.opt('StreamData'),
-    meta_object: t.opt('IMeta'),
-    meta: t.opt('IMeta'),
+    meta_object: t.opt('Meta'),
+    meta: t.opt('Meta'),
     extsync: t.opt('JSONValue'),
 });
 
 export const IStreamModel = t.iface([], {
     path: t.func('string'),
-    handleStream: t.func('void', t.param('event', 'IStreamEvent')),
+    handleStream: t.func('void', t.param('event', 'StreamEvent')),
 });
 
 export const IStreamFunc = t.iface([], {
@@ -839,7 +839,7 @@ export const IConnectionModelFunc = t.iface([], {
 });
 
 export const OAuthConnect = t.iface([], {
-    meta: t.opt('IMeta'),
+    meta: t.opt('Meta'),
     name: t.opt('string'),
     api: t.opt('string'),
     installation: t.opt('string'),
@@ -939,7 +939,7 @@ export const StorageChangeHandler = t.func(t.union('void', 'void'));
 
 export const StreamHandler = t.func(
     t.union(t.union('boolean', 'undefined'), 'boolean', 'undefined'),
-    t.param('event', 'IStreamEvent')
+    t.param('event', 'StreamEvent')
 );
 
 export const ServiceHandler = t.func(
@@ -1005,6 +1005,12 @@ export const IOntologyModel = t.iface(['IModel'], {
     deleteEdge: t.func('void', t.param('params', 'IEdge')),
     removeEdge: t.func('void', t.param('edge', 'IModel')),
     deleteModelFromEdge: t.func('void', t.param('params', 'IEdge')),
+    addParentEdge: t.func(
+        'void',
+        t.param('edge', 'IOntologyEdge'),
+        t.param('to', 'IOntologyModel')
+    ),
+    removeParentEdge: t.func('void', t.param('edge', 'IOntologyEdge')),
 });
 
 export const IOntologyModelFunc = t.iface([], {
@@ -1017,6 +1023,12 @@ export const IOntologyModelFunc = t.iface([], {
     deleteEdge: t.func('void', t.param('params', 'IEdge')),
     removeEdge: t.func('void', t.param('edge', 'IModel')),
     deleteModelFromEdge: t.func('void', t.param('params', 'IEdge')),
+    addParentEdge: t.func(
+        'void',
+        t.param('edge', 'IOntologyEdge'),
+        t.param('to', 'IOntologyModel')
+    ),
+    removeParentEdge: t.func('void', t.param('edge', 'IOntologyEdge')),
 });
 
 export const IOntologyEdge = t.iface(['IModel'], {
@@ -1048,7 +1060,7 @@ export const IOntologyNodeFunc = t.iface(['IOntologyModelFunc'], {
     findNode: t.func('IOntologyNode', t.param('name', 'string')),
 });
 
-export const IMail = t.iface([], {
+export const Mail = t.iface([], {
     body: 'string',
     subject: 'string',
     from: 'string',
@@ -1259,7 +1271,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IConfig,
     IConfigFunc,
     IConnection,
-    IMeta,
+    Meta,
     FetchRequest,
     IModel,
     IModelFunc,
@@ -1308,7 +1320,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     ExtsyncResponse,
     EventType,
     StreamData,
-    IStreamEvent,
+    StreamEvent,
     IStreamModel,
     IStreamFunc,
     IConnectionModel,
@@ -1336,7 +1348,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IOntologyEdgeFunc,
     IOntologyNode,
     IOntologyNodeFunc,
-    IMail,
+    Mail,
     FilterOperatorType,
     FilterValueOperatorType,
     FilterValueType,

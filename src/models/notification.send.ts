@@ -1,6 +1,6 @@
 import { Model } from '../models/model';
 import wappsto, { printHttpError } from '../util/http_wrapper';
-import { EventLogLevel, IMail, JSONObject } from '../util/interfaces';
+import { EventLogLevel, JSONObject, Mail } from '../util/interfaces';
 import { PermissionModel } from './model.permission';
 
 /**
@@ -9,7 +9,7 @@ import { PermissionModel } from './model.permission';
  * @param params - The parameters for sending the email.
  * @return A promise that resolves to true if the email was sent successfully, and false otherwise.
  */
-export async function sendMail(params: IMail): Promise<boolean> {
+export async function sendMail(params: Mail): Promise<boolean> {
     Model.validateMethod('notification', 'sendMail', arguments);
 
     const query = {

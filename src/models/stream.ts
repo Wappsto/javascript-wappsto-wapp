@@ -12,7 +12,6 @@ import { isUUID, isVersion, toSafeString } from '../util/helpers';
 import wappsto, { getErrorMessage } from '../util/http_wrapper';
 import {
     ExtsyncResponse,
-    IStreamEvent,
     IStreamModel,
     JSONValue,
     RequestHandler,
@@ -20,6 +19,7 @@ import {
     RPCResult,
     ServiceHandler,
     StreamData,
+    StreamEvent,
 } from '../util/interfaces';
 import { Model } from './model';
 
@@ -568,11 +568,11 @@ export class Stream extends Model {
         }
     }
 
-    #handleService(type: string, event: IStreamEvent, data: StreamData): void {
+    #handleService(type: string, event: StreamEvent, data: StreamData): void {
         this.#handleStreamService([`/${type}`], [], event, data);
     }
 
-    #handleMessage(type: string, event: IStreamEvent, data?: StreamData): void {
+    #handleMessage(type: string, event: StreamEvent, data?: StreamData): void {
         const paths: string[] = [];
         const services: string[] = [];
         if (type === 'message' && event.path) {
@@ -612,7 +612,7 @@ export class Stream extends Model {
     #handleStreamService(
         services: string[],
         paths: string[],
-        event: IStreamEvent,
+        event: StreamEvent,
         data?: StreamData
     ): void {
         printStream('services', services, this.#services);
@@ -709,7 +709,7 @@ export class Stream extends Model {
         return false;
     }
 
-    #handleWappstoMessage(message: IStreamEvent) {
+    #handleWappstoMessage(message: StreamEvent) {
         const newData = (message.extsync ||
             message.data) as unknown as ExtsyncResponse;
         if (!newData?.uri?.startsWith('/console')) {
@@ -740,15 +740,15 @@ export class Stream extends Model {
     }
 
     async #handleStreamMessage(
-        message: IStreamEvent | RPCResult
+        message: StreamEvent | RPCResult
     ): Promise<void> {
         if (this.#handleRPCMessage(message as RPCResult)) {
             return;
         }
 
-        let messages: IStreamEvent[] = [];
+        let messages: StreamEvent[] = [];
         if (message.constructor !== Array) {
-            messages = [message as IStreamEvent];
+            messages = [message as StreamEvent];
         } else {
             messages = message;
         }

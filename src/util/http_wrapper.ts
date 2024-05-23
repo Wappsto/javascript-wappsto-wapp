@@ -3,8 +3,8 @@ import { baseUrl, session } from '../session';
 import { _config } from '../util/config';
 import { fatalError, printDebug, printError, printRequest } from './debug';
 import { isBrowser, toSafeString } from './helpers';
-import { VERSION } from './version';
 import { JSONObject, JSONValue } from './interfaces';
+import { VERSION } from './version';
 
 type Methods = 'head' | 'options' | 'put' | 'post' | 'patch' | 'delete' | 'get';
 

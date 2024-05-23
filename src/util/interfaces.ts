@@ -47,7 +47,7 @@ export interface IConnection {
     online: boolean;
 }
 
-export interface IMeta {
+export type Meta = {
     id?: string;
     type?: string;
     version?: string;
@@ -83,7 +83,7 @@ export interface IMeta {
     name_by_user?: string;
     tag?: string[];
     tag_by_user?: string[];
-}
+};
 
 export interface FetchRequest {
     endpoint: string;
@@ -94,7 +94,7 @@ export interface FetchRequest {
 }
 
 export interface IModel {
-    meta: IMeta;
+    meta: Meta;
     id(): string;
     getType(): string;
     getUrl(): string;
@@ -123,7 +123,7 @@ export interface IModelFunc {
 
 export interface IData {
     [key: string]: any;
-    meta?: IMeta;
+    meta?: Meta;
 }
 
 export interface IDataFunc {
@@ -132,7 +132,7 @@ export interface IDataFunc {
 
 export interface INetwork {
     [key: string]: any; //string | undefined;
-    meta?: IMeta;
+    meta?: Meta;
     name: string;
     description?: string;
 }
@@ -185,7 +185,7 @@ export interface INetworkFunc {
 
 export interface IDevice {
     [key: string]: any; //string | undefined;
-    meta?: IMeta;
+    meta?: Meta;
     name: string;
     product?: string;
     serial?: string;
@@ -298,7 +298,7 @@ export type ValueType =
 export type IValueType = IValueNumber | IValueString | IValueBlob | IValueXml;
 export interface IValueBase {
     [key: string]: any;
-    meta?: IMeta;
+    meta?: Meta;
     name: string;
     permission: ValuePermission;
     type: string;
@@ -428,7 +428,7 @@ export type StateStatus = 'Send' | 'Pending' | 'Failed';
 
 export interface IState {
     [key: string]: any;
-    meta?: IMeta;
+    meta?: Meta;
     type: StateType;
     status?: StateStatus;
     data?: string;
@@ -505,7 +505,7 @@ export interface INotificationFunc {
         level?: EventLogLevel,
         data?: JSONObject
     ): Promise<void>;
-    sendMail(params: IMail): Promise<boolean>;
+    sendMail(params: Mail): Promise<boolean>;
     sendSMS(msg: string): Promise<boolean>;
 }
 
@@ -561,7 +561,7 @@ export interface ILogRequest {
 }
 
 export type ExternalLogValues = {
-    meta: IMeta;
+    meta: Meta;
     more: boolean;
     type: string;
     data: {
@@ -572,14 +572,14 @@ export type ExternalLogValues = {
     }[];
 };
 export interface ILogResponse {
-    meta: IMeta;
+    meta: Meta;
     data: LogValues;
     more: boolean;
     type: string;
 }
 
 export type ExtsyncResponse = {
-    meta?: IMeta;
+    meta?: Meta;
     headers: Record<string, string>;
     body?: JSONValue;
     code?: number;
@@ -592,18 +592,18 @@ export type EventType = 'create' | 'update' | 'delete' | 'direct';
 
 export type StreamData = JSONObject;
 
-export interface IStreamEvent {
+export type StreamEvent = {
     path: string;
     event: EventType;
     data?: StreamData;
-    meta_object?: IMeta;
-    meta?: IMeta;
+    meta_object?: Meta;
+    meta?: Meta;
     extsync?: JSONValue;
-}
+};
 
 export interface IStreamModel {
     path(): string;
-    handleStream(event: IStreamEvent): void;
+    handleStream(event: StreamEvent): void;
 }
 
 export interface IStreamFunc {
@@ -637,7 +637,7 @@ export interface IConnectionModelFunc {
 }
 
 export type OAuthConnect = {
-    meta?: IMeta;
+    meta?: Meta;
     name?: string;
     api?: string;
     installation?: string;
@@ -704,7 +704,7 @@ export type RequestType = {
 
 export type StorageChangeHandler = () => void | Promise<void>;
 export type StreamHandler = (
-    event: IStreamEvent
+    event: StreamEvent
 ) => Promise<boolean | undefined> | boolean | undefined;
 export type ServiceHandler = (
     event: StreamData
@@ -749,6 +749,8 @@ export interface IOntologyModel extends IModel {
     deleteEdge(params: IEdge): Promise<void>;
     removeEdge(edge: IModel): void;
     deleteModelFromEdge(params: IEdge): Promise<void>;
+    addParentEdge(edge: IOntologyEdge, to: IOntologyModel): void;
+    removeParentEdge(edge: IOntologyEdge): void;
 }
 export interface IOntologyModelFunc {
     createEdge(params: IEdge): Promise<IOntologyEdge>;
@@ -757,6 +759,8 @@ export interface IOntologyModelFunc {
     deleteEdge(params: IEdge): Promise<void>;
     removeEdge(edge: IModel): void;
     deleteModelFromEdge(params: IEdge): Promise<void>;
+    addParentEdge(edge: IOntologyEdge, to: IOntologyModel): void;
+    removeParentEdge(edge: IOntologyEdge): void;
 }
 export interface IOntologyEdge extends IModel {
     relationship: Relationship;
@@ -780,11 +784,11 @@ export interface IOntologyNodeFunc extends IOntologyModelFunc {
     createNode(name: string): Promise<IOntologyNode>;
     findNode(name: string): Promise<IOntologyNode>;
 }
-export interface IMail {
+export type Mail = {
     body: string;
     subject: string;
     from: string;
-}
+};
 
 export type FilterOperatorType =
     | '='
