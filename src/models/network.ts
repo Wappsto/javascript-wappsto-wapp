@@ -17,7 +17,6 @@ import { Model } from './model';
 import { ConnectionModel } from './model.connection';
 import { PermissionModel } from './model.permission';
 import { Value } from './value';
-import { resolve } from 'path';
 
 export async function createNetwork(params: INetwork): Promise<Network> {
     Model.validateMethod('Network', 'createNetwork', arguments);
@@ -335,7 +334,7 @@ export class Network extends ConnectionModel implements INetwork {
             }
         });
 
-        return networks;
+        return networks as Network[];
     };
 
     static findByName = (

@@ -491,7 +491,7 @@ export class Device extends ConnectionModel implements IDevice {
                 device.addChildrenToStore();
             }
         });
-        return devices;
+        return devices as Device[];
     };
 
     static findByName(

@@ -987,7 +987,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 value.addChildrenToStore();
             }
         });
-        return values;
+        return values as Value[];
     };
 
     static findByName = (

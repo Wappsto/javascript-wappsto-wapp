@@ -1386,8 +1386,8 @@ describe('value', () => {
             'a57b5e03-150e-4ca4-a249-7a311f7a28bc'
         );
 
-        expect(found.meta.id).toEqual('a57b5e03-150e-4ca4-a249-7a311f7a28bc');
-        expect(found.name).toEqual('Value 1');
+        expect(found?.meta.id).toEqual('a57b5e03-150e-4ca4-a249-7a311f7a28bc');
+        expect(found?.name).toEqual('Value 1');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
