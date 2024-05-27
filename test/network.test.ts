@@ -75,7 +75,8 @@ describe('network', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network',
             {
                 meta: {
@@ -112,9 +113,14 @@ describe('network', () => {
         const networks = await Network.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: { go_internal: true, expand: 3, method: ['retrieve'] },
         });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/network/d16ac42f-dedf-496f-a935-87ae9f29fb61',
+            { params: { expand: 3, go_internal: true, method: ['retrieve'] } }
+        );
         expect(networks[0]?.name).toEqual('test 1');
         expect(networks[1]?.name).toEqual('test 2');
     });
@@ -133,7 +139,8 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             `/2.1/network/${response.meta.id}`,
             {
                 meta: {
@@ -197,10 +204,7 @@ describe('network', () => {
         });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
-
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: {
                 expand: 3,
                 go_internal: true,
@@ -208,7 +212,9 @@ describe('network', () => {
                 method: ['retrieve'],
             },
         });
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/c5a73d64-b398-434e-a236-df15342339d5',
             {
                 delta: '0',
@@ -225,7 +231,9 @@ describe('network', () => {
             },
             {}
         );
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/c5a73d64-b398-434e-a236-df15342339d5/state',
             expect.objectContaining({
                 data: 'NA',
@@ -271,7 +279,7 @@ describe('network', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: {
                 expand: 3,
                 go_internal: true,
@@ -538,7 +546,8 @@ describe('network', () => {
         });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network/0a4de380-1c16-4b5c-a081-912b931ff891/device',
             {
                 communication: 'communication',
@@ -592,7 +601,7 @@ describe('network', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: {
                 expand: 3,
                 go_internal: true,
@@ -645,7 +654,8 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             {
                 communication: 'communication',
@@ -840,7 +850,8 @@ describe('network', () => {
         expect(res).toBe(false);
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.delete).toHaveBeenCalledWith(
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network/f36caf6f-eb2d-4e00-91ac-6b3a6ba04b02',
             {}
         );
@@ -1215,7 +1226,8 @@ describe('network', () => {
         const orgError = console.error;
         console.error = jest.fn();
         await network.reload();
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.error).toHaveBeenNthCalledWith(
+            1,
             'WAPPSTO ERROR: Permission.reload - Unhandled code: Reject the reload for will clear the id, when failing to talk to backend'
         );
         console.error = orgError;
@@ -1287,7 +1299,8 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network',
             {
                 filter: {
@@ -1331,7 +1344,8 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network',
             {
                 filter: { attribute: ['network_name!=[]'] },
@@ -1368,7 +1382,8 @@ describe('network', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network',
             {
                 filter: {
@@ -1468,7 +1483,8 @@ describe('network', () => {
         expect(networks[0].device.length).toBe(1);
         expect(networks[0].device[0].value.length).toBe(4);
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network',
             {
                 filter: {
@@ -1496,9 +1512,25 @@ describe('network', () => {
             }
         );
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network/11c73ade-ddf0-4bd1-8ad5-c3d05dd1dd1f',
             { params: { expand: 3 } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/value/fcd2db59-3a61-482c-b322-a49b35c4c8fe',
+            { params: { expand: 1 } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/value/83b28292-c4d6-4126-9b83-8430a000febf',
+            { params: { expand: 1 } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            4,
+            '/2.1/value/3e608a81-02f7-4acc-b02c-74aae728c945',
+            { params: { expand: 1 } }
         );
     });
 

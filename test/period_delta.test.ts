@@ -140,7 +140,8 @@ describe('period and delta on value', () => {
         await value.forceReport(444);
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(6);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Report',
@@ -148,7 +149,8 @@ describe('period and delta on value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Report',
@@ -156,7 +158,8 @@ describe('period and delta on value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            3,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Report',
@@ -164,7 +167,17 @@ describe('period and delta on value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            4,
+            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
+            expect.objectContaining({
+                data: 'error',
+                type: 'Report',
+            }),
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            5,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Report',
@@ -172,7 +185,8 @@ describe('period and delta on value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            6,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Report',
@@ -235,7 +249,8 @@ describe('period and delta on value', () => {
 
         expect(value.delta).toEqual('2');
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Report',
@@ -243,7 +258,8 @@ describe('period and delta on value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Report',
@@ -349,7 +365,8 @@ describe('period and delta on value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(fun).toHaveBeenCalledTimes(2);
-        expect(fun).toHaveBeenCalledWith(value, 'period');
+        expect(fun).toHaveBeenNthCalledWith(1, value, 'period');
+        expect(fun).toHaveBeenNthCalledWith(2, value, 'period');
 
         value.cancelPeriod();
     });
@@ -425,7 +442,8 @@ describe('period and delta on value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
             expect.objectContaining({
                 type: 'Report',
@@ -433,7 +451,8 @@ describe('period and delta on value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
             expect.objectContaining({
                 type: 'Report',
@@ -441,7 +460,8 @@ describe('period and delta on value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            3,
             '/2.1/state/05bcdf20-cf39-4b16-adb2-ac711d5678a6',
             expect.objectContaining({
                 type: 'Report',
@@ -550,7 +570,8 @@ describe('period and delta on value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             expect.objectContaining({
                 type: 'Report',
@@ -558,7 +579,8 @@ describe('period and delta on value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             {
                 type: 'Report',
@@ -567,7 +589,8 @@ describe('period and delta on value', () => {
             },
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenLastCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            3,
             '/2.1/state/8d0468c2-ed7c-4897-ae87-bc17490733f7',
             {
                 type: 'Report',
@@ -590,7 +613,8 @@ describe('period and delta on value', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             {
                 period: '3600',
@@ -611,7 +635,8 @@ describe('period and delta on value', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             {
                 delta: '2.2',
@@ -644,7 +669,8 @@ describe('period and delta on value', () => {
         await value.report(1, timestamp3);
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 type: 'Report',
@@ -653,7 +679,8 @@ describe('period and delta on value', () => {
             },
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 type: 'Report',
@@ -662,7 +689,8 @@ describe('period and delta on value', () => {
             },
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            3,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 type: 'Report',

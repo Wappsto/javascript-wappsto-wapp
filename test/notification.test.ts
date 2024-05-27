@@ -24,7 +24,8 @@ describe('notification', () => {
         notify('message');
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/notification',
             {
                 meta: {
@@ -46,7 +47,8 @@ describe('notification', () => {
         notify('message2', 'error', { test: 'data' });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/notification',
             {
                 meta: {
@@ -74,7 +76,7 @@ describe('notification', () => {
 
         expect(res).toBe(true);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/email_send', {
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(1, '/2.1/email_send', {
             subject: 'Test Mail',
             html: '<b>Hello</b>',
             from: 'My Wapp',
@@ -96,7 +98,7 @@ describe('notification', () => {
 
         expect(res).toBe(false);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/email_send', {
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(1, '/2.1/email_send', {
             subject: 'Test Mail',
             html: '<b>Hello</b>',
             from: 'My Wapp',
@@ -110,7 +112,7 @@ describe('notification', () => {
 
         expect(res).toBe(true);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/sms_send', {
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(1, '/2.1/sms_send', {
             content: 'My sms message',
         });
     });
@@ -124,14 +126,17 @@ describe('notification', () => {
             .mockRejectedValueOnce(makeErrorResponse({}));
 
         const res = await sendSMS('My sms message');
-        const res2 = await sendSMS('My sms message');
+        const res2 = await sendSMS('My new sms message');
         console.error = tmp;
 
         expect(res).toBe(false);
         expect(res2).toBe(false);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/sms_send', {
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(1, '/2.1/sms_send', {
             content: 'My sms message',
+        });
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(2, '/2.1/sms_send', {
+            content: 'My new sms message',
         });
     });
 });

@@ -151,7 +151,8 @@ describe('Ontology', () => {
             { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
         );
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
             {
                 meta: {
@@ -168,7 +169,8 @@ describe('Ontology', () => {
             },
             {}
         );
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
             {
                 meta: {
@@ -207,7 +209,8 @@ describe('Ontology', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/data',
             {
                 data: {},
@@ -563,7 +566,8 @@ describe('Ontology', () => {
         expect(state1.parentEdges.length).toBe(0);
 
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.delete).toHaveBeenCalledWith(
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
             '/2.1/ontology/75f43647-bf73-44df-a04e-4d04e47cd0fc',
             {}
         );
@@ -616,7 +620,8 @@ describe('Ontology', () => {
 
         expect(network.edges.length).toBe(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.delete).toHaveBeenCalledWith(
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
             '/2.1/ontology/75f43647-bf73-44df-a04e-4d04e47cd0fc',
             {}
         );
@@ -720,7 +725,9 @@ describe('Ontology', () => {
         await network.createEdge({ relationship: 'child', to: state1 });
         await state1.createEdge({ relationship: 'look', to: state2 });
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
             {
                 params: {
@@ -730,7 +737,8 @@ describe('Ontology', () => {
                 },
             }
         );
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/f0a9683f-da8b-4fe6-9925-2e6768ddedeb/ontology',
             {
                 params: {
@@ -740,11 +748,36 @@ describe('Ontology', () => {
                 },
             }
         );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/state/d2d27eab-bfaa-4253-b9cb-6402dc04e16b/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
 
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
+            {
+                meta: { type: 'ontology', version: '2.1' },
+                relationship: 'child',
+                to: { state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'] },
+            },
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/state/f0a9683f-da8b-4fe6-9925-2e6768ddedeb/ontology',
+            {
+                meta: { type: 'ontology', version: '2.1' },
+                relationship: 'look',
+                to: { state: ['d2d27eab-bfaa-4253-b9cb-6402dc04e16b'] },
+            },
+            {}
+        );
+
         expect(network.edges.length).toBe(1);
         expect(state1.edges.length).toBe(1);
 
@@ -826,11 +859,13 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(2);
 
-        expect(mockedAxios.delete).toHaveBeenCalledWith(
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
             '/2.1/data/45332794-e710-4702-90d6-632fe461d3e5',
             {}
         );
-        expect(mockedAxios.delete).toHaveBeenCalledWith(
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            2,
             '/2.1/ontology/b0553348-deac-4ed8-a546-f72346a60bb0',
             {}
         );

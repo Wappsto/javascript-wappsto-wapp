@@ -34,7 +34,8 @@ describe('WappStorage', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/data',
             {
                 data_meta: {
@@ -51,7 +52,7 @@ describe('WappStorage', () => {
             },
             {}
         );
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/data', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/data', {
             params: {
                 'this_data_meta.id': 'wapp_storage_test',
                 expand: 1,
@@ -162,7 +163,7 @@ describe('WappStorage', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/data', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/data', {
             params: {
                 'this_data_meta.id': 'wapp_storage_default',
                 expand: 1,
@@ -171,7 +172,8 @@ describe('WappStorage', () => {
             },
         });
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
@@ -230,7 +232,8 @@ describe('WappStorage', () => {
         await new Promise((r) => setTimeout(r, 100));
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/data',
             {
                 _secret_background: {},
@@ -254,7 +257,8 @@ describe('WappStorage', () => {
         await new Promise((r) => setTimeout(r, 100));
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/data',
             {
                 _secret_background: {},
@@ -348,7 +352,9 @@ describe('WappStorage', () => {
         await c.set('new', 'data');
         const res1 = c.get('new');
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
@@ -380,7 +386,8 @@ describe('WappStorage', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            2,
             '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 data_meta: {
@@ -431,7 +438,8 @@ describe('WappStorage', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
             {
                 old: null,

@@ -56,7 +56,8 @@ describe('oauth', () => {
         await new Promise((r) => setTimeout(r, 1));
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/oauth_connect/test',
             { params: { go_internal: true, method: ['retrieve'] } }
         );
@@ -107,7 +108,8 @@ describe('oauth', () => {
         const token = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/oauth_connect/test',
             { params: { go_internal: true, method: ['retrieve'] } }
         );
@@ -120,7 +122,8 @@ describe('oauth', () => {
         const token = await OAuth.getToken('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/oauth_connect/test',
             { params: { go_internal: true, method: ['retrieve'] } }
         );
@@ -159,7 +162,8 @@ describe('oauth', () => {
             'This installation does not have any oauth external with this name ({"wrong_value":"name","wrong_attribute":"test"})'
         );
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/oauth_connect/test',
             { params: { go_internal: true, method: ['retrieve'] } }
         );
@@ -190,7 +194,8 @@ describe('oauth', () => {
         await new Promise((r) => setTimeout(r, 1));
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/oauth_connect/test',
             { params: { go_internal: true, method: ['retrieve'] } }
         );
@@ -210,7 +215,8 @@ describe('oauth', () => {
         } catch (e) {
             error = e;
         }
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.error).toHaveBeenNthCalledWith(
+            1,
             'WAPPSTO ERROR: Model.create: Reject create for can handle a failed create'
         );
         console.error = orgError;

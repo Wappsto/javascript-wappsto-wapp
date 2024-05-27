@@ -86,7 +86,7 @@ describe('stream', () => {
         });
 
         expect(fun).toHaveBeenCalledTimes(1);
-        expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
+        expect(fun).toHaveBeenNthCalledWith(1, value, 'data', 'timestamp');
 
         const cancelControlPromise = value.cancelOnControl();
         const cancelReportPromise = value.cancelOnReport();
@@ -215,7 +215,7 @@ describe('stream', () => {
 
         expect(arrData.length).toBe(1);
         expect(fun).toHaveBeenCalledTimes(1);
-        expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
+        expect(fun).toHaveBeenNthCalledWith(1, value, 'data', 'timestamp');
     });
 
     it('can trigger an onReport and onControl handler', async () => {
@@ -288,8 +288,8 @@ describe('stream', () => {
 
         expect(funR).toHaveBeenCalledTimes(1);
         expect(funC).toHaveBeenCalledTimes(1);
-        expect(funR).toHaveBeenCalledWith(value, 'data', 'timestamp');
-        expect(funC).toHaveBeenCalledWith(value, 'data', 'timestamp');
+        expect(funR).toHaveBeenNthCalledWith(1, value, 'data', 'timestamp');
+        expect(funC).toHaveBeenNthCalledWith(1, value, 'data', 'timestamp');
 
         const cancelP = value.cancelOnControl();
 
@@ -334,7 +334,7 @@ describe('stream', () => {
 
         expect(funR).toHaveBeenCalledTimes(2);
         expect(funC).toHaveBeenCalledTimes(1);
-        expect(funR).toHaveBeenCalledWith(value, 'data2', 'timestamp2');
+        expect(funR).toHaveBeenNthCalledWith(2, value, 'data2', 'timestamp2');
     });
 
     it('can trigger an onDelete handler', async () => {
@@ -376,7 +376,8 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(fun).toHaveBeenCalledWith(value);
+        expect(fun).toHaveBeenCalledTimes(1);
+        expect(fun).toHaveBeenNthCalledWith(1, value);
     });
 
     it('can trigger an onRefresh handler', async () => {
@@ -444,7 +445,10 @@ describe('stream', () => {
         expect(fun1).toHaveBeenCalledTimes(2);
         expect(fun2).toHaveBeenCalledTimes(2);
 
-        expect(fun1).toHaveBeenCalledWith(value, 'user');
+        expect(fun1).toHaveBeenNthCalledWith(1, value, 'user');
+        expect(fun1).toHaveBeenNthCalledWith(2, value, 'user');
+        expect(fun2).toHaveBeenNthCalledWith(1);
+        expect(fun2).toHaveBeenNthCalledWith(2);
 
         const cancelPromise = value.cancelOnRefresh();
 
@@ -546,7 +550,8 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
+        expect(fun).toHaveBeenCalledTimes(1);
+        expect(fun).toHaveBeenNthCalledWith(1, value, 'data', 'timestamp');
     });
 
     it('can handle a stream close', async () => {
@@ -609,7 +614,7 @@ describe('stream', () => {
 
         await new Promise((r) => setTimeout(r, 1));
 
-        expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
+        expect(fun).toHaveBeenNthCalledWith(1, value, 'data', 'timestamp');
     });
 
     it('makes sure that onReport is awaited', async () => {

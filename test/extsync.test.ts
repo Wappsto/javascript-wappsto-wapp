@@ -148,7 +148,7 @@ describe('ExtSync stream', () => {
         await new Promise((r) => setTimeout(r, 1));
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(1, '/2.1/extsync', {
             message: '',
             type: 'backgroundIsStarted',
         });
@@ -190,7 +190,9 @@ describe('ExtSync stream', () => {
         });
 
         await new Promise((r) => setTimeout(r, 1));
-        expect(fun).toHaveBeenCalledWith(
+        expect(fun).toHaveBeenCalledTimes(1);
+        expect(fun).toHaveBeenNthCalledWith(
+            1,
             'test',
             'post',
             '/',
@@ -199,7 +201,7 @@ describe('ExtSync stream', () => {
                 accept: 'none',
             }
         );
-        expect(fun).toHaveBeenCalledTimes(1);
+
         await new Promise((r) => setTimeout(r, 1));
 
         server.send({
@@ -238,7 +240,9 @@ describe('ExtSync stream', () => {
 
         expect(fun).toHaveBeenCalledTimes(1);
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/extsync/response/1ae385e6-849c-44ac-9731-b360c1e774d4',
             {
                 body: true,
@@ -246,7 +250,6 @@ describe('ExtSync stream', () => {
             }
         );
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
     });
 
@@ -352,38 +355,49 @@ describe('ExtSync stream', () => {
 
         expect(responseForeground).toBe(res);
         expect(responseBackground).toBe(res);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
-            message: {
-                test: 'test message',
-            },
-            type: 'background',
-        });
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
-            message: {
-                test: 'test message',
-            },
-            type: 'foreground',
-        });
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/extsync/request',
+            {
+                message: {
+                    test: 'test message',
+                },
+                type: 'background',
+            }
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/extsync/request',
+            {
+                message: {
+                    test: 'test message',
+                },
+                type: 'foreground',
+            }
+        );
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/extsync/response/6718413a-4d78-4110-af0d-9291ab76196e',
             {
                 body: true,
                 code: 200,
             }
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/extsync/response/632bfbc6-64f6-4bff-9121-5b656c6e5ea1',
             {
                 body: true,
                 code: 200,
             }
         );
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(funB).toHaveBeenCalledWith({ test: 'foreground' });
-        expect(funF).toHaveBeenCalledWith({ test: 'background' });
+
         expect(funF).toHaveBeenCalledTimes(1);
         expect(funB).toHaveBeenCalledTimes(1);
+        expect(funB).toHaveBeenNthCalledWith(1, { test: 'foreground' });
+        expect(funF).toHaveBeenNthCalledWith(1, { test: 'background' });
     });
 
     it('can use webhook and sendToForeground', async () => {
@@ -452,7 +466,8 @@ describe('ExtSync stream', () => {
         expect(responseForeground).toBe(res);
         expect(funWeb).toHaveBeenCalledTimes(1);
         expect(funFore).toHaveBeenCalledTimes(1);
-        expect(funWeb).toHaveBeenCalledWith(
+        expect(funWeb).toHaveBeenNthCalledWith(
+            1,
             'test',
             'get',
             '/test',
@@ -461,30 +476,35 @@ describe('ExtSync stream', () => {
                 'Content-Type': 'application/json',
             }
         );
-        expect(funFore).toHaveBeenCalledWith({ test: 'foreground' });
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
-            message: {
-                test: 'test message',
-            },
-            type: 'background',
-        });
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
-            '/2.1/extsync/response/754526f7-7d6d-4cba-9ad9-9109a555edd4',
+        expect(funFore).toHaveBeenNthCalledWith(1, { test: 'foreground' });
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/extsync/request',
             {
-                body: true,
-                code: 200,
+                message: {
+                    test: 'test message',
+                },
+                type: 'background',
             }
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/extsync/response/9d9dc628-8542-4953-8d89-791978681b98',
             {
                 body: true,
                 code: 200,
             }
         );
-
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/extsync/response/754526f7-7d6d-4cba-9ad9-9109a555edd4',
+            {
+                body: true,
+                code: 200,
+            }
+        );
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
     });
@@ -657,7 +677,8 @@ describe('ExtSync stream', () => {
         );
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/extsync/response/foreground',
             {
                 body: {
@@ -691,7 +712,8 @@ describe('ExtSync stream', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/extsync/response/foreground',
             {
                 body: {
@@ -700,7 +722,8 @@ describe('ExtSync stream', () => {
                 code: 400,
             }
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/extsync/response/background',
             {
                 body: {
@@ -725,12 +748,16 @@ describe('ExtSync stream', () => {
         );
         console.error = orgError;
 
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync/request', {
-            message: 'test',
-            type: 'background',
-        });
-
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/extsync/request',
+            {
+                message: 'test',
+                type: 'background',
+            }
+        );
+
         expect(res).toEqual({});
     });
 
@@ -752,13 +779,14 @@ describe('ExtSync stream', () => {
 
         signalForeground(msg);
         signalBackground(msg);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(1, '/2.1/extsync', {
             message: {
                 test: 'test signal',
             },
             type: 'background',
         });
-        expect(mockedAxios.post).toHaveBeenCalledWith('/2.1/extsync', {
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(2, '/2.1/extsync', {
             message: {
                 test: 'test signal',
             },
@@ -783,11 +811,11 @@ describe('ExtSync stream', () => {
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(funB).toHaveBeenCalledWith({ signal: 'background' });
-        expect(funF).toHaveBeenCalledWith({ signal: 'foreground' });
 
-        expect(funF).toHaveBeenCalledTimes(1);
         expect(funB).toHaveBeenCalledTimes(1);
+        expect(funB).toHaveBeenNthCalledWith(1, { signal: 'background' });
+        expect(funF).toHaveBeenCalledTimes(1);
+        expect(funF).toHaveBeenNthCalledWith(1, { signal: 'foreground' });
     });
 
     it('can timeout waiting for background', async () => {
@@ -1008,7 +1036,9 @@ describe('ExtSync stream', () => {
 
         await new Promise((r) => setTimeout(r, 500));
 
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/extsync/response/bbe306a7-7216-4d7d-8be1-08d94cd2142d',
             {
                 body: '<html>Test</html>',
@@ -1019,7 +1049,6 @@ describe('ExtSync stream', () => {
             }
         );
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
     });
 });

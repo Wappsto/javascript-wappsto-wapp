@@ -59,7 +59,8 @@ describe('value', () => {
         await value.create();
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value',
             {
                 meta: {
@@ -94,7 +95,8 @@ describe('value', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             `/2.1/value/${response.meta.id}`,
             {
                 ...response,
@@ -115,7 +117,7 @@ describe('value', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: { go_internal: true, expand: 1, method: ['retrieve'] },
         });
         expect(values[0]?.name).toEqual('test');
@@ -131,7 +133,7 @@ describe('value', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: {
                 expand: 1,
                 go_internal: true,
@@ -172,7 +174,8 @@ describe('value', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             {
                 status: 'update',
@@ -201,7 +204,7 @@ describe('value', () => {
         const value = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: {
                 expand: 1,
                 quantity: 1,
@@ -212,6 +215,17 @@ describe('value', () => {
                 this_name: '=test',
                 method: ['retrieve', 'update'],
                 acl_attributes: ['parent_name_by_user'],
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/value', {
+            params: {
+                expand: 1,
+                go_internal: true,
+                manufacturer: false,
+                this_name: '=test',
+                method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
+                id: [response.meta.id],
             },
         });
         expect(value[0].meta.id).toEqual(response.meta.id);
@@ -226,7 +240,7 @@ describe('value', () => {
         const value = await Value.findByName('test', 2, true, 'msg');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: {
                 expand: 1,
                 quantity: 2,
@@ -308,7 +322,9 @@ describe('value', () => {
         const orgWarn = console.warn;
         console.warn = jest.fn();
         await value.report(undefined as unknown as string, new Date('wrong'));
-        expect(console.warn).toHaveBeenCalledWith(
+        expect(console.warn).toHaveBeenCalledTimes(1);
+        expect(console.warn).toHaveBeenNthCalledWith(
+            1,
             'WAPPSTO WARN: Failed to convert timestamp (Invalid Date) to string'
         );
         console.warn = orgWarn;
@@ -409,7 +425,8 @@ describe('value', () => {
         expect(res2).toBe(true);
         expect(res3).toBe(true);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -417,7 +434,8 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -427,7 +445,8 @@ describe('value', () => {
         );
         expect(value.getControlData()).toBe('test');
         expect(value.getReportData()).toBe(undefined);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            3,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 type: 'Control',
@@ -520,7 +539,8 @@ describe('value', () => {
         expect(res2).toBe('20');
         expect(fun).toHaveBeenCalledTimes(3);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -528,7 +548,8 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -616,7 +637,8 @@ describe('value', () => {
         expect(res2).toBe('2');
         expect(fun).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -624,7 +646,8 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -676,7 +699,8 @@ describe('value', () => {
         expect(res1).toBe(null);
         expect(res2).toBe('2');
         expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -684,7 +708,8 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -701,7 +726,7 @@ describe('value', () => {
         const value = await Value.find({ name: 'test' });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: {
                 expand: 1,
                 quantity: 1,
@@ -726,7 +751,7 @@ describe('value', () => {
         const value = await Value.findAllByName('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: {
                 expand: 1,
                 quantity: 'all',
@@ -749,7 +774,7 @@ describe('value', () => {
         const value = await Value.findAllByType('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: {
                 expand: 1,
                 quantity: 'all',
@@ -822,7 +847,8 @@ describe('value', () => {
         expect(event.info).toEqual({ info: 'test' });
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/23dba0b8-79df-425b-b443-3aaa385d8636/eventlog',
             {
                 level: 'error',
@@ -971,9 +997,9 @@ describe('value', () => {
         expect(value_xml).toBe(value_string);
 
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(4);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device/1714e470-76ef-4310-8c49-dda18ef8b819/value',
             {
                 delta: '0',
@@ -994,7 +1020,35 @@ describe('value', () => {
             },
             {}
         );
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            expect.objectContaining({
+                data: 'NA',
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                },
+                type: 'Report',
+            }),
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            expect.objectContaining({
+                data: 'NA',
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                },
+                type: 'Control',
+            }),
+            {}
+        );
+        expect(mockedAxios.put).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            2,
             '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             {
                 delta: '0',
@@ -1014,6 +1068,60 @@ describe('value', () => {
             },
             {}
         );
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            {
+                delta: '0',
+                meta: {
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                    type: 'value',
+                    version: '2.1',
+                },
+                name: 'test',
+                period: '0',
+                permission: 'rw',
+                string: { encoding: '', max: 64 },
+                type: 'string',
+            },
+            {}
+        );
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            {
+                delta: '0',
+                meta: {
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                    type: 'value',
+                    version: '2.1',
+                },
+                name: 'test',
+                period: '0',
+                permission: 'rw',
+                type: 'xml',
+                xml: { namespace: '', xsd: '' },
+            },
+            {}
+        );
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            4,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
+            {
+                delta: '0',
+                meta: {
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                    type: 'value',
+                    version: '2.1',
+                },
+                name: 'test',
+                number: { max: 128, min: -128, step: 0.1, unit: '' },
+                period: '0',
+                permission: 'rw',
+                type: 'number',
+            },
+            {}
+        );
     });
 
     it('can reload the value', async () => {
@@ -1029,7 +1137,8 @@ describe('value', () => {
         await value.reload();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             { params: { expand: 1 } }
         );
@@ -1066,7 +1175,8 @@ describe('value', () => {
         await value.reload(true);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             { params: { expand: 1 } }
         );
@@ -1112,7 +1222,8 @@ describe('value', () => {
         await value.loadAllChildren(null, true);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             {
                 params: {
@@ -1154,7 +1265,8 @@ describe('value', () => {
         await value.reload(true);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/1b969edb-da8b-46ba-9ed3-59edadcc24b1',
             {
                 params: {
@@ -1162,7 +1274,8 @@ describe('value', () => {
                 },
             }
         );
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/0d362fb9-3c52-4c4c-89aa-19f33cbe2f4f',
             {
                 params: {
@@ -1206,7 +1319,8 @@ describe('value', () => {
         await p3;
 
         expect(fun).toHaveBeenCalledTimes(2);
-        expect(fun).toHaveBeenCalledWith(value, 'data', 'timestamp');
+        expect(fun).toHaveBeenNthCalledWith(1, value, 'data', 'timestamp');
+        expect(fun).toHaveBeenNthCalledWith(2, value, 'data', 'timestamp');
     });
 
     it('can not override data by sending fast', async () => {
@@ -1230,7 +1344,8 @@ describe('value', () => {
         await new Promise((r) => setTimeout(r, 1));
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(4);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -1238,7 +1353,8 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -1246,7 +1362,8 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            3,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -1254,7 +1371,8 @@ describe('value', () => {
             }),
             {}
         );
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            4,
             '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
             expect.objectContaining({
                 type: 'Control',
@@ -1292,7 +1410,7 @@ describe('value', () => {
         const value = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: {
                 expand: 1,
                 quantity: 1,
@@ -1303,6 +1421,17 @@ describe('value', () => {
                 'this_meta.id': `=${response.meta.id}`,
                 method: ['retrieve', 'update'],
                 acl_attributes: ['parent_name_by_user'],
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/value', {
+            params: {
+                expand: 1,
+                go_internal: true,
+                manufacturer: false,
+                'this_meta.id': `=${response.meta.id}`,
+                method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
+                id: [response.meta.id],
             },
         });
         expect(value.toJSON).toBeDefined();
@@ -1321,7 +1450,8 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value',
             {
                 filter: { attribute: ['value_type=energy'] },
@@ -1362,7 +1492,8 @@ describe('value', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value',
             {
                 filter: {
@@ -1431,10 +1562,11 @@ describe('value', () => {
         const values = await Value.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: { expand: 1, go_internal: true, method: ['retrieve'] },
         });
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
             '/2.1/value/bd1f46f9-f41a-4f59-bdbd-6529d58b91c5',
             {
                 params: { expand: 1, go_internal: true, method: ['retrieve'] },

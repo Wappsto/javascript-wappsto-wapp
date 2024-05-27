@@ -11,6 +11,7 @@ import {
     makeValueResponse,
 } from './util/response';
 import { makeResponse } from './util/helpers';
+import exp from 'constants';
 
 const templateHelperStart = () => {
     mockedAxios.post
@@ -152,7 +153,8 @@ describe('device', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device',
             {
                 meta: {
@@ -183,7 +185,8 @@ describe('device', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             `/2.1/device/${device.meta.id}`,
             {
                 ...response,
@@ -202,7 +205,7 @@ describe('device', () => {
         const devices = await Device.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/device', {
             params: { go_internal: true, expand: 2, method: ['retrieve'] },
         });
         expect(devices[0]?.name).toEqual(response.name);
@@ -217,7 +220,7 @@ describe('device', () => {
         config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/device', {
             params: {
                 expand: 2,
                 go_internal: true,
@@ -289,7 +292,7 @@ describe('device', () => {
         const devices = await Device.findByProduct('test');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/device', {
             params: {
                 expand: 2,
                 go_internal: true,
@@ -426,7 +429,9 @@ describe('device', () => {
 
         templateHelperDone();
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
@@ -512,7 +517,9 @@ describe('device', () => {
 
         templateHelperDone();
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
@@ -549,7 +556,9 @@ describe('device', () => {
 
         templateHelperDone();
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
@@ -590,7 +599,9 @@ describe('device', () => {
 
         templateHelperDone();
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
@@ -721,7 +732,9 @@ describe('device', () => {
 
         templateHelperDone();
 
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
             {
                 meta: {
@@ -1247,9 +1260,30 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            expect.objectContaining({
+                data: 'NA',
+                meta: { type: 'state', version: '2.1' },
+                type: 'Report',
+            }),
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            expect.objectContaining({
+                data: 'NA',
+                meta: { type: 'state', version: '2.1' },
+                type: 'Control',
+            }),
+            {}
+        );
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             expect.objectContaining({
                 permission: 'rw',
@@ -1345,10 +1379,30 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
-
-        expect(mockedAxios.put).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            expect.objectContaining({
+                data: 'NA',
+                meta: { type: 'state', version: '2.1' },
+                type: 'Report',
+            }),
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            expect.objectContaining({
+                data: 'NA',
+                meta: { type: 'state', version: '2.1' },
+                type: 'Control',
+            }),
+            {}
+        );
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
             '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273',
             expect.objectContaining({
                 permission: 'rw',
@@ -1380,7 +1434,7 @@ describe('device', () => {
         const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/device', {
             params: {
                 expand: 2,
                 quantity: 'all',
@@ -1406,7 +1460,7 @@ describe('device', () => {
         const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/device', {
             params: {
                 expand: 2,
                 quantity: 'all',
@@ -1432,7 +1486,7 @@ describe('device', () => {
         const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/device', {
             params: {
                 expand: 2,
                 quantity: 1,
@@ -1782,8 +1836,8 @@ describe('device', () => {
         await new Promise((r) => setTimeout(r, 1));
 
         expect(f).toHaveBeenCalledTimes(2);
-        expect(f).toHaveBeenCalledWith(d, true);
-        expect(f).toHaveBeenLastCalledWith(d, false);
+        expect(f).toHaveBeenNthCalledWith(1, d, true);
+        expect(f).toHaveBeenNthCalledWith(2, d, false);
 
         d.cancelOnConnectionChange(f);
 
@@ -1808,8 +1862,8 @@ describe('device', () => {
         await new Promise((r) => setTimeout(r, 1));
 
         expect(f).toHaveBeenCalledTimes(2);
-        expect(f).toHaveBeenCalledWith(d, true);
-        expect(f).toHaveBeenLastCalledWith(d, false);
+        expect(f).toHaveBeenNthCalledWith(1, d, true);
+        expect(f).toHaveBeenNthCalledWith(2, d, false);
     });
 
     it('can find device by id', async () => {
@@ -1840,7 +1894,7 @@ describe('device', () => {
         const device = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/device', {
             params: {
                 expand: 2,
                 quantity: 1,
@@ -1851,6 +1905,17 @@ describe('device', () => {
                 'this_meta.id': `=${response.meta.id}`,
                 method: ['retrieve', 'update'],
                 acl_attributes: ['parent_name_by_user'],
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/device', {
+            params: {
+                acl_attributes: ['parent_name_by_user'],
+                expand: 2,
+                go_internal: true,
+                id: [response.meta.id],
+                manufacturer: false,
+                method: ['retrieve', 'update'],
+                'this_meta.id': `=${response.meta.id}`,
             },
         });
         expect(device.toJSON).toBeDefined();
@@ -1941,10 +2006,10 @@ describe('device', () => {
             value: { type: 'energy' },
         });
 
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device',
             {
                 filter: { attribute: ['value_type=energy'] },
@@ -1985,10 +2050,10 @@ describe('device', () => {
             }
         );
 
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
-
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/device',
             {
                 filter: {
@@ -2028,10 +2093,11 @@ describe('device', () => {
         const devices = await Device.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/device', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/device', {
             params: { expand: 2, go_internal: true, method: ['retrieve'] },
         });
-        expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
             '/2.1/device/47631c40-b687-4eca-9844-94be7328773f',
             {
                 params: { expand: 2, go_internal: true, method: ['retrieve'] },
