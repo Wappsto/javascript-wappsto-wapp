@@ -564,7 +564,7 @@ export interface IEdge {
     data?: unknown;
 }
 export interface IOntologyModel extends IModel {
-    parentEdges: IOntologyEdge[];
+    getParentEdges(): IOntologyEdge[];
     createEdge(params: IEdge): Promise<IOntologyEdge>;
     getAllEdges(force?: boolean): Promise<IOntologyEdge[]>;
     deleteBranch(): Promise<void>;
