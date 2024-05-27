@@ -269,7 +269,8 @@ describe('analytics', () => {
         const data = await dataPromise;
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/analytics/1.0/power_price_list',
             {
                 access: { state_id: [] },

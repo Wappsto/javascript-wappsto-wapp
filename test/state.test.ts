@@ -45,7 +45,8 @@ describe('state', () => {
         await state.create();
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
             '/2.1/state',
             expect.objectContaining({
                 meta: {
@@ -72,7 +73,8 @@ describe('state', () => {
         await state.update();
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             `/2.1/state/${state.meta.id}`,
             response,
             {}
@@ -87,7 +89,7 @@ describe('state', () => {
         const states = await State.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/state', {
             params: { go_internal: true, method: ['retrieve'] },
         });
         expect(states[0]?.type).toEqual('Report');
@@ -101,7 +103,7 @@ describe('state', () => {
         config({ verbose: false });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/state', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/state', {
             params: { verbose: true, go_internal: true, method: ['retrieve'] },
         });
         expect(states[0]?.type).toEqual('Report');
@@ -131,7 +133,8 @@ describe('state', () => {
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.patch).toHaveBeenCalledWith(
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
             `/2.1/state/${stateID}`,
             {
                 data: '0',

@@ -33,7 +33,7 @@ describe('config', () => {
         printDebug('test 2');
 
         expect(console.log).toHaveBeenCalledTimes(1);
-        expect(console.log).toHaveBeenCalledWith('WAPPSTO DEBUG: test 2');
+        expect(console.log).toHaveBeenNthCalledWith(1, 'WAPPSTO DEBUG: test 2');
     });
 
     it('can enable requests', async () => {
@@ -46,7 +46,8 @@ describe('config', () => {
 
         printRequest('post', '/2.1/console', {}, {});
         expect(console.log).toHaveBeenCalledTimes(1);
-        expect(console.log).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenNthCalledWith(
+            1,
             'WAPPSTO REQUEST: post test {"config":"test"} {"key":"test","data":"Circular REF"} => test'
         );
     });
@@ -59,7 +60,8 @@ describe('config', () => {
         printStream('test 2', { test: 2 }, 2);
 
         expect(console.log).toHaveBeenCalledTimes(1);
-        expect(console.log).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenNthCalledWith(
+            1,
             'WAPPSTO STREAM: test 2',
             { test: 2 },
             2
@@ -98,10 +100,16 @@ describe('config', () => {
         printError('error');
 
         expect(console.warn).toHaveBeenCalledTimes(1);
-        expect(console.warn).toHaveBeenCalledWith('WAPPSTO WARN: warning');
+        expect(console.warn).toHaveBeenNthCalledWith(
+            1,
+            'WAPPSTO WARN: warning'
+        );
 
         expect(console.error).toHaveBeenCalledTimes(1);
-        expect(console.error).toHaveBeenCalledWith('WAPPSTO ERROR: error');
+        expect(console.error).toHaveBeenNthCalledWith(
+            1,
+            'WAPPSTO ERROR: error'
+        );
     });
 
     it('can change the stream reconnect count', () => {

@@ -233,8 +233,7 @@ function handlePermissionUpdate(data: StreamData) {
     const d = data as Notification;
     if (
         permissionUpdateCallback &&
-        d.base?.code &&
-        (d.base.code === 1100003 || d.base.code === 1100004)
+        (d.base?.code === 1100003 || d.base?.code === 1100004)
     ) {
         permissionUpdateCallback();
     }

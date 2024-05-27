@@ -26,7 +26,11 @@ describe('http_wrapper', () => {
 
         expect(res.data).toEqual('test');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/network', undefined);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/network',
+            undefined
+        );
     });
 
     it('can call POST', async () => {
@@ -36,7 +40,7 @@ describe('http_wrapper', () => {
 
         expect(res.data).toEqual('test');
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.post).toHaveBeenCalledWith('/network', 'data');
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(1, '/network', 'data');
     });
 
     it('can call PATCH', async () => {
@@ -46,7 +50,7 @@ describe('http_wrapper', () => {
 
         expect(res.data).toEqual('test');
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.put).toHaveBeenCalledWith('/network', 'data');
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(1, '/network', 'data');
     });
 
     it('can call PUT', async () => {
@@ -56,7 +60,7 @@ describe('http_wrapper', () => {
 
         expect(res.data).toEqual('test');
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.put).toHaveBeenCalledWith('/network', 'data');
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(1, '/network', 'data');
     });
 
     it('can call DELETE', async () => {
@@ -66,7 +70,11 @@ describe('http_wrapper', () => {
 
         expect(res.data).toEqual('test');
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.delete).toHaveBeenCalledWith('/network', undefined);
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
+            '/network',
+            undefined
+        );
     });
 
     it('can report an error', async () => {
@@ -94,6 +102,10 @@ describe('http_wrapper', () => {
             },
         });
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/network', undefined);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/network',
+            undefined
+        );
     });
 });

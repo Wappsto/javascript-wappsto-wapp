@@ -18,7 +18,7 @@ describe('wappVersion', () => {
 
         expect(version).toEqual('1.0.0');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/user/me', {
             params: { expand: 1, go_internal: true, method: ['retrieve'] },
         });
     });
@@ -33,10 +33,12 @@ describe('wappVersion', () => {
 
         expect(version).toEqual('1.0.0');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/user/me', {
             params: { expand: 1, go_internal: true, method: ['retrieve'] },
         });
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.error).toHaveBeenCalledTimes(1);
+        expect(console.error).toHaveBeenNthCalledWith(
+            1,
             'WAPPSTO ERROR: Model.fetch: error for url'
         );
     });
@@ -53,9 +55,14 @@ describe('wappVersion', () => {
 
         expect(version).toEqual('1.0.0');
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/user/me', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/user/me', {
             params: { expand: 1, go_internal: true, method: ['retrieve'] },
         });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/installation/8c0ac555-054e-4f19-b1db-3c42cd00a729',
+            undefined
+        );
     });
 
     it('can get version from installation', async () => {

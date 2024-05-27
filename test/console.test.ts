@@ -20,7 +20,8 @@ describe('console', () => {
     it('has startLogging as a warning', () => {
         console.warn = jest.fn();
         startLogging();
-        expect(console.warn).toHaveBeenCalledWith(
+        expect(console.warn).toHaveBeenNthCalledWith(
+            1,
             'WAPPSTO WARN: DEPRECATED - The "startLogging" is not needed to be called any more'
         );
     });
