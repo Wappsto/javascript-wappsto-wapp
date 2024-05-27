@@ -264,6 +264,7 @@ describe('device', () => {
                 method: ['retrieve', 'update'],
                 quantity: 1,
                 this_name: '=test',
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/device', {
@@ -274,6 +275,7 @@ describe('device', () => {
                 manufacturer: false,
                 method: ['retrieve', 'update'],
                 this_name: '=test',
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(device[0].toJSON).toBeDefined();
@@ -297,6 +299,7 @@ describe('device', () => {
                 message: 'Find 1 device with product test',
                 quantity: 1,
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(devices[0].meta.id).toEqual(response.meta.id);
@@ -1387,6 +1390,7 @@ describe('device', () => {
                 identifier: 'device-all-Find all device with name test',
                 this_name: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
 
@@ -1412,6 +1416,7 @@ describe('device', () => {
                 identifier: 'device-all-Find all device with product test',
                 this_product: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
 
@@ -1437,6 +1442,7 @@ describe('device', () => {
                 identifier: 'device-1-Find 1 device',
                 this_name: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
 
@@ -1844,6 +1850,7 @@ describe('device', () => {
                 identifier: `device-1-Find device with id ${response.meta.id}`,
                 'this_meta.id': `=${response.meta.id}`,
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(device.toJSON).toBeDefined();
@@ -1953,6 +1960,7 @@ describe('device', () => {
                     message: 'Find 1 device using filter',
                     method: ['retrieve', 'update'],
                     quantity: 1,
+                    acl_attributes: ['parent_name_by_user'],
                 },
             }
         );
@@ -2003,6 +2011,7 @@ describe('device', () => {
                     message: 'Find all device using filter',
                     method: ['retrieve', 'update'],
                     quantity: 'all',
+                    acl_attributes: ['parent_name_by_user'],
                 },
             }
         );

@@ -165,6 +165,7 @@ export class PermissionModel extends OntologyModel {
                 message: message,
                 identifier: id,
                 manufacturer: false,
+                acl_attributes: ['parent_name_by_user'],
                 method:
                     readOnly === true
                         ? ['retrieve']

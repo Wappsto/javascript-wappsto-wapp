@@ -331,7 +331,7 @@ describe('network', () => {
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: {
                 expand: 3,
                 quantity: 1,
@@ -341,6 +341,18 @@ describe('network', () => {
                 identifier: 'network-1-Find 1 network with name test',
                 this_name: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/network', {
+            params: {
+                expand: 3,
+                go_internal: true,
+                manufacturer: false,
+                this_name: '=test',
+                method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
+                id: [response.meta.id],
             },
         });
         expect(network[0].meta.id).toEqual(response.meta.id);
@@ -704,7 +716,7 @@ describe('network', () => {
         const network = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/network', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: {
                 expand: 3,
                 quantity: 'all',
@@ -714,8 +726,31 @@ describe('network', () => {
                 identifier: 'network-all-Find all network with name test',
                 this_name: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/network', {
+            params: {
+                expand: 3,
+                go_internal: true,
+                manufacturer: false,
+                this_name: '=test',
+                method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
+                id: [networkID1, networkID2],
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            `/2.1/network/${networkID2}`,
+            {
+                params: {
+                    expand: 3,
+                    go_internal: true,
+                    method: ['retrieve'],
+                },
+            }
+        );
         expect(network[0].meta.id).toEqual(networkID1);
         expect(network[1].meta.id).toEqual(networkID2);
     });
@@ -777,6 +812,7 @@ describe('network', () => {
                 identifier: 'network-1-Find 1 network',
                 this_name: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/network', {
@@ -787,6 +823,7 @@ describe('network', () => {
                 this_name: '=test',
                 method: ['retrieve', 'update'],
                 id: [response2Networks[0].meta.id],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(network[0].meta.id).toEqual(response2Networks[0].meta.id);
@@ -835,7 +872,9 @@ describe('network', () => {
         response.device.push(makeDeviceResponse({ name: 'Device Name 4' }));
 
         mockedAxios.get
-            .mockResolvedValueOnce(makeResponse([response]))
+            .mockResolvedValueOnce(
+                makeResponse([response, '242a83ad-ca9e-490a-85ef-c3aaea0e80c3'])
+            )
             .mockResolvedValueOnce(
                 makeResponse([makeStateResponse({ type: 'Control' })])
             )
@@ -895,7 +934,7 @@ describe('network', () => {
 
         expect(device4.value[0].state[0].toJSON).toBeDefined();
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(5);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: { expand: 3, go_internal: true, method: ['retrieve'] },
         });
@@ -931,6 +970,11 @@ describe('network', () => {
                     offset: 1,
                 },
             }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            5,
+            '/2.1/network/242a83ad-ca9e-490a-85ef-c3aaea0e80c3',
+            { params: { expand: 3, go_internal: true, method: ['retrieve'] } }
         );
     });
 
@@ -1139,6 +1183,7 @@ describe('network', () => {
                 identifier: `network-1-Find network with id ${fullNetworkResponse.meta.id}`,
                 'this_meta.id': `=${fullNetworkResponse.meta.id}`,
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/network', {
@@ -1149,6 +1194,7 @@ describe('network', () => {
                 id: [fullNetworkResponse.meta.id],
                 'this_meta.id': `=${fullNetworkResponse.meta.id}`,
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(network.toJSON).toBeDefined();
@@ -1258,6 +1304,7 @@ describe('network', () => {
                     identifier: 'network-1-Find 1 network using filter',
                     message: 'Find 1 network using filter',
                     method: ['retrieve', 'update'],
+                    acl_attributes: ['parent_name_by_user'],
                     quantity: 1,
                 },
             }
@@ -1299,6 +1346,7 @@ describe('network', () => {
                     identifier: 'network-all-test',
                     message: 'test',
                     method: ['retrieve'],
+                    acl_attributes: ['parent_name_by_user'],
                     quantity: 'all',
                 },
             }
@@ -1337,6 +1385,7 @@ describe('network', () => {
                     identifier: 'network-all-Find all network using filter',
                     message: 'Find all network using filter',
                     method: ['retrieve', 'update'],
+                    acl_attributes: ['parent_name_by_user'],
                     quantity: 'all',
                 },
             }
@@ -1439,6 +1488,7 @@ describe('network', () => {
                     message: 'Find all network using filter',
                     identifier: 'network-all-Find all network using filter',
                     method: ['retrieve', 'update'],
+                    acl_attributes: ['parent_name_by_user'],
                     go_internal: true,
                     fetch: true,
                     manufacturer: false,
@@ -1450,5 +1500,29 @@ describe('network', () => {
             '/2.1/network/11c73ade-ddf0-4bd1-8ad5-c3d05dd1dd1f',
             { params: { expand: 3 } }
         );
+    });
+
+    it('can fetch by ID', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeNetworkResponse({
+                        name: 'test 1',
+                        id: '62648265-4328-4afb-a33a-9561b8715628',
+                    })
+                )
+            )
+            .mockResolvedValueOnce(makeResponse([]));
+        const network1 = await Network.fetchById(
+            '62648265-4328-4afb-a33a-9561b8715628'
+        );
+        const network2 = await Network.fetchById(
+            '62648265-4328-4afb-a33a-9561b8715628'
+        );
+
+        expect(network1?.meta.id).toEqual(
+            '62648265-4328-4afb-a33a-9561b8715628'
+        );
+        expect(network2).toBeUndefined();
     });
 });

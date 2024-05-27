@@ -211,6 +211,7 @@ describe('value', () => {
                 identifier: 'value-1-Find 1 value with name test',
                 this_name: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(value[0].meta.id).toEqual(response.meta.id);
@@ -235,6 +236,7 @@ describe('value', () => {
                 identifier: 'value-2-msg',
                 this_name: '=test',
                 method: ['retrieve'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(value[0].meta.id).toEqual(response.meta.id);
@@ -265,7 +267,7 @@ describe('value', () => {
         const value = await r;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/2.1/value', {
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/value', {
             params: {
                 expand: 1,
                 quantity: 1,
@@ -275,6 +277,18 @@ describe('value', () => {
                 identifier: 'value-1-Find 1 value with type test',
                 this_type: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(2, '/2.1/value', {
+            params: {
+                expand: 1,
+                go_internal: true,
+                manufacturer: false,
+                this_type: '=test',
+                method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
+                id: [response.meta.id],
             },
         });
         expect(value[0].meta.id).toEqual(response.meta.id);
@@ -697,6 +711,7 @@ describe('value', () => {
                 identifier: 'value-1-Find 1 value',
                 this_name: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
 
@@ -721,6 +736,7 @@ describe('value', () => {
                 identifier: 'value-all-Find all value with name test',
                 this_name: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(value[0].meta.id).toEqual(response.meta.id);
@@ -743,6 +759,7 @@ describe('value', () => {
                 identifier: 'value-all-Find all value with type test',
                 this_type: '=test',
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(value[0].meta.id).toEqual(response.meta.id);
@@ -1285,6 +1302,7 @@ describe('value', () => {
                 identifier: `value-1-Find value with id ${response.meta.id}`,
                 'this_meta.id': `=${response.meta.id}`,
                 method: ['retrieve', 'update'],
+                acl_attributes: ['parent_name_by_user'],
             },
         });
         expect(value.toJSON).toBeDefined();
@@ -1318,6 +1336,7 @@ describe('value', () => {
                     identifier: 'value-1-Find 1 value using filter',
                     message: 'Find 1 value using filter',
                     method: ['retrieve', 'update'],
+                    acl_attributes: ['parent_name_by_user'],
                     quantity: 1,
                 },
             }
@@ -1363,6 +1382,7 @@ describe('value', () => {
                     identifier: 'value-all-Find all value using filter',
                     message: 'Find all value using filter',
                     method: ['retrieve', 'update'],
+                    acl_attributes: ['parent_name_by_user'],
                     quantity: 'all',
                 },
             }
