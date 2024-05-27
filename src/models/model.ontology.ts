@@ -1,3 +1,4 @@
+import { printWarning } from '../util/debug';
 import { compareModels, uniqueModels } from '../util/helpers';
 import {
     IEdge,
@@ -171,6 +172,11 @@ export class OntologyModel extends Model implements IOntologyModel {
     async getAllEdges(force?: boolean): Promise<IOntologyEdge[]> {
         Model.validateMethod('OntologyModel', 'getAllEdges', arguments);
 
+        if (this.meta.id === undefined) {
+            printWarning('getAllEdges called on an deleted node');
+            return [];
+        }
+
         if (!this.#ontologyLoaded || force) {
             this.#ontologyLoaded = true;
             this.edges = await OntologyEdge.fetch({
@@ -187,6 +193,11 @@ export class OntologyModel extends Model implements IOntologyModel {
         path: string,
         getAll?: boolean
     ): Promise<IOntologyModel[]> {
+        if (this.meta.id === undefined) {
+            printWarning('transverse called on an deleted node');
+            return [];
+        }
+
         const params: JSONObject = { path: path };
 
         if (getAll) {

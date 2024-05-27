@@ -809,6 +809,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     }
 
     async #changeAttribute(key: string, value: string | number): Promise<void> {
+        if (this.meta.id === undefined) {
+            printWarning('changeAttribute called on an deleted node');
+            return;
+        }
+
         try {
             const data: Record<string, string | number> = {};
             data[key] = value;

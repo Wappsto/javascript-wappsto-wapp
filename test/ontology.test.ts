@@ -1676,6 +1676,16 @@ describe('Ontology', () => {
         expect(leaf.edges.length).toBe(0);
         expect(leaf.parentEdges.length).toBe(0);
 
+        const orgWarn = console.warn;
+        console.warn = jest.fn();
+        const edges = await child.getAllEdges();
+        expect(edges).toHaveLength(0);
+        expect(console.warn).toHaveBeenNthCalledWith(
+            1,
+            'WAPPSTO WARN: getAllEdges called on an deleted node'
+        );
+        console.warn = orgWarn;
+
         expect(mockedAxios.post).toHaveBeenCalledTimes(5);
         expect(mockedAxios.get).toHaveBeenCalledTimes(6);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(4);
