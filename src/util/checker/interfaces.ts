@@ -564,13 +564,14 @@ export interface IEdge {
     data?: unknown;
 }
 export interface IOntologyModel extends IModel {
+    parentEdges: IOntologyEdge[];
     createEdge(params: IEdge): Promise<IOntologyEdge>;
     getAllEdges(force?: boolean): Promise<IOntologyEdge[]>;
     deleteBranch(): Promise<void>;
     deleteEdge(params: IEdge): Promise<void>;
     removeEdge(edge: IModel): void;
     deleteModelFromEdge(params: IEdge): Promise<void>;
-    addParentEdge(edge: IOntologyEdge, to: IOntologyModel): void;
+    addParentEdge(edge: IOntologyEdge, to: IOntologyModel): Promise<void>;
     removeParentEdge(edge: IOntologyEdge): void;
 }
 export interface IOntologyModelFunc {

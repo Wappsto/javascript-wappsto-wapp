@@ -182,6 +182,7 @@ export class OntologyModel extends Model implements IOntologyModel {
             this.edges = await OntologyEdge.fetch({
                 endpoint: `${this.getUrl()}/ontology`,
             });
+
             this.edges.forEach((o) => {
                 o.setParent(this);
             });

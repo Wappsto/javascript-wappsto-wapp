@@ -20,6 +20,7 @@ import {
     makeDataResponse,
     makeDeviceResponse,
     makeNetworkResponse,
+    makeOntologyNodeResponse,
     makeStateResponse,
     makeValueResponse,
     responses,
@@ -37,6 +38,123 @@ describe('Ontology', () => {
 
     afterEach(() => {
         after();
+    });
+
+    it('can load all edges with correct parents', async () => {
+        const nodeID1 = 'aef5f0a4-b9bd-47e0-b7e5-b3511f34b110';
+        const edgeID1 = 'd78f5fbd-634c-47fc-bc8a-f475b148b68c';
+        const nodeID2 = '88eb60f5-f6ce-4302-b67f-d03be30f1e9f';
+        const edgeID2 = '85bf93d0-fd3f-4eef-934d-0670829330a3';
+        const nodeID3 = '52283c11-7b90-4ed9-ba7b-6e39022268e5';
+
+        mockedAxios.get
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeOntologyNodeResponse({
+                        id: nodeID1,
+                        name: 'node',
+                    }),
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    {
+                        meta: {
+                            id: edgeID1,
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                        name: 'Onto name 1',
+                        relationship: 'child',
+                        to: {
+                            data: [nodeID2],
+                        },
+                    },
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeOntologyNodeResponse({
+                        id: nodeID2,
+                        name: 'node child 1',
+                    }),
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    {
+                        meta: {
+                            id: edgeID2,
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                        name: 'Onto name 2',
+                        relationship: 'child',
+                        to: {
+                            data: [nodeID3],
+                        },
+                    },
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeOntologyNodeResponse({
+                        id: nodeID3,
+                        name: 'node child 2',
+                    }),
+                ])
+            )
+            .mockResolvedValueOnce(makeResponse([]));
+
+        const node = await createNode('node');
+        expect(node.meta.id).toEqual(nodeID1);
+        expect(node.parentEdges).toHaveLength(0);
+        expect(node.edges).toHaveLength(1);
+
+        const child = node.edges[0].models[0];
+        expect(child.meta.id).toEqual(nodeID2);
+        expect(child.edges).toHaveLength(1);
+        expect(child.parentEdges).toHaveLength(1);
+
+        const child2 = child.edges[0].models[0];
+        expect(child2.meta.id).toEqual(nodeID3);
+        expect(child2.edges).toHaveLength(0);
+        expect(child2.parentEdges).toHaveLength(1);
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(6);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/data', {
+            params: {
+                expand: 1,
+                go_internal: true,
+                method: ['retrieve'],
+                'this_data_meta.id': 'ontology_node_node',
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            `/2.1/data/${nodeID1}/ontology`,
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            `/2.1/data/${nodeID2}`,
+            { params: { expand: 0 } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            4,
+            `/2.1/data/${nodeID2}/ontology`,
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            5,
+            `/2.1/data/${nodeID3}`,
+            { params: { expand: 0 } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            6,
+            `/2.1/data/${nodeID3}/ontology`,
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
     });
 
     it('can create a new edge', async () => {
@@ -208,6 +326,19 @@ describe('Ontology', () => {
         expect(node.getClass()).toEqual('ontology_node');
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/data', {
+            params: {
+                expand: 1,
+                go_internal: true,
+                method: ['retrieve'],
+                'this_data_meta.id': 'ontology_node_onto name',
+            },
+        });
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/data/dd4e6da3-f70f-403b-8ba0-79b1c14028d8/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenNthCalledWith(
             1,
@@ -334,7 +465,12 @@ describe('Ontology', () => {
             )
             .mockResolvedValueOnce(makeResponse(deviceResponse))
             .mockResolvedValueOnce(makeResponse(valueResponse))
-            .mockResolvedValueOnce(makeResponse(valueResponse));
+            .mockResolvedValueOnce(makeResponse(valueResponse))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
@@ -344,7 +480,7 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(9);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(14);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
@@ -428,12 +564,38 @@ describe('Ontology', () => {
                 },
             }
         );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            10,
+            '/2.1/state/311b2c2d-54de-4e00-a850-f6712c4622bd/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            11,
+            '/2.1/data/97e0dd7c-8e22-4263-82f9-d26102643465/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            12,
+            '/2.1/value/75d7d198-7f91-45e2-9b79-754073d7e758/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            13,
+            '/2.1/device/8a3f67a6-751c-483b-a2ef-ba890948e6e4/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            14,
+            '/2.1/network/f11fa9d7-3b2b-474e-95e4-f086c5606154/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
 
         expect(edges[0].relationship).toEqual('state');
         expect(edges[0].models.length).toBe(1);
         expect(edges[0].models[0].id()).toEqual(
             '311b2c2d-54de-4e00-a850-f6712c4622bd'
         );
+        expect(edges[0].models[0].parentEdges).toHaveLength(1);
         const state = edges[0].models[0] as State;
         expect(state.data).toEqual('0');
 
@@ -442,6 +604,7 @@ describe('Ontology', () => {
         expect(edges[1].models[0].id()).toEqual(
             'f11fa9d7-3b2b-474e-95e4-f086c5606154'
         );
+        expect(edges[1].models[0].parentEdges).toHaveLength(1);
         const netChild = edges[1].models[0] as Network;
         expect(netChild.device[0].id()).toEqual(
             '8a3f67a6-751c-483b-a2ef-ba890948e6e4'
@@ -457,6 +620,7 @@ describe('Ontology', () => {
         expect(edges[2].models[0].id()).toEqual(
             '8a3f67a6-751c-483b-a2ef-ba890948e6e4'
         );
+        expect(edges[2].models[0].parentEdges).toHaveLength(1);
         const devChild = edges[2].models[0] as Device;
         expect(devChild.value[0].id()).toEqual(
             '75d7d198-7f91-45e2-9b79-754073d7e758'
@@ -469,6 +633,7 @@ describe('Ontology', () => {
         expect(edges[3].models[0].id()).toEqual(
             '75d7d198-7f91-45e2-9b79-754073d7e758'
         );
+        expect(edges[3].models[0].parentEdges).toHaveLength(1);
         const valChild = edges[3].models[0] as Value;
         expect(valChild.state[0].id()).toEqual(
             '311b2c2d-54de-4e00-a850-f6712c4622bd'
@@ -478,6 +643,7 @@ describe('Ontology', () => {
         expect(edges[4].models[0].id()).toEqual(
             '97e0dd7c-8e22-4263-82f9-d26102643465'
         );
+        expect(edges[4].models[0].parentEdges).toHaveLength(1);
 
         expect(edges[5].models.length).toBe(0);
     });
@@ -628,35 +794,37 @@ describe('Ontology', () => {
     });
 
     it('can delete all edges', async () => {
-        mockedAxios.get.mockResolvedValueOnce(
-            makeResponse([
-                {
-                    meta: {
-                        id: '022fcd88-91ba-46cf-b53f-4268e6ce4196',
-                        type: 'ontology',
-                        version: '2.1',
+        mockedAxios.get
+            .mockResolvedValueOnce(
+                makeResponse([
+                    {
+                        meta: {
+                            id: '022fcd88-91ba-46cf-b53f-4268e6ce4196',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                        name: 'Onto name',
+                        description: 'Onto description',
+                        data: { test: 'data' },
+                        relationship: 'state',
+                        to: {
+                            state: ['311b2c2d-54de-4e00-a850-f6712c4622bd'],
+                        },
                     },
-                    name: 'Onto name',
-                    description: 'Onto description',
-                    data: { test: 'data' },
-                    relationship: 'state',
-                    to: {
-                        state: ['311b2c2d-54de-4e00-a850-f6712c4622bd'],
+                    {
+                        meta: {
+                            id: 'e0632888-53be-4613-9cea-db4867015f0c',
+                            type: 'ontology',
+                            version: '2.1',
+                        },
+                        relationship: 'child',
+                        to: {
+                            network: ['f11fa9d7-3b2b-474e-95e4-f086c5606154'],
+                        },
                     },
-                },
-                {
-                    meta: {
-                        id: 'e0632888-53be-4613-9cea-db4867015f0c',
-                        type: 'ontology',
-                        version: '2.1',
-                    },
-                    relationship: 'child',
-                    to: {
-                        network: ['f11fa9d7-3b2b-474e-95e4-f086c5606154'],
-                    },
-                },
-            ])
-        );
+                ])
+            )
+            .mockResolvedValueOnce(makeResponse([]));
         mockedAxios.delete
             .mockResolvedValueOnce(makeResponse({}))
             .mockResolvedValueOnce(makeResponse({}));
@@ -666,9 +834,29 @@ describe('Ontology', () => {
 
         await network.deleteEdges();
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/state/311b2c2d-54de-4e00-a850-f6712c4622bd/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/ontology/022fcd88-91ba-46cf-b53f-4268e6ce4196',
+            {}
+        );
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/ontology/e0632888-53be-4613-9cea-db4867015f0c',
+            {}
+        );
 
         expect(network.edges.length).toBe(0);
     });
@@ -1269,7 +1457,8 @@ describe('Ontology', () => {
                         ],
                     },
                 })
-            );
+            )
+            .mockResolvedValue(makeResponse([]));
 
         const network = await createNetwork({ name: 'Ontology 1' });
         const device = await network.createDevice({ name: 'Ontology 2' });
@@ -1282,7 +1471,7 @@ describe('Ontology', () => {
 
         expect(edges[0].models.length).toBe(19);
         expect(mockedAxios.post).toHaveBeenCalledTimes(3);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(8);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(26);
     });
 
     it('can link objects from fetchByName to ontology', async () => {
@@ -1439,6 +1628,9 @@ describe('Ontology', () => {
             )
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([]));
 
         const networks = await Network.fetchByName('EMS Configurator');
@@ -1451,7 +1643,7 @@ describe('Ontology', () => {
         });
         await Promise.all(promises);
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(7);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(10);
 
         network.device.forEach((dev) => {
             dev.name = 'testing';
@@ -1541,7 +1733,9 @@ describe('Ontology', () => {
                     timestamp: '',
                     data: '1',
                 })
-            );
+            )
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
 
         const network = new Network('Ontology Network');
         network.meta.id = '99138103-743f-48a4-b120-322ec9e9d62c';
@@ -1575,7 +1769,7 @@ describe('Ontology', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(7);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
             '/2.1/network/99138103-743f-48a4-b120-322ec9e9d62c/ontology',
@@ -1622,6 +1816,16 @@ describe('Ontology', () => {
                     expand: 0,
                 },
             }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            6,
+            '/2.1/state/7c7171b7-db9c-4418-8e29-2e76c42597b0/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            7,
+            '/2.1/state/1e5eb75f-0912-4858-9ad5-89fb21787768/ontology',
+            { params: { expand: 1, go_internal: true, method: ['retrieve'] } }
         );
     });
 

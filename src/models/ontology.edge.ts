@@ -62,7 +62,7 @@ export class OntologyEdge extends Model implements IOntologyEdge {
         return res;
     }
 
-    addModel(to: IOntologyModel): boolean {
+    #addModel(to: IOntologyModel): boolean {
         let res = false;
         if (this.models.find((o) => compareModels(o, to)) === undefined) {
             this.models.push(to as OntologyModel);
@@ -96,10 +96,15 @@ export class OntologyEdge extends Model implements IOntologyEdge {
             this.to[type].forEach((id: string) => {
                 proms.push(
                     new Promise(async (resolve: () => void) => {
-                        const m = await getModel(type, id);
-                        if (m) {
-                            this.addModel(m as IOntologyModel);
-                        } else if (m === false) {
+                        const model = await getModel(type, id);
+                        if (model) {
+                            const ontologyModel = model as IOntologyModel;
+                            this.#addModel(ontologyModel);
+                            await ontologyModel.addParentEdge(
+                                this,
+                                ontologyModel
+                            );
+                        } else if (model === false) {
                             this.#addFailedModel(type, id);
                         }
                         resolve();
@@ -139,7 +144,7 @@ export class OntologyEdge extends Model implements IOntologyEdge {
 
         if (ontologies[0]) {
             const ontology = ontologies[0] as OntologyEdge;
-            await ontology.loadAllChildren(null);
+            await ontology.fetchModels();
             return ontology;
         }
         return undefined;
@@ -165,9 +170,14 @@ export class OntologyEdge extends Model implements IOntologyEdge {
                 proms.push(
                     new Promise(async (resolve) => {
                         const onto = await OntologyEdge.fetchById(o);
+                        const promises: Promise<void>[] = [];
                         if (onto) {
                             res[index] = onto;
+                            onto.models.forEach((m) => {
+                                promises.push(m.addParentEdge(onto, m));
+                            });
                         }
+                        await Promise.all(promises);
                         resolve();
                     })
                 );

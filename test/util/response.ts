@@ -106,12 +106,28 @@ export function makeStateResponse(options?: {
     };
 }
 
-export function makeDataResponse(options?: {id?: string}) {
+export function makeDataResponse(options?: { id?: string }) {
     return {
         meta: {
             type: 'data',
             version: '2.1',
             id: options?.id || randomUUID(),
+        },
+    };
+}
+
+export function makeOntologyNodeResponse(options?: {
+    id?: string;
+    name?: string;
+}) {
+    return {
+        meta: {
+            type: 'data',
+            version: '2.1',
+            id: options?.id || randomUUID(),
+        },
+        data_meta: {
+            id: `ontology_node_${options?.name || 'test'}`,
         },
     };
 }
