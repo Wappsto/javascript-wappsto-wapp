@@ -89,7 +89,7 @@
         "ws": "^8.17.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.24.6",
+        "@babel/core": "^7.24.9",
         "@babel/plugin-syntax-flow": "^7.24.6",
         "@babel/plugin-transform-react-jsx": "^7.24.6",
         "@size-limit/preset-small-lib": "^11.1.4",
