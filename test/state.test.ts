@@ -1,10 +1,11 @@
 import axios from 'axios';
+
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { State, config, stopLogging } from '../src/index';
-import { after } from './util/stream';
 import { makeResponse } from './util/helpers';
+import { after } from './util/stream';
 
 const stateID = '6be66588-5f65-4257-8026-7f1152824f81';
 const response = {
@@ -148,5 +149,14 @@ describe('state', () => {
             },
             {}
         );
+    });
+
+    it('will fail if state does not exist', async () => {
+        mockedAxios.get.mockResolvedValue({});
+        const state = await State.fetchById(
+            'c14c4de6-b26a-4ec4-8547-1bd8f60a4238'
+        );
+
+        expect(state).toBeUndefined();
     });
 });
