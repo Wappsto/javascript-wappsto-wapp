@@ -5,7 +5,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 console.log = jest.fn();
 console.error = jest.fn();
 import { startLogging, stopLogging } from '../src/index';
-import { makeErrorResponse, makeResponse } from './util/helpers';
+import { delay, makeErrorResponse, makeResponse } from './util/helpers';
 import { after } from './util/stream';
 
 describe('console', () => {
@@ -44,7 +44,7 @@ describe('console', () => {
         console.error('test start');
         console.warn('test start');
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
         expect(mockedAxios.post).toHaveBeenCalledTimes(4);
     });
 
@@ -54,7 +54,7 @@ describe('console', () => {
             .mockRejectedValueOnce({}); // This must be an invalid error response.
         console.log('test 1');
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         console.log('test 2');
 
@@ -67,7 +67,7 @@ describe('console', () => {
         );
         console.log('test 1');
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         console.log('test 2');
 

@@ -32,3 +32,7 @@ export function makeErrorResponse(
         },
     };
 }
+
+export async function delay(count = 1): Promise<void> {
+    return new Promise((r) => setTimeout(r, count));
+}

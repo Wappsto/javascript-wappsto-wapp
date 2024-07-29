@@ -6,7 +6,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import { OAuth, stopLogging } from '../src/index';
 import { openStream } from '../src/stream_helpers';
 import { after } from './util/stream';
-import { makeErrorResponse, makeResponse } from './util/helpers';
+import { delay, makeErrorResponse, makeResponse } from './util/helpers';
 
 describe('oauth', () => {
     const response = {
@@ -53,7 +53,7 @@ describe('oauth', () => {
             requestUrl = url;
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
@@ -191,7 +191,7 @@ describe('oauth', () => {
             data: {},
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(

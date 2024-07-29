@@ -4,7 +4,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import WS from 'jest-websocket-mock';
 import { Device, Network, Value, config, createNetwork } from '../src/index';
-import { makeErrorResponse, makeResponse } from './util/helpers';
+import { delay, makeErrorResponse, makeResponse } from './util/helpers';
 import {
     fullNetworkResponse,
     makeDeviceResponse,
@@ -106,7 +106,6 @@ describe('network', () => {
                         name: 'test 2',
                         id: 'd16ac42f-dedf-496f-a935-87ae9f29fb61',
                     }),
-                    ,
                 ])
             );
 
@@ -707,7 +706,7 @@ describe('network', () => {
         const r = Network.findAllByName('test');
         await server.connected;
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send({
             meta_object: {
@@ -773,7 +772,7 @@ describe('network', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         await server.connected;
 
-        await new Promise((r) => setTimeout(r, 100));
+        await delay(100);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         server.send({
             meta_object: {
@@ -1079,7 +1078,7 @@ describe('network', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
@@ -1153,7 +1152,7 @@ describe('network', () => {
 
         const r = Network.findById(fullNetworkResponse.meta.id);
         await server.connected;
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send({
             meta_object: {

@@ -10,8 +10,9 @@ import {
     responses,
     generateStreamEvent,
     makeValueResponse,
+    makeStateResponse,
 } from './util/response';
-import { makeErrorResponse, makeResponse } from './util/helpers';
+import { makeErrorResponse, makeResponse, delay } from './util/helpers';
 
 const response2Values = [
     {
@@ -264,7 +265,8 @@ describe('value', () => {
 
         const r = Value.findByType('test');
         await server.connected;
-        await new Promise((r) => setTimeout(r, 100));
+        await delay(100);
+
         server.send({
             meta_object: {
                 type: 'notification',
@@ -511,7 +513,7 @@ describe('value', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         const controlPromise2 = value.controlWithAck(20);
 
@@ -531,7 +533,7 @@ describe('value', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         const res2 = await controlPromise2;
 
@@ -586,7 +588,7 @@ describe('value', () => {
         console.error = jest.fn();
         const controlPromise = value.controlWithAck(10);
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send({
             meta_object: {
@@ -613,7 +615,7 @@ describe('value', () => {
 
         const controlPromise2 = value.controlWithAck(20);
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send({
             meta_object: {
@@ -676,7 +678,7 @@ describe('value', () => {
         const res1 = await controlPromise;
 
         const controlPromise2 = value.controlWithAck(20);
-        await new Promise((r) => setTimeout(r, 10));
+        await delay(100);
 
         server.send({
             meta_object: {
@@ -684,14 +686,11 @@ describe('value', () => {
             },
             event: 'update',
             path: '/state/f1ada7da-7192-487d-93d5-221a00bdc23c',
-            data: {
-                meta: {
-                    id: 'f1ada7da-7192-487d-93d5-221a00bdc23c',
-                    type: 'state',
-                },
+            data: makeStateResponse({
+                id: 'f1ada7da-7192-487d-93d5-221a00bdc23c',
                 type: 'Report',
                 data: '2',
-            },
+            }),
         });
 
         const res2 = await controlPromise2;
@@ -1341,7 +1340,7 @@ describe('value', () => {
         value.control('3');
         value.control('4');
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(4);
         expect(mockedAxios.patch).toHaveBeenNthCalledWith(
@@ -1390,7 +1389,7 @@ describe('value', () => {
 
         const r = Value.findById(response.meta.id);
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         await server.connected;
         server.send({

@@ -14,7 +14,7 @@ import {
     generateStreamEvent,
     powerPriceListResponse,
 } from './util/response';
-import { makeErrorResponse, makeResponse } from './util/helpers';
+import { makeErrorResponse, makeResponse, delay } from './util/helpers';
 
 describe('analytics', () => {
     let server: WS;
@@ -53,7 +53,7 @@ describe('analytics', () => {
                 },
             })
         );
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send(
             generateStreamEvent('analytics', energyDataResponse.meta.id, {})
@@ -122,7 +122,7 @@ describe('analytics', () => {
                 },
             })
         );
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send(
             generateStreamEvent(
@@ -177,7 +177,7 @@ describe('analytics', () => {
                 },
             })
         );
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send(
             generateStreamEvent(
@@ -218,7 +218,7 @@ describe('analytics', () => {
                 },
             })
         );
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send(
             generateStreamEvent(
@@ -256,7 +256,7 @@ describe('analytics', () => {
                 },
             })
         );
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send(
             generateStreamEvent(

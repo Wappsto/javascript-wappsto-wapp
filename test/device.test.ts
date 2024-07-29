@@ -10,8 +10,7 @@ import {
     makeDeviceResponse,
     makeValueResponse,
 } from './util/response';
-import { makeResponse } from './util/helpers';
-import exp from 'constants';
+import { delay, makeResponse } from './util/helpers';
 
 const templateHelperStart = () => {
     mockedAxios.post
@@ -1747,7 +1746,7 @@ describe('device', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(f).toHaveBeenCalledTimes(1);
@@ -1833,7 +1832,7 @@ describe('device', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(f).toHaveBeenCalledTimes(2);
         expect(f).toHaveBeenNthCalledWith(1, d, true);
@@ -1859,7 +1858,7 @@ describe('device', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(f).toHaveBeenCalledTimes(2);
         expect(f).toHaveBeenNthCalledWith(1, d, true);
@@ -1874,7 +1873,7 @@ describe('device', () => {
 
         const r = Device.findById(response.meta.id);
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
         await server.connected;
 
         server.send({

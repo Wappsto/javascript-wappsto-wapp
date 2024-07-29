@@ -9,6 +9,7 @@ import {
     cancelPermissionUpdate,
     onPermissionUpdate,
 } from '../src/stream_helpers';
+import { delay } from './util/helpers';
 
 describe('stream', () => {
     let server: WS;
@@ -115,7 +116,7 @@ describe('stream', () => {
                 timestamp: 'timestamp2',
             },
         });
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(fun).toHaveBeenCalledTimes(1);
     });
@@ -211,7 +212,7 @@ describe('stream', () => {
                 },
             },
         ]);
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(arrData.length).toBe(1);
         expect(fun).toHaveBeenCalledTimes(1);
@@ -284,7 +285,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(funR).toHaveBeenCalledTimes(1);
         expect(funC).toHaveBeenCalledTimes(1);
@@ -330,7 +331,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(funR).toHaveBeenCalledTimes(2);
         expect(funC).toHaveBeenCalledTimes(1);
@@ -374,7 +375,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(fun).toHaveBeenCalledTimes(1);
         expect(fun).toHaveBeenNthCalledWith(1, value);
@@ -440,7 +441,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(fun1).toHaveBeenCalledTimes(2);
         expect(fun2).toHaveBeenCalledTimes(2);
@@ -477,7 +478,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(fun1).toHaveBeenCalledTimes(2);
         expect(fun2).toHaveBeenCalledTimes(2);
@@ -548,7 +549,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(fun).toHaveBeenCalledTimes(1);
         expect(fun).toHaveBeenNthCalledWith(1, value, 'data', 'timestamp');
@@ -612,7 +613,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(fun).toHaveBeenNthCalledWith(1, value, 'data', 'timestamp');
     });
@@ -628,7 +629,7 @@ describe('stream', () => {
 
         const reportPromise = value.onReport(async (val, data) => {
             if (data === '1') {
-                await new Promise((r) => setTimeout(r, 10));
+                await delay(10);
             }
             result.push(data);
         });
@@ -672,7 +673,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 100));
+        await delay(100);
 
         expect(result).toEqual(['1', '2']);
     });
@@ -754,7 +755,7 @@ describe('stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 100));
+        await delay(100);
         expect(permissionUpdated).toBe(1);
     });
 });

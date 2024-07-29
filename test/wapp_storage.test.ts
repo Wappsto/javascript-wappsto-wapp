@@ -5,7 +5,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { wappStorage } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
-import { makeResponse } from './util/helpers';
+import { delay, makeResponse } from './util/helpers';
 
 describe('WappStorage', () => {
     let server: WS;
@@ -152,7 +152,7 @@ describe('WappStorage', () => {
 
         server.send(streamEvent);
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(res).toBe('item');
         expect(newRes).toBe('new_item');
@@ -217,7 +217,7 @@ describe('WappStorage', () => {
 
         server.send(streamEvent);
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(fun).toHaveBeenCalledTimes(1);
     });
@@ -229,7 +229,7 @@ describe('WappStorage', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
 
         let res = await c.set('missing', 'will be removed');
-        await new Promise((r) => setTimeout(r, 100));
+        await delay(100);
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenNthCalledWith(
@@ -254,8 +254,9 @@ describe('WappStorage', () => {
         );
 
         res = await c.set('missing');
-        await new Promise((r) => setTimeout(r, 100));
+        await delay(100);
 
+        expect(res).toBeFalsy();
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenNthCalledWith(
             1,

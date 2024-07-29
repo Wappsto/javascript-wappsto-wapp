@@ -6,7 +6,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
 import { Device, Value, State, config, ValueTemplate } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
-import { makeResponse } from './util/helpers';
+import { delay, makeResponse } from './util/helpers';
 
 const templateHelperStart = () => {
     mockedAxios.post
@@ -242,7 +242,7 @@ describe('period and delta on value', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         await value.report(2);
         await value.report(3);
@@ -341,7 +341,7 @@ describe('period and delta on value', () => {
 
         let wait = 4000;
         while (wait) {
-            await new Promise((r) => setTimeout(r, 1));
+            await delay();
             wait -= 1;
             if (fun.mock.calls.length >= 2) {
                 break;
@@ -358,7 +358,7 @@ describe('period and delta on value', () => {
                 period: '0',
             },
         });
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         value.cancelPeriod();
 
@@ -436,7 +436,7 @@ describe('period and delta on value', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(value.getReportData()).toEqual('100');
         expect(mockedAxios.get).toHaveBeenCalledTimes(0);
@@ -535,7 +535,7 @@ describe('period and delta on value', () => {
             if (mockedAxios.patch.mock.calls.length >= 2) {
                 break;
             }
-            await new Promise((r) => setTimeout(r, 1));
+            await delay();
             wait -= 1;
         }
         const firstCallCount = mockedAxios.patch.mock.calls.length;
@@ -553,7 +553,7 @@ describe('period and delta on value', () => {
 
         wait = 2500;
         while (wait !== 0) {
-            await new Promise((r) => setTimeout(r, 1));
+            await delay();
             wait -= 1;
             if (mockedAxios.patch.mock.calls.length >= 3) {
                 break;

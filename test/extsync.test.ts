@@ -19,7 +19,7 @@ import {
 } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { signalRequest } from './util/response';
-import { makeErrorResponse, makeResponse } from './util/helpers';
+import { delay, makeErrorResponse, makeResponse } from './util/helpers';
 
 const rpcExtSyncRequest = expect.objectContaining({
     jsonrpc: '2.0',
@@ -145,7 +145,7 @@ describe('ExtSync stream', () => {
             path: '/extsync/direct',
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenNthCalledWith(1, '/2.1/extsync', {
@@ -189,7 +189,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
         expect(fun).toHaveBeenCalledTimes(1);
         expect(fun).toHaveBeenNthCalledWith(
             1,
@@ -202,7 +202,7 @@ describe('ExtSync stream', () => {
             }
         );
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send({
             meta_object: {
@@ -236,7 +236,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(fun).toHaveBeenCalledTimes(1);
 
@@ -316,7 +316,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         cancelFromBackground();
         cancelFromForeground();
@@ -351,7 +351,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(responseForeground).toBe(res);
         expect(responseBackground).toBe(res);
@@ -461,7 +461,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(responseForeground).toBe(res);
         expect(funWeb).toHaveBeenCalledTimes(1);
@@ -530,7 +530,7 @@ describe('ExtSync stream', () => {
                 body: '{"type": "foreground","message": {"test": "foreground"}}',
             },
         });
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(fun).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
@@ -574,7 +574,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         cancelFromBackground();
         cancelFromForeground();
@@ -603,7 +603,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         foregroundPromise = fromForeground(funF);
         backgroundPromise = fromBackground(funB);
@@ -634,7 +634,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(funF).toHaveBeenCalledTimes(2);
         expect(funB).toHaveBeenCalledTimes(2);
@@ -669,7 +669,7 @@ describe('ExtSync stream', () => {
                 body: '{"type": "foreground","message": {"test": "foreground"}}',
             },
         });
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
         expect(console.error).toHaveBeenLastCalledWith(
             expect.stringContaining(
                 'WAPPSTO ERROR: TypeError: msg.berror is not a function'
@@ -701,7 +701,7 @@ describe('ExtSync stream', () => {
                 body: '{"type": "background","message": {"test": "background"}}',
             },
         });
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(console.error).toHaveBeenLastCalledWith(
             expect.stringContaining(
@@ -807,7 +807,7 @@ describe('ExtSync stream', () => {
         server.send(signalRequest('foreground'));
         server.send(signalRequest('background'));
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(2);
@@ -834,7 +834,7 @@ describe('ExtSync stream', () => {
 
         await server.connected;
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         server.send({
             meta: {
@@ -940,14 +940,14 @@ describe('ExtSync stream', () => {
         fromForeground<JSONObject>(async (event) => {
             let res;
             if (event.test === 'correct') {
-                await new Promise((r) => setTimeout(r, 10));
+                await delay(10);
                 res = { status: 'ok' };
             }
             result.push(event.test as number);
             return res;
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         await server.connected;
 
@@ -978,7 +978,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 100));
+        await delay(100);
 
         expect(result).toEqual(['correct', 'order']);
 
@@ -1016,7 +1016,7 @@ describe('ExtSync stream', () => {
             };
         });
 
-        await new Promise((r) => setTimeout(r, 1));
+        await delay();
 
         await server.connected;
 
@@ -1034,7 +1034,7 @@ describe('ExtSync stream', () => {
             },
         });
 
-        await new Promise((r) => setTimeout(r, 500));
+        await delay(500);
 
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenNthCalledWith(
