@@ -3,7 +3,7 @@ import { openStream } from '../stream_helpers';
 import { printDebug, printError } from '../util/debug';
 import { toSafeString } from '../util/helpers';
 import { getErrorResponse, printHttpError } from '../util/http_wrapper';
-import { JSONObject, StreamData } from '../util/types';
+import { JSONObject, MetaItem, StreamData } from '../util/types';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';
 import { Notification } from './notification';
@@ -121,12 +121,18 @@ export class PermissionModel extends OntologyModel {
         });
     }
 
-    static #convertFromFetch(endpoint: string, data: Record<string, any>[]) {
-        if (data.length === 1 && data[0]?.meta?.type === 'fetch') {
-            const arr = endpoint.split('/');
-            if (arr.length) {
-                const service = arr[arr.length - 1];
-                data = data[0].data[service];
+    static #convertFromFetch(endpoint: string, data: JSONObject[]) {
+        if (data.length === 1 && 'meta' in data[0]) {
+            const item = data[0] as MetaItem;
+            if (item.meta.type === 'fetch') {
+                const arr = endpoint.split('/');
+                if (arr.length && 'data' in data[0]) {
+                    const service_data = data[0].data as JSONObject;
+                    const service = arr[arr.length - 1];
+                    if (service in service_data) {
+                        data = service_data[service] as JSONObject[];
+                    }
+                }
             }
         }
         return data;
