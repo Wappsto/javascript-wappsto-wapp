@@ -685,7 +685,7 @@ describe('network', () => {
         expect(device.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
-    it('can find all network by name', async () => {
+    it('can find all networks by name', async () => {
         const networkID1 = '59afce73-f161-4fb8-bae2-789be920be88';
         const networkID2 = 'df59953d-1b3c-44f5-9597-7714dd83a5f3';
 
@@ -810,7 +810,7 @@ describe('network', () => {
 
         const network = await r;
 
-        //expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: {
                 expand: 3,
@@ -898,10 +898,7 @@ describe('network', () => {
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    makeDeviceResponse({
-                        name: 'Device Name 2',
-                        id: response.device[1] as string,
-                    }),
+                    response.device[1] as string,
                     makeDeviceResponse({
                         name: 'Device Name 3',
                         id: response.device[2] as string,
@@ -918,7 +915,15 @@ describe('network', () => {
                     }),
                 ])
             )
-            .mockResolvedValue(makeResponse({}));
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeDeviceResponse({
+                        name: 'Device Name 2',
+                        id: response.device[1] as string,
+                    })
+                )
+            );
 
         const networks = await Network.fetchByName();
 
@@ -944,7 +949,7 @@ describe('network', () => {
 
         expect(device4.value[0].state[0].toJSON).toBeDefined();
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(5);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(6);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/network', {
             params: { expand: 3, go_internal: true, method: ['retrieve'] },
         });
@@ -985,6 +990,18 @@ describe('network', () => {
             5,
             '/2.1/network/242a83ad-ca9e-490a-85ef-c3aaea0e80c3',
             { params: { expand: 3, go_internal: true, method: ['retrieve'] } }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            6,
+            `/2.1/network/${response.meta.id}/device`,
+            {
+                params: {
+                    expand: 2,
+                    go_internal: true,
+                    method: ['retrieve'],
+                    offset: 1,
+                },
+            }
         );
     });
 

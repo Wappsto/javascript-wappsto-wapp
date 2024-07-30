@@ -516,9 +516,8 @@ export class Network extends ConnectionModel implements INetwork {
                 this.device[offset + index] = dev;
             }
         });
-
         if (stringIdsOffset !== -1) {
-            promises.push(this.#fetchMissingDevices(stringIdsOffset));
+            promises.push(this.#fetchMissingDevices(offset + stringIdsOffset));
         }
 
         devices.forEach((dev) => {
