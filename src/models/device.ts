@@ -676,7 +676,7 @@ export class Device extends ConnectionModel implements IDevice {
         });
 
         if (stringIdsOffset !== -1) {
-            promises.push(this.#fetchMissingValues(stringIdsOffset));
+            promises.push(this.#fetchMissingValues(offset + stringIdsOffset));
         }
 
         values.forEach((val) => {

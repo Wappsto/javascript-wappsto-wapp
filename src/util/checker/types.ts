@@ -132,6 +132,10 @@ export type Meta = {
     tag_by_user?: string[];
 };
 
+export type MetaItem = {
+    meta: Meta;
+};
+
 export type FetchRequest = {
     endpoint: string;
     params?: JSONObject;
