@@ -189,6 +189,7 @@ function attributesToFilter(
                     }
                 }
             }
+            /* istanbul ignore next */
         } else if (filter[att] !== undefined) {
             /* istanbul ignore next */
             strFilter.push(`${type}_${att}${operator}${filter[att]}`);

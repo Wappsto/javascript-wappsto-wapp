@@ -9,6 +9,7 @@ import {
     responses,
     makeDeviceResponse,
     makeValueResponse,
+    makeStateResponse,
 } from './util/response';
 import { delay, makeResponse } from './util/helpers';
 
@@ -305,6 +306,112 @@ describe('device', () => {
             },
         });
         expect(devices[0].meta.id).toEqual(response.meta.id);
+    });
+
+    it('can load all missing object using lazy loading', async () => {
+        const deviceID = '15bd24b5-a314-41d9-abdb-e2dadaab068c';
+        const valueID1 = '3df6bf3d-c690-4290-8f53-233dbdf59cc1';
+        const valueID2 = 'c3be1897-2bf7-4a34-b0e6-97516ac964be';
+        const valueID3 = '99f758c3-5358-495c-a680-409d18cd25b5';
+        const stateID1 = 'bcb9ec9c-89ec-40e1-815e-ad6e8976f862';
+        const stateID2 = '9474bb8b-6dca-47ae-acdf-a9005a470210';
+        const response = makeDeviceResponse({
+            name: 'Device Name 1',
+            id: deviceID,
+            values: [
+                makeValueResponse({
+                    name: 'Value Name 1',
+                    id: valueID1,
+                    states: [
+                        makeStateResponse({ id: stateID1, type: 'Report' }),
+                        stateID2,
+                    ],
+                }),
+                valueID2,
+            ],
+        });
+
+        mockedAxios.get
+            .mockResolvedValueOnce(makeResponse(response))
+            .mockResolvedValueOnce(
+                makeResponse([makeStateResponse({ type: 'Control' })])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeValueResponse({
+                        name: 'Value Name 2',
+                        id: valueID2,
+                    }),
+                    valueID3,
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeValueResponse({
+                        name: 'Value Name 3',
+                        id: valueID3,
+                    }),
+                ])
+            );
+
+        const device = await Device.fetchById(deviceID);
+
+        const value1 = device?.value[0];
+        const value2 = device?.value[1];
+        const value3 = device?.value[2];
+        const state1 = value1?.state[0];
+        const state2 = value1?.state[1];
+
+        expect(value1?.name).toEqual('Value Name 1');
+        expect(value2?.name).toEqual('Value Name 2');
+        expect(value3?.name).toEqual('Value Name 3');
+
+        expect(state1?.type).toEqual('Report');
+        expect(state2?.type).toEqual('Control');
+
+        expect(device?.value[0].state[0].toJSON).toBeDefined();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(4);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            `/2.1/device/${deviceID}`,
+            {
+                params: { expand: 2, go_internal: true, method: ['retrieve'] },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            `/2.1/state/${stateID2}`,
+            {
+                params: {
+                    expand: 0,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            `/2.1/device/${deviceID}/value`,
+            {
+                params: {
+                    expand: 1,
+                    go_internal: true,
+                    method: ['retrieve'],
+                    offset: 1,
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            4,
+            `/2.1/device/${deviceID}/value`,
+            {
+                params: {
+                    expand: 1,
+                    go_internal: true,
+                    method: ['retrieve'],
+                    offset: 2,
+                },
+            }
+        );
     });
 
     it('can reload and get new values', async () => {
