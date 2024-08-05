@@ -113,6 +113,30 @@ export class OntologyEdge extends Model implements IOntologyEdge {
             });
         });
         await Promise.all(proms);
+
+        if (!this.from) {
+            return;
+        }
+
+        proms.length = 0;
+        Object.keys(this.from).forEach((type: string) => {
+            this.from[type].forEach((id: string) => {
+                proms.push(
+                    new Promise(async (resolve: () => void) => {
+                        const model = await getModel(type, id);
+                        if (model) {
+                            const ontologyModel = model as IOntologyModel;
+                            ontologyModel.addEdge(this);
+                        } else if (model === false) {
+                            this.#addFailedModel(type, id);
+                        }
+                        resolve();
+                    })
+                );
+            });
+        });
+
+        await Promise.all(proms);
     }
 
     async delete(): Promise<void> {
@@ -193,4 +217,38 @@ export class OntologyEdge extends Model implements IOntologyEdge {
     static #validate(name: string, params: ValidateParams): void {
         Model.validateMethod('OntologyEdge', name, params);
     }
+}
+
+export async function getAllEdges() {
+    const data = await Model.fetch({
+        endpoint: '/ontology',
+        params: { expand: 1 },
+    });
+    const res = OntologyEdge.fromArray(data);
+
+    const proms: Promise<void>[] = [];
+    res.forEach((o, index) => {
+        if (typeof o === 'string') {
+            proms.push(
+                new Promise(async (resolve) => {
+                    const onto = await OntologyEdge.fetchById(o);
+                    const promises: Promise<void>[] = [];
+                    if (onto) {
+                        res[index] = onto;
+                        onto.models.forEach((m) => {
+                            promises.push(m.addParentEdge(onto, m));
+                        });
+                    }
+                    await Promise.all(promises);
+                    resolve();
+                })
+            );
+        } else {
+            proms.push(o.fetchModels());
+        }
+    });
+
+    await Promise.all(proms);
+
+    return res as OntologyEdge[];
 }

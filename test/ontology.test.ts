@@ -10,6 +10,7 @@ import {
     State,
     createNode,
     getAllNodes,
+    getAllEdges,
     ValueTemplate,
     IOntologyEdge,
 } from '../src/index';
@@ -20,6 +21,8 @@ import {
     makeDataResponse,
     makeDeviceResponse,
     makeNetworkResponse,
+    makeNumberValueResponse,
+    makeOntologyEdgeResponse,
     makeOntologyNodeResponse,
     makeStateResponse,
     makeValueResponse,
@@ -82,18 +85,12 @@ describe('Ontology', () => {
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            id: edgeID2,
-                            type: 'ontology',
-                            version: '2.1',
-                        },
+                    makeOntologyEdgeResponse({
+                        id: edgeID2,
                         name: 'Onto name 2',
-                        relationship: 'child',
-                        to: {
-                            data: [nodeID3],
-                        },
-                    },
+                        to_type: 'data',
+                        to_id: nodeID3,
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
@@ -164,36 +161,31 @@ describe('Ontology', () => {
             .mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeOntologyEdgeResponse({
                         id: '1e844d39-6b70-4f96-b762-9c28c73c5410',
-                        type: 'ontology',
-                        version: '2.1',
-                    },
-                    name: 'Onto name',
-                    description: 'Onto description',
-                    data: { test: 'data' },
-                    relationship: 'child',
-                    to: {
-                        state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
-                    },
-                })
+                        name: 'Onto name',
+                        description: 'Onto description',
+                        data: { test: 'data' },
+                        relationship: 'child',
+                        to_type: 'state',
+                        to_id: 'f0a9683f-da8b-4fe6-9925-2e6768ddedeb',
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeOntologyEdgeResponse({
                         id: '9764d589-047e-4089-af0c-6034349df23f',
-                        type: 'ontology',
-                        version: '2.1',
-                    },
-                    name: 'Onto name2',
-                    description: 'Onto description2',
-                    data: { test: 'data2' },
-                    relationship: 'look',
-                    to: {
-                        state: ['047f00f9-276b-4f5b-ba28-c1ab05f16e52'],
-                    },
-                })
+
+                        name: 'Onto name2',
+                        description: 'Onto description2',
+                        data: { test: 'data2' },
+                        relationship: 'look',
+                        to_type: 'state',
+                        to_id: '047f00f9-276b-4f5b-ba28-c1ab05f16e52',
+                    })
+                )
             );
 
         const network = new Network('Ontology Network');
@@ -377,77 +369,40 @@ describe('Ontology', () => {
         mockedAxios.get
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            id: 'ee155377-566d-4c7a-a517-6e6d1eb1ff7e',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
+                    makeOntologyEdgeResponse({
+                        id: 'ee155377-566d-4c7a-a517-6e6d1eb1ff7e',
                         name: 'Onto name',
                         description: 'Onto description',
                         data: { test: 'data' },
                         relationship: 'state',
-                        to: {
-                            state: ['311b2c2d-54de-4e00-a850-f6712c4622bd'],
-                        },
-                    },
-                    {
-                        meta: {
-                            id: 'e0632888-53be-4613-9cea-db4867015f0c',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                        relationship: 'child',
-                        to: {
-                            network: ['f11fa9d7-3b2b-474e-95e4-f086c5606154'],
-                        },
-                    },
-                    {
-                        meta: {
-                            id: '8f364a18-34e2-480b-ade5-90f7c146d592',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                        relationship: 'child',
-                        to: {
-                            device: ['8a3f67a6-751c-483b-a2ef-ba890948e6e4'],
-                        },
-                    },
-                    {
-                        meta: {
-                            id: '0ee52b4d-0498-4784-b540-de3c3db0baa8',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                        relationship: 'child',
-                        to: {
-                            value: ['75d7d198-7f91-45e2-9b79-754073d7e758'],
-                        },
-                    },
-                    {
-                        meta: {
-                            id: 'ced1993c-798f-4ef1-b41a-c6106fa08d4e',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                        relationship: 'child',
-                        to: {
-                            data: ['97e0dd7c-8e22-4263-82f9-d26102643465'],
-                        },
-                    },
-                    {
-                        meta: {
-                            id: '3832afcd-3302-4045-901c-6dfd027277d7',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                        relationship: 'child',
-                        to: {
-                            application: [
-                                '76228636-afb4-4b1b-8c58-1d6b4bf956f0',
-                            ],
-                        },
-                    },
+                        to_type: 'state',
+                        to_id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
+                    }),
+                    makeOntologyEdgeResponse({
+                        id: 'e0632888-53be-4613-9cea-db4867015f0c',
+                        to_type: 'network',
+                        to_id: 'f11fa9d7-3b2b-474e-95e4-f086c5606154',
+                    }),
+                    makeOntologyEdgeResponse({
+                        id: '8f364a18-34e2-480b-ade5-90f7c146d592',
+                        to_type: 'device',
+                        to_id: '8a3f67a6-751c-483b-a2ef-ba890948e6e4',
+                    }),
+                    makeOntologyEdgeResponse({
+                        id: '0ee52b4d-0498-4784-b540-de3c3db0baa8',
+                        to_type: 'value',
+                        to_id: '75d7d198-7f91-45e2-9b79-754073d7e758',
+                    }),
+                    makeOntologyEdgeResponse({
+                        id: 'ced1993c-798f-4ef1-b41a-c6106fa08d4e',
+                        to_type: 'data',
+                        to_id: '97e0dd7c-8e22-4263-82f9-d26102643465',
+                    }),
+                    makeOntologyEdgeResponse({
+                        id: '3832afcd-3302-4045-901c-6dfd027277d7',
+                        to_type: 'application',
+                        to_id: '76228636-afb4-4b1b-8c58-1d6b4bf956f0',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(makeResponse(stateResponse))
@@ -651,30 +606,14 @@ describe('Ontology', () => {
     it('can get all nodes', async () => {
         mockedAxios.get.mockResolvedValueOnce(
             makeResponse([
-                {
-                    meta: {
-                        id: '09af28b3-0e84-4230-ab96-88990cfa04b8',
-                        type: 'data',
-                        version: '2.1',
-                    },
-                    data_meta: {
-                        type: 'ontology_node',
-                        version: '1',
-                        id: 'ontology_node_1',
-                    },
-                },
-                {
-                    meta: {
-                        id: '43cc3164-bd43-4bbb-8b62-246618cc28bf',
-                        type: 'data',
-                        version: '2.1',
-                    },
-                    data_meta: {
-                        type: 'ontology_node',
-                        version: '1',
-                        id: 'ontology_node_2',
-                    },
-                },
+                makeOntologyNodeResponse({
+                    id: '09af28b3-0e84-4230-ab96-88990cfa04b8',
+                    name: '1',
+                }),
+                makeOntologyNodeResponse({
+                    id: '43cc3164-bd43-4bbb-8b62-246618cc28bf',
+                    name: '2',
+                }),
             ])
         );
         const nodes = await getAllNodes();
@@ -687,22 +626,44 @@ describe('Ontology', () => {
         expect(nodes[1].data_meta.id).toEqual('ontology_node_2');
     });
 
+    it('can get all edges', async () => {
+        const networkID1 = '62aadedd-8b57-45e6-bb4d-bfb13a7586f4';
+        const networkID2 = '70758c18-de70-497b-b17d-6f3965afa63b';
+
+        mockedAxios.get
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeOntologyEdgeResponse({
+                        from_id: networkID1,
+                        to_id: networkID2,
+                    })
+                )
+            )
+            .mockResolvedValueOnce(
+                makeResponse(makeNetworkResponse({ id: networkID1 }))
+            )
+            .mockResolvedValueOnce(
+                makeResponse(makeNetworkResponse({ id: networkID2 }))
+            );
+        const edges = await getAllEdges();
+
+        expect(edges).toHaveLength(1);
+        expect(edges[0].from.network).toEqual([networkID1]);
+        expect(edges[0].to.network).toEqual([networkID2]);
+    });
+
     it('can remove an edge', async () => {
         mockedAxios.get
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post.mockResolvedValueOnce(
-            makeResponse({
-                meta: {
+            makeResponse(
+                makeOntologyEdgeResponse({
                     id: '75f43647-bf73-44df-a04e-4d04e47cd0fc',
-                    type: 'ontology',
-                    version: '2.1',
-                },
-                relationship: 'child',
-                to: {
-                    state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
-                },
-            })
+                    to_type: 'state',
+                    to_id: 'f0a9683f-da8b-4fe6-9925-2e6768ddedeb',
+                })
+            )
         );
         mockedAxios.delete.mockResolvedValueOnce(makeResponse({}));
 
@@ -744,17 +705,13 @@ describe('Ontology', () => {
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post.mockResolvedValueOnce(
-            makeResponse({
-                meta: {
+            makeResponse(
+                makeOntologyEdgeResponse({
                     id: '75f43647-bf73-44df-a04e-4d04e47cd0fc',
-                    type: 'ontology',
-                    version: '2.1',
-                },
-                relationship: 'child',
-                to: {
-                    state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
-                },
-            })
+                    to_type: 'state',
+                    to_id: 'f0a9683f-da8b-4fe6-9925-2e6768ddedeb',
+                })
+            )
         );
         mockedAxios.delete.mockResolvedValueOnce(makeResponse({}));
 
@@ -797,31 +754,20 @@ describe('Ontology', () => {
         mockedAxios.get
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            id: '022fcd88-91ba-46cf-b53f-4268e6ce4196',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
+                    makeOntologyEdgeResponse({
+                        id: '022fcd88-91ba-46cf-b53f-4268e6ce4196',
                         name: 'Onto name',
                         description: 'Onto description',
                         data: { test: 'data' },
                         relationship: 'state',
-                        to: {
-                            state: ['311b2c2d-54de-4e00-a850-f6712c4622bd'],
-                        },
-                    },
-                    {
-                        meta: {
-                            id: 'e0632888-53be-4613-9cea-db4867015f0c',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                        relationship: 'child',
-                        to: {
-                            network: ['f11fa9d7-3b2b-474e-95e4-f086c5606154'],
-                        },
-                    },
+                        to_type: 'state',
+                        to_id: '311b2c2d-54de-4e00-a850-f6712c4622bd',
+                    }),
+                    makeOntologyEdgeResponse({
+                        id: 'e0632888-53be-4613-9cea-db4867015f0c',
+                        to_type: 'network',
+                        to_id: 'f11fa9d7-3b2b-474e-95e4-f086c5606154',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(makeResponse([]));
@@ -864,30 +810,23 @@ describe('Ontology', () => {
     it('can remove an branch', async () => {
         mockedAxios.post
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeOntologyEdgeResponse({
                         id: 'f275ac72-a2fe-42fe-b4ea-e87eabfe14bf',
-                        type: 'ontology',
-                        version: '2.1',
-                    },
-                    relationship: 'child',
-                    to: {
-                        state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'],
-                    },
-                })
+                        to_type: 'state',
+                        to_id: 'f0a9683f-da8b-4fe6-9925-2e6768ddedeb',
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeOntologyEdgeResponse({
                         id: 'd7224517-328f-4ccd-874c-06e3257dc090',
-                        type: 'ontology',
-                        version: '2.1',
-                    },
-                    relationship: 'look',
-                    to: {
-                        state: ['d2d27eab-bfaa-4253-b9cb-6402dc04e16b'],
-                    },
-                })
+                        relationship: 'look',
+                        to_type: 'state',
+                        to_id: 'd2d27eab-bfaa-4253-b9cb-6402dc04e16b',
+                    })
+                )
             );
         mockedAxios.get
             .mockResolvedValueOnce(makeResponse([]))
@@ -984,46 +923,29 @@ describe('Ontology', () => {
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            id: '45332794-e710-4702-90d6-632fe461d3e5',
-                            type: 'data',
-                            version: '2.1',
-                        },
-                        data_meta: {
-                            type: 'ontology_node',
-                            version: '1',
-                            id: 'ontology_node_2',
-                        },
-                    },
+                    makeOntologyNodeResponse({
+                        id: '45332794-e710-4702-90d6-632fe461d3e5',
+                        name: '2',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeOntologyNodeResponse({
                         id: '09af28b3-0e84-4230-ab96-88990cfa04b8',
-                        type: 'data',
-                        version: '2.1',
-                    },
-                    data_meta: {
-                        type: 'ontology_node',
-                        version: '1',
-                        id: 'ontology_node_1',
-                    },
-                })
+                        name: '1',
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeOntologyEdgeResponse({
                         id: 'b0553348-deac-4ed8-a546-f72346a60bb0',
-                        type: 'ontology',
-                        version: '2.1',
-                    },
-                    relationship: 'look',
-                    to: {},
-                })
+                        relationship: 'look',
+                    })
+                )
             );
         mockedAxios.delete
             .mockResolvedValueOnce(makeResponse({}))
@@ -1065,60 +987,40 @@ describe('Ontology', () => {
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            id: '45332794-e710-4702-90d6-632fe461d3e5',
-                            type: 'data',
-                            version: '2.1',
-                        },
-                        data_meta: {
-                            type: 'ontology_node',
-                            version: '1',
-                            id: 'ontology_node_2',
-                        },
-                    },
+                    makeOntologyNodeResponse({
+                        id: '45332794-e710-4702-90d6-632fe461d3e5',
+                        name: '2',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            id: '38248e1b-4b00-4721-b194-4c6147f6dd4d',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
+                    makeOntologyEdgeResponse({
+                        id: '38248e1b-4b00-4721-b194-4c6147f6dd4d',
                         relationship: 'look',
-                        to: { state: ['f0a9683f-da8b-4fe6-9925-2e6768ddedeb'] },
-                    },
+                        to_type: 'state',
+                        to_id: 'f0a9683f-da8b-4fe6-9925-2e6768ddedeb',
+                    }),
                 ])
             );
         mockedAxios.post
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeOntologyNodeResponse({
                         id: '09af28b3-0e84-4230-ab96-88990cfa04b8',
-                        type: 'data',
-                        version: '2.1',
-                    },
-                    data_meta: {
-                        type: 'ontology_node',
-                        version: '1',
-                        id: 'ontology_node_1',
-                    },
-                })
+                        name: '1',
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeOntologyEdgeResponse({
                         id: 'b0553348-deac-4ed8-a546-f72346a60bb0',
-                        type: 'ontology',
-                        version: '2.1',
-                    },
-                    relationship: 'look',
-                    to: {},
-                })
+                        relationship: 'look',
+                    })
+                )
             );
 
         const node1 = await createNode('node 1');
@@ -1169,255 +1071,186 @@ describe('Ontology', () => {
         mockedAxios.post
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'device',
-                            version: '2.1',
-                            id: '4d3e1192-bde3-4f39-8c84-45d02965ab4e',
-                        },
+                    makeDeviceResponse({
+                        id: '4d3e1192-bde3-4f39-8c84-45d02965ab4e',
                         name: 'Device Test',
-                    },
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'value',
-                            version: '2.1',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        },
-                    },
+                    makeValueResponse({
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                        },
-                    },
+                    makeStateResponse({
+                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    }),
                 ])
             );
         mockedAxios.get
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
-                        type: 'network',
-                        version: '2.1',
+                makeResponse(
+                    makeNetworkResponse({
                         id: '59ec0368-cacd-4dd6-a633-03402732d1ef',
-                        connection: {
-                            online: true,
-                            timestamp: '',
-                        },
-                    },
-                    name: 'Network Name',
-                    device: [
-                        {
-                            meta: {
+                        connection: true,
+                        name: 'Network Name',
+                        devices: [
+                            makeDeviceResponse({
                                 id: 'e65ec3eb-04f1-4253-bd1b-b989b1204b81',
-                                version: '2.1',
-                                type: 'device',
-                            },
-                            name: 'Device Name',
-                            product: 'Device Product',
-                            value: [
-                                {
-                                    meta: {
+                                name: 'Device Name',
+                                product: 'Device Product',
+                                values: [
+                                    makeNumberValueResponse({
                                         id: '9ed44936-96f7-44b4-8880-aa0a197d89f0',
-                                        version: '2.1',
-                                        type: 'value',
-                                    },
-                                    name: 'Value Name',
-                                    permission: 'w',
-                                    type: 'temperature',
-                                    number: {
+                                        name: 'Value Name',
+                                        permission: 'w',
+                                        type: 'temperature',
                                         min: 0,
                                         max: 100,
                                         step: 1,
                                         unit: 'c',
-                                    },
-                                    state: [
-                                        {
-                                            meta: {
+                                        states: [
+                                            makeStateResponse({
                                                 id: 'd58e1d50-0182-4a39-bd03-129f5d316c20',
-                                                version: '2.1',
-                                                type: 'state',
-                                            },
-                                            type: 'Control',
-                                            timestamp: '',
-                                            data: '1',
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
-                    ],
-                })
+                                                type: 'Control',
+                                                timestamp: '',
+                                                data: '1',
+                                            }),
+                                        ],
+                                    }),
+                                ],
+                            }),
+                        ],
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
-                        type: 'network',
-                        version: '2.1',
+                makeResponse(
+                    makeNetworkResponse({
                         id: 'c7053fdc-ace2-4cb5-8e61-06fc1d5846f0',
-                        connection: {
-                            online: true,
-                            timestamp: '',
-                        },
-                    },
-                    name: 'Network Name',
-                    device: [
-                        {
-                            meta: {
+                        connection: true,
+                        name: 'Network Name',
+                        devices: [
+                            makeDeviceResponse({
                                 id: '3c40baca-a2e9-4e55-b7df-9331045c0a52',
-                                version: '2.1',
-                                type: 'device',
-                            },
-                            name: 'Device Name',
-                            product: 'Device Product',
-                            value: [
-                                {
-                                    meta: {
+                                name: 'Device Name',
+                                product: 'Device Product',
+                                values: [
+                                    makeNumberValueResponse({
                                         id: 'f90fa9aa-05e4-434b-99a8-b5790649d2e7',
-                                        version: '2.1',
-                                        type: 'value',
-                                    },
-                                    name: 'Value Name',
-                                    permission: 'w',
-                                    type: 'temperature',
-                                    number: {
+                                        name: 'Value Name',
+                                        permission: 'w',
+                                        type: 'temperature',
                                         min: 0,
                                         max: 100,
                                         step: 1,
                                         unit: 'c',
-                                    },
-                                    state: [
-                                        {
-                                            meta: {
+                                        states: [
+                                            makeStateResponse({
                                                 id: '3b91ff17-514e-4098-a7de-df1c16b6e95b',
-                                                version: '2.1',
-                                                type: 'state',
-                                            },
-                                            type: 'Control',
-                                            timestamp: '',
-                                            data: '1',
-                                        },
-                                        '6e6e868f-9cd6-4a7c-a324-b5e3225ac849',
-                                    ],
-                                },
-                                'f2b19d60-87db-4a4f-9226-8dafa91f36be',
-                            ],
-                        },
-                        '008dddc7-24b7-4be6-a9c8-4b197d845a1f',
-                    ],
-                })
+                                                type: 'Control',
+                                                timestamp: '',
+                                                data: '1',
+                                            }),
+                                            '6e6e868f-9cd6-4a7c-a324-b5e3225ac849',
+                                        ],
+                                    }),
+                                    'f2b19d60-87db-4a4f-9226-8dafa91f36be',
+                                ],
+                            }),
+                            '008dddc7-24b7-4be6-a9c8-4b197d845a1f',
+                        ],
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeDeviceResponse({
                         id: '008dddc7-24b7-4be6-a9c8-4b197d845a1f',
-                        version: '2.1',
-                        type: 'device',
-                    },
-                    name: 'Device Name',
-                    product: 'Device Product',
-                    value: [],
-                })
+                        name: 'Device Name',
+                        product: 'Device Product',
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeNumberValueResponse({
                         id: 'f2b19d60-87db-4a4f-9226-8dafa91f36be',
-                        version: '2.1',
-                        type: 'value',
-                    },
-                    name: 'Value Name',
-                    permission: 'w',
-                    type: 'temperature',
-                    number: {
+                        name: 'Value Name',
+                        permission: 'w',
+                        type: 'temperature',
                         min: 0,
                         max: 100,
                         step: 1,
                         unit: 'c',
-                    },
-                    state: [],
-                })
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeStateResponse({
                         id: '6e6e868f-9cd6-4a7c-a324-b5e3225ac849',
-                        version: '2.1',
-                        type: 'state',
-                    },
-                    type: 'Control',
-                    timestamp: '',
-                    data: '1',
-                })
+                        type: 'Control',
+                        timestamp: '',
+                        data: '1',
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeDeviceResponse({
                         id: 'd1f5623e-522d-4557-b20d-5629e0f232c5',
-                        version: '2.1',
-                        type: 'device',
-                    },
-                    name: 'Device Name',
-                    product: 'Device Product',
-                    value: [
-                        {
-                            meta: {
+                        name: 'Device Name',
+                        product: 'Device Product',
+                        values: [
+                            makeNumberValueResponse({
                                 id: '4f302dae-1d0b-4278-b195-0cb4794f4123',
-                                version: '2.1',
-                                type: 'value',
-                            },
-                            name: 'Value Name',
-                            permission: 'w',
-                            type: 'temperature',
-                            number: { min: 0, max: 100, step: 1, unit: 'c' },
-                            state: [
-                                {
-                                    meta: {
+                                name: 'Value Name',
+                                permission: 'w',
+                                type: 'temperature',
+                                min: 0,
+                                max: 100,
+                                step: 1,
+                                unit: 'c',
+                                states: [
+                                    makeStateResponse({
                                         id: '8b58846a-6c89-4b19-a183-eeee995f337d',
-                                        version: '2.1',
-                                        type: 'state',
-                                    },
-                                    type: 'Control',
-                                    timestamp: '',
-                                    data: '1',
-                                },
-                            ],
-                        },
-                    ],
-                })
+
+                                        type: 'Control',
+                                        timestamp: '',
+                                        data: '1',
+                                    }),
+                                ],
+                            }),
+                        ],
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeNumberValueResponse({
                         id: '7199388e-c90b-4780-83da-ce430d190d9c',
-                        version: '2.1',
-                        type: 'value',
-                    },
-                    name: 'Value Name',
-                    permission: 'w',
-                    type: 'temperature',
-                    number: { min: 0, max: 100, step: 1, unit: 'c' },
-                    state: [
-                        {
-                            meta: {
+                        name: 'Value Name',
+                        permission: 'w',
+                        type: 'temperature',
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                        unit: 'c',
+                        states: [
+                            makeStateResponse({
                                 id: 'f8ee4c57-afb2-4d30-b5c0-9d276aee4992',
-                                version: '2.1',
-                                type: 'state',
-                            },
-                            type: 'Control',
-                            timestamp: '',
-                            data: '1',
-                        },
-                    ],
-                })
+                                type: 'Control',
+                                timestamp: '',
+                                data: '1',
+                            }),
+                        ],
+                    })
+                )
             )
             .mockResolvedValueOnce(
                 makeResponse({
@@ -1479,17 +1312,11 @@ describe('Ontology', () => {
             .mockResolvedValueOnce(makeResponse([fullNetworkResponse]))
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            id: 'b62eca33-94a2-476e-b594-0c6c0f6ddb67',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                        relationship: 'child',
-                        to: {
-                            device: [fullNetworkResponse.device[0].meta.id],
-                        },
-                    },
+                    makeOntologyEdgeResponse({
+                        id: 'b62eca33-94a2-476e-b594-0c6c0f6ddb67',
+                        to_type: 'device',
+                        to_id: fullNetworkResponse.device[0].meta.id,
+                    }),
                 ])
             );
 
@@ -1546,84 +1373,55 @@ describe('Ontology', () => {
             .mockResolvedValueOnce(makeResponse(responses['ems_network']))
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        from: {
-                            network: ['99061ade-2aa1-445d-83cf-868559770026'],
-                        },
-                        to: {
-                            device: ['74f15b96-ac61-4550-9970-f957a3281f9a'],
-                        },
+                    makeOntologyEdgeResponse({
+                        id: '77cbc4a6-1bba-47b9-b087-155b281bd9af',
+                        from_type: 'network',
+                        from_id: '99061ade-2aa1-445d-83cf-868559770026',
+                        to_type: 'device',
+                        to_id: '74f15b96-ac61-4550-9970-f957a3281f9a',
                         relationship: 'contains',
-                        meta: {
-                            id: '77cbc4a6-1bba-47b9-b087-155b281bd9af',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                    },
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        from: {
-                            device: ['74f15b96-ac61-4550-9970-f957a3281f9a'],
-                        },
-                        to: {
-                            device: ['f269650d-d4a8-4745-80f8-5791fadf5e73'],
-                        },
+                    makeOntologyEdgeResponse({
+                        from_type: 'device',
+                        from_id: '74f15b96-ac61-4550-9970-f957a3281f9a',
+                        to_type: 'device',
+                        to_id: 'f269650d-d4a8-4745-80f8-5791fadf5e73',
                         relationship: 'contains',
-                        meta: {
-                            id: '0cbae50e-2131-4ec3-842f-e930d2d32175',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                    },
-                    {
-                        from: {
-                            device: ['74f15b96-ac61-4550-9970-f957a3281f9a'],
-                        },
-                        to: {
-                            device: ['2af6d04a-b833-4b37-a921-e82c8448e4bb'],
-                        },
+                        id: '0cbae50e-2131-4ec3-842f-e930d2d32175',
+                    }),
+                    makeOntologyEdgeResponse({
+                        from_type: 'device',
+                        from_id: '74f15b96-ac61-4550-9970-f957a3281f9a',
+                        to_type: 'device',
+                        to_id: '2af6d04a-b833-4b37-a921-e82c8448e4bb',
+
                         relationship: 'contains',
-                        meta: {
-                            id: 'b639721f-7413-4ea8-a398-5abaa5fec583',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                    },
+                        id: 'b639721f-7413-4ea8-a398-5abaa5fec583',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        from: {
-                            device: ['f269650d-d4a8-4745-80f8-5791fadf5e73'],
-                        },
-                        to: {
-                            device: ['c7fb2303-07a4-4793-b63a-0865ff785633'],
-                        },
+                    makeOntologyEdgeResponse({
+                        from_type: 'device',
+                        from_id: 'f269650d-d4a8-4745-80f8-5791fadf5e73',
+                        to_type: 'device',
+                        to_id: 'c7fb2303-07a4-4793-b63a-0865ff785633',
                         relationship: 'contains',
-                        meta: {
-                            id: '626b5a95-4812-4395-977a-21c6055e5509',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                    },
-                    {
-                        from: {
-                            device: ['f269650d-d4a8-4745-80f8-5791fadf5e73'],
-                        },
-                        to: {
-                            device: ['8b388544-76f0-42cb-ba2a-0189ce17ce4e'],
-                        },
+                        id: '626b5a95-4812-4395-977a-21c6055e5509',
+                    }),
+                    makeOntologyEdgeResponse({
+                        from_type: 'device',
+                        from_id: 'f269650d-d4a8-4745-80f8-5791fadf5e73',
+                        to_type: 'device',
+                        to_id: '8b388544-76f0-42cb-ba2a-0189ce17ce4e',
                         relationship: 'contains',
-                        meta: {
-                            id: 'b783fedd-caf8-4c18-b17d-b31fad967fb4',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
-                    },
+                        id: 'b783fedd-caf8-4c18-b17d-b31fad967fb4',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(makeResponse([]))
@@ -1682,20 +1480,15 @@ describe('Ontology', () => {
                             ],
                         },
                     },
-                    {
-                        meta: {
-                            id: 'aaa56f4e-cb10-42fb-8878-c67e3a14ddb1',
-                            type: 'ontology',
-                            version: '2.1',
-                        },
+                    makeOntologyEdgeResponse({
+                        id: 'aaa56f4e-cb10-42fb-8878-c67e3a14ddb1',
                         name: 'Onto name',
                         description: 'Onto description',
                         data: { test: 'data' },
                         relationship: 'state',
-                        to: {
-                            state: ['1e5eb75f-0912-4858-9ad5-89fb21787768'],
-                        },
-                    },
+                        to_type: 'state',
+                        to_id: '1e5eb75f-0912-4858-9ad5-89fb21787768',
+                    }),
                 ])
             )
             .mockRejectedValueOnce(
@@ -1711,28 +1504,24 @@ describe('Ontology', () => {
                 })
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeStateResponse({
                         id: '7c7171b7-db9c-4418-8e29-2e76c42597b0',
-                        version: '2.1',
-                        type: 'state',
-                    },
-                    type: 'Control',
-                    timestamp: '',
-                    data: '1',
-                })
+                        type: 'Control',
+                        timestamp: '',
+                        data: '1',
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse({
-                    meta: {
+                makeResponse(
+                    makeStateResponse({
                         id: '1e5eb75f-0912-4858-9ad5-89fb21787768',
-                        version: '2.1',
-                        type: 'state',
-                    },
-                    type: 'Control',
-                    timestamp: '',
-                    data: '1',
-                })
+                        type: 'Control',
+                        timestamp: '',
+                        data: '1',
+                    })
+                )
             )
             .mockResolvedValueOnce(makeResponse([]))
             .mockResolvedValueOnce(makeResponse([]));

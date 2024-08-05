@@ -759,6 +759,7 @@ export const IEdge = t.iface([], {
 
 export const IOntologyModel = t.iface(['IModel'], {
     getParentEdges: t.func(t.array('IOntologyEdge')),
+    addEdge: t.func('void', t.param('edge', 'IOntologyEdge')),
     createEdge: t.func('IOntologyEdge', t.param('params', 'IEdge')),
     getAllEdges: t.func(
         t.array('IOntologyEdge'),

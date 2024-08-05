@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { JSONObject } from '../../src';
+import { JSONObject, Meta } from '../../src';
 import { randomUUID } from 'crypto';
 
 const directoryPath = path.join(__dirname, 'json');
@@ -52,6 +52,7 @@ export function makeNetworkResponse(options?: {
 export function makeDeviceResponse(options?: {
     name?: string;
     id?: string;
+    product?: string;
     values?: (JSONObject | string)[];
 }) {
     return {
@@ -88,6 +89,38 @@ export function makeValueResponse(options?: {
     };
 }
 
+export function makeNumberValueResponse(options?: {
+    name?: string;
+    id?: string;
+    permission?: string;
+    type?: string;
+    unit?: string;
+    min?: number;
+    max?: number;
+    step?: number;
+    states?: (JSONObject | string)[];
+}) {
+    return {
+        meta: {
+            type: 'value',
+            version: '2.1',
+            id: options?.id || randomUUID(),
+        },
+        name: options?.name || 'test',
+        permission: options?.permission || 'rw',
+        type: options?.type || 'number',
+        period: '0',
+        delta: '0',
+        number: {
+            min: options?.min || 0,
+            max: options?.max || 1,
+            step: options?.step || 1,
+            unit: options?.unit || 'boolean',
+        },
+        state: options?.states || [],
+    };
+}
+
 export function makeStateResponse(options?: {
     type?: string;
     id?: string;
@@ -116,6 +149,47 @@ export function makeDataResponse(options?: { id?: string }) {
     };
 }
 
+export function makeOntologyEdgeResponse(options?: {
+    id?: string;
+    name?: string;
+    description?: string;
+    data?: JSONObject;
+    relationship?: string;
+    from_type?: string;
+    from_id?: string;
+    to_type?: string;
+    to_id?: string;
+}) {
+    const edge: {
+        meta: Meta;
+        name?: string;
+        description?: string;
+        data?: JSONObject;
+        relationship: string;
+        from: Record<string, string[]>;
+        to: Record<string, string[]>;
+    } = {
+        meta: {
+            id: options?.id || randomUUID(),
+            type: 'ontology',
+            version: '2.1',
+        },
+        name: options?.name,
+        description: options?.description,
+        data: options?.data,
+        relationship: options?.relationship || 'child',
+        to: {},
+        from: {},
+    };
+    edge.to[options?.to_type || 'network'] = [options?.to_id || randomUUID()];
+
+    if (options?.from_id) {
+        edge.from[options?.from_type || 'network'] = [options.from_id];
+    }
+
+    return edge;
+}
+
 export function makeOntologyNodeResponse(options?: {
     id?: string;
     name?: string;
@@ -127,6 +201,8 @@ export function makeOntologyNodeResponse(options?: {
             id: options?.id || randomUUID(),
         },
         data_meta: {
+            type: 'ontology_node',
+            version: '1',
             id: `ontology_node_${options?.name || 'test'}`,
         },
     };

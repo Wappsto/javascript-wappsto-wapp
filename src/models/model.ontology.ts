@@ -41,6 +41,11 @@ export class OntologyModel extends Model implements IOntologyModel {
         return this.parentEdges;
     }
 
+    addEdge(edge: OntologyEdge): void {
+        this.#ontologyLoaded = true;
+        this.edges.push(edge);
+    }
+
     async createEdge(params: IEdge): Promise<OntologyEdge> {
         Model.validateMethod('OntologyModel', 'createEdge', arguments);
 
