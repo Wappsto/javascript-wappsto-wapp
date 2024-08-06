@@ -10,6 +10,7 @@ import {
     makeDeviceResponse,
     makeValueResponse,
     makeStateResponse,
+    makeNumberValueResponse,
 } from './util/response';
 import { delay, makeResponse } from './util/helpers';
 
@@ -99,41 +100,25 @@ describe('device', () => {
     });
 
     const response2Devices = [
-        {
-            meta: {
-                type: 'device',
-                version: '2.1',
-                id: 'a8175d07-db1b-4a5b-92dd-45ae573ba78a',
-            },
+        makeDeviceResponse({
+            id: 'a8175d07-db1b-4a5b-92dd-45ae573ba78a',
             name: 'test',
-        },
-        {
-            meta: {
-                type: 'device',
-                version: '2.1',
-                id: '7c1611da-46e2-4f0d-85fa-1b010561b35d',
-            },
+        }),
+        makeDeviceResponse({
+            id: '7c1611da-46e2-4f0d-85fa-1b010561b35d',
             name: 'test',
-        },
+        }),
     ];
 
     const response3Devices = [
-        {
-            meta: {
-                type: 'device',
-                version: '2.1',
-                id: '782c5147-0852-4ed2-ac64-66d56385cfd8',
-            },
+        makeDeviceResponse({
+            id: '782c5147-0852-4ed2-ac64-66d56385cfd8',
             name: 'test',
-        },
-        {
-            meta: {
-                type: 'device',
-                version: '2.1',
-                id: '7c1611da-46e2-4f0d-85fa-1b010561b35d',
-            },
+        }),
+        makeDeviceResponse({
+            id: '7c1611da-46e2-4f0d-85fa-1b010561b35d',
             name: 'test',
-        },
+        }),
         '47631c40-b687-4eca-9844-94be7328773f',
     ];
 
@@ -740,13 +725,10 @@ describe('device', () => {
 
         mockedAxios.post.mockResolvedValueOnce({
             data: [
-                {
-                    meta: {
-                        type: 'state',
-                        version: '2.1',
-                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                    },
-                },
+                makeStateResponse({
+                    id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    type: 'Control',
+                }),
             ],
         });
 
@@ -919,36 +901,27 @@ describe('device', () => {
         mockedAxios.post
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'value',
-                            version: '2.1',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        },
+                    makeValueResponse({
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        name: 'Value Name',
+                        type: 'type',
                         permission: '',
-                    },
+                        delta: 'delta',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                        },
-                    },
+                    makeStateResponse({
+                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
-                        },
-                    },
+                    makeStateResponse({
+                        id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
+                    }),
                 ])
             );
 
@@ -1042,35 +1015,26 @@ describe('device', () => {
         mockedAxios.post
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'value',
-                            version: '2.1',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        },
-                    },
+                    makeValueResponse({
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        name: 'Value Name',
+                        type: 'type',
+                        delta: 'delta',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                        },
-                    },
+                    makeStateResponse({
+                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
-                        },
-                    },
+                    makeStateResponse({
+                        id: 'd5ad7430-7948-47b5-ab85-c9a93d0bff5b',
+                    }),
                 ])
             );
 
@@ -1147,24 +1111,19 @@ describe('device', () => {
         mockedAxios.post
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'value',
-                            version: '2.1',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        },
-                    },
+                    makeValueResponse({
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        name: 'Value Name',
+                        type: 'type',
+                        delta: 'delta',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                        },
-                    },
+                    makeStateResponse({
+                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    }),
                 ])
             );
 
@@ -1228,24 +1187,19 @@ describe('device', () => {
         mockedAxios.post
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'value',
-                            version: '2.1',
-                            id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                        },
-                    },
+                    makeValueResponse({
+                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
+                        name: 'Value Name',
+                        type: 'type',
+                        delta: 'delta',
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                        },
-                    },
+                    makeStateResponse({
+                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    }),
                 ])
             );
 
@@ -1309,25 +1263,19 @@ describe('device', () => {
     it('can return value as a child', async () => {
         mockedAxios.put.mockResolvedValueOnce(
             makeResponse([
-                {
+                makeNumberValueResponse({
                     permission: 'rw',
                     type: 'type',
                     period: '0',
-                    meta: {
-                        type: 'value',
-                        version: '2.1',
-                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                    },
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     name: 'Value Name',
                     delta: 'delta',
-                    number: {
-                        min: 0,
-                        max: 1,
-                        step: 1,
-                        unit: 'unit',
-                        si_conversion: 'si_conversion',
-                    },
-                },
+                    min: 0,
+                    max: 1,
+                    step: 1,
+                    unit: 'unit',
+                    si_conversion: 'si_conversion',
+                }),
             ])
         );
         mockedAxios.post
@@ -1417,25 +1365,19 @@ describe('device', () => {
     it('can update a value when the parameters are changed', async () => {
         mockedAxios.put.mockResolvedValueOnce(
             makeResponse([
-                {
+                makeNumberValueResponse({
                     permission: 'rw',
                     type: 'type',
                     period: '0',
-                    meta: {
-                        type: 'value',
-                        version: '2.1',
-                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                    },
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     name: 'Value Name',
                     delta: 'delta',
-                    number: {
-                        min: 0,
-                        max: 1,
-                        step: 1,
-                        unit: 'new unit',
-                        si_conversion: 'si_conversion',
-                    },
-                },
+                    min: 0,
+                    max: 1,
+                    step: 1,
+                    unit: 'new unit',
+                    si_conversion: 'si_conversion',
+                }),
             ])
         );
         mockedAxios.post
@@ -1614,26 +1556,18 @@ describe('device', () => {
         mockedAxios.post
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'value',
-                            version: '2.1',
-                            id: 'b2c8fe69-eee5-4dc4-a1f0-54b2ab044b2b',
-                        },
+                    makeValueResponse({
+                        id: 'b2c8fe69-eee5-4dc4-a1f0-54b2ab044b2b',
                         name: 'Test Value',
                         permission: '',
-                    },
+                    }),
                 ])
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: '1c067551-799a-4b35-9a75-5eb0b978ee97',
-                        },
-                    },
+                    makeStateResponse({
+                        id: '1c067551-799a-4b35-9a75-5eb0b978ee97',
+                    }),
                 ])
             );
 
@@ -2043,13 +1977,9 @@ describe('device', () => {
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'state',
-                            version: '2.1',
-                            id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
-                        },
-                    },
+                    makeStateResponse({
+                        id: '8d0468c2-ed7c-4897-ae87-bc17490733f7',
+                    }),
                 ])
             );
 

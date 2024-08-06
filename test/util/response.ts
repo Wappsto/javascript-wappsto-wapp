@@ -27,8 +27,9 @@ fs.readdir(directoryPath, function (err, files) {
 export { data as responses };
 
 export function makeNetworkResponse(options?: {
-    name?: string;
     id?: string;
+    name?: string;
+    description?: string;
     connection?: boolean;
     devices?: (JSONObject | string)[];
 }) {
@@ -45,14 +46,21 @@ export function makeNetworkResponse(options?: {
                 : undefined,
         },
         name: options?.name || 'test',
+        description: options?.description || undefined,
         device: options?.devices || [],
     };
 }
 
 export function makeDeviceResponse(options?: {
-    name?: string;
     id?: string;
+    name?: string;
+    description?: string;
+    communication?: string;
+    manufacturer?: string;
     product?: string;
+    protocol?: string;
+    serial?: string;
+    version?: string;
     values?: (JSONObject | string)[];
 }) {
     return {
@@ -62,6 +70,13 @@ export function makeDeviceResponse(options?: {
             id: options?.id || randomUUID(),
         },
         name: options?.name || 'test',
+        description: options?.description || undefined,
+        communication: options?.communication || undefined,
+        manufacturer: options?.manufacturer || undefined,
+        product: options?.product || undefined,
+        protocol: options?.protocol || undefined,
+        serial: options?.serial || undefined,
+        version: options?.version || undefined,
         value: options?.values || [],
     };
 }
@@ -72,6 +87,7 @@ export function makeValueResponse(options?: {
     permission?: string;
     type?: string;
     unit?: string;
+    delta?: string;
     states?: (JSONObject | string)[];
 }) {
     return {
@@ -84,7 +100,7 @@ export function makeValueResponse(options?: {
         permission: options?.permission || 'rw',
         type: options?.type || 'number',
         period: '0',
-        delta: '0',
+        delta: options?.delta || '0',
         state: options?.states || [],
     };
 }
@@ -94,10 +110,13 @@ export function makeNumberValueResponse(options?: {
     id?: string;
     permission?: string;
     type?: string;
+    period?: string;
+    delta?: string;
     unit?: string;
     min?: number;
     max?: number;
     step?: number;
+    si_conversion?: string;
     states?: (JSONObject | string)[];
 }) {
     return {
@@ -109,13 +128,14 @@ export function makeNumberValueResponse(options?: {
         name: options?.name || 'test',
         permission: options?.permission || 'rw',
         type: options?.type || 'number',
-        period: '0',
-        delta: '0',
+        period: options?.period || '0',
+        delta: options?.delta || '0',
         number: {
             min: options?.min || 0,
             max: options?.max || 1,
             step: options?.step || 1,
             unit: options?.unit || 'boolean',
+            si_conversion: options?.si_conversion || undefined,
         },
         state: options?.states || [],
     };

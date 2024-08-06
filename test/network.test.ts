@@ -581,15 +581,11 @@ describe('network', () => {
         mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post.mockResolvedValueOnce(
             makeResponse([
-                {
-                    meta: {
-                        type: 'network',
-                        version: '2.1',
-                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                    },
+                makeNetworkResponse({
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     name: 'Network Name',
                     description: 'Description',
-                },
+                }),
             ])
         );
 
@@ -616,21 +612,17 @@ describe('network', () => {
     it('can return device as a child', async () => {
         mockedAxios.put.mockResolvedValueOnce(
             makeResponse([
-                {
+                makeDeviceResponse({
                     communication: 'communication',
                     description: 'description',
                     manufacturer: 'manufacturer',
-                    meta: {
-                        type: 'device',
-                        version: '2.1',
-                        id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
-                    },
+                    id: 'f589b816-1f2b-412b-ac36-1ca5a6db0273',
                     name: 'Device Name',
                     product: 'product',
                     protocol: 'protocol',
                     serial: 'serial',
                     version: 'version',
-                },
+                }),
             ])
         );
 
@@ -1023,14 +1015,10 @@ describe('network', () => {
             )
             .mockResolvedValueOnce(
                 makeResponse([
-                    {
-                        meta: {
-                            type: 'device',
-                            version: '2.1',
-                            id: '700a43fb-f520-46de-b628-92c95a8d0e08',
-                        },
+                    makeDeviceResponse({
+                        id: '700a43fb-f520-46de-b628-92c95a8d0e08',
                         name: 'Device Test',
-                    },
+                    }),
                 ])
             );
 
