@@ -176,6 +176,10 @@ export const Meta = t.iface([], {
     tag_by_user: t.opt(t.array('string')),
 });
 
+export const MetaItem = t.iface([], {
+    meta: 'Meta',
+});
+
 export const FetchRequest = t.iface([], {
     endpoint: 'string',
     params: t.opt('JSONObject'),
@@ -293,6 +297,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     Connection,
     ParentName,
     Meta,
+    MetaItem,
     FetchRequest,
     AnalyticsResponse,
     NotificationCustomData,

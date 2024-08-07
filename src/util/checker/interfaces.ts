@@ -584,6 +584,7 @@ export interface IOntologyModelFunc {
     deleteModelFromEdge(params: IEdge): Promise<void>;
     addParentEdge(edge: IOntologyEdge, to: IOntologyModel): void;
     removeParentEdge(edge: IOntologyEdge): void;
+    transverse(path: string, getAll?: boolean): Promise<IOntologyModel[]>;
 }
 export interface IOntologyEdge extends IModel {
     relationship: Relationship;

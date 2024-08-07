@@ -793,6 +793,11 @@ export const IOntologyModelFunc = t.iface([], {
         t.param('to', 'IOntologyModel')
     ),
     removeParentEdge: t.func('void', t.param('edge', 'IOntologyEdge')),
+    transverse: t.func(
+        t.array('IOntologyModel'),
+        t.param('path', 'string'),
+        t.param('getAll', 'boolean', true)
+    ),
 });
 
 export const IOntologyEdge = t.iface(['IModel'], {
