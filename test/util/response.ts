@@ -6,22 +6,14 @@ import { randomUUID } from 'crypto';
 const directoryPath = path.join(__dirname, 'json');
 const data: Record<string, JSONObject> = {};
 
-fs.readdir(directoryPath, function (err, files) {
-    //handling error
-    if (err) {
-        return console.log('Unable to scan directory: ' + err);
+const files = fs.readdirSync(directoryPath);
+files.forEach(function (file) {
+    const jsonString = fs.readFileSync(path.join(directoryPath, file), 'utf8');
+    try {
+        data[file.split('.')[0]] = JSON.parse(jsonString);
+    } catch (e) {
+        console.log('Loading test json', e);
     }
-    files.forEach(function (file) {
-        const jsonString = fs.readFileSync(
-            path.join(directoryPath, file),
-            'utf8'
-        );
-        try {
-            data[file.split('.')[0]] = JSON.parse(jsonString);
-        } catch (e) {
-            console.log('Loading test json', e);
-        }
-    });
 });
 
 export { data as responses };
