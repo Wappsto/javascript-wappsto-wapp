@@ -308,8 +308,12 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             for (let i = 0; i < this.state.length; i++) {
                 if (typeof this.state[i] === 'string') {
                     const id: string = this.state[i] as unknown as string;
-                    this.state[i] = ((await getModel('state', id)) ??
-                        new State()) as State;
+                    const state = await getModel('state', id);
+                    if (state) {
+                        this.state[i] = state as State;
+                    } else {
+                        this.state[i] = new State();
+                    }
                     this.state[i].parent = this;
                 } else if (reloadAll) {
                     await this.state[i].reload();
