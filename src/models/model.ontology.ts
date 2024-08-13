@@ -6,14 +6,20 @@ import {
     IOntologyEdge,
     IOntologyModel,
     JSONObject,
+    Relationship,
 } from '../util/types';
 import { Model } from './model';
 import { OntologyEdge } from './ontology.edge';
 
+let loadOntologyCallback: () => Promise<void>;
+
+export function setLoadOntologyCallback(callback: () => Promise<void>) {
+    loadOntologyCallback = callback;
+}
+
 export class OntologyModel extends Model implements IOntologyModel {
     edges: OntologyEdge[] = [];
     parentEdges: OntologyEdge[] = [];
-    #ontologyLoaded = false;
 
     /**
      * Get the ontology edges of the current object.
@@ -42,8 +48,8 @@ export class OntologyModel extends Model implements IOntologyModel {
     }
 
     addEdge(edge: OntologyEdge): void {
-        this.#ontologyLoaded = true;
         this.edges.push(edge);
+        edge.parent = this;
     }
 
     async createEdge(params: IEdge): Promise<OntologyEdge> {
@@ -99,7 +105,6 @@ export class OntologyModel extends Model implements IOntologyModel {
 
     async deleteEdges(): Promise<void> {
         await this.getAllEdges();
-
         while (this.edges.length) {
             await this.edges[0].delete();
         }
@@ -137,6 +142,11 @@ export class OntologyModel extends Model implements IOntologyModel {
                 return;
             }
         }
+    }
+
+    async findEdges(relationship: Relationship): Promise<OntologyEdge[]> {
+        await this.getAllEdges();
+        return this.edges.filter((o) => o.relationship === relationship);
     }
 
     async findEdge(params: IEdge): Promise<OntologyEdge | undefined> {
@@ -178,7 +188,8 @@ export class OntologyModel extends Model implements IOntologyModel {
         }
     }
 
-    async getAllEdges(force?: boolean): Promise<IOntologyEdge[]> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async getAllEdges(_force?: boolean): Promise<IOntologyEdge[]> {
         Model.validateMethod('OntologyModel', 'getAllEdges', arguments);
 
         if (this.meta.id === undefined) {
@@ -186,16 +197,10 @@ export class OntologyModel extends Model implements IOntologyModel {
             return [];
         }
 
-        if (!this.#ontologyLoaded || force) {
-            this.#ontologyLoaded = true;
-            this.edges = await OntologyEdge.fetch({
-                endpoint: `${this.getUrl()}/ontology`,
-            });
-
-            this.edges.forEach((o) => {
-                o.setParent(this);
-            });
+        if (loadOntologyCallback) {
+            await loadOntologyCallback();
         }
+
         return this.edges;
     }
 
@@ -203,6 +208,8 @@ export class OntologyModel extends Model implements IOntologyModel {
         path: string,
         getAll?: boolean
     ): Promise<IOntologyModel[]> {
+        Model.validateMethod('OntologyModel', 'transverse', arguments);
+
         if (this.meta.id === undefined) {
             printWarning('transverse called on an deleted node');
             return [];

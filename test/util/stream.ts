@@ -5,6 +5,7 @@ import {
     startBackgroundTimer,
     streamHelperReset,
 } from '../../src/stream_helpers';
+import { clearOntologyStatus } from '../../src/models/ontology.node';
 import { AxiosStatic } from 'axios';
 
 let server: WS;
@@ -26,6 +27,7 @@ export function after(mockedAxios?: jest.Mocked<AxiosStatic>) {
     openStream.close();
     openStream.reset();
     streamHelperReset();
+    clearOntologyStatus();
     server?.close();
     WS.clean();
     clearTimeout(startBackgroundTimer);

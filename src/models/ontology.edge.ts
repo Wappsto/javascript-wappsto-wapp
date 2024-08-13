@@ -11,6 +11,9 @@ import { getModel } from '../util/modelStore';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';
 
+let _allEdgesLoaded = false;
+let _allEdges: OntologyEdge[] = [];
+
 export class OntologyEdge extends Model implements IOntologyEdge {
     static endpoint = '/2.1/ontology';
     static attributes = ['name', 'description', 'relationship', 'data', 'to'];
@@ -125,8 +128,7 @@ export class OntologyEdge extends Model implements IOntologyEdge {
                     new Promise(async (resolve: () => void) => {
                         const model = await getModel(type, id);
                         if (model) {
-                            const ontologyModel = model as IOntologyModel;
-                            ontologyModel.addEdge(this);
+                            (model as IOntologyModel).addEdge(this);
                         } else if (model === false) {
                             this.#addFailedModel(type, id);
                         }
@@ -220,12 +222,16 @@ export class OntologyEdge extends Model implements IOntologyEdge {
 }
 
 export async function getAllEdges() {
+    if (_allEdgesLoaded) {
+        return _allEdges;
+    }
+    _allEdgesLoaded = true;
+
     const data = await Model.fetch({
-        endpoint: '/ontology',
+        endpoint: '/2.1/ontology',
         params: { expand: 1 },
     });
     const res = OntologyEdge.fromArray(data);
-
     const proms: Promise<void>[] = [];
     res.forEach((o, index) => {
         if (typeof o === 'string') {
@@ -250,5 +256,11 @@ export async function getAllEdges() {
 
     await Promise.all(proms);
 
-    return res as OntologyEdge[];
+    _allEdges = res as OntologyEdge[];
+    return _allEdges as OntologyEdge[];
+}
+
+export function clearOntologyEdgeStatus() {
+    _allEdgesLoaded = false;
+    _allEdges = [];
 }

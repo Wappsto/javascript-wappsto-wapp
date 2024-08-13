@@ -1,1 +1,195 @@
-[{"device":[{"status":[],"value":[{"state":[{"timestamp":"2022-12-05T22:00:00.000000Z","data":"0.25","status_payment":"owned","type":"Report","meta":{"id":"3b5aebdf-4733-4661-ac03-875650e6864e","type":"state","version":"2.1","owner":"4607ea4f-001f-448a-93e1-5eeb09da552a","manufacturer":"7508417e-5522-479b-8cee-6f422ff29914","created":"2022-12-08T09:40:00.575805Z","updated":"2022-12-08T12:06:24.278779Z","application":"261a76da-12d0-4a9b-b909-6ae9afc92e34","tag":[],"tag_by_user":[],"name_by_user":"Report","iot":false}}],"eventlog":[],"name":"Total energy","type":"load_curve_energy","period":"0","delta":"0","permission":"r","number":{"min":0.0,"max":100000.0,"step":0.1,"unit":"Wh"},"meta":{"id":"3b894c06-05dd-46ef-8041-1f42f7066ad9","type":"value","version":"2.1","owner":"4607ea4f-001f-448a-93e1-5eeb09da552a","manufacturer":"7508417e-5522-479b-8cee-6f422ff29914","created":"2022-12-08T09:40:00.474312Z","updated":"2022-12-08T09:40:00.575805Z","application":"261a76da-12d0-4a9b-b909-6ae9afc92e34","tag":[],"tag_by_user":[],"name_by_user":"Total energy"}}],"name":"Homes","manufacturer":"EMS Configurator","product":"EMS Node","version":"1.0.0","serial":"EMS-2","protocol":"wappsto-wapp","communication":"wappsto","meta":{"id":"74f15b96-ac61-4550-9970-f957a3281f9a","type":"device","version":"2.1","owner":"4607ea4f-001f-448a-93e1-5eeb09da552a","manufacturer":"7508417e-5522-479b-8cee-6f422ff29914","created":"2022-12-08T09:40:00.304344Z","updated":"2022-12-08T09:40:14.132001Z","application":"261a76da-12d0-4a9b-b909-6ae9afc92e34","tag":[],"tag_by_user":[],"name_by_user":"Homes","iot":false,"connection":{"timestamp":"2022-12-08T09:39:35.502375Z","online":false},"stable_connection":{"timestamp":"2022-12-08T09:39:35.502375Z","online":false}}},{"status":[],"value":[{"state":[{"timestamp":"2022-12-06T22:00:00.000000Z","data":"0.28","status_payment":"owned","type":"Report","meta":{"id":"84a4110d-e146-4775-8639-89c4bed1fea1","type":"state","version":"2.1","owner":"4607ea4f-001f-448a-93e1-5eeb09da552a","manufacturer":"7508417e-5522-479b-8cee-6f422ff29914","created":"2022-12-08T09:40:06.601950Z","updated":"2022-12-08T12:06:15.385673Z","application":"261a76da-12d0-4a9b-b909-6ae9afc92e34","tag":[],"tag_by_user":[],"name_by_user":"Report","iot":false}}],"eventlog":[],"name":"Total energy","type":"load_curve_energy","period":"0","delta":"0","permission":"r","number":{"min":0.0,"max":100000.0,"step":0.1,"unit":"Wh"},"meta":{"id":"4f1c4085-cffa-497f-a844-5cffb46c7685","type":"value","version":"2.1","owner":"4607ea4f-001f-448a-93e1-5eeb09da552a","manufacturer":"7508417e-5522-479b-8cee-6f422ff29914","created":"2022-12-08T09:40:06.488624Z","updated":"2022-12-08T09:40:06.601950Z","application":"261a76da-12d0-4a9b-b909-6ae9afc92e34","tag":[],"tag_by_user":[],"name_by_user":"Total energy"}}],"name":"Aalborg","manufacturer":"EMS Configurator","product":"EMS Node","version":"1.0.0","serial":"EMS-3","protocol":"wappsto-wapp","communication":"wappsto","meta":{"id":"f269650d-d4a8-4745-80f8-5791fadf5e73","type":"device","version":"2.1","owner":"4607ea4f-001f-448a-93e1-5eeb09da552a","manufacturer":"7508417e-5522-479b-8cee-6f422ff29914","created":"2022-12-08T09:40:06.404277Z","updated":"2022-12-08T09:40:10.940272Z","application":"261a76da-12d0-4a9b-b909-6ae9afc92e34","tag":[],"tag_by_user":[],"name_by_user":"Aalborg","iot":false,"connection":{"timestamp":"2022-12-08T09:39:35.502375Z","online":false},"stable_connection":{"timestamp":"2022-12-08T09:39:35.502375Z","online":false}}}],"name":"EMS Configurator","meta":{"id":"99061ade-2aa1-445d-83cf-868559770026","type":"network","version":"2.1","owner":"4607ea4f-001f-448a-93e1-5eeb09da552a","manufacturer":"7508417e-5522-479b-8cee-6f422ff29914","created":"2022-12-08T09:39:35.446191Z","updated":"2022-12-08T09:40:06.404277Z","application":"261a76da-12d0-4a9b-b909-6ae9afc92e34","tag":[],"tag_by_user":[],"name_by_user":"EMS Configurator","iot":false,"connection":{"timestamp":"2022-12-08T09:39:35.502375Z","online":false},"stable_connection":{"timestamp":"2022-12-08T09:39:35.502375Z","online":false}}}]
+[
+    {
+        "device": [
+            {
+                "status": [],
+                "value": [
+                    {
+                        "state": [
+                            {
+                                "timestamp": "2022-12-05T22:00:00.000000Z",
+                                "data": "0.25",
+                                "status_payment": "owned",
+                                "type": "Report",
+                                "meta": {
+                                    "id": "3b5aebdf-4733-4661-ac03-875650e6864e",
+                                    "type": "state",
+                                    "version": "2.1",
+                                    "owner": "4607ea4f-001f-448a-93e1-5eeb09da552a",
+                                    "manufacturer": "7508417e-5522-479b-8cee-6f422ff29914",
+                                    "created": "2022-12-08T09:40:00.575805Z",
+                                    "updated": "2022-12-08T12:06:24.278779Z",
+                                    "application": "261a76da-12d0-4a9b-b909-6ae9afc92e34",
+                                    "tag": [],
+                                    "tag_by_user": [],
+                                    "name_by_user": "Report",
+                                    "iot": false
+                                }
+                            }
+                        ],
+                        "eventlog": [],
+                        "name": "Total energy",
+                        "type": "load_curve_energy",
+                        "period": "0",
+                        "delta": "0",
+                        "permission": "r",
+                        "number": {
+                            "min": 0.0,
+                            "max": 100000.0,
+                            "step": 0.1,
+                            "unit": "Wh"
+                        },
+                        "meta": {
+                            "id": "3b894c06-05dd-46ef-8041-1f42f7066ad9",
+                            "type": "value",
+                            "version": "2.1",
+                            "owner": "4607ea4f-001f-448a-93e1-5eeb09da552a",
+                            "manufacturer": "7508417e-5522-479b-8cee-6f422ff29914",
+                            "created": "2022-12-08T09:40:00.474312Z",
+                            "updated": "2022-12-08T09:40:00.575805Z",
+                            "application": "261a76da-12d0-4a9b-b909-6ae9afc92e34",
+                            "tag": [],
+                            "tag_by_user": [],
+                            "name_by_user": "Total energy"
+                        }
+                    }
+                ],
+                "name": "Homes",
+                "manufacturer": "EMS Configurator",
+                "product": "EMS Node",
+                "version": "1.0.0",
+                "serial": "EMS-2",
+                "protocol": "wappsto-wapp",
+                "communication": "wappsto",
+                "meta": {
+                    "id": "74f15b96-ac61-4550-9970-f957a3281f9a",
+                    "type": "device",
+                    "version": "2.1",
+                    "owner": "4607ea4f-001f-448a-93e1-5eeb09da552a",
+                    "manufacturer": "7508417e-5522-479b-8cee-6f422ff29914",
+                    "created": "2022-12-08T09:40:00.304344Z",
+                    "updated": "2022-12-08T09:40:14.132001Z",
+                    "application": "261a76da-12d0-4a9b-b909-6ae9afc92e34",
+                    "tag": [],
+                    "tag_by_user": [],
+                    "name_by_user": "Homes",
+                    "iot": false,
+                    "connection": {
+                        "timestamp": "2022-12-08T09:39:35.502375Z",
+                        "online": false
+                    },
+                    "stable_connection": {
+                        "timestamp": "2022-12-08T09:39:35.502375Z",
+                        "online": false
+                    }
+                }
+            },
+            {
+                "status": [],
+                "value": [
+                    {
+                        "state": [
+                            {
+                                "timestamp": "2022-12-06T22:00:00.000000Z",
+                                "data": "0.28",
+                                "status_payment": "owned",
+                                "type": "Report",
+                                "meta": {
+                                    "id": "84a4110d-e146-4775-8639-89c4bed1fea1",
+                                    "type": "state",
+                                    "version": "2.1",
+                                    "owner": "4607ea4f-001f-448a-93e1-5eeb09da552a",
+                                    "manufacturer": "7508417e-5522-479b-8cee-6f422ff29914",
+                                    "created": "2022-12-08T09:40:06.601950Z",
+                                    "updated": "2022-12-08T12:06:15.385673Z",
+                                    "application": "261a76da-12d0-4a9b-b909-6ae9afc92e34",
+                                    "tag": [],
+                                    "tag_by_user": [],
+                                    "name_by_user": "Report",
+                                    "iot": false
+                                }
+                            }
+                        ],
+                        "eventlog": [],
+                        "name": "Total energy",
+                        "type": "load_curve_energy",
+                        "period": "0",
+                        "delta": "0",
+                        "permission": "r",
+                        "number": {
+                            "min": 0.0,
+                            "max": 100000.0,
+                            "step": 0.1,
+                            "unit": "Wh"
+                        },
+                        "meta": {
+                            "id": "4f1c4085-cffa-497f-a844-5cffb46c7685",
+                            "type": "value",
+                            "version": "2.1",
+                            "owner": "4607ea4f-001f-448a-93e1-5eeb09da552a",
+                            "manufacturer": "7508417e-5522-479b-8cee-6f422ff29914",
+                            "created": "2022-12-08T09:40:06.488624Z",
+                            "updated": "2022-12-08T09:40:06.601950Z",
+                            "application": "261a76da-12d0-4a9b-b909-6ae9afc92e34",
+                            "tag": [],
+                            "tag_by_user": [],
+                            "name_by_user": "Total energy"
+                        }
+                    }
+                ],
+                "name": "Aalborg",
+                "manufacturer": "EMS Configurator",
+                "product": "EMS Node",
+                "version": "1.0.0",
+                "serial": "EMS-3",
+                "protocol": "wappsto-wapp",
+                "communication": "wappsto",
+                "meta": {
+                    "id": "f269650d-d4a8-4745-80f8-5791fadf5e73",
+                    "type": "device",
+                    "version": "2.1",
+                    "owner": "4607ea4f-001f-448a-93e1-5eeb09da552a",
+                    "manufacturer": "7508417e-5522-479b-8cee-6f422ff29914",
+                    "created": "2022-12-08T09:40:06.404277Z",
+                    "updated": "2022-12-08T09:40:10.940272Z",
+                    "application": "261a76da-12d0-4a9b-b909-6ae9afc92e34",
+                    "tag": [],
+                    "tag_by_user": [],
+                    "name_by_user": "Aalborg",
+                    "iot": false,
+                    "connection": {
+                        "timestamp": "2022-12-08T09:39:35.502375Z",
+                        "online": false
+                    },
+                    "stable_connection": {
+                        "timestamp": "2022-12-08T09:39:35.502375Z",
+                        "online": false
+                    }
+                }
+            }
+        ],
+        "name": "EMS Configurator",
+        "meta": {
+            "id": "99061ade-2aa1-445d-83cf-868559770026",
+            "type": "network",
+            "version": "2.1",
+            "owner": "4607ea4f-001f-448a-93e1-5eeb09da552a",
+            "manufacturer": "7508417e-5522-479b-8cee-6f422ff29914",
+            "created": "2022-12-08T09:39:35.446191Z",
+            "updated": "2022-12-08T09:40:06.404277Z",
+            "application": "261a76da-12d0-4a9b-b909-6ae9afc92e34",
+            "tag": [],
+            "tag_by_user": [],
+            "name_by_user": "EMS Configurator",
+            "iot": false,
+            "connection": {
+                "timestamp": "2022-12-08T09:39:35.502375Z",
+                "online": false
+            },
+            "stable_connection": {
+                "timestamp": "2022-12-08T09:39:35.502375Z",
+                "online": false
+            }
+        }
+    }
+]
