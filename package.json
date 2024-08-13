@@ -76,7 +76,7 @@
         }
     ],
     "dependencies": {
-        "axios": "1.7.2",
+        "axios": "1.7.3",
         "class-transformer": "^0.5.1",
         "isomorphic-ws": "^5.0.0",
         "lodash.isequal": "^4.5.0",
@@ -89,15 +89,15 @@
         "ws": "^8.18.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.24.9",
+        "@babel/core": "^7.25.2",
         "@babel/plugin-syntax-flow": "^7.24.7",
-        "@babel/plugin-transform-react-jsx": "^7.24.7",
+        "@babel/plugin-transform-react-jsx": "^7.25.2",
         "@size-limit/preset-small-lib": "^11.1.4",
         "@tsconfig/recommended": "^1.0.7",
         "@types/lodash.isequal": "^4.5.8",
         "@types/lodash.omit": "^4.5.9",
         "@types/lodash.pick": "^4.4.9",
-        "@types/node": "^22.0.0",
+        "@types/node": "^22.2.0",
         "@types/websocket": "^1.0.10",
         "@types/ws": "^8.5.12",
         "dts-cli": "^2.0.5",
@@ -106,7 +106,7 @@
         "jest-websocket-mock": "^2.5.0",
         "size-limit": "^11.1.4",
         "ts-interface-builder": "^0.3.3",
-        "ts-jest": "^29.2.3",
+        "ts-jest": "^29.2.4",
         "typedoc": "^0.26.5",
         "typescript": "^5.5.4"
     }
