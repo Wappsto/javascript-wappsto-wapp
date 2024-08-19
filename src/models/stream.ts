@@ -313,6 +313,10 @@ export class Stream extends Model {
         return res;
     }
 
+    #sendPing() {
+        this.#socket?.send('ping');
+    }
+
     async sendEvent(type: string, msg: JSONValue): Promise<JSONValue> {
         this.validate('sendEvent', arguments);
 
@@ -758,19 +762,12 @@ export class Stream extends Model {
         });
     }
 
-    validateWatchdog() {
-        const diff = Date.now() - this.#lastStreamMessage;
-        if (diff > (_config.watchdogTimeout * 60) / 2) {
-            this.#triggerWatchdog();
-        }
-    }
-
     #triggerWatchdog(): void {
         const diff = Math.trunc((Date.now() - this.#lastStreamMessage) / 60000);
         printDebug(
             `Trigger Watchdog because we did not receive any stream messages for ${diff} minutes`
         );
-        this.sendEvent('ping', 'pong');
+        this.#sendPing();
         this.#watchDogTriggerTimeout = setTimeout(() => {
             printWarning('Reconnecting stream because Watchdog Triggered!');
             this.#reconnect();
@@ -790,8 +787,9 @@ export class Stream extends Model {
         if (this.#watchdogTimer) {
             clearTimeout(this.#watchdogTimer);
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-            this.subscribeInternal('ping', (_msg: unknown): undefined => {});
+            printDebug(
+                `Starting Stream Watchdog with timeout of ${_config.watchdogTimeout} minutes`
+            );
         }
 
         if (this.#watchDogTriggerTimeout) {
@@ -824,6 +822,11 @@ export class Stream extends Model {
             if (ev.type !== 'message') {
                 /* istanbul ignore next */
                 printError("Can't handle binary stream data");
+                return;
+            }
+
+            if (ev.data === 'pong') {
+                printStream('Received a Stream Pong message');
                 return;
             }
 

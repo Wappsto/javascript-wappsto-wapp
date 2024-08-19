@@ -136,18 +136,6 @@ describe('WappStorage', () => {
         );
         sendRpcResponse(server);
 
-        await expect(server).toReceiveMessage(
-            expect.objectContaining({
-                jsonrpc: '2.0',
-                method: 'POST',
-                params: {
-                    url: '/services/2.1/websocket/open/subscription',
-                    data: '/2.1/extsync',
-                },
-            })
-        );
-        sendRpcResponse(server);
-
         await changeP;
 
         server.send(streamEvent);
