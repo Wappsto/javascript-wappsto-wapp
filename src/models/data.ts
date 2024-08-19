@@ -5,6 +5,7 @@ import { isBrowser } from '../util/helpers';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
 import { IData, JSONObject } from '../util/types';
+import { findModel } from '../util/modelStore';
 
 type DataMeta = {
     id?: string;
@@ -96,6 +97,11 @@ export class Data<T extends Record<string, unknown>>
         T extends Record<string, unknown> = Record<string, unknown>
     >(id: string) {
         Data.#validate('fetchById', [id]);
+        const model = findModel('data', id);
+        if (model) {
+            return model as Data<T>;
+        }
+
         const data = await Model.fetch({
             endpoint: `${Data.endpoint}/${id}`,
         });

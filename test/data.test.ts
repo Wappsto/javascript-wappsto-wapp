@@ -45,10 +45,10 @@ describe('data', () => {
         const emptyData = await Data.fetchById<MyData>(
             'f135f57b-2e37-409d-9409-6c5add5bb59f'
         );
+        const data2 = await Data.fetchById<MyData>(
+            '1d75a50b-5e41-4a8c-9436-b2193e604697'
+        );
 
-        expect(data?.get('key1')).toEqual('value1');
-        expect(data?.meta.id).toEqual('1d75a50b-5e41-4a8c-9436-b2193e604697');
-        expect(emptyData).toBeUndefined();
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
@@ -70,5 +70,10 @@ describe('data', () => {
                 },
             }
         );
+
+        expect(data?.get('key1')).toEqual('value1');
+        expect(data?.meta.id).toEqual('1d75a50b-5e41-4a8c-9436-b2193e604697');
+        expect(emptyData).toBeUndefined();
+        expect(data).toEqual(data2);
     });
 });

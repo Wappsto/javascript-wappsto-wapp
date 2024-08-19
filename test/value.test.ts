@@ -1535,9 +1535,10 @@ describe('value', () => {
         const found = await Value.fetchById(
             'a57b5e03-150e-4ca4-a249-7a311f7a28bc'
         );
+        const found2 = await Value.fetchById(
+            'a57b5e03-150e-4ca4-a249-7a311f7a28bc'
+        );
 
-        expect(found?.meta.id).toEqual('a57b5e03-150e-4ca4-a249-7a311f7a28bc');
-        expect(found?.name).toEqual('Value 1');
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
@@ -1550,6 +1551,10 @@ describe('value', () => {
                 },
             }
         );
+
+        expect(found?.meta.id).toEqual('a57b5e03-150e-4ca4-a249-7a311f7a28bc');
+        expect(found?.name).toEqual('Value 1');
+        expect(found).toEqual(found2);
     });
 
     it('can create 2 new values from wappsto', async () => {

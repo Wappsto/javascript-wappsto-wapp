@@ -11,7 +11,7 @@ import {
     JSONObject,
     ValidateParams,
 } from '../util/types';
-import { addModel, getModel } from '../util/modelStore';
+import { addModel, findModel, getModel } from '../util/modelStore';
 import { Device } from './device';
 import { Model } from './model';
 import { ConnectionModel } from './model.connection';
@@ -412,6 +412,11 @@ export class Network extends ConnectionModel implements INetwork {
 
     static fetchById = async (id: string) => {
         Network.#validate('fetchById', [id]);
+        const model = findModel('network', id);
+        if (model) {
+            return model as Network;
+        }
+
         const data = await Model.fetch({
             endpoint: `${Network.endpoint}/${id}`,
             params: {

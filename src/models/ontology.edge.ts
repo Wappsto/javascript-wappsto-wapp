@@ -7,7 +7,7 @@ import {
     Relationship,
     ValidateParams,
 } from '../util/types';
-import { getModel } from '../util/modelStore';
+import { findModel, getModel } from '../util/modelStore';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';
 
@@ -163,6 +163,11 @@ export class OntologyEdge extends Model implements IOntologyEdge {
 
     static fetchById = async (id: string) => {
         OntologyEdge.#validate('fetchById', [id]);
+        const model = findModel('ontology', id);
+        if (model) {
+            return model as OntologyEdge;
+        }
+
         const data = await Model.fetch({
             endpoint: `${OntologyEdge.endpoint}/${id}`,
         });

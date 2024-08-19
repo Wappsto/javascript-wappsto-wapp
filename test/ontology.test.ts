@@ -3,23 +3,20 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import {
-    createNetwork,
     Network,
     Device,
     Value,
     State,
     createNode,
-    ValueTemplate,
     IOntologyEdge,
 } from '../src/index';
-import { addModel, getModel } from '../src/util/modelStore';
+import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
 import {
     fullNetworkResponse,
     makeDataResponse,
     makeDeviceResponse,
     makeNetworkResponse,
-    makeNumberValueResponse,
     makeOntologyEdgeResponse,
     makeOntologyNodeResponse,
     makeStateResponse,

@@ -6,6 +6,7 @@ mockedAxios.create = jest.fn(() => mockedAxios);
 import { State, config, stopLogging } from '../src/index';
 import { makeResponse } from './util/helpers';
 import { after } from './util/stream';
+import { makeStateResponse } from './util/response';
 
 const stateID = '6be66588-5f65-4257-8026-7f1152824f81';
 const response = {
@@ -158,5 +159,34 @@ describe('state', () => {
         );
 
         expect(state).toBeUndefined();
+    });
+
+    it('can get a state by id', async () => {
+        mockedAxios.get.mockResolvedValue(
+            makeResponse(
+                makeStateResponse({
+                    id: '01d376af-1760-4cc6-abb2-6e2d3cd0e196',
+                })
+            )
+        );
+
+        const state = await State.fetchById(
+            '01d376af-1760-4cc6-abb2-6e2d3cd0e196'
+        );
+        const state2 = await State.fetchById(
+            '01d376af-1760-4cc6-abb2-6e2d3cd0e196'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/state/01d376af-1760-4cc6-abb2-6e2d3cd0e196',
+            {
+                params: { go_internal: true, method: ['retrieve'] },
+            }
+        );
+
+        expect(state?.type).toEqual('Report');
+        expect(state).toEqual(state2);
     });
 });

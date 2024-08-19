@@ -18,7 +18,7 @@ import {
     ValuePermission,
     ValueType,
 } from '../util/types';
-import { addModel, getModel } from '../util/modelStore';
+import { addModel, findModel, getModel } from '../util/modelStore';
 import { ValueTemplate } from '../util/value_template';
 import { Model } from './model';
 import { ConnectionModel } from './model.connection';
@@ -582,6 +582,11 @@ export class Device extends ConnectionModel implements IDevice {
 
     static fetchById = async (id: string) => {
         Device.#validate('fetchById', [id]);
+        const model = findModel('device', id);
+        if (model) {
+            return model as Device;
+        }
+
         const data = await Model.fetch({
             endpoint: `${Device.endpoint}/${id}`,
             params: {

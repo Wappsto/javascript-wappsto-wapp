@@ -45,7 +45,7 @@ import {
     ValuePermission,
     ValueStreamCallback,
 } from '../util/types';
-import { addModel, getModel } from '../util/modelStore';
+import { addModel, findModel, getModel } from '../util/modelStore';
 import { EnergyData, EnergyPieChart, EnergySummary } from './analytic';
 import { AnalyticsModel, Newable } from './analytic/model.analytics';
 import { EventLog } from './eventlog';
@@ -210,6 +210,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
 
     static fetchById = async (id: string) => {
         Value.#validateStatic('fetchById', [id]);
+        const model = findModel('state', id);
+        if (model) {
+            return model as Value;
+        }
+
         const data = await Model.fetch({
             endpoint: `${Value.endpoint}/${id}`,
             params: {

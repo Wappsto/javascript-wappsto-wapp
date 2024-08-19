@@ -1553,6 +1553,9 @@ describe('network', () => {
             '62648265-4328-4afb-a33a-9561b8715628'
         );
         const network2 = await Network.fetchById(
+            '9f8aded6-17eb-4135-8edf-e00e930c6a1d'
+        );
+        const network3 = await Network.fetchById(
             '62648265-4328-4afb-a33a-9561b8715628'
         );
 
@@ -1560,5 +1563,6 @@ describe('network', () => {
             '62648265-4328-4afb-a33a-9561b8715628'
         );
         expect(network2).toBeUndefined();
+        expect(network1).toEqual(network3);
     });
 });

@@ -1,4 +1,5 @@
 import { convertFilterToJson, convertFilterToString } from '../util/helpers';
+import { findModel } from '../util/modelStore';
 import { IState, StateStatus, StateType, ValidateParams } from '../util/types';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
@@ -44,6 +45,11 @@ export class State extends StreamModel implements IState {
 
     static fetchById = async (id: string) => {
         State.#validate('fetchById', [id]);
+        const model = findModel('state', id);
+        if (model) {
+            return model as State;
+        }
+
         const data = await Model.fetch({ endpoint: `${State.endpoint}/${id}` });
         const res = State.fromArray(data);
         if (res[0]) {
