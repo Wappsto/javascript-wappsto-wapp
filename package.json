@@ -107,7 +107,7 @@
         "size-limit": "^11.1.4",
         "ts-interface-builder": "^0.3.3",
         "ts-jest": "^29.2.4",
-        "typedoc": "^0.26.5",
+        "typedoc": "^0.26.6",
         "typescript": "^5.5.4"
     }
 }
