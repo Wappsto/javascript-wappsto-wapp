@@ -24,7 +24,7 @@ export class OntologyModel extends Model implements IOntologyModel {
     /**
      * Get the ontology edges of the current object.
      *
-     * @note This is here for backwards compatibility.
+     * @remarks This is here for backwards compatibility.
      * @deprecated Should use edges instead.
      * @return The ontology edges of the current object.
      */
@@ -35,7 +35,7 @@ export class OntologyModel extends Model implements IOntologyModel {
     /**
      * Set the ontology edges of the current object.
      *
-     * @note This is here for backwards compatibility.
+     * @remarks This is here for backwards compatibility.
      * @deprecated Should use edges instead.
      * @param edges - The ontology edges to set.
      */

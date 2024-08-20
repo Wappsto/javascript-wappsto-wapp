@@ -26,7 +26,7 @@ export { _config };
  * @param param - The configuration parameters to set.
  * @return The updated configuration object.
  */
-export function config(param: IConfig): Config {
+export function config(param: IConfig): IConfig {
     const m = _checker.IConfigFunc.methodArgs('config');
     if (_config.validation === 'normal') {
         m.check(Array.from(arguments));

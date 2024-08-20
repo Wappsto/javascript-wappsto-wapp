@@ -30,7 +30,7 @@ export async function wappStorage<T extends Record<string, unknown>>(
 /**
  * Class representing a WappStorage instance.
  *
- * @implements IWappStorage
+ * @satisfies IWappStorage
  * @template T - The type of the stored data.
  */
 export class WappStorage<

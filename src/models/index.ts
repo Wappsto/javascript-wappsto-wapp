@@ -1,4 +1,4 @@
-export { Data } from './data';
+export { Data, DataMeta } from './data';
 export { Device } from './device';
 export { Network, createNetwork } from './network';
 export { Notification } from './notification';
@@ -6,7 +6,9 @@ export { notify, sendMail, sendSMS } from './notification.send';
 export { OAuth } from './oauth';
 export { OntologyEdge, OntologyEdge as Ontology } from './ontology.edge';
 export { OntologyNode, createNode, loadOntology } from './ontology.node';
+export { OntologyModel } from './model.ontology';
 export { State } from './state';
 export { Stream } from './stream';
 export { User } from './user';
 export { Value } from './value';
+export { EventLog } from './eventlog';

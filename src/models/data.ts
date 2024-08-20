@@ -7,7 +7,7 @@ import { StreamModel } from './model.stream';
 import { IData, JSONObject } from '../util/types';
 import { findModel } from '../util/modelStore';
 
-type DataMeta = {
+export type DataMeta = {
     id?: string;
     type?: string;
     version?: number;
