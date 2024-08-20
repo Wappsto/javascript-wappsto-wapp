@@ -4,6 +4,7 @@ import {
     FilterValueOperatorType,
     FilterValueType,
     IModel,
+    LogGroupBy,
     LogValue,
     LogValues,
     Timestamp,
@@ -44,6 +45,31 @@ export function checkListIndex(list: unknown[], check: unknown) {
 
 export function checkList(list: unknown[], check: unknown) {
     return checkListIndex(list, check) !== -1;
+}
+
+export function getNextTimestamp(date: Date): Date {
+    return new Date(date.setMilliseconds(date.getMilliseconds() + 1));
+}
+
+export function getNextPeriod(date: Date, period: LogGroupBy): Date {
+    switch (period) {
+        case 'minute':
+            date.setMilliseconds(0);
+            date.setSeconds(0);
+            return new Date(date.setMinutes(date.getMinutes() + 1));
+        case 'hour':
+            date.setMilliseconds(0);
+            date.setSeconds(0);
+            date.setMinutes(0);
+            return new Date(date.setHours(date.getHours() + 1));
+        case 'day':
+            date.setMilliseconds(0);
+            date.setSeconds(0);
+            date.setMinutes(0);
+            date.setHours(0);
+            return new Date(date.setDate(date.getDate() + 1));
+    }
+    return date;
 }
 
 export function getSecondsToNextPeriod(period: number) {

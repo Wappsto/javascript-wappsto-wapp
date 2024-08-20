@@ -31,3 +31,4 @@ export { ValueTemplate } from './util/value_template';
 export { VERSION } from './util/version';
 export { wappStorage, WappStorage } from './wapp_storage';
 export { default as getWappVersion } from './util/wappVersion';
+export { unifyData } from './services/unifyData';

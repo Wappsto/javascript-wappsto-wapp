@@ -10,6 +10,7 @@ import {
     compareDates,
     convertFilterToJson,
     convertFilterToString,
+    getNextTimestamp,
     getSecondsToNextPeriod,
     isLogValues,
     isPositiveInteger,
@@ -664,7 +665,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return this.#findStateAndUpdate('Report', sendData, timestamp);
     }
 
-    async sendLogReports(data: LogValues) {
+    async #sendLogReports(data: LogValues) {
         const state = this.#findState('Report');
         if (!state) {
             return false;
@@ -703,10 +704,10 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         logData.sort(sortByTimestamp);
         const lastData = logData.pop();
         if (lastData) {
-            await this.report(lastData.data, lastData.timestamp);
+            await this.#sendReport(lastData.data, lastData.timestamp, false);
         }
 
-        return this.sendLogReports(logData);
+        return this.#sendLogReports(logData);
     }
 
     control(data: ReportValueInput, timestamp?: Timestamp): Promise<boolean> {
@@ -911,7 +912,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                             firstLogData.data.length - 1
                         ].timestamp
                     );
-                    startDate.setMilliseconds(startDate.getMilliseconds() + 1);
+                    getNextTimestamp(startDate);
                     const start = startDate.toISOString();
                     const res = await this.#loadAndConvertLog(state, {
                         ...params,
