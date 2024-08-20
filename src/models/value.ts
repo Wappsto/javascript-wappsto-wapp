@@ -849,6 +849,38 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return this.#changeAttribute('delta', delta.toString());
     }
 
+    async #loadAndConvertLog(
+        state: State,
+        request: LogRequest
+    ): Promise<ILogResponse | undefined> {
+        const params = { ...request };
+        delete params.all;
+        const response = await Model.fetch({
+            endpoint: `/2.1/log/${state.id()}/state`,
+            params: params as JSONObject,
+            go_internal: false,
+            throw_error: true,
+        });
+        if (
+            response[0] &&
+            response[0].data &&
+            Array.isArray(response[0].data)
+        ) {
+            const r = response[0] as unknown as ExternalLogValues;
+            const data = r?.data?.map(
+                (item) =>
+                    ({
+                        data: item.data ?? item[params.operation ?? 'data'],
+                        timestamp: item.timestamp ?? item.time,
+                    } as LogValue)
+            ) as LogValues;
+            return {
+                ...r,
+                data,
+            } as ILogResponse;
+        }
+    }
+
     async #findStateAndLog(
         type: StateType,
         request: LogRequest
@@ -862,29 +894,39 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             if (typeof params.end === 'object') {
                 params.end = params.end.toISOString();
             }
-            const response = await Model.fetch({
-                endpoint: `/2.1/log/${state.id()}/state`,
-                params: params as JSONObject,
-                go_internal: false,
-                throw_error: true,
-            });
-            if (
-                response[0] &&
-                response[0].data &&
-                Array.isArray(response[0].data)
-            ) {
-                const r = response[0] as unknown as ExternalLogValues;
-                const data = r?.data?.map(
-                    (item) =>
-                        ({
-                            data: item.data ?? item[params.operation ?? 'data'],
-                            timestamp: item.timestamp ?? item.time,
-                        } as LogValue)
-                ) as LogValues;
-                return {
-                    ...r,
-                    data,
-                } as ILogResponse;
+            if (params.all) {
+                params.limit = 100000;
+            }
+
+            const firstLogData = await this.#loadAndConvertLog(state, params);
+            if (firstLogData) {
+                if (!params.all || !firstLogData.more) {
+                    return firstLogData;
+                }
+
+                let done = false;
+                while (!done) {
+                    const startDate = new Date(
+                        firstLogData.data[
+                            firstLogData.data.length - 1
+                        ].timestamp
+                    );
+                    startDate.setMilliseconds(startDate.getMilliseconds() + 1);
+                    const start = startDate.toISOString();
+                    const res = await this.#loadAndConvertLog(state, {
+                        ...params,
+                        start: start,
+                    });
+                    if (res) {
+                        firstLogData.data.push(...res.data);
+                    }
+                    if (!res || !res.more) {
+                        firstLogData.more = false;
+                        done = true;
+                    }
+                }
+
+                return firstLogData;
             }
         }
         return {

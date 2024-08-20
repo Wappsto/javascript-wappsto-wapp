@@ -6,6 +6,7 @@ import 'reflect-metadata';
 import { Value, State, LogValues } from '../src/index';
 import { before, after } from './util/stream';
 import { makeErrorResponse, makeResponse } from './util/helpers';
+import { makeLogResponse } from './util/response';
 
 describe('historical', () => {
     beforeAll(() => {
@@ -19,57 +20,30 @@ describe('historical', () => {
     it('can get log data', async () => {
         mockedAxios.get
             .mockResolvedValueOnce(
-                makeResponse([
-                    {
-                        meta: {
-                            id: '',
-                            type: 'log',
-                            version: '2.1',
-                        },
+                makeResponse(
+                    makeLogResponse({
                         data: [
                             {
-                                time: '2022-01-01T01:02:03Z',
+                                timestamp: '2022-01-01T01:02:03Z',
                                 data: '1',
                             },
                         ],
-                        more: false,
-                        type: 'state',
-                    },
-                ])
+                    })
+                )
             )
             .mockResolvedValueOnce(
-                makeResponse([
-                    {
-                        meta: {
-                            id: '',
-                            type: 'log',
-                            version: '2.1',
-                        },
+                makeResponse(
+                    makeLogResponse({
                         data: [
                             {
-                                time: '2022-01-01T01:02:03Z',
-                                max: '2',
+                                timestamp: '2022-01-01T01:02:03Z',
+                                data: '2',
                             },
                         ],
-                        more: false,
-                        type: 'state',
-                    },
-                ])
+                    })
+                )
             )
-            .mockResolvedValueOnce(
-                makeResponse([
-                    {
-                        meta: {
-                            id: '',
-                            type: 'log',
-                            version: '2.1',
-                        },
-                        data: [],
-                        more: false,
-                        type: 'state',
-                    },
-                ])
-            )
+            .mockResolvedValueOnce(makeResponse(makeLogResponse()))
             .mockRejectedValueOnce(
                 makeErrorResponse(
                     {},
@@ -162,6 +136,96 @@ describe('historical', () => {
         const logs = await value.getReportLog({});
 
         expect(logs.data.length).toBe(0);
+    });
+
+    it('can get all the log values', async () => {
+        mockedAxios.get
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeLogResponse({
+                        data: [
+                            {
+                                timestamp: '2022-01-01T01:01:01Z',
+                                data: '1',
+                            },
+                        ],
+                        more: true,
+                    })
+                )
+            )
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeLogResponse({
+                        data: [
+                            {
+                                timestamp: '2022-02-02T02:02:02Z',
+                                data: '2',
+                            },
+                        ],
+                        more: true,
+                    })
+                )
+            )
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeLogResponse({
+                        data: [
+                            {
+                                timestamp: '2022-03-03T03:03:03Z',
+                                data: '3',
+                            },
+                        ],
+                    })
+                )
+            );
+
+        const value = new Value();
+        value.meta.id = '52e15a12-de10-4047-bb0d-6f6a1669fb1a';
+        const stateR = new State('Report');
+        stateR.meta.id = '775e511a-7daf-4124-9198-1f37d19ddda5';
+        value.state.push(stateR);
+
+        const logs = await value.getReportLog({ all: true });
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/log/775e511a-7daf-4124-9198-1f37d19ddda5/state',
+            {
+                params: {
+                    limit: 100000,
+                    method: ['retrieve'],
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/log/775e511a-7daf-4124-9198-1f37d19ddda5/state',
+            {
+                params: {
+                    limit: 100000,
+                    method: ['retrieve'],
+                    start: '2022-01-01T01:01:01.001Z',
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/log/775e511a-7daf-4124-9198-1f37d19ddda5/state',
+            {
+                params: {
+                    limit: 100000,
+                    method: ['retrieve'],
+                    start: '2022-02-02T02:02:02.001Z',
+                },
+            }
+        );
+
+        expect(logs.data.length).toBe(3);
+        expect(logs.more).toBeFalsy();
+        expect(logs.data[0].data).toEqual('1');
+        expect(logs.data[2].data).toEqual('3');
     });
 
     it('can send log values to log_zip', async () => {

@@ -210,6 +210,7 @@ export type LogRequest = {
     order?: 'ascending' | 'descending';
     order_by?: string;
     number?: boolean;
+    all?: boolean;
 };
 
 export type ExternalLogValues = {

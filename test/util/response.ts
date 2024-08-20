@@ -151,6 +151,27 @@ export function makeStateResponse(options?: {
     };
 }
 
+export function makeLogResponse(options?: {
+    id?: string;
+    type?: string;
+    more?: boolean;
+    data?: {
+        timestamp: string;
+        data: string | number;
+    }[];
+}) {
+    return {
+        meta: {
+            type: 'log',
+            version: '2.1',
+            id: options?.id || randomUUID(),
+        },
+        data: options?.data || [],
+        type: options?.type || 'state',
+        more: options?.more ?? false,
+    };
+}
+
 export function makeDataResponse(options?: { id?: string }) {
     return {
         meta: {
