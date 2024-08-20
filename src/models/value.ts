@@ -817,10 +817,13 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return this.clearAllCallbacks();
     }
 
-    async #changeAttribute(key: string, value: string | number): Promise<void> {
+    async #changeAttribute(
+        key: string,
+        value: string | number
+    ): Promise<boolean> {
         if (this.meta.id === undefined) {
             printWarning('changeAttribute called on an deleted node');
-            return;
+            return false;
         }
 
         try {
@@ -829,18 +832,20 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             await wappsto.patch(this.getUrl(), data, Model.generateOptions());
         } catch (e) {
             printHttpError('Value.changeAttribute', e);
+            return false;
         }
+        return true;
     }
 
-    refresh(): Promise<void> {
+    refresh(): Promise<boolean> {
         return this.#changeAttribute('status', 'update');
     }
 
-    setPeriod(period: number): Promise<void> {
+    setPeriod(period: number): Promise<boolean> {
         return this.#changeAttribute('period', period.toString());
     }
 
-    setDelta(delta: number): Promise<void> {
+    setDelta(delta: number): Promise<boolean> {
         return this.#changeAttribute('delta', delta.toString());
     }
 
