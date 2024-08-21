@@ -648,6 +648,7 @@ The `LogRequest` object is defined like this:
 | order            | string   | Should the result be ordered ascending or descending               |
 | order_by         | string   | The field that should be used to order by                          |
 | number           | boolean  | If only numbers should be returned in the log response             |
+| all              | boolean  | Return all the log data                                            |
 
 ### Check if a device is online
 
@@ -1085,6 +1086,53 @@ This will remove all edges and nodes under this node or edge.
 
 ```javascript
 await startNode.deleteBranch();
+```
+
+### Service helpers
+
+There are a range of helpers avaiable to use in your wapp.
+
+#### UnifyData
+
+Use this helper function to unify data from one value to another.
+The function takes two `Value` objects and a `LogRequest` as arguments.
+The first `Value` is the source to read from, while the second is the destination to which the data is sent.
+The `LogRequest` object controls how the data should be unified.
+Additionally, there is an optional parameter that allows the data to be converted using a callback function.
+
+```javascript
+unifyData(inputValue, outputValue, { group_by: 'hour', operation: 'max' });
+unifyData(
+    inputValue,
+    outputValue,
+    { group_by: 'hour', operation: 'max' },
+    (data) => Number(data) * 2
+);
+```
+
+#### generateHistory
+
+Use this helper function to generate history for a value based on an other values history.
+The function takes two `Value` objects and a `LogRequest` as arguments.
+The first `Value` is the source to read the history from,
+while the second is the destination to which the history is sent.
+The `LogRequest` object controls how the log data should be loaded.
+Additionally, there is an optional parameter that allows the data to be converted using a callback function.
+
+```javascript
+await generateHistory(inputValue, outputValue, {
+    group_by: 'hour',
+    operation: 'max',
+});
+await generateHistory(
+    inputValue,
+    outputValue,
+    {
+        group_by: 'hour',
+        operation: 'max',
+    },
+    (data) => Number(data) * 2
+);
 ```
 
 ### Background logging
