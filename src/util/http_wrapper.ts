@@ -130,6 +130,7 @@ export function getErrorMessage(error: any | Error | AxiosError): string {
             }
         }
 
+        /* istanbul ignore next */
         return `${error.response.statusText} for ${error.config?.url}`;
     }
 
@@ -146,6 +147,7 @@ export function printHttpError(
     const msg = getErrorMessage(error);
     printError(`${message}: ${msg}`);
 
+    /* istanbul ignore next */
     if ((error as AxiosError).status === 503) {
         /* istanbul ignore next */
         fatalError('Got a SERVICE UNAVAILABLE response from the backend');

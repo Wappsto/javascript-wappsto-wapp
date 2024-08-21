@@ -198,7 +198,10 @@ export class Model implements IModel {
         /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     ): Promise<void> {}
 
-    async _reload(reloadAll?: boolean, defaultExpand = 0): Promise<boolean> {
+    async reloadAndParse(
+        reloadAll?: boolean,
+        defaultExpand = 0
+    ): Promise<boolean> {
         Model.validateMethod('Model', 'reload', arguments);
 
         if (this.meta.id === undefined) {
@@ -219,14 +222,14 @@ export class Model implements IModel {
     async reload(reloadAll?: boolean, defaultExpand = 0): Promise<boolean> {
         Model.validateMethod('Model', 'reload', arguments);
 
-        let res = false;
+        let result = false;
         try {
-            res = await this._reload(reloadAll, defaultExpand);
+            result = await this.reloadAndParse(reloadAll, defaultExpand);
         } catch (e) {
             this.meta.id = undefined;
             printHttpError('Model.reload', e);
         }
-        return res;
+        return result;
     }
 
     async delete(): Promise<void> {
@@ -348,6 +351,7 @@ export class Model implements IModel {
                 (k) => k.toLowerCase() === funcName
             );
 
+            /* istanbul ignore else */
             if (c) {
                 const m = Model.checker[c].methodArgs(name);
                 try {

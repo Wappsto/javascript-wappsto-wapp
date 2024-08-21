@@ -59,7 +59,7 @@ export class PermissionModel extends OntologyModel {
                     `Got permission to retrieve ${this.getType()}/${this.id()} from user`
                 );
                 try {
-                    await this._reload(
+                    await this.reloadAndParse(
                         !!options?.reloadAll,
                         options?.defaultExpand as number
                     );
@@ -271,7 +271,7 @@ export class PermissionModel extends OntologyModel {
         return new Promise<boolean>(async (resolve) => {
             let res = false;
             try {
-                res = await this._reload(reloadAll, defaultExpand);
+                res = await this.reloadAndParse(reloadAll, defaultExpand);
                 resolve(res);
             } catch (error) {
                 const data = getErrorResponse(error);

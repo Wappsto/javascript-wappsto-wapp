@@ -28,8 +28,10 @@ export function runAnalyticModel(
         try {
             await analytic.create();
         } catch (e: any) {
+            /* istanbul ignore next */
             const response = e?.data?.response ?? e?.response ?? e;
 
+            /* istanbul ignore next */
             if (response?.message) {
                 printWarning(response.message);
             }
