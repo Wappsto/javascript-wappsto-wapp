@@ -14,8 +14,11 @@ export class OntologyNode<
     extends Data<T>
     implements IOntologyNode
 {
-    constructor(name?: string) {
+    constructor(name?: string, nodeData?: T) {
         super(`ontology_node_${name || 'default'}`, 'ontology_node');
+        if (nodeData) {
+            this.data = nodeData;
+        }
     }
 
     getClass(): string {
@@ -29,15 +32,19 @@ export class OntologyNode<
 
 export async function createNode<
     T extends Record<string, unknown> = Record<string, string>
->(name: string): Promise<OntologyNode<T>> {
+>(name: string, nodeData?: T): Promise<OntologyNode<T>> {
     Model.validateMethod('OntologyNode', 'createNode', arguments);
 
     await loadOntology();
 
     let node = await findNode<T>(name);
     if (node === undefined) {
-        node = new OntologyNode<T>(name);
+        node = new OntologyNode<T>(name, nodeData);
         await node.create();
+    } else if (nodeData) {
+        if (node.parse({ data: nodeData } as JSONObject)) {
+            node.update();
+        }
     }
 
     return node;

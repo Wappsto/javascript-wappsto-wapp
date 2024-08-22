@@ -268,7 +268,13 @@ describe('Ontology', () => {
                 },
             })
         );
-        const node = await createNode('onto name');
+        const node = await createNode('onto name', {
+            test: 'data',
+        });
+        const node2 = await createNode('onto name', {
+            test: 'data 2',
+            test2: 'data 3',
+        });
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(3);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/data', {
@@ -295,20 +301,48 @@ describe('Ontology', () => {
             1,
             '/2.1/data',
             {
-                data: {},
                 _secret_background: {},
                 data_meta: {
                     id: 'ontology_node_onto name',
                     type: 'ontology_node',
                     version: 1,
                 },
+                data: {
+                    test: 'data',
+                },
                 meta: { type: 'data', version: '2.1' },
+            },
+            {}
+        );
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/data/dd4e6da3-f70f-403b-8ba0-79b1c14028d8',
+            {
+                _secret_background: {},
+                data_meta: {
+                    id: 'ontology_node_onto name',
+                    type: 'ontology_node',
+                    version: 1,
+                },
+                data: {
+                    test: 'data 2',
+                    test2: 'data 3',
+                },
+                meta: {
+                    id: 'dd4e6da3-f70f-403b-8ba0-79b1c14028d8',
+                    type: 'data',
+                    version: '2.1',
+                },
             },
             {}
         );
 
         expect(node.data_meta.type).toEqual('ontology_node');
         expect(node.getClass()).toEqual('ontology_node');
+        expect(node).toEqual(node2);
+        expect(node.data.test).toEqual('data 2');
+        expect(node2.data.test2).toEqual('data 3');
     });
 
     it('can get all edges on a network', async () => {
