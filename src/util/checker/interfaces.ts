@@ -605,7 +605,10 @@ export interface IOntologyEdgeFunc {
 export type IOntologyNode = IOntologyModel;
 export interface IOntologyNodeFunc extends IOntologyModelFunc {
     constructor(name?: string): void;
-    createNode(name: string): Promise<IOntologyNode>;
+    createNode(
+        name: string,
+        nodeData?: Record<string, unknown>
+    ): Promise<IOntologyNode>;
     findNode(name: string): Promise<IOntologyNode>;
 }
 

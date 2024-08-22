@@ -257,6 +257,7 @@ export const LogRequest = t.iface([], {
     order: t.opt(t.union(t.lit('ascending'), t.lit('descending'))),
     order_by: t.opt('string'),
     number: t.opt('boolean'),
+    all: t.opt('boolean'),
 });
 
 export const ExternalLogValues = t.iface([], {

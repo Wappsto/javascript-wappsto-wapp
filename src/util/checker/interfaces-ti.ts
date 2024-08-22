@@ -825,7 +825,11 @@ export const IOntologyNode = t.name('IOntologyModel');
 
 export const IOntologyNodeFunc = t.iface(['IOntologyModelFunc'], {
     constructor: t.func('void', t.param('name', 'string', true)),
-    createNode: t.func('IOntologyNode', t.param('name', 'string')),
+    createNode: t.func(
+        'IOntologyNode',
+        t.param('name', 'string'),
+        t.param('nodeData', 'any', true)
+    ),
     findNode: t.func('IOntologyNode', t.param('name', 'string')),
 });
 
