@@ -566,6 +566,11 @@ function.</p>
 <pre><code class="typescript"><span class="hl-3">type</span><span class="hl-1"> </span><span class="hl-14">CustomNode</span><span class="hl-1"> = {</span><br/><span class="hl-1">    </span><span class="hl-4">name</span><span class="hl-1">: </span><span class="hl-14">string</span><span class="hl-1">;</span><br/><span class="hl-1">    </span><span class="hl-4">age</span><span class="hl-1">: </span><span class="hl-14">number</span><span class="hl-1">;</span><br/><span class="hl-1">};</span><br/><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-11">startNode</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-4">Wappsto</span><span class="hl-1">.</span><span class="hl-0">createNode</span><span class="hl-1">&lt;</span><span class="hl-14">CustomNode</span><span class="hl-1">&gt;(</span><span class="hl-2">&#39;start node&#39;</span><span class="hl-1">);</span>
 </code><button type="button">Copy</button></pre>
 
+<p>It is also possible to add some data to the node when you create it,
+by supplying it in the constructor.</p>
+<pre><code class="javascript"><span class="hl-3">const</span><span class="hl-1"> </span><span class="hl-11">dataNode</span><span class="hl-1"> = </span><span class="hl-5">await</span><span class="hl-1"> </span><span class="hl-4">Wappsto</span><span class="hl-1">.</span><span class="hl-0">createNode</span><span class="hl-1">(</span><span class="hl-2">&#39;data node&#39;</span><span class="hl-1">, {</span><br/><span class="hl-1">    </span><span class="hl-4">data:</span><span class="hl-1"> </span><span class="hl-2">&#39;my data node&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
+</code><button type="button">Copy</button></pre>
+
 <p>When you have created your ontology, you can <code>transverse</code> the graph
 and find 'leafs' in the graph. You need to define a path to
 follow. There are 3 special characters in the path, that have special
