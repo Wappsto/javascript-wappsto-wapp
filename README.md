@@ -1031,6 +1031,15 @@ type CustomNode = {
 const startNode = await Wappsto.createNode<CustomNode>('start node');
 ```
 
+It is also possible to add some data to the node when you create it,
+by supplying it in the constructor.
+
+```javascript
+const dataNode = await Wappsto.createNode('data node', {
+    data: 'my data node',
+});
+```
+
 When you have created your ontology, you can `transverse` the graph
 and find 'leafs' in the graph. You need to define a path to
 follow. There are 3 special characters in the path, that have special
