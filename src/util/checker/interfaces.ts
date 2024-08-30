@@ -237,9 +237,11 @@ export interface IValueBase {
     name: string;
     permission: ValuePermission;
     type: string;
+    measure_type?: string;
     description?: string;
     period?: number | string;
     delta?: string;
+    thresholds?: string[];
     disableLog?: boolean;
     initialState?: InitialState;
     disablePeriodAndDelta?: boolean;
@@ -250,6 +252,7 @@ export interface IValueNumberBase {
     max: number;
     step: number;
     unit: string;
+    resolution?: string;
     si_conversion?: string;
     mapping?: JSONObject;
     ordered_mapping?: boolean;

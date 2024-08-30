@@ -1310,7 +1310,7 @@ describe('network', () => {
                 filter: {
                     attribute: ['value_type=energy', 'value_number.max=[1,2]'],
                 },
-                return: '{network  { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy","this_number.max=[1,2]"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+                return: '{network  { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=energy","this_number.max=[1,2]"]) { meta{id type version connection name_by_user} name permission description type measure_type period delta thresholds number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
             },
             {
                 params: {
@@ -1353,7 +1353,7 @@ describe('network', () => {
             '/2.1/network',
             {
                 filter: { attribute: ['network_name!=[]'] },
-                return: '{network (attribute: ["this_name!=[]"]) { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value  { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+                return: '{network (attribute: ["this_name!=[]"]) { meta{id type version connection name_by_user} name description device  { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value  { meta{id type version connection name_by_user} name permission description type measure_type period delta thresholds number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
             },
             {
                 params: {
@@ -1393,7 +1393,7 @@ describe('network', () => {
                 filter: {
                     attribute: ['device_name=[,test]', 'value_type!=energy'],
                 },
-                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_name=[,test]"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type!=energy"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_name=[,test]"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type!=energy"]) { meta{id type version connection name_by_user} name permission description type measure_type period delta thresholds number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
             },
             {
                 params: {
@@ -1499,7 +1499,7 @@ describe('network', () => {
                         'value_number.min!~5',
                     ],
                 },
-                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_manufacturer=Seluxit"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=temperature","this_number.max=85","this_number.min!~5"]) { meta{id type version connection name_by_user} name permission description type period delta number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
+                return: '{network  { meta{id type version connection name_by_user} name description device (attribute: ["this_manufacturer=Seluxit"]) { meta{id type version connection name_by_user} name product serial description protocol communication version manufacturer value (attribute: ["this_type=temperature","this_number.max=85","this_number.min!~5"]) { meta{id type version connection name_by_user} name permission description type measure_type period delta thresholds number string blob xml status state  { meta{id type version connection name_by_user} data type timestamp }}}}}',
             },
             {
                 params: {

@@ -62,8 +62,10 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         'permission',
         'description',
         'type',
+        'measure_type',
         'period',
         'delta',
+        'thresholds',
         'number',
         'string',
         'blob',
@@ -75,9 +77,11 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     permission: ValuePermission = 'r';
     tmp_permission: ValuePermission = 'r';
     type = '';
+    measure_type?: string;
     period?: number | string;
     last_period = 0;
     delta?: string;
+    thresholds?: string[];
 
     number?: IValueNumberBase;
     string?: IValueStringBlobBase;
