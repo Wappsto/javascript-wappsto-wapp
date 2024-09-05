@@ -79,6 +79,10 @@ export class Model implements IModel {
         this.parent = parent;
     }
 
+    getParent() {
+        return this.parent;
+    }
+
     /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     preserve(): void {}
 
