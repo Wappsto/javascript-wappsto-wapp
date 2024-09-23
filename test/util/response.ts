@@ -241,6 +241,26 @@ export function makeOntologyNodeResponse(options?: {
     };
 }
 
+export function makeFileResponse(options?: {
+    id?: string;
+    name?: string;
+    type?: string;
+    size?: number;
+    published?: boolean;
+}) {
+    return {
+        meta: {
+            type: 'file',
+            version: '2.1',
+            id: options?.id || randomUUID(),
+        },
+        name: options?.name ?? 'File Name',
+        type: options?.type ?? 'File Type',
+        size: options?.size ?? 100,
+        published: options?.published ?? false,
+    };
+}
+
 const fullNetworkResponse = {
     meta: {
         type: 'network',

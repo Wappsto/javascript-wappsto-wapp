@@ -1,5 +1,5 @@
 import WS from 'jest-websocket-mock';
-import { stopLogging } from '../../src/index';
+import { stopLogging, Stream } from '../../src/index';
 import {
     openStream,
     startBackgroundTimer,
@@ -35,7 +35,7 @@ export function after(mockedAxios?: jest.Mocked<AxiosStatic>) {
 
 export function before() {
     stopLogging();
-    openStream.websocketUrl = 'ws://localhost:12345';
+    fixStream(openStream);
 }
 
 export function newWServer(autoReply?: boolean) {
@@ -70,4 +70,8 @@ export function sendRpcResponse(server: WS, offset?: number): number {
     const len = server.messages.length;
     server.messages = [];
     return len;
+}
+
+export function fixStream(stream: Stream) {
+    stream.websocketUrl = 'ws://localhost:12345';
 }
