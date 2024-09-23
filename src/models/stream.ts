@@ -8,7 +8,12 @@ import {
     printStream,
     printWarning,
 } from '../util/debug';
-import { isUUID, isVersion, toSafeString } from '../util/helpers';
+import {
+    compareCallback,
+    isUUID,
+    isVersion,
+    toSafeString,
+} from '../util/helpers';
 import wappsto, { getErrorMessage } from '../util/http_wrapper';
 import {
     ExtsyncResponse,
@@ -20,6 +25,7 @@ import {
     ServiceHandler,
     StreamData,
     StreamEvent,
+    StreamHandler,
 } from '../util/types';
 import { Model } from './model';
 
@@ -40,6 +46,10 @@ interface StreamServiceHash {
     [key: string]: ServiceHandler[];
 }
 
+interface StreamHandlerHash {
+    [key: string]: StreamHandler[];
+}
+
 export class Stream extends Model {
     static endpoint = '/2.1/stream';
     websocketUrl = '';
@@ -49,6 +59,7 @@ export class Stream extends Model {
     #ignoreReconnect = false;
     #models: StreamModelHash = {};
     #services: StreamServiceHash = {};
+    #events: StreamHandlerHash = {};
     #subscriptions: string[] = [];
     #opened = false;
     #backOff = 1;
@@ -200,6 +211,7 @@ export class Stream extends Model {
         if (index !== -1) {
             this.#subscriptions.splice(index, 1);
         }
+
         return this.#sendMessage(
             'DELETE',
             `/services/2.1/${this.websocketService}/open/subscription`,
@@ -301,12 +313,65 @@ export class Stream extends Model {
         let res = true;
 
         if (this.#services[path] !== undefined) {
-            const index = this.#services[path].indexOf(handler);
+            const index = this.#services[path].findIndex((c) =>
+                compareCallback(c, handler)
+            );
             if (index !== -1) {
                 this.#services[path].splice(index, 1);
             }
 
-            if (this.#services[path].length === 0) {
+            if (
+                this.#services[path].length === 0 &&
+                !this.#events[path]?.length
+            ) {
+                res = await this.#removeSubscription(path);
+            }
+        }
+        return res;
+    }
+
+    async subscribeEvent(
+        service: string,
+        handler: StreamHandler
+    ): Promise<boolean> {
+        this.validate('subscribeEvent', arguments);
+        await this.#open();
+
+        const path = this.#generatePathFromService(service, false);
+        if (!this.#events[path]) {
+            this.#events[path] = [];
+        }
+        this.#events[path].push(handler);
+
+        printDebug(`Add event subscription: ${path}`);
+
+        return this.#addSubscription(path);
+    }
+
+    async unsubscribeEvent(
+        service: string,
+        handler: StreamHandler
+    ): Promise<boolean> {
+        this.validate('subscribeEvent', arguments);
+        const path = this.#generatePathFromService(service, false);
+        let res = true;
+
+        if (this.#events[path] !== undefined) {
+            const index = this.#events[path].findIndex((c) =>
+                compareCallback(c, handler)
+            );
+
+            //const index = this.#events[path].indexOf(handler);
+            if (index !== -1) {
+                this.#events[path].splice(index, 1);
+            } else {
+                printDebug('Failed to find callback to remove');
+            }
+
+            if (
+                this.#events[path].length === 0 &&
+                !this.#services[path]?.length
+            ) {
                 res = await this.#removeSubscription(path);
             }
         }
@@ -625,6 +690,12 @@ export class Stream extends Model {
         paths.forEach((path: string) => {
             this.#models[path]?.forEach((model: IStreamModel) => {
                 model.handleStream(event);
+            });
+        });
+
+        services.forEach((service: string) => {
+            this.#events[service]?.forEach((callback: StreamHandler) => {
+                callback(event);
             });
         });
 

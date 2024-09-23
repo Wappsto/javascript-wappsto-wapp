@@ -64,6 +64,10 @@ export interface IModelFunc {
     onChange(callback: StreamCallback): void;
     onDelete(callback: StreamCallback): void;
     onCreate(callback: StreamCallback): void;
+    cancelOnEvent(callback: StreamCallback): Promise<boolean>;
+    cancelOnChange(callback: StreamCallback): Promise<boolean>;
+    cancelOnDelete(callback: StreamCallback): Promise<boolean>;
+    cancelOnCreate(callback: StreamCallback): Promise<boolean>;
     getFilterResult(filter?: Filter, omit_filter?: Filter): string;
 }
 
@@ -376,6 +380,21 @@ export interface IStateFunc {
     fetchById(id: string): IState;
 }
 
+export interface IFile {
+    [key: string]: any;
+    meta?: Meta;
+    name: string;
+    type?: string;
+    size?: number;
+    publish?: boolean;
+}
+
+export interface IFileFunc {
+    constructor(name?: string, type?: string, size?: number): IFile;
+    findById(id: string): IFile;
+    fetchById(id: string): IFile;
+}
+
 export interface IEventLog {
     message: string;
     level: EventLogLevel;
@@ -439,6 +458,7 @@ export interface IStreamFunc {
         handler: ServiceHandler,
         full?: boolean
     ): void;
+    subscribeEvent(service: string, handler: ServiceHandler): void;
     sendRequest(msg: JSONValue): Promise<JSONValue>;
     sendEvent(type: string, msg: JSONValue): Promise<JSONValue>;
     sendResponse(

@@ -1,7 +1,12 @@
 import { openStream } from '../stream_helpers';
 import { printDebug, printError } from '../util/debug';
 import { checkList, compareCallback } from '../util/helpers';
-import { StreamEvent, IStreamModel, StreamCallback } from '../util/types';
+import {
+    StreamEvent,
+    IStreamModel,
+    StreamCallback,
+    StreamHandler,
+} from '../util/types';
 import { Model } from './model';
 import { PermissionModel } from './model.permission';
 
@@ -15,6 +20,14 @@ type StreamCallbacks = {
     create: StreamCallback[];
 };
 
+type StreamHandlerCallbacks = {
+    [key: string]: StreamHandler[];
+    event: StreamHandler[];
+    update: StreamHandler[];
+    delete: StreamHandler[];
+    create: StreamHandler[];
+};
+
 type EventQueue = {
     [key: string]: StreamEvent[];
     event: StreamEvent[];
@@ -23,19 +36,152 @@ type EventQueue = {
     create: StreamEvent[];
 };
 
+function getServiceFromEndpoint(obj: any): string {
+    return obj.endpoint.split('/').at(-1);
+}
+
+function getStreamCallback(type: string, list: StreamHandler[]) {
+    return async (event: StreamEvent) => {
+        if (event.event === type) {
+            for (let i = 0; i < list.length; i++) {
+                await list[i](event);
+            }
+        }
+        return false;
+    };
+}
+
 export class StreamModel extends PermissionModel implements IStreamModel {
     #streamCallback: StreamCallbacks = {
         event: [],
         change: [],
         delete: [],
         create: [],
-    } as StreamCallbacks;
+    };
     #eventQueue: EventQueue = {
         event: [],
         create: [],
         delete: [],
         change: [],
     };
+    static streamCallback: StreamHandlerCallbacks = {
+        event: [],
+        update: [],
+        delete: [],
+        create: [],
+    };
+
+    static async onCreate<T>(
+        this: new () => T,
+        callback: StreamHandler
+    ): Promise<boolean> {
+        Model.validateMethod('Model', 'onCreate', arguments);
+
+        const list = (this as unknown as StreamModel).streamCallback.create;
+        const service = getServiceFromEndpoint(this);
+        const cb = getStreamCallback('create', list);
+
+        list.push(callback);
+
+        if (list.length === 1) {
+            return await openStream.subscribeEvent(`/${service}`, cb);
+        }
+        return true;
+    }
+
+    static async onChange<T>(
+        this: new () => T,
+        callback: StreamHandler
+    ): Promise<boolean> {
+        Model.validateMethod('Model', 'onChange', arguments);
+
+        const list = (this as unknown as StreamModel).streamCallback.update;
+        const service = getServiceFromEndpoint(this);
+        const cb = getStreamCallback('update', list);
+
+        list.push(callback);
+
+        if (list.length === 1) {
+            return await openStream.subscribeEvent(`/${service}`, cb);
+        }
+        return true;
+    }
+
+    static async onDelete<T>(
+        this: new () => T,
+        callback: StreamHandler
+    ): Promise<boolean> {
+        Model.validateMethod('Model', 'onDelete', arguments);
+
+        const list = (this as unknown as StreamModel).streamCallback.delete;
+        const service = getServiceFromEndpoint(this);
+        const cb = getStreamCallback('delete', list);
+
+        list.push(callback);
+
+        if (list.length === 1) {
+            return await openStream.subscribeEvent(`/${service}`, cb);
+        }
+        return true;
+    }
+
+    static async cancelCallback(
+        all: StreamHandlerCallbacks,
+        type: string,
+        callback: StreamHandler
+    ): Promise<boolean> {
+        const index = all[type].findIndex((c) => compareCallback(c, callback));
+        if (index !== -1) {
+            all[type].splice(index, 1);
+        } else {
+            printDebug('Failed to find callback to remove');
+            return false;
+        }
+
+        if (
+            all.event.length === 0 &&
+            all.update.length === 0 &&
+            all.delete.length === 0 &&
+            all.create.length === 0
+        ) {
+            const list = (this as unknown as StreamModel).streamCallback.delete;
+            const service = getServiceFromEndpoint(this);
+            const cb = getStreamCallback(type, list);
+
+            return await openStream.unsubscribeEvent(service, cb);
+        }
+        return true;
+    }
+
+    static async cancelOnCreate<T>(
+        this: new () => T,
+        callback: StreamCallback
+    ): Promise<boolean> {
+        Model.validateMethod('Model', 'cancelOnCreate', arguments);
+
+        const m = this as unknown as StreamModel;
+        return m.cancelCallback(m.streamCallback, 'create', callback);
+    }
+
+    static async cancelOnChange<T>(
+        this: new () => T,
+        callback: StreamCallback
+    ): Promise<boolean> {
+        Model.validateMethod('Model', 'cancelOnChange', arguments);
+
+        const m = this as unknown as StreamModel;
+        return m.cancelCallback(m.streamCallback, 'update', callback);
+    }
+
+    static async cancelOnDelete<T>(
+        this: new () => T,
+        callback: StreamCallback
+    ): Promise<boolean> {
+        Model.validateMethod('Model', 'cancelOnDelete', arguments);
+
+        const m = this as unknown as StreamModel;
+        return m.cancelCallback(m.streamCallback, 'delete', callback);
+    }
 
     async onEvent(callback: StreamCallback): Promise<boolean> {
         Model.validateMethod('Model', 'onEvent', arguments);

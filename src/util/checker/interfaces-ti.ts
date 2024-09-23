@@ -31,6 +31,7 @@ export const IModel = t.iface([], {
     removeChild: t.func('void', t.param('child', 'IModel')),
     addChildrenToStore: t.func('void'),
     setParent: t.func('void', t.param('parent', 'IModel', true)),
+    getParent: t.func(t.union('IModel', 'undefined')),
     parse: t.func('boolean', t.param('json', 'any')),
     toJSON: t.func(
         'JSONObject',
@@ -49,6 +50,10 @@ export const IModelFunc = t.iface([], {
     onChange: t.func('void', t.param('callback', 'StreamCallback')),
     onDelete: t.func('void', t.param('callback', 'StreamCallback')),
     onCreate: t.func('void', t.param('callback', 'StreamCallback')),
+    cancelOnEvent: t.func('boolean', t.param('callback', 'StreamCallback')),
+    cancelOnChange: t.func('boolean', t.param('callback', 'StreamCallback')),
+    cancelOnDelete: t.func('boolean', t.param('callback', 'StreamCallback')),
+    cancelOnCreate: t.func('boolean', t.param('callback', 'StreamCallback')),
     getFilterResult: t.func(
         'string',
         t.param('filter', 'Filter', true),
@@ -489,6 +494,26 @@ export const IStateFunc = t.iface([], {
     fetchById: t.func('IState', t.param('id', 'string')),
 });
 
+export const IFile = t.iface([], {
+    [t.indexKey]: 'any',
+    meta: t.opt('Meta'),
+    name: 'string',
+    type: t.opt('string'),
+    size: t.opt('number'),
+    publish: t.opt('boolean'),
+});
+
+export const IFileFunc = t.iface([], {
+    constructor: t.func(
+        'IFile',
+        t.param('name', 'string', true),
+        t.param('type', 'string', true),
+        t.param('size', 'number', true)
+    ),
+    findById: t.func('IFile', t.param('id', 'string')),
+    fetchById: t.func('IFile', t.param('id', 'string')),
+});
+
 export const IEventLog = t.iface([], {
     message: 'string',
     level: 'EventLogLevel',
@@ -565,6 +590,11 @@ export const IStreamFunc = t.iface([], {
         t.param('service', 'string'),
         t.param('handler', 'ServiceHandler'),
         t.param('full', 'boolean', true)
+    ),
+    subscribeEvent: t.func(
+        'void',
+        t.param('service', 'string'),
+        t.param('handler', 'ServiceHandler')
     ),
     sendRequest: t.func('JSONValue', t.param('msg', 'JSONValue')),
     sendEvent: t.func(
@@ -1032,6 +1062,8 @@ const exportedTypeSuite: t.ITypeSuite = {
     IValueStaticFunc,
     IState,
     IStateFunc,
+    IFile,
+    IFileFunc,
     IEventLog,
     IEventLogFunc,
     INotificationFunc,
