@@ -12,3 +12,4 @@ export { Stream } from './stream';
 export { User } from './user';
 export { Value } from './value';
 export { EventLog } from './eventlog';
+export { File } from './file';
