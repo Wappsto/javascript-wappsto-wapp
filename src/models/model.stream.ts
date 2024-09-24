@@ -22,7 +22,6 @@ type StreamCallbacks = {
 
 type StreamHandlerCallbacks = {
     [key: string]: StreamHandler[];
-    event: StreamHandler[];
     update: StreamHandler[];
     delete: StreamHandler[];
     create: StreamHandler[];
@@ -65,7 +64,6 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         change: [],
     };
     static streamCallback: StreamHandlerCallbacks = {
-        event: [],
         update: [],
         delete: [],
         create: [],
@@ -127,7 +125,7 @@ export class StreamModel extends PermissionModel implements IStreamModel {
 
     static async cancelCallback(
         all: StreamHandlerCallbacks,
-        type: string,
+        type: 'create' | 'update' | 'delete',
         callback: StreamHandler
     ): Promise<boolean> {
         const index = all[type].findIndex((c) => compareCallback(c, callback));
@@ -139,7 +137,6 @@ export class StreamModel extends PermissionModel implements IStreamModel {
         }
 
         if (
-            all.event.length === 0 &&
             all.update.length === 0 &&
             all.delete.length === 0 &&
             all.create.length === 0
