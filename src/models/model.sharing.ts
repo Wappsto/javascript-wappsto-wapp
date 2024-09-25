@@ -1,16 +1,18 @@
-/*import wappsto from '../util/http_wrapper';
+import wappsto from '../util/http_wrapper';
 import { Model } from './model';
+import { OntologyModel } from './model.ontology';
 import { printHttpError } from '../util/http_wrapper';
+import { JSONObject } from '../util/types';
 
-interface IRestriction {
+export interface IRestriction {
     retrieve: boolean;
     update: boolean;
     delete: boolean;
     create: boolean;
 }
 
-export class SharingModel extends Model {
-    __shareWith = async (
+export class SharingModel extends OntologyModel {
+    shareWith = async (
         user: string,
         restriction: IRestriction = {
             retrieve: true,
@@ -20,22 +22,37 @@ export class SharingModel extends Model {
         }
     ) => {
         try {
-            let response = await wappsto.patch(
-                `/acl/${this.id()}`,
+            const response = await wappsto.patch(
+                `/2.1/acl/${this.id()}`,
                 {
                     permission: [
                         {
                             meta: { id: user },
                             restriction: [
                                 {
-                                    method: {
-                                        retrieve: restriction.retrieve,
-                                        update: restriction.update,
-                                        delete: restriction.delete,
-                                        create: restriction.create,
-                                    },
+                                    method: restriction as unknown as JSONObject,
                                 },
                             ],
+                        },
+                    ],
+                },
+                Model.generateOptions({ propagate: true })
+            );
+            return response.data;
+        } catch (e) {
+            printHttpError('Failed to share model', e);
+        }
+    };
+
+    unshareWith = async (user: string) => {
+        try {
+            const response = await wappsto.patch(
+                `/2.1/acl/${this.id()}`,
+                {
+                    permission: [
+                        {
+                            meta: { id: user },
+                            restriction: [],
                         },
                     ],
                 },
@@ -43,7 +60,20 @@ export class SharingModel extends Model {
             );
             return response.data;
         } catch (e) {
-            printHttpError(e);
+            printHttpError('Failed to unshare model', e);
         }
     };
-}*/
+
+    getSharedWith = async () => {
+        try {
+            const response = await wappsto.get(
+                `/2.1/acl/${this.id()}`,
+                Model.generateOptions({})
+            );
+            console.log(response.data);
+            return response.data.permission;
+        } catch (e) {
+            printHttpError('Failed to get model sharing', e);
+        }
+    };
+}

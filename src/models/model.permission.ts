@@ -5,10 +5,10 @@ import { toSafeString } from '../util/helpers';
 import { getErrorResponse, printHttpError } from '../util/http_wrapper';
 import { JSONObject, MetaItem, StreamData } from '../util/types';
 import { Model } from './model';
-import { OntologyModel } from './model.ontology';
+import { SharingModel } from './model.sharing';
 import { Notification } from './notification';
 
-export class PermissionModel extends OntologyModel {
+export class PermissionModel extends SharingModel {
     static #getPermissionHash(
         type: string,
         quantity: number | 'all',
