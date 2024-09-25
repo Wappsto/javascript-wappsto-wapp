@@ -136,8 +136,8 @@ export const FilterValueType = t.union(
 );
 
 export const Connection = t.iface([], {
-    timestamp: 'string',
-    online: 'boolean',
+    timestamp: t.opt('string'),
+    online: t.opt('boolean'),
 });
 
 export const ParentName = t.iface([], {

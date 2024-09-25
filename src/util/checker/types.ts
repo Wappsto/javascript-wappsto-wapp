@@ -92,8 +92,8 @@ export type FilterValueType =
     | undefined;
 
 export type Connection = {
-    timestamp: string;
-    online: boolean;
+    timestamp?: string;
+    online?: boolean;
 };
 
 export type ParentName = {
