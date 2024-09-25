@@ -46,16 +46,8 @@ export class SharingModel extends OntologyModel {
 
     unshareWith = async (user: string) => {
         try {
-            const response = await wappsto.patch(
-                `/2.1/acl/${this.id()}`,
-                {
-                    permission: [
-                        {
-                            meta: { id: user },
-                            restriction: [],
-                        },
-                    ],
-                },
+            const response = await wappsto.delete(
+                `/2.1/acl/${this.id()}/permission/${user}`,
                 Model.generateOptions({})
             );
             return response.data;
@@ -70,7 +62,6 @@ export class SharingModel extends OntologyModel {
                 `/2.1/acl/${this.id()}`,
                 Model.generateOptions({})
             );
-            console.log(response.data);
             return response.data.permission;
         } catch (e) {
             printHttpError('Failed to get model sharing', e);

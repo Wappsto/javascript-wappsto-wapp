@@ -198,4 +198,18 @@ describe('sharing', () => {
             },
         ]);
     });
+
+    it('can unshare a network', async () => {
+        mockedAxios.delete.mockResolvedValueOnce(makeResponse({}));
+
+        const network = new Network();
+        network.meta.id = '64574e21-fa2d-4ee6-9cdb-66dbbb8ead6a';
+        await network.unshareWith('a6be65eb-2c84-4baa-a656-0aae9aab9ae0');
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/acl/64574e21-fa2d-4ee6-9cdb-66dbbb8ead6a/permission/a6be65eb-2c84-4baa-a656-0aae9aab9ae0',
+            {}
+        );
+    });
 });
