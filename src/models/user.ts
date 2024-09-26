@@ -10,14 +10,57 @@ export class User extends Model {
     email?: string;
     phone?: string;
     name?: string;
+    role?: string;
+    organization?: string;
+    address?: string;
     nickname?: string;
     language?: string;
     friend?: boolean;
     blocked?: boolean;
-    provider?: string[];
+    provider?: { name?: string; picture?: string; type?: string }[];
     public?: string[];
     verified_email?: boolean;
+    verified_sms?: boolean;
     installation?: string;
+    other_email?: {
+        contact: string;
+        status:
+            | 'pending'
+            | 'refused'
+            | 'accepted'
+            | 'send'
+            | 'not_sent'
+            | 'archive';
+        contact_message: string;
+        language: string;
+        last_update: string;
+    }[];
+    other_sms?: {
+        contact: string;
+        status:
+            | 'pending'
+            | 'refused'
+            | 'accepted'
+            | 'send'
+            | 'not_sent'
+            | 'archive';
+        contact_message: string;
+        language: string;
+        last_update: string;
+    }[];
+    admin?: boolean;
+    founder?: boolean;
+    subuser?: boolean;
+    subuser_owner?: string;
+    last_online?: string;
+    ban?: {
+        type: 'soft' | 'strong';
+        start_ban?: string;
+        end_ban: string;
+        motivation: string;
+    };
+    token?: string;
+    special_token?: string;
 
     constructor() {
         super('user');

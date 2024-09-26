@@ -38,6 +38,9 @@ export class SubUser extends OntologyModel {
         'last_name',
         'email',
         'phone',
+        'role',
+        'organization',
+        'address',
         'name',
         'nickname',
         'language',
@@ -53,10 +56,41 @@ export class SubUser extends OntologyModel {
     email?: string;
     phone?: string;
     name?: string;
+    role?: string;
+    organization?: string;
+    address?: string;
     nickname?: string;
     language?: string;
     last_online?: string;
     point_management?: PointManagement;
+    verified_email?: boolean;
+    verified_sms?: boolean;
+    other_email?: {
+        contact: string;
+        status:
+            | 'pending'
+            | 'refused'
+            | 'accepted'
+            | 'send'
+            | 'not_sent'
+            | 'archive';
+        contact_message: string;
+        language: string;
+        last_update: string;
+    }[];
+    other_sms?: {
+        contact: string;
+        status:
+            | 'pending'
+            | 'refused'
+            | 'accepted'
+            | 'send'
+            | 'not_sent'
+            | 'archive';
+        contact_message: string;
+        language: string;
+        last_update: string;
+    }[];
 
     constructor(username?: string, password?: string) {
         super('subuser');
