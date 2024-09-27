@@ -60,4 +60,45 @@ describe('sub user', () => {
         expect(user[0]?.first_name).toEqual('first');
         expect(user[0]?.last_name).toEqual('last');
     });
+
+    it('can update a subuser', async () => {
+        mockedAxios.patch.mockResolvedValue(makeResponse({}));
+
+        const user = new SubUser();
+        user.meta.id = '7fe7e97d-7516-4c0f-9c71-eba1db2fc422';
+        user.first_name = 'first';
+        user.last_name = 'last';
+        await user.update();
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/subuser/7fe7e97d-7516-4c0f-9c71-eba1db2fc422',
+            {
+                meta: {
+                    id: '7fe7e97d-7516-4c0f-9c71-eba1db2fc422',
+                    type: 'subuser',
+                    version: '2.1',
+                },
+                first_name: 'first',
+                last_name: 'last',
+            },
+            {}
+        );
+    });
+
+    it('can delete a subuser', async () => {
+        mockedAxios.delete.mockResolvedValue(makeResponse({}));
+
+        const user = new SubUser();
+        user.meta.id = '0abfd294-917a-4023-bbc6-ddd6f44c7b6f';
+        await user.delete();
+
+        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.delete).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/subuser/0abfd294-917a-4023-bbc6-ddd6f44c7b6f',
+            {}
+        );
+    });
 });

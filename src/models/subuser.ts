@@ -102,6 +102,10 @@ export class SubUser extends OntologyModel {
         return SubUser.attributes;
     }
 
+    protected usePutForUpdate(): boolean {
+        return false;
+    }
+
     static #validate(name: string, params: ValidateParams): void {
         Model.validateMethod('SubUser', name, params);
     }
