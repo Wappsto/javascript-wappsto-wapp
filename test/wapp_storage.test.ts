@@ -761,4 +761,87 @@ describe('WappStorage', () => {
         expect(typeof k2).toEqual('number');
         expect(typeof k3).toEqual('boolean');
     });
+
+    it('works with read only object', async () => {
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse({
+                meta: { id: '32127128-8152-4320-a788-71cdebbf6c8a' },
+            })
+        );
+        mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
+
+        const w = await wappStorage<Record<string, Record<string, any>>>(
+            'with-read-only'
+        );
+
+        function deepFreeze(object: any) {
+            // Retrieve the property names defined on object
+            const propNames = Reflect.ownKeys(object);
+
+            // Freeze properties before freezing self
+            for (const name of propNames) {
+                const value = object[name];
+
+                if (
+                    (value && typeof value === 'object') ||
+                    typeof value === 'function'
+                ) {
+                    deepFreeze(value);
+                }
+            }
+
+            return Object.freeze(object);
+        }
+
+        const data = deepFreeze({
+            key: 'value',
+            test: undefined,
+            deep: {
+                empty: undefined,
+            },
+            deepA: [
+                {
+                    other: 'test',
+                },
+                {
+                    empty: undefined,
+                },
+            ],
+        });
+
+        await w.set('main', data);
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenLastCalledWith(
+            '/2.1/data/32127128-8152-4320-a788-71cdebbf6c8a',
+            {
+                data: {
+                    main: {
+                        key: 'value',
+                        deep: {},
+                        deepA: [
+                            {
+                                other: 'test',
+                            },
+                            {},
+                        ],
+                    },
+                },
+                _secret_background: {},
+                data_meta: {
+                    version: 1,
+                },
+                meta: {
+                    id: '32127128-8152-4320-a788-71cdebbf6c8a',
+                },
+            },
+            {}
+        );
+
+        expect(data).toHaveProperty('test');
+        expect(data.deep).toHaveProperty('empty');
+        expect(data.deepA).toHaveLength(2);
+        expect(data.deepA[1]).toHaveProperty('empty');
+    });
 });

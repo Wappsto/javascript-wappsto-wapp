@@ -131,6 +131,10 @@ export function toSafeString(json: unknown): string {
     return JSON.stringify(json, getCircularReplacer());
 }
 
+export function toSafeObject(json: unknown): Record<string, unknown> {
+    return JSON.parse(toSafeString(json));
+}
+
 export function toTime(date: Timestamp): number {
     if (typeof date === 'string') {
         return Date.parse(date);

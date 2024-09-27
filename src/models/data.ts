@@ -1,7 +1,7 @@
 import isEqual from 'lodash.isequal';
 import omit from 'lodash.omit';
 import pick from 'lodash.pick';
-import { isBrowser } from '../util/helpers';
+import { isBrowser, toSafeObject } from '../util/helpers';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
 import { IData, JSONObject } from '../util/types';
@@ -56,9 +56,17 @@ export class Data<T extends Record<string, unknown>>
     set<K extends keyof T>(name: K, item: T[K], secret = false): void {
         if (secret) {
             this.#checkSecret();
-            this._secret_background[name] = item;
+            if (item && typeof item === 'object') {
+                this._secret_background[name] = toSafeObject(item) as T[K];
+            } else {
+                this._secret_background[name] = item;
+            }
         } else {
-            this.data[name] = item;
+            if (item && typeof item === 'object') {
+                this.data[name] = toSafeObject(item) as T[K];
+            } else {
+                this.data[name] = item;
+            }
         }
     }
 
