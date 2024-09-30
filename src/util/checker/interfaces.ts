@@ -26,6 +26,7 @@ export interface IConfig {
     requests?: boolean;
     debug?: boolean;
     stream?: boolean;
+    wappStorageSecret?: boolean;
     validation?: ValidationType;
     reconnectCount?: number;
     ackTimeout?: number;

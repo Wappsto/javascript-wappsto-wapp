@@ -6,6 +6,7 @@ import { Model } from './model';
 import { StreamModel } from './model.stream';
 import { IData, JSONObject } from '../util/types';
 import { findModel } from '../util/modelStore';
+import { _config } from '../util/config';
 
 export type DataMeta = {
     id?: string;
@@ -46,7 +47,7 @@ export class Data<T extends Record<string, unknown>>
     }
 
     getAttributes(): string[] {
-        if (isBrowser()) {
+        if (isBrowser() || _config.wappStorageSecret === false) {
             return Data.attributes;
         } else {
             return [...Data.attributes, '_secret_background'];

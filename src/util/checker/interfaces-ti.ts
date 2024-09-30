@@ -9,6 +9,7 @@ export const IConfig = t.iface([], {
     requests: t.opt('boolean'),
     debug: t.opt('boolean'),
     stream: t.opt('boolean'),
+    wappStorageSecret: t.opt('boolean'),
     validation: t.opt('ValidationType'),
     reconnectCount: t.opt('number'),
     ackTimeout: t.opt('number'),

@@ -3,7 +3,7 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { wappStorage } from '../src/index';
+import { config, wappStorage } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { delay, makeResponse } from './util/helpers';
 
@@ -810,9 +810,10 @@ describe('WappStorage', () => {
         });
 
         await w.set('main', data);
+        await w.setSecret('main', data);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(2);
         expect(mockedAxios.put).toHaveBeenLastCalledWith(
             '/2.1/data/32127128-8152-4320-a788-71cdebbf6c8a',
             {
@@ -828,7 +829,18 @@ describe('WappStorage', () => {
                         ],
                     },
                 },
-                _secret_background: {},
+                _secret_background: {
+                    main: {
+                        key: 'value',
+                        deep: {},
+                        deepA: [
+                            {
+                                other: 'test',
+                            },
+                            {},
+                        ],
+                    },
+                },
                 data_meta: {
                     version: 1,
                 },
@@ -843,5 +855,45 @@ describe('WappStorage', () => {
         expect(data.deep).toHaveProperty('empty');
         expect(data.deepA).toHaveLength(2);
         expect(data.deepA[1]).toHaveProperty('empty');
+    });
+
+    it('can disable secret storage', async () => {
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse([
+                {
+                    meta: { id: '4b9fe9f4-8345-47fd-abec-b682e18f8e89' },
+                    data_meta: {
+                        id: 'wapp_storage_background_disable_secret',
+                        type: 'wapp_storage',
+                        version: 1,
+                    },
+                    data: {},
+                },
+            ])
+        );
+        mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
+
+        config({ wappStorageSecret: false });
+        const w = await wappStorage('disable_secret');
+        await w.setSecret('key', 'value');
+        config({ wappStorageSecret: true });
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenLastCalledWith(
+            '/2.1/data/4b9fe9f4-8345-47fd-abec-b682e18f8e89',
+            {
+                data: {},
+                data_meta: {
+                    id: 'wapp_storage_background_disable_secret',
+                    type: 'wapp_storage',
+                    version: 1,
+                },
+                meta: {
+                    id: '4b9fe9f4-8345-47fd-abec-b682e18f8e89',
+                },
+            },
+            {}
+        );
     });
 });

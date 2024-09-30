@@ -7,6 +7,7 @@ class Config implements IConfig {
     requests = false;
     verbose = false;
     stream = false;
+    wappStorageSecret = true;
     validation: ValidationType = 'normal';
     reconnectCount = 10;
     ackTimeout = 5;
@@ -61,6 +62,9 @@ export function config(param: IConfig): IConfig {
     }
     if (param.jitterMax !== undefined) {
         _config.jitterMax = param.jitterMax;
+    }
+    if (param.wappStorageSecret !== undefined) {
+        _config.wappStorageSecret = param.wappStorageSecret;
     }
 
     return _config;

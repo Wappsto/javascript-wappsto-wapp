@@ -121,4 +121,11 @@ describe('config', () => {
         const c = config({ watchdogTimeout: 15 });
         expect(c.watchdogTimeout).toEqual(15);
     });
+
+    it('can change the wapp storage secret feature', () => {
+        let c = config({});
+        expect(c.wappStorageSecret).toEqual(true);
+        c = config({ wappStorageSecret: false });
+        expect(c.wappStorageSecret).toEqual(false);
+    });
 });
