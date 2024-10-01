@@ -29,12 +29,12 @@ import {
 } from '../util/types';
 import { Model } from './model';
 
-export class IgnoreError extends Error {
+export class IgnoreStreamEventException extends Error {
     constructor(msg: string) {
         super(msg);
 
         // Set the prototype explicitly.
-        Object.setPrototypeOf(this, IgnoreError.prototype);
+        Object.setPrototypeOf(this, IgnoreStreamEventException.prototype);
     }
 }
 
@@ -532,7 +532,7 @@ export class Stream extends Model {
                     }
                     this.#sendResponse(event, code, body, headers);
                 } catch (err: unknown) {
-                    if (!(err instanceof IgnoreError)) {
+                    if (!(err instanceof IgnoreStreamEventException)) {
                         printError(err);
                         this.#sendResponse(event, 400, {
                             error: (err as Error).message,

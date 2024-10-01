@@ -1,6 +1,6 @@
 import { Notification } from './models';
 import { Model } from './models/model';
-import { IgnoreError, Stream } from './models/stream';
+import { IgnoreStreamEventException, Stream } from './models/stream';
 import { printDebug } from './util/debug';
 import { isBrowser } from './util/helpers';
 import {
@@ -89,7 +89,7 @@ async function _handleRequest(event: JSONValue): Promise<JSONValue> {
     if (request_handlers[data.type]) {
         res = await request_handlers[data.type](data.message);
     } else {
-        throw new IgnoreError('Wrong request handler');
+        throw new IgnoreStreamEventException('Wrong request handler');
     }
     return res;
 }

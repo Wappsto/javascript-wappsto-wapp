@@ -8,7 +8,7 @@ export { OntologyEdge, OntologyEdge as Ontology } from './ontology.edge';
 export { OntologyNode, createNode, loadOntology } from './ontology.node';
 export { OntologyModel } from './model.ontology';
 export { State } from './state';
-export { Stream } from './stream';
+export { Stream, IgnoreStreamEventException } from './stream';
 export { User } from './user';
 export { Value } from './value';
 export { EventLog } from './eventlog';

@@ -16,6 +16,7 @@ import {
     signalForeground,
     waitForBackground,
     JSONObject,
+    IgnoreStreamEventException,
 } from '../src/index';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import { signalRequest } from './util/response';
@@ -1049,6 +1050,35 @@ describe('ExtSync stream', () => {
             }
         );
 
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+    });
+
+    it('can cancel the handling of a stream event', async () => {
+        fromForeground(async () => {
+            throw new IgnoreStreamEventException('test');
+        });
+
+        await delay();
+
+        await server.connected;
+
+        server.send({
+            meta_object: {
+                type: 'extsync',
+            },
+            extsync: {
+                meta: {
+                    id: '8a41b11a-d739-4f28-a085-cfddfec33bea',
+                },
+                request: 'request',
+                uri: 'extsync/',
+                body: '{"type": "foreground","message": {}}',
+            },
+        });
+
+        await delay(500);
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
     });
 });
