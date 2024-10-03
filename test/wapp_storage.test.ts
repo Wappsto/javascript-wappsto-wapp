@@ -26,8 +26,13 @@ describe('WappStorage', () => {
         mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
         mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
 
+        const wsPromise = wappStorage('test');
         const ws = await wappStorage('test');
         expect(ws.name).toEqual('test');
+
+        const ws2 = await wsPromise;
+        expect(ws2.name).toEqual('test');
+        expect(ws).toEqual(ws2);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);

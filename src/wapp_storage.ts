@@ -4,8 +4,12 @@ import { printError } from './util/debug';
 import { isBrowser } from './util/helpers';
 import { IWappStorage, StorageChangeHandler } from './util/types';
 
-const storages: Record<string, WappStorage> = {};
+type promiseCallback = (
+    value: WappStorage<any> | PromiseLike<WappStorage<any>>
+) => void;
 
+const storages: Record<string, WappStorage> = {};
+const promises: Record<string, promiseCallback[] | undefined> = {};
 /**
  * Initializes a WappStorage instance with the given name.
  *
@@ -19,11 +23,25 @@ export async function wappStorage<T extends Record<string, unknown>>(
     if (name === undefined) {
         name = 'default';
     }
+
+    if (Array.isArray(promises[name])) {
+        const promise = new Promise<WappStorage<T>>((resolve) => {
+            promises[name]?.push(resolve);
+        });
+        return promise;
+    }
+
     if (storages[name] === undefined) {
+        promises[name] = [];
         const storage = new WappStorage<T>(name);
         await storage.init();
         storages[name] = storage as WappStorage;
+        promises[name]?.forEach((r) => {
+            r(storage);
+        });
+        promises[name] = undefined;
     }
+
     return storages[name] as WappStorage<T>;
 }
 
