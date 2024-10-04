@@ -105,18 +105,23 @@ export class User extends Model {
         }
 
         const old = this.other_email.find((e) => e.contact === contact);
-        if (old?.status === 'accepted' || old?.status === 'pending') {
+        if (
+            old?.status === 'accepted' ||
+            old?.status === 'send' ||
+            old?.status === 'pending' ||
+            old?.status === 'refused'
+        ) {
             return;
         }
 
         if (old) {
-            old.status = 'pending';
+            old.status = 'send';
             old.contact_message = message;
             old.language = language;
         } else {
             this.other_email.push({
                 contact,
-                status: 'pending',
+                status: 'send',
                 contact_message: message,
                 language: language,
             });
