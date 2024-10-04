@@ -4,6 +4,7 @@ import { Model } from './model';
 
 export class User extends Model {
     static endpoint = '/2.1/user';
+    static attributes = ['other_email', 'other_sms'];
 
     first_name?: string;
     last_name?: string;
@@ -33,7 +34,7 @@ export class User extends Model {
             | 'archive';
         contact_message: string;
         language: string;
-        last_update: string;
+        last_update?: string;
     }[];
     other_sms?: {
         contact: string;
@@ -46,7 +47,7 @@ export class User extends Model {
             | 'archive';
         contact_message: string;
         language: string;
-        last_update: string;
+        last_update?: string;
     }[];
     admin?: boolean;
     founder?: boolean;
@@ -64,6 +65,10 @@ export class User extends Model {
 
     constructor() {
         super('user');
+    }
+
+    getAttributes(): string[] {
+        return User.attributes;
     }
 
     static me = async (): Promise<User | undefined> => {
@@ -86,8 +91,30 @@ export class User extends Model {
         printError("User can't be created");
     }
 
-    async update(): Promise<boolean> {
-        printError("User can't be updated");
+    protected usePutForUpdate(): boolean {
         return false;
+    }
+
+    async addOtherMail(
+        contact: string,
+        message: string,
+        language = 'en'
+    ): Promise<void> {
+        if (!this.other_email) {
+            this.other_email = [];
+        }
+
+        if (this.other_email.find((e) => e.contact === contact)) {
+            return;
+        }
+
+        this.other_email.push({
+            contact,
+            status: 'pending',
+            contact_message: message,
+            language: language,
+        });
+
+        await this.update();
     }
 }

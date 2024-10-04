@@ -37,13 +37,6 @@ describe('user', () => {
         expect(mockedAxios.post).not.toHaveBeenCalled();
     });
 
-    it('can not update a user on wappsto', async () => {
-        const user = new User();
-        await user.update();
-
-        expect(mockedAxios.put).not.toHaveBeenCalled();
-    });
-
     it('can create a new user from wappsto', async () => {
         const user = await User.me();
 
@@ -75,5 +68,36 @@ describe('user', () => {
         });
         expect(users[0]?.first_name).toEqual('first');
         expect(users[0]?.last_name).toEqual('last');
+    });
+
+    it('can add a other mail to the user', async () => {
+        mockedAxios.patch.mockResolvedValue(makeResponse({}));
+
+        const user = new User();
+        user.meta.id = '258ba6c6-91ae-4c92-b5d1-617684bae479';
+        await user.addOtherMail('test@test.com', 'hello');
+        await user.addOtherMail('test@test.com', 'hello');
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/user/258ba6c6-91ae-4c92-b5d1-617684bae479',
+            {
+                meta: {
+                    id: '258ba6c6-91ae-4c92-b5d1-617684bae479',
+                    type: 'user',
+                    version: '2.1',
+                },
+                other_email: [
+                    {
+                        contact: 'test@test.com',
+                        contact_message: 'hello',
+                        language: 'en',
+                        status: 'pending',
+                    },
+                ],
+            },
+            {}
+        );
     });
 });
