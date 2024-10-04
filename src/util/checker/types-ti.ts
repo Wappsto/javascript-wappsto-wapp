@@ -274,6 +274,21 @@ export const ExternalLogValues = t.iface([], {
     ),
 });
 
+export const OtherContact = t.iface([], {
+    contact: 'string',
+    status: t.union(
+        t.lit('pending'),
+        t.lit('refused'),
+        t.lit('accepted'),
+        t.lit('send'),
+        t.lit('not_sent'),
+        t.lit('archive')
+    ),
+    contact_message: 'string',
+    language: 'string',
+    last_update: t.opt('string'),
+});
+
 const exportedTypeSuite: t.ITypeSuite = {
     JSONValue,
     JSONObject,
@@ -307,5 +322,6 @@ const exportedTypeSuite: t.ITypeSuite = {
     LogGroupBy,
     LogRequest,
     ExternalLogValues,
+    OtherContact,
 };
 export default exportedTypeSuite;

@@ -1,5 +1,5 @@
 import { printError } from '../util/debug';
-import { JSONObject } from '../util/types';
+import { JSONObject, OtherContact } from '../util/types';
 import { Model } from './model';
 
 export class User extends Model {
@@ -23,32 +23,8 @@ export class User extends Model {
     verified_email?: boolean;
     verified_sms?: boolean;
     installation?: string;
-    other_email?: {
-        contact: string;
-        status:
-            | 'pending'
-            | 'refused'
-            | 'accepted'
-            | 'send'
-            | 'not_sent'
-            | 'archive';
-        contact_message: string;
-        language: string;
-        last_update?: string;
-    }[];
-    other_sms?: {
-        contact: string;
-        status:
-            | 'pending'
-            | 'refused'
-            | 'accepted'
-            | 'send'
-            | 'not_sent'
-            | 'archive';
-        contact_message: string;
-        language: string;
-        last_update?: string;
-    }[];
+    other_email?: OtherContact[];
+    other_sms?: OtherContact[];
     admin?: boolean;
     founder?: boolean;
     subuser?: boolean;

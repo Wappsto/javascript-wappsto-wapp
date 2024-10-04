@@ -224,3 +224,17 @@ export type ExternalLogValues = {
         [key: string]: string;
     }[];
 };
+
+export type OtherContact = {
+    contact: string;
+    status:
+        | 'pending'
+        | 'refused'
+        | 'accepted'
+        | 'send'
+        | 'not_sent'
+        | 'archive';
+    contact_message: string;
+    language: string;
+    last_update?: string;
+};
