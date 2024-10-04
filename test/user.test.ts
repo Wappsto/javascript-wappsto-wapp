@@ -100,4 +100,42 @@ describe('user', () => {
             {}
         );
     });
+
+    it('can re request a other mail to the user', async () => {
+        mockedAxios.patch.mockResolvedValue(makeResponse({}));
+
+        const user = new User();
+        user.meta.id = 'cace573a-5db4-49ec-87fb-39f1b19a66be';
+        user.other_email = [
+            {
+                contact: 'test@test.com',
+                contact_message: 'hello',
+                language: 'en',
+                status: 'not_sent',
+            },
+        ];
+        await user.addOtherMail('test@test.com', 'hello');
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/user/cace573a-5db4-49ec-87fb-39f1b19a66be',
+            {
+                meta: {
+                    id: 'cace573a-5db4-49ec-87fb-39f1b19a66be',
+                    type: 'user',
+                    version: '2.1',
+                },
+                other_email: [
+                    {
+                        contact: 'test@test.com',
+                        contact_message: 'hello',
+                        language: 'en',
+                        status: 'pending',
+                    },
+                ],
+            },
+            {}
+        );
+    });
 });

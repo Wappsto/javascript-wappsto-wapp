@@ -104,16 +104,23 @@ export class User extends Model {
             this.other_email = [];
         }
 
-        if (this.other_email.find((e) => e.contact === contact)) {
+        const old = this.other_email.find((e) => e.contact === contact);
+        if (old?.status === 'accepted' || old?.status === 'pending') {
             return;
         }
 
-        this.other_email.push({
-            contact,
-            status: 'pending',
-            contact_message: message,
-            language: language,
-        });
+        if (old) {
+            old.status = 'pending';
+            old.contact_message = message;
+            old.language = language;
+        } else {
+            this.other_email.push({
+                contact,
+                status: 'pending',
+                contact_message: message,
+                language: language,
+            });
+        }
 
         await this.update();
     }
