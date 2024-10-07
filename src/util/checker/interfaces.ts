@@ -14,6 +14,8 @@ import {
     LogValues,
     Mail,
     Meta,
+    OtherContact,
+    PointManagement,
     StateStatus,
     StateType,
     Timestamp,
@@ -364,6 +366,34 @@ export interface IValueStaticFunc {
     fetchById(id: string): ValueType;
     getFilter(filter?: Filter, omit_filter?: Filter): string[];
     getFilterResult(filter?: Filter, omit_filter?: Filter): string;
+}
+
+export interface ISubUser {
+    login_username?: string;
+    login_password?: string;
+    session_token?: string;
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone?: string;
+    name?: string;
+    role?: string;
+    organization?: string;
+    address?: string;
+    nickname?: string;
+    language?: string;
+    last_online?: string;
+    point_management?: PointManagement;
+    verified_email?: boolean;
+    verified_sms?: boolean;
+    other_email?: OtherContact[];
+    other_sms?: OtherContact[];
+}
+
+export interface ISubUserFunc {
+    constructor(username?: string, password?: string): ISubUser;
+    fetchById(id: string): ISubUser;
+    makeIndependent(newUsername: string): boolean;
 }
 
 export interface IState {

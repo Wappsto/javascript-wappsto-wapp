@@ -10,6 +10,7 @@ type promiseCallback = (
 
 const storages: Record<string, WappStorage> = {};
 const promises: Record<string, promiseCallback[] | undefined> = {};
+
 /**
  * Initializes a WappStorage instance with the given name.
  *

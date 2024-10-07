@@ -14,4 +14,4 @@ export { Value } from './value';
 export { EventLog } from './eventlog';
 export { File } from './file';
 export { Icon } from './icon';
-export { SubUser, PointManagement } from './subuser';
+export { SubUser } from './subuser';

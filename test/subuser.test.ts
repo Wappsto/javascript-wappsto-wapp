@@ -101,4 +101,55 @@ describe('sub user', () => {
             {}
         );
     });
+
+    it('can make a subuser independent', async () => {
+        mockedAxios.patch.mockResolvedValue(makeResponse({}));
+        const user = new SubUser();
+        user.meta.id = '7394c226-f39c-408b-93c6-18e53826c1f7';
+        await user.makeIndependent('new@mail.com');
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/register',
+            {
+                subuser: {
+                    id: '7394c226-f39c-408b-93c6-18e53826c1f7',
+                    new_username: 'new@mail.com',
+                },
+            },
+            { params: { request: 'convert_subuser_to_user' } }
+        );
+    });
+
+    it('can fetch a subuser by id', async () => {
+        mockedAxios.get.mockResolvedValue(
+            makeResponse({
+                meta: {
+                    type: 'subuser',
+                    version: '2.1',
+                    id: 'a733c8b5-baa2-42c9-a64a-30604a8e9b63',
+                },
+                first_name: 'first',
+                last_name: 'last',
+            })
+        );
+        const user = await SubUser.fetchById(
+            'a733c8b5-baa2-42c9-a64a-30604a8e9b63'
+        );
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/subuser/a733c8b5-baa2-42c9-a64a-30604a8e9b63',
+            {
+                params: {
+                    go_internal: true,
+                    method: ['retrieve'],
+                },
+            }
+        );
+        expect(user?.first_name).toEqual('first');
+        expect(user?.last_name).toEqual('last');
+    });
 });

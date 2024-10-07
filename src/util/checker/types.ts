@@ -238,3 +238,29 @@ export type OtherContact = {
     language: string;
     last_update?: string;
 };
+
+export type UserDailyLimit = {
+    point?: number;
+    document?: number;
+    log_row?: number;
+    traffic?: number;
+    iot_traffic?: number;
+    stream_traffic?: number;
+    file?: number;
+    request?: number;
+    request_time?: number;
+};
+
+export type NetworkDailyLimit = {
+    point?: number;
+    iot_traffic?: number;
+    request?: number;
+    request_time?: number;
+};
+
+export type PointManagement = {
+    base_point?: any;
+    base_network?: any;
+    user_daily_limit?: UserDailyLimit;
+    network_daily_limit?: NetworkDailyLimit;
+};

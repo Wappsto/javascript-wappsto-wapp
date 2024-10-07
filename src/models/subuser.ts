@@ -1,34 +1,15 @@
-import { ValidateParams } from '../util/types';
+import {
+    ISubUser,
+    OtherContact,
+    PointManagement,
+    ValidateParams,
+} from '../util/types';
 import { Model } from './model';
 import { OntologyModel } from './model.ontology';
+import wappsto from '../util/http_wrapper';
+import { findModel } from '../util/modelStore';
 
-export type UserDailyLimit = {
-    point?: number;
-    document?: number;
-    log_row?: number;
-    traffic?: number;
-    iot_traffic?: number;
-    stream_traffic?: number;
-    file?: number;
-    request?: number;
-    request_time?: number;
-};
-
-export type NetworkDailyLimit = {
-    point?: number;
-    iot_traffic?: number;
-    request?: number;
-    request_time?: number;
-};
-
-export type PointManagement = {
-    base_point?: any;
-    base_network?: any;
-    user_daily_limit?: UserDailyLimit;
-    network_daily_limit?: NetworkDailyLimit;
-};
-
-export class SubUser extends OntologyModel {
+export class SubUser extends OntologyModel implements ISubUser {
     static endpoint = '/2.1/subuser';
     static attributes = [
         'login_username',
@@ -65,32 +46,8 @@ export class SubUser extends OntologyModel {
     point_management?: PointManagement;
     verified_email?: boolean;
     verified_sms?: boolean;
-    other_email?: {
-        contact: string;
-        status:
-            | 'pending'
-            | 'refused'
-            | 'accepted'
-            | 'send'
-            | 'not_sent'
-            | 'archive';
-        contact_message: string;
-        language: string;
-        last_update: string;
-    }[];
-    other_sms?: {
-        contact: string;
-        status:
-            | 'pending'
-            | 'refused'
-            | 'accepted'
-            | 'send'
-            | 'not_sent'
-            | 'archive';
-        contact_message: string;
-        language: string;
-        last_update: string;
-    }[];
+    other_email?: OtherContact[];
+    other_sms?: OtherContact[];
 
     constructor(username?: string, password?: string) {
         super('subuser');
@@ -116,5 +73,41 @@ export class SubUser extends OntologyModel {
 
         const data = await Model.fetch({ endpoint: url, params });
         return SubUser.fromArray(data) as SubUser[];
+    };
+
+    static fetchById = async (id: string) => {
+        SubUser.#validate('fetchById', [id]);
+        const model = findModel('subuser', id);
+        if (model) {
+            return model as SubUser;
+        }
+
+        const data = await Model.fetch({
+            endpoint: `${SubUser.endpoint}/${id}`,
+        });
+        const res = SubUser.fromArray(data);
+        if (res[0]) {
+            return res[0] as SubUser;
+        }
+        return undefined;
+    };
+
+    makeIndependent = async (newUsername: string) => {
+        this.validate('makeIndependent', [newUsername]);
+
+        try {
+            const response = await wappsto.patch(
+                '/2.1/register',
+                { subuser: { id: this.id(), new_username: newUsername } },
+                { params: { request: 'convert_subuser_to_user' } }
+            );
+
+            if (response.status === 200) {
+                return true;
+            }
+        } catch (error) {
+            return false;
+        }
+        return false;
     };
 }

@@ -289,6 +289,32 @@ export const OtherContact = t.iface([], {
     last_update: t.opt('string'),
 });
 
+export const UserDailyLimit = t.iface([], {
+    point: t.opt('number'),
+    document: t.opt('number'),
+    log_row: t.opt('number'),
+    traffic: t.opt('number'),
+    iot_traffic: t.opt('number'),
+    stream_traffic: t.opt('number'),
+    file: t.opt('number'),
+    request: t.opt('number'),
+    request_time: t.opt('number'),
+});
+
+export const NetworkDailyLimit = t.iface([], {
+    point: t.opt('number'),
+    iot_traffic: t.opt('number'),
+    request: t.opt('number'),
+    request_time: t.opt('number'),
+});
+
+export const PointManagement = t.iface([], {
+    base_point: t.opt('any'),
+    base_network: t.opt('any'),
+    user_daily_limit: t.opt('UserDailyLimit'),
+    network_daily_limit: t.opt('NetworkDailyLimit'),
+});
+
 const exportedTypeSuite: t.ITypeSuite = {
     JSONValue,
     JSONObject,
@@ -323,5 +349,8 @@ const exportedTypeSuite: t.ITypeSuite = {
     LogRequest,
     ExternalLogValues,
     OtherContact,
+    UserDailyLimit,
+    NetworkDailyLimit,
+    PointManagement,
 };
 export default exportedTypeSuite;

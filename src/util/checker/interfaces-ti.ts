@@ -476,6 +476,38 @@ export const IValueStaticFunc = t.iface([], {
     ),
 });
 
+export const ISubUser = t.iface([], {
+    login_username: t.opt('string'),
+    login_password: t.opt('string'),
+    session_token: t.opt('string'),
+    first_name: t.opt('string'),
+    last_name: t.opt('string'),
+    email: t.opt('string'),
+    phone: t.opt('string'),
+    name: t.opt('string'),
+    role: t.opt('string'),
+    organization: t.opt('string'),
+    address: t.opt('string'),
+    nickname: t.opt('string'),
+    language: t.opt('string'),
+    last_online: t.opt('string'),
+    point_management: t.opt('PointManagement'),
+    verified_email: t.opt('boolean'),
+    verified_sms: t.opt('boolean'),
+    other_email: t.opt(t.array('OtherContact')),
+    other_sms: t.opt(t.array('OtherContact')),
+});
+
+export const ISubUserFunc = t.iface([], {
+    constructor: t.func(
+        'ISubUser',
+        t.param('username', 'string', true),
+        t.param('password', 'string', true)
+    ),
+    fetchById: t.func('ISubUser', t.param('id', 'string')),
+    makeIndependent: t.func('boolean', t.param('newUsername', 'string')),
+});
+
 export const IState = t.iface([], {
     [t.indexKey]: 'any',
     meta: t.opt('Meta'),
@@ -1061,6 +1093,8 @@ const exportedTypeSuite: t.ITypeSuite = {
     ReportValueInput,
     IValueFunc,
     IValueStaticFunc,
+    ISubUser,
+    ISubUserFunc,
     IState,
     IStateFunc,
     IFile,
