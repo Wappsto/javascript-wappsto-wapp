@@ -1,8 +1,7 @@
-import wappsto from '../util/http_wrapper';
-import { Model } from './model';
-import { OntologyModel } from './model.ontology';
-import { printHttpError } from '../util/http_wrapper';
+import wappsto, { printHttpError } from '../util/http_wrapper';
 import { JSONObject } from '../util/types';
+import { Model } from './model';
+import { TagsModel } from './model.tags';
 
 export interface IRestriction {
     retrieve: boolean;
@@ -11,7 +10,7 @@ export interface IRestriction {
     create: boolean;
 }
 
-export class SharingModel extends OntologyModel {
+export class SharingModel extends TagsModel {
     shareWith = async (
         user: string,
         restriction: IRestriction = {

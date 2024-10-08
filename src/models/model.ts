@@ -277,7 +277,14 @@ export class Model implements IModel {
         }
         const meta = Object.assign(
             {},
-            pick(this.meta, ['id', 'type', 'version', 'historical'])
+            pick(this.meta, [
+                'id',
+                'type',
+                'version',
+                'historical',
+                'name_by_user',
+                'tag_by_user',
+            ])
         );
 
         return Object.assign(
