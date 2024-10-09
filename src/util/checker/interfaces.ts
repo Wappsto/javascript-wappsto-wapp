@@ -72,6 +72,8 @@ export interface IModelFunc {
     cancelOnDelete(callback: StreamCallback): Promise<boolean>;
     cancelOnCreate(callback: StreamCallback): Promise<boolean>;
     getFilterResult(filter?: Filter, omit_filter?: Filter): string;
+    addTag(tag: string): Promise<boolean>;
+    removeTag(tag: string): Promise<boolean>;
 }
 
 export interface IData {

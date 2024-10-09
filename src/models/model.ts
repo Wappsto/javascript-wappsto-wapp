@@ -275,6 +275,7 @@ export class Model implements IModel {
                 this.#removeUndefined(pick(this, customKeys))
             );
         }
+
         const meta = Object.assign(
             {},
             pick(this.meta, [

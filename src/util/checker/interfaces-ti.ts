@@ -60,6 +60,8 @@ export const IModelFunc = t.iface([], {
         t.param('filter', 'Filter', true),
         t.param('omit_filter', 'Filter', true)
     ),
+    addTag: t.func('boolean', t.param('tag', 'string')),
+    removeTag: t.func('boolean', t.param('tag', 'string')),
 });
 
 export const IData = t.iface([], {

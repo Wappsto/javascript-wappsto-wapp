@@ -2,9 +2,10 @@ import axios from 'axios';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
-import { Network } from '../src/index';
+import { Network, File } from '../src/index';
 import { after, before } from './util/stream';
 import { makeResponse } from './util/helpers';
+import { makeFileResponse } from './util/response';
 
 describe('tags', () => {
     beforeAll(() => {
@@ -112,6 +113,45 @@ describe('tags', () => {
                     tag_by_user: [],
                 },
                 name: '',
+            },
+            {}
+        );
+    });
+
+    it('can add a tag to a file after it was fetch by id', async () => {
+        mockedAxios.get.mockResolvedValue(
+            makeResponse([
+                makeFileResponse({
+                    id: 'd3b86c0e-0498-466c-b7ae-22b79bf6aba9',
+                    name: 'new name',
+                }),
+            ])
+        );
+        mockedAxios.patch.mockResolvedValueOnce(makeResponse({}));
+
+        const file = await File.fetchById(
+            'd3b86c0e-0498-466c-b7ae-22b79bf6aba9'
+        );
+        await file?.addTag('test');
+        expect(file?.getTags()).toEqual(['test']);
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/file/d3b86c0e-0498-466c-b7ae-22b79bf6aba9',
+            {
+                meta: {
+                    id: 'd3b86c0e-0498-466c-b7ae-22b79bf6aba9',
+                    type: 'file',
+                    version: '2.1',
+                    tag_by_user: ['test'],
+                },
+                name: 'new name',
+                published: false,
+                size: 100,
+                type: 'File Type',
             },
             {}
         );
