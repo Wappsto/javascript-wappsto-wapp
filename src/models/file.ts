@@ -51,9 +51,10 @@ export class File extends StreamModel implements IFile {
     };
 
     static fetch = async () => {
+        const params = { expand: 0 };
         const url = File.endpoint;
 
-        const data = await Model.fetch({ endpoint: url });
+        const data = await Model.fetch({ endpoint: url, params });
         return File.fromArray(data) as File[];
     };
 }

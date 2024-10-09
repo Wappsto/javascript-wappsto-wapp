@@ -98,16 +98,21 @@ describe('file', () => {
 
     it('can create a new file from wappsto', async () => {
         mockedAxios.get.mockResolvedValue(
-            makeResponse([makeFileResponse({ name: 'new name' })])
+            makeResponse([
+                makeFileResponse({ name: 'File 1' }),
+                makeFileResponse({ name: 'File 2' }),
+            ])
         );
 
         const files = await File.fetch();
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/file', {
-            params: { go_internal: true, method: ['retrieve'] },
+            params: { expand: 0, go_internal: true, method: ['retrieve'] },
         });
-        expect(files[0]?.name).toEqual('new name');
+
+        expect(files[0]?.name).toEqual('File 1');
+        expect(files[1]?.name).toEqual('File 2');
     });
 
     it('will fail if file does not exist', async () => {
