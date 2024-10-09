@@ -1,5 +1,5 @@
-import { Timestamp } from '../../util/types';
-import { AnalyticsModel, AnalyticsParameters } from './model.analytics';
+import { AnalyticsParameters, Timestamp } from '../../util/types';
+import { AnalyticsModel } from './model.analytics';
 
 export class PowerPriceList extends AnalyticsModel {
     constructor(

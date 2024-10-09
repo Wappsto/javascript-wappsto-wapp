@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import isEqual from 'lodash.isequal';
-import { runAnalyticModel } from '../util/analytics_helpers';
+import { Newable, runAnalyticModel } from '../util/analytics_helpers';
 import { _config } from '../util/config';
 import { printDebug, printWarning } from '../util/debug';
 import { generateFilterRequest } from '../util/filter';
@@ -48,7 +48,7 @@ import {
 } from '../util/types';
 import { addModel, findModel, getModel } from '../util/modelStore';
 import { EnergyData, EnergyPieChart, EnergySummary } from './analytic';
-import { AnalyticsModel, Newable } from './analytic/model.analytics';
+import { AnalyticsModel } from './analytic/model.analytics';
 import { EventLog } from './eventlog';
 import { Model } from './model';
 import { PermissionModel } from './model.permission';

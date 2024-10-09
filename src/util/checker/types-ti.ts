@@ -315,6 +315,26 @@ export const PointManagement = t.iface([], {
     network_daily_limit: t.opt('NetworkDailyLimit'),
 });
 
+export const IRestriction = t.iface([], {
+    retrieve: 'boolean',
+    update: 'boolean',
+    delete: 'boolean',
+    create: 'boolean',
+});
+
+export const DataMeta = t.iface([], {
+    id: t.opt('string'),
+    type: t.opt('string'),
+    version: t.opt('number'),
+});
+
+export const AnalyticsParameters = t.iface([], {
+    start: t.opt('string'),
+    end: t.opt('string'),
+    provider: t.opt('string'),
+    region: t.opt('string'),
+});
+
 const exportedTypeSuite: t.ITypeSuite = {
     JSONValue,
     JSONObject,
@@ -352,5 +372,8 @@ const exportedTypeSuite: t.ITypeSuite = {
     UserDailyLimit,
     NetworkDailyLimit,
     PointManagement,
+    IRestriction,
+    DataMeta,
+    AnalyticsParameters,
 };
 export default exportedTypeSuite;

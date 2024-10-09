@@ -467,17 +467,6 @@ export type ExtsyncResponse = {
     method?: string;
 };
 
-export type StreamData = JSONObject;
-
-export type StreamEvent = {
-    path: string;
-    event: EventType;
-    data?: StreamData;
-    meta_object?: Meta;
-    meta?: Meta;
-    extsync?: JSONValue;
-};
-
 export interface IStreamModel {
     path(): string;
     handleStream(event: StreamEvent): void;
@@ -580,6 +569,41 @@ export type RequestType = {
     message: JSONValue;
 };
 
+export type StreamCallbacks = {
+    [key: string]: StreamCallback[];
+    event: StreamCallback[];
+    change: StreamCallback[];
+    delete: StreamCallback[];
+    create: StreamCallback[];
+};
+
+export type StreamHandlerCallbacks = {
+    [key: string]: StreamHandler[];
+    update: StreamHandler[];
+    delete: StreamHandler[];
+    create: StreamHandler[];
+};
+
+export type StreamEvent = {
+    path: string;
+    event: EventType;
+    data?: StreamData;
+    meta_object?: Meta;
+    meta?: Meta;
+    extsync?: JSONValue;
+};
+
+export type EventHandler = (event: StreamEvent) => boolean | void;
+
+export type EventQueue = {
+    [key: string]: StreamEvent[];
+    event: StreamEvent[];
+    change: StreamEvent[];
+    delete: StreamEvent[];
+    create: StreamEvent[];
+};
+
+export type StreamData = JSONObject;
 export type StorageChangeHandler = () => void | Promise<void>;
 export type StreamHandler = (
     event: StreamEvent

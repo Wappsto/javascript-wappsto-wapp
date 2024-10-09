@@ -4,15 +4,9 @@ import pick from 'lodash.pick';
 import { isBrowser, toSafeObject } from '../util/helpers';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
-import { IData, JSONObject } from '../util/types';
+import { DataMeta, IData, JSONObject } from '../util/types';
 import { findModel } from '../util/modelStore';
 import { _config } from '../util/config';
-
-export type DataMeta = {
-    id?: string;
-    type?: string;
-    version?: number;
-};
 
 export class Data<T extends Record<string, unknown>>
     extends StreamModel

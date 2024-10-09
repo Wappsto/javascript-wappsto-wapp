@@ -1,5 +1,6 @@
 import pick from 'lodash.pick';
 import {
+    AnalyticsParameters,
     AnalyticsResponse,
     JSONObject,
     StreamData,
@@ -7,15 +8,6 @@ import {
 } from '../../util/types';
 import { PermissionModel } from '../model.permission';
 import { toISOString } from '../../util/helpers';
-
-export type Newable<T> = { new (...args: any[]): T };
-
-export type AnalyticsParameters = {
-    start?: string;
-    end?: string;
-    provider?: string;
-    region?: string;
-};
 
 export class AnalyticsModel extends PermissionModel {
     static endpoint = '/2.1/analytics';

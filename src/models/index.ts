@@ -1,4 +1,4 @@
-export { Data, DataMeta } from './data';
+export { Data } from './data';
 export { Device } from './device';
 export { Network, createNetwork } from './network';
 export { Notification } from './notification';

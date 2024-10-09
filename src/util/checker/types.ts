@@ -264,3 +264,23 @@ export type PointManagement = {
     user_daily_limit?: UserDailyLimit;
     network_daily_limit?: NetworkDailyLimit;
 };
+
+export type IRestriction = {
+    retrieve: boolean;
+    update: boolean;
+    delete: boolean;
+    create: boolean;
+};
+
+export type DataMeta = {
+    id?: string;
+    type?: string;
+    version?: number;
+};
+
+export type AnalyticsParameters = {
+    start?: string;
+    end?: string;
+    provider?: string;
+    region?: string;
+};

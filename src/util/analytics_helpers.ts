@@ -1,12 +1,15 @@
 import { PowerPriceList } from '../models/analytic';
-import {
-    AnalyticsModel,
-    AnalyticsParameters,
-    Newable,
-} from '../models/analytic/model.analytics';
+import { AnalyticsModel } from '../models/analytic/model.analytics';
 import { openStream } from '../stream_helpers';
 import { printWarning } from './debug';
-import { AnalyticsResponse, StreamData, Timestamp } from './types';
+import {
+    AnalyticsParameters,
+    AnalyticsResponse,
+    StreamData,
+    Timestamp,
+} from './types';
+
+export type Newable<T> = { new (...args: any[]): T };
 
 export function runAnalyticModel(
     model: Newable<AnalyticsModel>,

@@ -593,17 +593,6 @@ export const ExtsyncResponse = t.iface([], {
     method: t.opt('string'),
 });
 
-export const StreamData = t.name('JSONObject');
-
-export const StreamEvent = t.iface([], {
-    path: 'string',
-    event: 'EventType',
-    data: t.opt('StreamData'),
-    meta_object: t.opt('Meta'),
-    meta: t.opt('Meta'),
-    extsync: t.opt('JSONValue'),
-});
-
 export const IStreamModel = t.iface([], {
     path: t.func('string'),
     handleStream: t.func('void', t.param('event', 'StreamEvent')),
@@ -764,6 +753,45 @@ export const RequestType = t.iface([], {
     type: t.union(t.lit('foreground'), t.lit('background')),
     message: 'JSONValue',
 });
+
+export const StreamCallbacks = t.iface([], {
+    [t.indexKey]: t.array('StreamCallback'),
+    event: t.array('StreamCallback'),
+    change: t.array('StreamCallback'),
+    delete: t.array('StreamCallback'),
+    create: t.array('StreamCallback'),
+});
+
+export const StreamHandlerCallbacks = t.iface([], {
+    [t.indexKey]: t.array('StreamHandler'),
+    update: t.array('StreamHandler'),
+    delete: t.array('StreamHandler'),
+    create: t.array('StreamHandler'),
+});
+
+export const StreamEvent = t.iface([], {
+    path: 'string',
+    event: 'EventType',
+    data: t.opt('StreamData'),
+    meta_object: t.opt('Meta'),
+    meta: t.opt('Meta'),
+    extsync: t.opt('JSONValue'),
+});
+
+export const EventHandler = t.func(
+    t.union('boolean', 'void'),
+    t.param('event', 'StreamEvent')
+);
+
+export const EventQueue = t.iface([], {
+    [t.indexKey]: t.array('StreamEvent'),
+    event: t.array('StreamEvent'),
+    change: t.array('StreamEvent'),
+    delete: t.array('StreamEvent'),
+    create: t.array('StreamEvent'),
+});
+
+export const StreamData = t.name('JSONObject');
 
 export const StorageChangeHandler = t.func(t.union('void', 'void'));
 
@@ -1106,8 +1134,6 @@ const exportedTypeSuite: t.ITypeSuite = {
     INotificationFunc,
     ILogResponse,
     ExtsyncResponse,
-    StreamData,
-    StreamEvent,
     IStreamModel,
     IStreamFunc,
     IConnectionModel,
@@ -1118,6 +1144,12 @@ const exportedTypeSuite: t.ITypeSuite = {
     IWappStorageFunc,
     IWappStorage,
     RequestType,
+    StreamCallbacks,
+    StreamHandlerCallbacks,
+    StreamEvent,
+    EventHandler,
+    EventQueue,
+    StreamData,
     StorageChangeHandler,
     StreamHandler,
     ServiceHandler,

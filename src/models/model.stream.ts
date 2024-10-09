@@ -6,34 +6,13 @@ import {
     IStreamModel,
     StreamCallback,
     StreamHandler,
+    StreamCallbacks,
+    EventQueue,
+    StreamHandlerCallbacks,
+    EventHandler,
 } from '../util/types';
 import { Model } from './model';
 import { PermissionModel } from './model.permission';
-
-export type EventHandler = (event: StreamEvent) => boolean | void;
-
-type StreamCallbacks = {
-    [key: string]: StreamCallback[];
-    event: StreamCallback[];
-    change: StreamCallback[];
-    delete: StreamCallback[];
-    create: StreamCallback[];
-};
-
-type StreamHandlerCallbacks = {
-    [key: string]: StreamHandler[];
-    update: StreamHandler[];
-    delete: StreamHandler[];
-    create: StreamHandler[];
-};
-
-type EventQueue = {
-    [key: string]: StreamEvent[];
-    event: StreamEvent[];
-    change: StreamEvent[];
-    delete: StreamEvent[];
-    create: StreamEvent[];
-};
 
 function getServiceFromEndpoint(obj: any): string {
     return obj.endpoint.split('/').at(-1);

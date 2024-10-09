@@ -1,14 +1,7 @@
 import wappsto, { printHttpError } from '../util/http_wrapper';
-import { JSONObject } from '../util/types';
+import { IRestriction, JSONObject } from '../util/types';
 import { Model } from './model';
 import { TagsModel } from './model.tags';
-
-export interface IRestriction {
-    retrieve: boolean;
-    update: boolean;
-    delete: boolean;
-    create: boolean;
-}
 
 export class SharingModel extends TagsModel {
     shareWith = async (
