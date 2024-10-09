@@ -22,6 +22,13 @@ export class File extends StreamModel implements IFile {
         return File.attributes;
     }
 
+    getUrl(): string {
+        if (this.meta.id) {
+            return `${super.getUrl()}/document`;
+        }
+        return super.getUrl();
+    }
+
     static #validate(name: string, params: ValidateParams): void {
         Model.validateMethod('File', name, params);
     }
@@ -33,7 +40,9 @@ export class File extends StreamModel implements IFile {
             return model as File;
         }
 
-        const data = await Model.fetch({ endpoint: `${File.endpoint}/${id}` });
+        const data = await Model.fetch({
+            endpoint: `${File.endpoint}/${id}/document`,
+        });
         const res = File.fromArray(data);
         if (res[0]) {
             return res[0] as File;

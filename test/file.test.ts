@@ -75,20 +75,20 @@ describe('file', () => {
         mockedAxios.put.mockResolvedValue(response);
         mockedAxios.post.mockResolvedValue(response);
 
-        const state = new File();
-        await state.create();
-        state.type = 'new test';
-        await state.update();
+        const file = new File();
+        await file.create();
+        file.type = 'new test';
+        await file.update();
 
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenNthCalledWith(
             1,
-            `/2.1/file/${state.meta.id}`,
+            `/2.1/file/${file.meta.id}/document`,
             expect.objectContaining({
                 meta: {
                     type: 'file',
                     version: '2.1',
-                    id: state.meta.id,
+                    id: file.meta.id,
                 },
                 type: 'new test',
             }),
@@ -139,7 +139,7 @@ describe('file', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
-            '/2.1/file/96b2d794-1475-4b27-80fd-807e0cd76176',
+            '/2.1/file/96b2d794-1475-4b27-80fd-807e0cd76176/document',
             {
                 params: { go_internal: true, method: ['retrieve'] },
             }

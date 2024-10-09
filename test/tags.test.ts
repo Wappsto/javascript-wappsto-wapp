@@ -140,7 +140,7 @@ describe('tags', () => {
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenNthCalledWith(
             1,
-            '/2.1/file/d3b86c0e-0498-466c-b7ae-22b79bf6aba9',
+            '/2.1/file/d3b86c0e-0498-466c-b7ae-22b79bf6aba9/document',
             {
                 meta: {
                     id: 'd3b86c0e-0498-466c-b7ae-22b79bf6aba9',
