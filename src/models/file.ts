@@ -5,7 +5,7 @@ import { StreamModel } from './model.stream';
 
 export class File extends StreamModel implements IFile {
     static endpoint = '/2.1/file';
-    static attributes = ['name', 'type', 'size', 'published'];
+    static attributes = ['name', 'type'];
     name = '';
     type;
     size = 0;

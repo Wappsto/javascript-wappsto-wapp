@@ -60,8 +60,6 @@ describe('file', () => {
                 },
                 name: 'my file',
                 type: 'my type',
-                size: 0,
-                published: false,
             }),
             {}
         );

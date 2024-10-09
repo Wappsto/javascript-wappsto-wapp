@@ -149,8 +149,6 @@ describe('tags', () => {
                     tag_by_user: ['test'],
                 },
                 name: 'new name',
-                published: false,
-                size: 100,
                 type: 'File Type',
             },
             {}
