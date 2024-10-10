@@ -815,7 +815,12 @@ describe('WappStorage', () => {
         });
 
         await w.set('main', data);
+        const value = w.get('main');
+        expect(value).not.toBe(data);
+
         await w.setSecret('main', data);
+        const valueSecret = w.getSecret('main');
+        expect(valueSecret).not.toBe(data);
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledTimes(2);

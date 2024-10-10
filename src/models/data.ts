@@ -68,8 +68,17 @@ export class Data<T extends Record<string, unknown>>
     get<K extends keyof T>(name: K, secret = false): T[K] | undefined {
         if (secret) {
             this.#checkSecret();
-            return this._secret_background[name];
+            if (typeof this._secret_background[name] === 'object') {
+                return toSafeObject(this._secret_background[name]) as
+                    | T[K]
+                    | undefined;
+            } else {
+                return this._secret_background[name];
+            }
         } else {
+            if (typeof this.data[name] === 'object') {
+                return toSafeObject(this.data[name]) as T[K] | undefined;
+            }
             return this.data[name];
         }
     }
@@ -84,16 +93,16 @@ export class Data<T extends Record<string, unknown>>
         }
     }
 
-    keys() {
-        return Object.keys(this.data);
+    keys<K extends keyof T>() {
+        return toSafeObject(Object.keys(this.data)) as K[];
     }
 
-    values() {
-        return Object.values(this.data);
+    values<K extends keyof T>() {
+        return toSafeObject(Object.values(this.data)) as T[K][];
     }
 
-    entries() {
-        return Object.entries(this.data);
+    entries<K extends keyof T>() {
+        return toSafeObject(Object.entries(this.data)) as [K, T[K]][];
     }
 
     static async fetchById<

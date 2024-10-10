@@ -4,6 +4,7 @@ import {
     FilterValueOperatorType,
     FilterValueType,
     IModel,
+    JSONValue,
     LogGroupBy,
     LogValue,
     LogValues,
@@ -131,7 +132,7 @@ export function toSafeString(json: unknown): string {
     return JSON.stringify(json, getCircularReplacer());
 }
 
-export function toSafeObject(json: unknown): Record<string, unknown> {
+export function toSafeObject(json: unknown): JSONValue {
     return JSON.parse(toSafeString(json));
 }
 

@@ -202,8 +202,8 @@ export class WappStorage<
      *
      * @return An iterator of key-value pairs.
      */
-    entries() {
-        return this.#data.entries();
+    entries<K extends keyof T>() {
+        return this.#data.entries() as [K, T[K]][];
     }
 
     #remove(name: string | string[], secret?: boolean): Promise<boolean> {
