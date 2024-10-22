@@ -22,11 +22,50 @@ describe('WappStorage', () => {
         after();
     });
 
+    it('subscribes to extsync on start', async () => {
+        await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/extsync',
+                },
+            })
+        );
+        sendRpcResponse(server);
+    });
+
     it('can create a new instance', async () => {
         mockedAxios.get.mockResolvedValueOnce(makeResponse([]));
-        mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.post.mockResolvedValueOnce(
+            makeResponse({
+                meta: {
+                    type: 'data',
+                    id: '2bedb9fc-6063-4d7b-b5e1-bb38d8cab507',
+                    version: '2.1',
+                },
+            })
+        );
 
         const wsPromise = wappStorage('test');
+
+        await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/data/2bedb9fc-6063-4d7b-b5e1-bb38d8cab507',
+                },
+            })
+        );
+        sendRpcResponse(server);
+
         const ws = await wappStorage('test');
         expect(ws.name).toEqual('test');
 
@@ -121,11 +160,7 @@ describe('WappStorage', () => {
         mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
 
         const fun = jest.fn();
-        const c = await wappStorage<Record<string, string>>();
-        const changeP = c.onChange(fun);
-        const res = c.get('key');
-        await c.set('new_key', 'new_item');
-        const newRes = c.get('new_key');
+        const promiseCallback = wappStorage<Record<string, string>>('new_item');
 
         await server.connected;
 
@@ -140,6 +175,12 @@ describe('WappStorage', () => {
             })
         );
         sendRpcResponse(server);
+        const c = await promiseCallback;
+
+        const changeP = c.onChange(fun);
+        const res = c.get('key');
+        await c.set('new_key', 'new_item');
+        const newRes = c.get('new_key');
 
         await changeP;
 
@@ -158,7 +199,7 @@ describe('WappStorage', () => {
 
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/data', {
             params: {
-                'this_data_meta.id': 'wapp_storage_default',
+                'this_data_meta.id': 'wapp_storage_new_item',
                 expand: 1,
                 go_internal: true,
                 method: ['retrieve'],
@@ -189,18 +230,6 @@ describe('WappStorage', () => {
         );
 
         const removedPromise = c.cancelOnChange();
-
-        await expect(server).toReceiveMessage(
-            expect.objectContaining({
-                jsonrpc: '2.0',
-                method: 'DELETE',
-                params: {
-                    url: '/services/2.1/websocket/open/subscription',
-                    data: '/2.1/data/be342e99-5e52-4f8c-bb20-ead46bfe4a16',
-                },
-            })
-        );
-        sendRpcResponse(server);
 
         let removed = await removedPromise;
         expect(removed).toBeTruthy();
@@ -272,22 +301,45 @@ describe('WappStorage', () => {
     });
 
     it('can load new data from the server', async () => {
-        mockedAxios.get.mockResolvedValueOnce(
-            makeResponse([
-                {
-                    data_meta: {
-                        id: 'wapp_storage_default',
-                        type: 'wapp_storage',
-                        version: 1,
+        mockedAxios.get
+            .mockResolvedValueOnce(
+                makeResponse([
+                    {
+                        meta: {
+                            type: 'data',
+                            id: 'e09c8a6f-e98d-417f-a6a9-1e1238127446',
+                            version: '2.1',
+                        },
+                        data_meta: {
+                            id: 'wapp_storage_default',
+                            type: 'wapp_storage',
+                            version: 1,
+                        },
+                        data: {},
                     },
-                    data: {
-                        missing: 'item',
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    {
+                        meta: {
+                            type: 'data',
+                            id: 'e09c8a6f-e98d-417f-a6a9-1e1238127446',
+                            version: '2.1',
+                        },
+                        data_meta: {
+                            id: 'wapp_storage_default',
+                            type: 'wapp_storage',
+                            version: 1,
+                        },
+                        data: {
+                            missing: 'item',
+                        },
                     },
-                },
-            ])
-        );
+                ])
+            );
 
-        const c = await wappStorage<Record<string, string>>();
+        const c = await wappStorage<Record<string, string>>('missing');
         const oldData = c.get('missing');
         await c.reload();
         const newData = c.get('missing');
@@ -295,18 +347,29 @@ describe('WappStorage', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
 
         expect(oldData).toBe(undefined);
         expect(newData).toBe('item');
     });
 
     it('can reset the data', async () => {
-        mockedAxios.post.mockResolvedValueOnce(makeResponse([]));
-        mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse({
+                meta: {
+                    type: 'data',
+                    id: '6d198069-dbe0-45e1-b83e-9abf8d289b6a',
+                    version: '2.1',
+                },
+            })
+        );
+        mockedAxios.post
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
+        //mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
         mockedAxios.delete.mockResolvedValueOnce(makeResponse([]));
 
-        const c = await wappStorage<Record<string, string>>();
+        const c = await wappStorage<Record<string, string>>('reset');
         await c.set('key', 'item');
         const resOld = c.get('key');
         await c.reset();
@@ -314,7 +377,7 @@ describe('WappStorage', () => {
         expect(resOld).toBe('item');
         expect(resNew).toBe(undefined);
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);

@@ -85,6 +85,7 @@ export class WappStorage<
         } else {
             await this.#data.create();
         }
+        this.#data.onChange(this.#handleStreamUpdate.bind(this));
     }
 
     #set<K extends keyof T>(
@@ -262,10 +263,10 @@ export class WappStorage<
      * @param cb - The callback function to be invoked.
      * @return A promise that resolves to true if the callback was successfully registered, and false otherwise.
      */
-    onChange(cb: StorageChangeHandler): Promise<boolean> {
+    async onChange(cb: StorageChangeHandler): Promise<boolean> {
         WappStorage.#validate('onChange', arguments);
         this.#onChangeCallback = cb;
-        return this.#data.onChange(this.#handleStreamUpdate.bind(this));
+        return true;
     }
 
     /**
@@ -279,7 +280,7 @@ export class WappStorage<
             return false;
         }
         this.#onChangeCallback = undefined;
-        return this.#data.cancelOnChange(this.#handleStreamUpdate.bind(this));
+        return true;
     }
 
     /**
