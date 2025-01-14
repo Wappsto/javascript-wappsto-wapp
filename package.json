@@ -98,7 +98,7 @@
         "@types/lodash.isequal": "^4.5.8",
         "@types/lodash.omit": "^4.5.9",
         "@types/lodash.pick": "^4.4.9",
-        "@types/node": "^22.7.8",
+        "@types/node": "^22.10.6",
         "@types/websocket": "^1.0.10",
         "@types/ws": "^8.5.12",
         "dts-cli": "^2.0.5",
