@@ -168,4 +168,92 @@ describe('generateHistory', () => {
             {}
         );
     });
+
+    it('should handle undefined input', async () => {
+        const input = new Value();
+        const output = new Value();
+        await generateHistory(input, output, {});
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+    });
+
+    it('can reuse log data', async () => {
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse(
+                makeLogResponse({
+                    data: [
+                        {
+                            timestamp: '2022-01-01T01:02:03Z',
+                            data: '3',
+                        },
+                    ],
+                })
+            )
+        );
+        mockedAxios.patch.mockResolvedValueOnce(
+            makeResponse(
+                makeStateResponse({
+                    id: 'b98a35e3-85f7-4271-a0b7-879c3267baa3',
+                    data: '2',
+                    timestamp: '2022-01-01T01:05:03Z',
+                })
+            )
+        );
+
+        const input = new Value();
+        input.meta.id = '331e54a6-fdc0-41a4-9738-71c3ce2ebad3';
+        const inputState = new State('Report');
+        inputState.meta.id = 'f4549a89-b7aa-46f5-b0ac-eaa11a606f7b';
+        input.state.push(inputState);
+        const output = new Value();
+        output.meta.id = '999b2c32-aae6-48a5-a066-495ba56fe105';
+        const outputState = new State('Report');
+        outputState.meta.id = 'b98a35e3-85f7-4271-a0b7-879c3267baa3';
+        outputState.timestamp = '2020-01-01T00:00:00.000Z';
+        output.state.push(outputState);
+
+        const oldData = await generateHistory(input, output, {});
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/log/f4549a89-b7aa-46f5-b0ac-eaa11a606f7b/state',
+            {
+                params: {
+                    group_by: 'hour',
+                    limit: 100000,
+                    method: ['retrieve'],
+                    operation: 'avg',
+                },
+            }
+        );
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/state/b98a35e3-85f7-4271-a0b7-879c3267baa3',
+            {
+                data: '3',
+                timestamp: '2022-01-01T01:02:03Z',
+                type: 'Report',
+            },
+            {}
+        );
+
+        const oldData2 = await generateHistory(oldData, output, {});
+
+        expect(oldData2).toEqual(oldData);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/state/b98a35e3-85f7-4271-a0b7-879c3267baa3',
+            {
+                data: '3',
+                timestamp: '2022-01-01T01:02:03Z',
+                type: 'Report',
+            },
+            {}
+        );
+    });
 });

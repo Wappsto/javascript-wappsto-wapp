@@ -1,8 +1,8 @@
 import { Value } from '../models';
-import { LogRequest, LogValues } from '../util/types';
+import { LogRequest, LogValues, ILogResponse } from '../util/types';
 
 export async function generateHistory(
-    input: Value,
+    input: Value | ILogResponse,
     output: Value,
     logRequest: LogRequest,
     convertValue?: (value: string | number) => string
@@ -21,9 +21,15 @@ export async function generateHistory(
     delete logRequest.order;
     delete logRequest.order_by;
 
-    const res = await input.getReportLog(logRequest);
+    let logData: ILogResponse;
+    if (input instanceof Value) {
+        logData = await input.getReportLog(logRequest);
+    } else {
+        logData = input;
+    }
+
     const reportData: LogValues = [];
-    res.data.forEach((val) => {
+    logData.data.forEach((val) => {
         const data = convertValue ? convertValue(val.data) : val.data;
         reportData.push({
             data: data,
@@ -31,4 +37,6 @@ export async function generateHistory(
         });
     });
     await output.report(reportData);
+
+    return logData;
 }

@@ -192,6 +192,7 @@ describe('network', () => {
 
         const network = await createNetwork({ name: 'Wapp Network' });
         const device = await network.createDevice({ name: 'Device Name' });
+        const device2 = await network.createDevice({ name: 'Device Name' });
         const value = await device.createNumberValue({
             name: 'Value Name',
             permission: 'rw',
@@ -242,6 +243,7 @@ describe('network', () => {
             {}
         );
 
+        expect(device).toBe(device2);
         expect(network?.name).toEqual('Network Name');
         expect(network?.device[0]?.name).toEqual('Device Name');
         expect(network?.device[0]?.value[0]?.name).toEqual('Value Name');
