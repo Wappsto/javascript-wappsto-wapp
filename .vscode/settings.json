@@ -10,6 +10,7 @@
         "isequal",
         "KVAR",
         "KVARH",
+        "nocov",
         "sqrdiff",
         "subuser",
         "TRUEFALSE",
