@@ -99,7 +99,7 @@
         "@types/lodash.isequal": "^4.5.8",
         "@types/lodash.omit": "^4.5.9",
         "@types/lodash.pick": "^4.4.9",
-        "@types/node": "^22.10.10",
+        "@types/node": "^22.13.1",
         "@types/websocket": "^1.0.10",
         "@types/ws": "^8.5.14",
         "dts-cli": "^2.0.5",
