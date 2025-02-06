@@ -720,6 +720,57 @@ describe('device', () => {
         expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
     });
 
+    it('can create a value from a VOLTAGE_V template', async () => {
+        templateHelperStart();
+
+        const device = new Device();
+        device.meta.id = '10483867-3182-4bb7-be89-24c2444cf8b7';
+        const value = await device.createValue(
+            'name',
+            'rw',
+            ValueTemplate.VOLTAGE_V,
+            '0',
+            2
+        );
+
+        templateHelperDone();
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/device/10483867-3182-4bb7-be89-24c2444cf8b7/value',
+            {
+                meta: {
+                    type: 'value',
+                    version: '2.1',
+                },
+                name: 'name',
+                permission: 'rw',
+                type: 'voltage',
+                period: '0',
+                delta: '2',
+                measure_type: 'electricity',
+                number: {
+                    min: 0,
+                    max: 250,
+                    step: 0.1,
+                    unit: 'V',
+                },
+            },
+            {}
+        );
+
+        expect(value.name).toEqual('name');
+        expect(value.permission).toEqual('rw');
+        expect(value.type).toEqual('voltage');
+        expect(value.number?.min).toEqual(0);
+        expect(value.number?.max).toEqual(250);
+        expect(value.number?.step).toEqual(0.1);
+        expect(value.number?.unit).toEqual('V');
+        expect(value.measure_type).toEqual('electricity');
+        expect(value.meta.id).toEqual('f589b816-1f2b-412b-ac36-1ca5a6db0273');
+    });
+
     it('will remove states when the permission is changed', async () => {
         templateHelperStart();
 
