@@ -122,7 +122,7 @@ export class Model implements IModel {
             /* istanbul ignore next */
             if (!valid) {
                 throw new Error(
-                    "Can't create a child under a parent that do not have an ID"
+                    `Can't create a child under a parent that do not have an ID: ${this.getUrl()}`
                 );
             }
         }

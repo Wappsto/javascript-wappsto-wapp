@@ -334,13 +334,9 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     }
 
     #findState(type: StateType): State | undefined {
-        let res: State | undefined = undefined;
-        this.state.forEach((state) => {
-            if (state.type === type) {
-                res = state;
-            }
+        return this.state.find((state) => {
+            return state.type.localeCompare(type) === 0;
         });
-        return res;
     }
 
     #getTime(): string {
@@ -877,7 +873,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                     ({
                         data: item.data ?? item[params.operation ?? 'data'],
                         timestamp: item.timestamp ?? item.time,
-                    } as LogValue)
+                    }) as LogValue
             ) as LogValues;
             return {
                 ...r,

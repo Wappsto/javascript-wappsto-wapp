@@ -989,6 +989,7 @@ describe('device', () => {
             unit: 'unit',
             si_conversion: 'si_conversion',
             disableLog: true,
+            measure_type: 'electricity',
             initialState: {
                 data: 0,
                 timestamp: '2020-02-02T02:02:02Z',
@@ -999,6 +1000,7 @@ describe('device', () => {
         expect(value.permission).toEqual('rw');
         expect(value.type).toEqual('type');
         expect(value.delta).toEqual('delta');
+        expect(value.measure_type).toEqual('electricity');
         expect(value.number?.min).toEqual(0);
         expect(value.number?.max).toEqual(1);
         expect(value.number?.step).toEqual(1);
@@ -1022,6 +1024,7 @@ describe('device', () => {
                 },
                 name: 'Value Name',
                 delta: 'delta',
+                measure_type: 'electricity',
                 number: {
                     min: 0,
                     max: 1,
@@ -1049,6 +1052,150 @@ describe('device', () => {
         expect(mockedAxios.post).toHaveBeenNthCalledWith(
             3,
             '/2.1/value/f589b816-1f2b-412b-ac36-1ca5a6db0273/state',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                },
+                data: '0',
+                timestamp: '2020-02-02T02:02:02Z',
+                type: 'Control',
+            }),
+            {}
+        );
+    });
+
+    it('can update a value with new parameters', async () => {
+        mockedAxios.post
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeValueResponse({
+                        id: '7ce07133-5fa4-4421-bc3e-bf89d9a40117',
+                        name: 'Value Name',
+                        type: 'type',
+                        permission: '',
+                        delta: 'delta',
+                    }),
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeStateResponse({
+                        id: '786b044c-d1c5-4e0d-96aa-2b150e01f827',
+                        type: 'Report',
+                    }),
+                ])
+            )
+            .mockResolvedValueOnce(
+                makeResponse([
+                    makeStateResponse({
+                        id: '21c5c04c-3590-4c8f-a2f7-9dce89ccb8f3',
+                        type: 'Control',
+                    }),
+                ])
+            )
+            .mockResolvedValueOnce(makeResponse([]));
+        mockedAxios.put.mockResolvedValueOnce(makeResponse([]));
+
+        const device = new Device();
+        device.meta.id = '1a093f1a-6e86-4b5e-9065-a9489f73c83d';
+        const value = await device.createNumberValue({
+            name: 'Value Name',
+            permission: 'rw',
+            type: 'type',
+            delta: 'delta',
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'unit',
+            initialState: {
+                data: 0,
+                timestamp: '2020-02-02T02:02:02Z',
+            },
+        });
+
+        const newValue = await device.createNumberValue({
+            name: 'Value Name',
+            permission: 'rw',
+            type: 'type',
+            delta: 'delta',
+            min: 0,
+            max: 1,
+            step: 1,
+            unit: 'unit',
+            si_conversion: 'si_conversion',
+            disableLog: true,
+            measure_type: 'electricity',
+            initialState: {
+                data: 0,
+                timestamp: '2020-02-02T02:02:02Z',
+            },
+        });
+
+        expect(value.meta.id).toEqual(newValue.meta.id);
+        expect(newValue.measure_type).toEqual('electricity');
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.put).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/value/7ce07133-5fa4-4421-bc3e-bf89d9a40117',
+            {
+                delta: 'delta',
+                measure_type: 'electricity',
+                meta: {
+                    historical: false,
+                    id: '7ce07133-5fa4-4421-bc3e-bf89d9a40117',
+                    type: 'value',
+                    version: '2.1',
+                },
+                name: 'Value Name',
+                number: {
+                    max: 1,
+                    min: 0,
+                    si_conversion: 'si_conversion',
+                    step: 1,
+                    unit: 'unit',
+                },
+                period: '0',
+                permission: 'rw',
+                type: 'type',
+            },
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenCalledTimes(3);
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/device/1a093f1a-6e86-4b5e-9065-a9489f73c83d/value',
+            {
+                delta: 'delta',
+                meta: { type: 'value', version: '2.1' },
+                name: 'Value Name',
+                number: { max: 1, min: 0, step: 1, unit: 'unit' },
+                period: '0',
+                permission: 'rw',
+                type: 'type',
+            },
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/value/7ce07133-5fa4-4421-bc3e-bf89d9a40117/state',
+            expect.objectContaining({
+                meta: {
+                    type: 'state',
+                    version: '2.1',
+                },
+                data: '0',
+                timestamp: '2020-02-02T02:02:02Z',
+                type: 'Report',
+            }),
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/value/7ce07133-5fa4-4421-bc3e-bf89d9a40117/state',
             expect.objectContaining({
                 meta: {
                     type: 'state',
