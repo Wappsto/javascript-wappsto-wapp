@@ -414,7 +414,7 @@ export class Stream extends Model {
             result = response.data;
         } catch (e: any) {
             /* istanbul ignore next */
-            if (e.response.data?.code !== undefined) {
+            if (e?.response?.data?.code !== undefined) {
                 const errorMsg = getErrorMessage(e);
                 printError(
                     `Failed to send request (${toSafeString(
@@ -422,7 +422,7 @@ export class Stream extends Model {
                     )}) because: ${errorMsg}`
                 );
             } else {
-                result = e.response.data;
+                result = e?.response?.data;
             }
         }
         return result;
