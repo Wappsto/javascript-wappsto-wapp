@@ -41,10 +41,12 @@ export function unifyData(
             const reportData: LogValues = [];
             res.data.forEach((val) => {
                 const data = convertValue ? convertValue(val.data) : val.data;
-                reportData.push({
-                    data: data,
-                    timestamp: val.timestamp,
-                });
+                if (typeof data === 'string' || typeof data === 'number') {
+                    reportData.push({
+                        data: data,
+                        timestamp: val.timestamp,
+                    });
+                }
             });
             output.report(reportData);
         }
