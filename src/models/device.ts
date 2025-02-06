@@ -325,6 +325,7 @@ export class Device extends ConnectionModel implements IDevice {
             template.permission = name.permission;
             template.period = name.period || 0;
             template.delta = name.delta?.toString() || '0';
+            template.measure_type = name.measure_type;
             template.disableLog = name.disableLog;
             template.initialState = name.initialState;
             template.disablePeriodAndDelta = name.disablePeriodAndDelta;
@@ -343,6 +344,7 @@ export class Device extends ConnectionModel implements IDevice {
             description: params.description,
             period: params.period,
             delta: params.delta,
+            measure_type: params.measure_type,
             disableLog: params.disableLog,
             initialState: params.initialState,
             disablePeriodAndDelta: params.disablePeriodAndDelta,

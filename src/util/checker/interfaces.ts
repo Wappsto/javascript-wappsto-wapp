@@ -157,6 +157,7 @@ export interface ICreateValue {
     template: ValueType;
     period?: number | string;
     delta?: number | 'inf';
+    measure_type?: string;
     disableLog?: boolean;
     initialState?: InitialState;
     disablePeriodAndDelta?: boolean;

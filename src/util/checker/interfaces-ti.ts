@@ -165,6 +165,7 @@ export const ICreateValue = t.iface([], {
     template: 'ValueType',
     period: t.opt(t.union('number', 'string')),
     delta: t.opt(t.union('number', t.lit('inf'))),
+    measure_type: t.opt('string'),
     disableLog: t.opt('boolean'),
     initialState: t.opt('InitialState'),
     disablePeriodAndDelta: t.opt('boolean'),
