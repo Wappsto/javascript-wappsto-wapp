@@ -53,7 +53,7 @@ export async function wappStorage<T extends Record<string, unknown>>(
  * @template T - The type of the stored data.
  */
 export class WappStorage<
-    T extends Record<string, unknown> = Record<string, unknown>
+    T extends Record<string, unknown> = Record<string, unknown>,
 > implements IWappStorage<T>
 {
     name = '';

@@ -9,7 +9,7 @@ let _allNodesLoaded = false;
 const _allNodes: OntologyNode<Record<string, unknown>>[] = [];
 
 export class OntologyNode<
-        T extends Record<string, unknown> = Record<string, string>
+        T extends Record<string, unknown> = Record<string, string>,
     >
     extends Data<T>
     implements IOntologyNode
@@ -31,7 +31,7 @@ export class OntologyNode<
 }
 
 export async function createNode<
-    T extends Record<string, unknown> = Record<string, string>
+    T extends Record<string, unknown> = Record<string, string>,
 >(name: string, nodeData?: T): Promise<OntologyNode<T>> {
     Model.validateMethod('OntologyNode', 'createNode', arguments);
 
@@ -51,7 +51,7 @@ export async function createNode<
 }
 
 export async function getAllNodes<
-    T extends Record<string, unknown> = Record<string, string>
+    T extends Record<string, unknown> = Record<string, string>,
 >(): Promise<OntologyNode<T>[]> {
     if (_allNodesLoaded) {
         return _allNodes as OntologyNode<T>[];
@@ -84,7 +84,7 @@ export async function getAllNodes<
 }
 
 export async function findNode<
-    T extends Record<string, unknown> = Record<string, string>
+    T extends Record<string, unknown> = Record<string, string>,
 >(name: string): Promise<OntologyNode<T>> {
     Model.validateMethod('OntologyNode', 'findNode', arguments);
 

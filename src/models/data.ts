@@ -106,7 +106,7 @@ export class Data<T extends Record<string, unknown>>
     }
 
     static async fetchById<
-        T extends Record<string, unknown> = Record<string, unknown>
+        T extends Record<string, unknown> = Record<string, unknown>,
     >(id: string) {
         Data.#validate('fetchById', [id]);
         const model = findModel('data', id);
@@ -132,7 +132,7 @@ export class Data<T extends Record<string, unknown>>
      * @returns A Promise that resolves to an array of Data instances matching the provided ID.
      */
     static async findByDataId<
-        T extends Record<string, unknown> = Record<string, unknown>
+        T extends Record<string, unknown> = Record<string, unknown>,
     >(id: string) {
         const json: JSONObject[] = await Model.fetch({
             endpoint: Data.endpoint,

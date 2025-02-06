@@ -176,8 +176,8 @@ export class PermissionModel extends SharingModel {
                     readOnly === true
                         ? ['retrieve']
                         : create === true
-                        ? ['create', 'retrieve', 'update']
-                        : ['retrieve', 'update'],
+                          ? ['create', 'retrieve', 'update']
+                          : ['retrieve', 'update'],
             });
             const result = await Model.fetch({
                 endpoint,
