@@ -1,5 +1,6 @@
 import { Value } from '../models/value';
-import { getNextPeriod, getNextTimestamp } from '../util/helpers';
+import { printError } from '../util/debug';
+import { getNextPeriod, getNextTimestamp, toSafeString } from '../util/helpers';
 import { LogRequest, LogValues } from '../util/types';
 
 export function unifyData(
@@ -41,14 +42,16 @@ export function unifyData(
             const reportData: LogValues = [];
             res.data.forEach((val) => {
                 const data = convertValue ? convertValue(val.data) : val.data;
-                if (typeof data === 'string' || typeof data === 'number') {
+                if (typeof data === 'number' || !isNaN(parseFloat(data))) {
                     reportData.push({
                         data: data,
                         timestamp: val.timestamp,
                     });
                 }
             });
-            output.report(reportData);
+            if (reportData.length > 0) {
+                output.report(reportData);
+            }
         }
     });
 }

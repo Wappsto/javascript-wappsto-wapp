@@ -289,4 +289,99 @@ describe('unifyData', () => {
             {}
         );
     });
+
+    it('can handle non-numeric data', async () => {
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse(
+                makeLogResponse({
+                    data: [
+                        {
+                            timestamp: '2022-01-01T01:02:03Z',
+                            data: '3',
+                        },
+                    ],
+                })
+            )
+        );
+        mockedAxios.patch.mockResolvedValueOnce(
+            makeResponse(
+                makeStateResponse({
+                    id: 'ae491ff5-4583-419b-9e7c-af1320c3aef0',
+                    data: '2',
+                    timestamp: '2022-01-01T01:05:03Z',
+                })
+            )
+        );
+
+        const input = new Value();
+        input.meta.id = '655eef90-ac63-456f-b514-d325e7f46512';
+        const inputState = new State('Report');
+        inputState.meta.id = 'f01d5cbc-08b5-4793-8ee2-5001c7b67154';
+        input.state.push(inputState);
+        const output = new Value();
+        output.meta.id = 'e370196a-eb39-4b21-828f-e1378a9b6815';
+        const outputState = new State('Report');
+        outputState.meta.id = 'ae491ff5-4583-419b-9e7c-af1320c3aef0';
+        outputState.timestamp = '2020-01-01T00:00:00.000Z';
+        output.state.push(outputState);
+
+        unifyData(
+            input,
+            output,
+            { operation: 'sum', group_by: 'minute' },
+            () => {
+                return `[]`;
+            }
+        );
+
+        await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/state/f01d5cbc-08b5-4793-8ee2-5001c7b67154',
+                },
+            })
+        );
+        sendRpcResponse(server);
+
+        await delay();
+
+        server.send([
+            {
+                meta_object: {
+                    type: 'event',
+                },
+                event: 'update',
+                path: '/state/f01d5cbc-08b5-4793-8ee2-5001c7b67154',
+                data: {
+                    data: '2',
+                    timestamp: '2020-01-01T01:00:00.000Z',
+                },
+            },
+        ]);
+        sendRpcResponse(server);
+
+        await delay();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            1,
+            '/2.1/log/f01d5cbc-08b5-4793-8ee2-5001c7b67154/state',
+            {
+                params: {
+                    group_by: 'minute',
+                    limit: 100,
+                    method: ['retrieve'],
+                    operation: 'sum',
+                    start: '2020-01-01T00:01:00.001Z',
+                },
+            }
+        );
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+    });
 });
