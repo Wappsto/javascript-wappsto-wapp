@@ -1,6 +1,6 @@
 import { Value } from '../models/value';
 import { printError } from '../util/debug';
-import { getNextPeriod, getNextTimestamp, toSafeString } from '../util/helpers';
+import { getNextPeriod, getNextTimestamp } from '../util/helpers';
 import { LogRequest, LogValues } from '../util/types';
 
 export function unifyData(
@@ -47,10 +47,18 @@ export function unifyData(
                         data: data,
                         timestamp: val.timestamp,
                     });
+                } else {
+                    printError(
+                        `Failed to convert value ${val.data} to number (${data}) for ${input.id()}`
+                    );
                 }
             });
             if (reportData.length > 0) {
                 output.report(reportData);
+            } else {
+                printError(
+                    `Received new event (${inputTimestamp}) for ${input.id()} after the next period (${nextTimestamp}), but no new data (${res.data}) was generated from ${logRequest.start}`
+                );
             }
         }
     });
