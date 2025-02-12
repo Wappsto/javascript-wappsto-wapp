@@ -396,7 +396,8 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
     async #findStateAndCallback(
         type: StateType,
         callback: ValueStreamCallback,
-        callOnInit?: boolean
+        callOnInit?: boolean,
+        forceRegistering?: boolean
     ): Promise<boolean> {
         let res = false;
         const state = this.#findState(type);
@@ -415,12 +416,21 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                 };
             }
 
-            if (!checkList(this.#stateCallbacks[type], callback)) {
+            if (
+                forceRegistering ||
+                !checkList(this.#stateCallbacks[type], callback)
+            ) {
                 this.#stateCallbacks[type].push(callback);
                 if (this.#stateCallbacks[type].length === 1) {
                     res = await state.onChange(this.#callbackFunc[type]);
                 }
             } else {
+                console.log(
+                    'Skipping duplicate',
+                    type,
+                    'callback for',
+                    this.id()
+                );
                 printDebug(
                     `Skipping duplicate ${type} callback for ${this.id()}`
                 );
@@ -768,17 +778,30 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         return promise;
     }
 
-    onControl(callback: ValueStreamCallback): Promise<boolean> {
+    onControl(
+        callback: ValueStreamCallback,
+        forceRegistering?: boolean
+    ): Promise<boolean> {
         this.validate('onControl', arguments);
-        return this.#findStateAndCallback('Control', callback);
+        return this.#findStateAndCallback(
+            'Control',
+            callback,
+            forceRegistering
+        );
     }
 
     onReport(
         callback: ValueStreamCallback,
-        callOnInit?: boolean
+        callOnInit?: boolean,
+        forceRegistering?: boolean
     ): Promise<boolean> {
         this.validate('onReport', arguments);
-        return this.#findStateAndCallback('Report', callback, callOnInit);
+        return this.#findStateAndCallback(
+            'Report',
+            callback,
+            callOnInit,
+            forceRegistering
+        );
     }
 
     async onRefresh(callback: RefreshStreamCallback): Promise<boolean> {
