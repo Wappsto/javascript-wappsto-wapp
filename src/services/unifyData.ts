@@ -25,41 +25,52 @@ export function unifyData(
     delete logRequest.order;
     delete logRequest.order_by;
 
-    input.onReport(async (_val, _data, timestamp) => {
-        /* istanbul ignore next */
-        const outputTimestamp = new Date(output.getReportTimestamp() ?? '');
-        const inputTimestamp = new Date(timestamp);
-        const nextTimestamp = getNextPeriod(
-            outputTimestamp,
+    input.onReport(
+        async (_val, _data, timestamp) => {
             /* istanbul ignore next */
-            logRequest.group_by ?? 'hour'
-        );
+            const outputTimestamp = new Date(output.getReportTimestamp() ?? '');
+            const inputTimestamp = new Date(timestamp);
+            const nextTimestamp = getNextPeriod(
+                outputTimestamp,
+                /* istanbul ignore next */
+                logRequest.group_by ?? 'hour'
+            );
 
-        if (inputTimestamp >= nextTimestamp) {
-            logRequest.start = getNextTimestamp(outputTimestamp);
+            if (inputTimestamp >= nextTimestamp) {
+                logRequest.start = getNextTimestamp(outputTimestamp);
 
-            const res = await input.getReportLog(logRequest);
-            const reportData: LogValues = [];
-            res.data.forEach((val) => {
-                const data = convertValue ? convertValue(val.data) : val.data;
-                if (typeof data === 'number' || !isNaN(parseFloat(data))) {
-                    reportData.push({
-                        data: data,
-                        timestamp: val.timestamp,
-                    });
+                const res = await input.getReportLog(logRequest);
+                const reportData: LogValues = [];
+                res.data.forEach((val) => {
+                    const data = convertValue
+                        ? convertValue(val.data)
+                        : val.data;
+
+                    // Is the data a valid number?
+                    if (typeof data === 'number' || !isNaN(parseFloat(data))) {
+                        reportData.push({
+                            data: data,
+                            timestamp: val.timestamp,
+                        });
+                    } else {
+                        printError(
+                            `Failed to convert value ${val.data} to number (${data}) for ${input.id()}`
+                        );
+                    }
+                });
+                if (reportData.length > 0) {
+                    output.report(reportData);
                 } else {
                     printError(
-                        `Failed to convert value ${val.data} to number (${data}) for ${input.id()}`
+                        `\
+Received new event (${inputTimestamp.toISOString()}) for ${input.id()} \
+after the next period (${nextTimestamp.toISOString()}), \
+but no new log data (${JSON.stringify(res.data)}) was loaded, starting from ${logRequest.start.toISOString()}`
                     );
                 }
-            });
-            if (reportData.length > 0) {
-                output.report(reportData);
-            } else {
-                printError(
-                    `Received new event (${inputTimestamp}) for ${input.id()} after the next period (${nextTimestamp}), but no new data (${res.data}) was generated from ${logRequest.start}`
-                );
             }
-        }
-    });
+        },
+        false,
+        true
+    );
 }
