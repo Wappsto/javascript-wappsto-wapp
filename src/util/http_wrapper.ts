@@ -111,7 +111,7 @@ export function getErrorMessage(error: any | Error | AxiosError): string {
             data?: JSONObject;
             message?: string;
         };
-        if (data &&data.code !== undefined) {
+        if (data && data.code !== undefined) {
             switch (data.code) {
                 case 507000000:
                     return 'Timeout, waiting for response on extsync request';
