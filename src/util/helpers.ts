@@ -49,28 +49,39 @@ export function checkList(list: unknown[], check: unknown) {
 }
 
 export function getNextTimestamp(date: Date): Date {
-    return new Date(date.setMilliseconds(date.getMilliseconds() + 1));
+    const tmpDate = new Date(date);
+    tmpDate.setMilliseconds(tmpDate.getMilliseconds() + 1);
+    return tmpDate;
 }
 
 export function getNextPeriod(date: Date, period: LogGroupBy): Date {
+    const tmpDate = new Date(date);
+    tmpDate.setMilliseconds(0);
+    tmpDate.setSeconds(0);
+
     switch (period) {
-        case 'minute':
-            date.setMilliseconds(0);
-            date.setSeconds(0);
-            return new Date(date.setMinutes(date.getMinutes() + 1));
-        case 'hour':
-            date.setMilliseconds(0);
-            date.setSeconds(0);
-            date.setMinutes(0);
-            return new Date(date.setHours(date.getHours() + 1));
+        case 'year':
+            tmpDate.setMinutes(0);
+            tmpDate.setHours(0);
+            tmpDate.setDate(1);
+            tmpDate.setFullYear(tmpDate.getFullYear() + 1);
+            break;
         case 'day':
-            date.setMilliseconds(0);
-            date.setSeconds(0);
-            date.setMinutes(0);
-            date.setHours(0);
-            return new Date(date.setDate(date.getDate() + 1));
+            tmpDate.setMinutes(0);
+            tmpDate.setHours(0);
+            tmpDate.setDate(tmpDate.getDate() + 1);
+            break;
+        case 'minute':
+            tmpDate.setMinutes(tmpDate.getMinutes() + 1);
+            break;
+        case 'hour':
+        default:
+            tmpDate.setMinutes(0);
+            tmpDate.setHours(tmpDate.getHours() + 1);
+            break;
     }
-    return date;
+
+    return tmpDate;
 }
 
 export function getSecondsToNextPeriod(period: number) {

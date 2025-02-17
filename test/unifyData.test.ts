@@ -192,7 +192,7 @@ describe('unifyData', () => {
                     limit: 100,
                     method: ['retrieve'],
                     operation: 'avg',
-                    start: '2020-01-01T01:00:00.001Z',
+                    start: '2020-01-01T00:00:00.001Z',
                 },
             }
         );
@@ -310,7 +310,7 @@ describe('unifyData', () => {
                     limit: 100,
                     method: ['retrieve'],
                     operation: 'sum',
-                    start: '2020-01-01T00:01:00.001Z',
+                    start: '2020-01-01T00:00:00.001Z',
                 },
             }
         );
@@ -416,7 +416,7 @@ describe('unifyData', () => {
         );
         expect(console.error).toHaveBeenNthCalledWith(
             2,
-            'WAPPSTO ERROR: Received new event (2020-01-01T01:00:00.000Z) for 655eef90-ac63-456f-b514-d325e7f46512 after the next period (2020-01-01T00:01:00.000Z), but no new log data ([{"data":"3","timestamp":"2022-01-01T01:02:03Z"}]) was loaded, starting from 2020-01-01T00:01:00.001Z'
+            'WAPPSTO ERROR: Received new event (2020-01-01T01:00:00.000Z) for 655eef90-ac63-456f-b514-d325e7f46512 after the next period (2020-01-01T00:01:00.000Z), but no new log data ([{"data":"3","timestamp":"2022-01-01T01:02:03Z"}]) was loaded, starting from 2020-01-01T00:00:00.001Z'
         );
         console.error = oldError;
 
@@ -430,11 +430,92 @@ describe('unifyData', () => {
                     limit: 100,
                     method: ['retrieve'],
                     operation: 'sum',
-                    start: '2020-01-01T00:01:00.001Z',
+                    start: '2020-01-01T00:00:00.001Z',
                 },
             }
         );
 
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+    });
+
+    it('can handle new data after a period', async () => {
+        mockedAxios.get.mockResolvedValueOnce(
+            makeResponse(
+                makeLogResponse({
+                    data: [
+                        {
+                            timestamp: '2022-01-01T01:02:03Z',
+                            data: '3',
+                        },
+                    ],
+                })
+            )
+        );
+
+        const input = new Value();
+        input.meta.id = '3d3a4db2-fe2e-4cf2-8f77-6496f85d47a9';
+        const inputState = new State('Report');
+        inputState.meta.id = '648f6a81-83be-47f1-a3d9-c7aeaa62278a';
+        inputState.timestamp = '2020-01-01T00:00:00.000Z';
+        input.state.push(inputState);
+
+        const output = new Value();
+        output.meta.id = 'fefe8629-fdcb-45da-b27e-4f54107071b5';
+        const outputState = new State('Report');
+        outputState.meta.id = '3a832de9-e6a0-4df3-ab88-d103fd5c262b';
+        outputState.timestamp = '2020-01-01T00:00:00.000Z';
+        output.state.push(outputState);
+
+        unifyData(input, output, { operation: 'sum', group_by: 'hour' });
+
+        await server.connected;
+
+        await expect(server).toReceiveMessage(
+            expect.objectContaining({
+                jsonrpc: '2.0',
+                method: 'POST',
+                params: {
+                    url: '/services/2.1/websocket/open/subscription',
+                    data: '/2.1/state/648f6a81-83be-47f1-a3d9-c7aeaa62278a',
+                },
+            })
+        );
+        sendRpcResponse(server);
+        await delay();
+
+        server.send([
+            {
+                meta_object: {
+                    type: 'event',
+                },
+                event: 'update',
+                path: '/state/648f6a81-83be-47f1-a3d9-c7aeaa62278a',
+                data: {
+                    data: '2',
+                    timestamp: '2020-01-01T00:00:00.000Z',
+                },
+            },
+        ]);
+        sendRpcResponse(server);
+        await delay();
+
+        server.send([
+            {
+                meta_object: {
+                    type: 'event',
+                },
+                event: 'update',
+                path: '/state/648f6a81-83be-47f1-a3d9-c7aeaa62278a',
+                data: {
+                    data: '2',
+                    timestamp: '2020-01-01T00:01:01.000Z',
+                },
+            },
+        ]);
+        sendRpcResponse(server);
+        await delay();
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(0);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
     });
 });

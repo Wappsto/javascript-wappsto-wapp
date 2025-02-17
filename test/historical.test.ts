@@ -206,7 +206,7 @@ describe('historical', () => {
                 params: {
                     limit: 100000,
                     method: ['retrieve'],
-                    start: '2022-01-01T01:01:01.001Z',
+                    start: '2022-01-01T01:01:01.000Z',
                 },
             }
         );
@@ -217,7 +217,7 @@ describe('historical', () => {
                 params: {
                     limit: 100000,
                     method: ['retrieve'],
-                    start: '2022-02-02T02:02:02.001Z',
+                    start: '2022-02-02T02:02:02.000Z',
                 },
             }
         );
