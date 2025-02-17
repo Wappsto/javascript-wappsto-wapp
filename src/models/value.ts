@@ -425,12 +425,6 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
                     res = await state.onChange(this.#callbackFunc[type]);
                 }
             } else {
-                console.log(
-                    'Skipping duplicate',
-                    type,
-                    'callback for',
-                    this.id()
-                );
                 printDebug(
                     `Skipping duplicate ${type} callback for ${this.id()}`
                 );

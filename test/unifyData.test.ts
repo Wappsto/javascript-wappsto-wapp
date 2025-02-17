@@ -40,46 +40,84 @@ describe('unifyData', () => {
     });
 
     it('can unify data', async () => {
-        mockedAxios.get.mockResolvedValueOnce(
-            makeResponse(
-                makeLogResponse({
-                    data: [
-                        {
-                            timestamp: '2022-01-01T01:02:03Z',
-                            data: '1',
-                        },
-                        {
-                            timestamp: '2022-01-01T01:05:03Z',
-                            data: '2',
-                        },
-                    ],
-                })
+        mockedAxios.get
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeLogResponse({
+                        data: [
+                            {
+                                timestamp: '2022-01-01T01:02:03Z',
+                                data: '1',
+                            },
+                            {
+                                timestamp: '2022-01-01T01:05:03Z',
+                                data: '2',
+                            },
+                        ],
+                    })
+                )
             )
-        );
-        mockedAxios.post.mockResolvedValueOnce(makeResponse({}));
-        mockedAxios.patch.mockResolvedValueOnce(
-            makeResponse(
-                makeStateResponse({
-                    id: '5acf81f9-8201-4cee-be33-eb3654d1fca9',
-                    data: '2',
-                    timestamp: '2022-01-01T01:05:03Z',
-                })
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeLogResponse({
+                        data: [
+                            {
+                                timestamp: '2022-01-01T01:02:03Z',
+                                data: '1',
+                            },
+                            {
+                                timestamp: '2022-01-01T01:05:03Z',
+                                data: '2',
+                            },
+                        ],
+                    })
+                )
+            );
+        mockedAxios.post
+            .mockResolvedValueOnce(makeResponse({}))
+            .mockResolvedValueOnce(makeResponse({}));
+        mockedAxios.patch
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeStateResponse({
+                        id: '5acf81f9-8201-4cee-be33-eb3654d1fca9',
+                        data: '2',
+                        timestamp: '2022-01-01T01:05:03Z',
+                    })
+                )
             )
-        );
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeStateResponse({
+                        id: '3afd7dfb-186f-4062-9cda-5be9919dbcac',
+                        data: '2',
+                        timestamp: '2022-01-01T01:05:03Z',
+                    })
+                )
+            );
 
         const input = new Value();
         input.meta.id = 'e9d70b17-518c-46b4-9751-5cc4d34bdd99';
         const inputState = new State('Report');
         inputState.meta.id = '3a0c698f-e464-4b41-8efd-95d53c962a22';
         input.state.push(inputState);
-        const output = new Value();
-        output.meta.id = '555b3cd5-ec55-4cba-ab42-10804518d0eb';
-        const outputState = new State('Report');
-        outputState.meta.id = '5acf81f9-8201-4cee-be33-eb3654d1fca9';
-        outputState.timestamp = '2020-01-01T00:00:00.000Z';
-        output.state.push(outputState);
 
-        unifyData(input, output, {});
+        const output1 = new Value();
+        output1.meta.id = '555b3cd5-ec55-4cba-ab42-10804518d0eb';
+        const outputState1 = new State('Report');
+        outputState1.meta.id = '5acf81f9-8201-4cee-be33-eb3654d1fca9';
+        outputState1.timestamp = '2020-01-01T00:00:00.000Z';
+        output1.state.push(outputState1);
+
+        const output2 = new Value();
+        output2.meta.id = 'f404aed8-92bc-4dc2-a934-c0280a12112c';
+        const outputState2 = new State('Report');
+        outputState2.meta.id = '3afd7dfb-186f-4062-9cda-5be9919dbcac';
+        outputState2.timestamp = '2020-01-01T00:00:00.000Z';
+        output2.state.push(outputState2);
+
+        unifyData(input, output1, {});
+        unifyData(input, output2, {});
 
         await server.connected;
 
@@ -144,7 +182,7 @@ describe('unifyData', () => {
 
         await delay();
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
             '/2.1/log/3a0c698f-e464-4b41-8efd-95d53c962a22/state',
@@ -160,7 +198,7 @@ describe('unifyData', () => {
         );
 
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
         expect(mockedAxios.post).toHaveBeenNthCalledWith(
             1,
             '/log_zip',
@@ -172,7 +210,7 @@ describe('unifyData', () => {
             }
         );
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
         expect(mockedAxios.patch).toHaveBeenNthCalledWith(
             1,
             '/2.1/state/5acf81f9-8201-4cee-be33-eb3654d1fca9',
@@ -313,11 +351,15 @@ describe('unifyData', () => {
             )
         );
 
+        const oldError = console.error;
+        console.error = jest.fn();
+
         const input = new Value();
         input.meta.id = '655eef90-ac63-456f-b514-d325e7f46512';
         const inputState = new State('Report');
         inputState.meta.id = 'f01d5cbc-08b5-4793-8ee2-5001c7b67154';
         input.state.push(inputState);
+
         const output = new Value();
         output.meta.id = 'e370196a-eb39-4b21-828f-e1378a9b6815';
         const outputState = new State('Report');
@@ -366,6 +408,17 @@ describe('unifyData', () => {
         sendRpcResponse(server);
 
         await delay();
+
+        expect(console.error).toHaveBeenCalledTimes(2);
+        expect(console.error).toHaveBeenNthCalledWith(
+            1,
+            'WAPPSTO ERROR: Failed to convert value 3 to number ([]) for 655eef90-ac63-456f-b514-d325e7f46512'
+        );
+        expect(console.error).toHaveBeenNthCalledWith(
+            2,
+            'WAPPSTO ERROR: Received new event (2020-01-01T01:00:00.000Z) for 655eef90-ac63-456f-b514-d325e7f46512 after the next period (2020-01-01T00:01:00.000Z), but no new log data ([{"data":"3","timestamp":"2022-01-01T01:02:03Z"}]) was loaded, starting from 2020-01-01T00:01:00.001Z'
+        );
+        console.error = oldError;
 
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(

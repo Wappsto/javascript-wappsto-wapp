@@ -36,7 +36,7 @@ export function unifyData(
                 logRequest.group_by ?? 'hour'
             );
 
-            if (inputTimestamp >= nextTimestamp) {
+            if (inputTimestamp.getTime() >= nextTimestamp.getTime()) {
                 logRequest.start = getNextTimestamp(outputTimestamp);
 
                 const res = await input.getReportLog(logRequest);
