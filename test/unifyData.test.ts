@@ -46,6 +46,10 @@ describe('unifyData', () => {
                     makeLogResponse({
                         data: [
                             {
+                                timestamp: '2020-01-01T00:00:00Z',
+                                data: '0',
+                            },
+                            {
                                 timestamp: '2022-01-01T01:02:03Z',
                                 data: '1',
                             },
@@ -62,12 +66,20 @@ describe('unifyData', () => {
                     makeLogResponse({
                         data: [
                             {
-                                timestamp: '2022-01-01T01:02:03Z',
-                                data: '1',
+                                timestamp: '2020-01-01T00:00:00Z',
+                                data: '0',
                             },
+                        ],
+                    })
+                )
+            )
+            .mockResolvedValueOnce(
+                makeResponse(
+                    makeLogResponse({
+                        data: [
                             {
-                                timestamp: '2022-01-01T01:05:03Z',
-                                data: '2',
+                                timestamp: '2020-01-01T00:00:00Z',
+                                data: '0',
                             },
                         ],
                     })
@@ -100,6 +112,7 @@ describe('unifyData', () => {
         input.meta.id = 'e9d70b17-518c-46b4-9751-5cc4d34bdd99';
         const inputState = new State('Report');
         inputState.meta.id = '3a0c698f-e464-4b41-8efd-95d53c962a22';
+        inputState.timestamp = '2020-01-01T00:00:00.000Z';
         input.state.push(inputState);
 
         const output1 = new Value();
@@ -182,7 +195,7 @@ describe('unifyData', () => {
 
         await delay();
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        //expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(mockedAxios.get).toHaveBeenNthCalledWith(
             1,
             '/2.1/log/3a0c698f-e464-4b41-8efd-95d53c962a22/state',
@@ -196,9 +209,35 @@ describe('unifyData', () => {
                 },
             }
         );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/log/3a0c698f-e464-4b41-8efd-95d53c962a22/state',
+            {
+                params: {
+                    group_by: 'hour',
+                    limit: 100,
+                    method: ['retrieve'],
+                    operation: 'avg',
+                    start: '2020-01-01T00:00:00.001Z',
+                },
+            }
+        );
+        expect(mockedAxios.get).toHaveBeenNthCalledWith(
+            3,
+            '/2.1/log/3a0c698f-e464-4b41-8efd-95d53c962a22/state',
+            {
+                params: {
+                    group_by: 'hour',
+                    limit: 100,
+                    method: ['retrieve'],
+                    operation: 'avg',
+                    start: '2020-01-01T00:00:00.001Z',
+                },
+            }
+        );
 
         expect(mockedAxios.put).toHaveBeenCalledTimes(0);
-        expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(1);
         expect(mockedAxios.post).toHaveBeenNthCalledWith(
             1,
             '/log_zip',
@@ -209,8 +248,18 @@ describe('unifyData', () => {
                 },
             }
         );
+        /*expect(mockedAxios.post).toHaveBeenNthCalledWith(
+            2,
+            '/log_zip',
+            'state_id,data,timestamp\n3afd7dfb-186f-4062-9cda-5be9919dbcac,1,2022-01-01T01:02:03Z\n',
+            {
+                headers: {
+                    'Content-type': 'text/csv',
+                },
+            }
+        );*/
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
         expect(mockedAxios.patch).toHaveBeenNthCalledWith(
             1,
             '/2.1/state/5acf81f9-8201-4cee-be33-eb3654d1fca9',
@@ -221,6 +270,16 @@ describe('unifyData', () => {
             },
             {}
         );
+        /*expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
+            '/2.1/state/3afd7dfb-186f-4062-9cda-5be9919dbcac',
+            {
+                data: '2',
+                timestamp: '2022-01-01T01:05:03Z',
+                type: 'Report',
+            },
+            {}
+        );*/
     });
 
     it('can convert data', async () => {

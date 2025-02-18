@@ -40,7 +40,7 @@ export function unifyData(
                 logRequest.start = getNextTimestamp(outputTimestamp);
 
                 const res = await input.getReportLog(logRequest);
-                const reportData: LogValues = [];
+                let reportData: LogValues = [];
                 res.data.forEach((val) => {
                     const data = convertValue
                         ? convertValue(val.data)
@@ -59,7 +59,15 @@ export function unifyData(
                     }
                 });
                 if (reportData.length > 0) {
-                    output.report(reportData);
+                    // Make sure that we do not add data that is already in the output
+                    reportData = reportData.filter(
+                        (val) =>
+                            new Date(val.timestamp).getTime() >
+                            outputTimestamp.getTime()
+                    );
+                    if (reportData.length > 0) {
+                        output.report(reportData);
+                    }
                 } else {
                     printError(
                         `\
