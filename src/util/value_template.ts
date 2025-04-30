@@ -2,7 +2,7 @@ import { ValueType } from './types';
 
 export class ValueTemplate {
     [key: string]: ValueType;
-    static version = '0.0.6';
+    static version = '0.0.7';
 
     static TRIGGER: ValueType = {
         name: '',
@@ -137,6 +137,23 @@ export class ValueTemplate {
             step: 0.1,
             si_conversion: undefined,
             unit: 'V',
+            resolution: undefined,
+        },
+    };
+    static FREQUENCY_HZ: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'frequency',
+        measure_type: 'electricity',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: 0,
+            max: 30000,
+            step: 0.01,
+            si_conversion: undefined,
+            unit: 'Hz',
             resolution: undefined,
         },
     };
@@ -514,20 +531,105 @@ export class ValueTemplate {
             resolution: undefined,
         },
     };
-    static FREQUENCY_HZ: ValueType = {
+    static VOLUME_M3: ValueType = {
         name: '',
         permission: 'r',
-        type: 'frequency',
-        measure_type: 'electricity',
+        type: 'volume',
+        measure_type: undefined,
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
-            meaningful_zero: undefined,
+            meaningful_zero: true,
             min: 0,
-            max: 30000,
-            step: 0.01,
-            si_conversion: undefined,
-            unit: 'Hz',
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m�] = [m�]',
+            unit: 'm�',
+            resolution: undefined,
+        },
+    };
+    static TOTAL_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'total_volume',
+        measure_type: undefined,
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m�] = [m�]',
+            unit: 'm�',
+            resolution: undefined,
+        },
+    };
+    static FLOW_CURVE_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'flow_curve_volume',
+        measure_type: undefined,
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m�] = [m�]',
+            unit: 'm�',
+            resolution: undefined,
+        },
+    };
+    static WATER_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'volume',
+        measure_type: 'water',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m�] = [m�]',
+            unit: 'm�',
+            resolution: undefined,
+        },
+    };
+    static WATER_TOTAL_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'total_volume',
+        measure_type: 'water',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m�] = [m�]',
+            unit: 'm�',
+            resolution: undefined,
+        },
+    };
+    static WATER_FLOW_CURVE_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'flow_curve_volume',
+        measure_type: 'water',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m�] = [m�]',
+            unit: 'm�',
             resolution: undefined,
         },
     };
@@ -543,8 +645,8 @@ export class ValueTemplate {
             min: -30,
             max: 50,
             step: 1,
-            si_conversion: '[K] = [°C] + 273.15',
-            unit: '°C',
+            si_conversion: '[K] = [�C] + 273.15',
+            unit: '�C',
             resolution: undefined,
         },
     };
@@ -560,8 +662,8 @@ export class ValueTemplate {
             min: -20,
             max: 120,
             step: 1,
-            si_conversion: '[K] = ([°F] + 459.67) × 5/9 ',
-            unit: '°F',
+            si_conversion: '[K] = ([�F] + 459.67) � 5/9 ',
+            unit: '�F',
             resolution: undefined,
         },
     };
@@ -594,8 +696,8 @@ export class ValueTemplate {
             min: 0,
             max: 360,
             step: 0,
-            si_conversion: '[rad] = (180/pi) * [°]',
-            unit: '°',
+            si_conversion: '[rad] = (180/pi) * [�]',
+            unit: '�',
             resolution: undefined,
         },
     };
@@ -732,23 +834,6 @@ export class ValueTemplate {
             step: 1,
             si_conversion: '[Pa] = [hPa]/100',
             unit: 'hPa',
-            resolution: undefined,
-        },
-    };
-    static VOLUME_M3: ValueType = {
-        name: '',
-        permission: 'r',
-        type: 'volume',
-        measure_type: undefined,
-        number: {
-            mapping: undefined,
-            ordered_mapping: undefined,
-            meaningful_zero: true,
-            min: 0,
-            max: 1000000000,
-            step: 0.001,
-            si_conversion: '[m³] = [m³]',
-            unit: 'm³',
             resolution: undefined,
         },
     };
@@ -961,7 +1046,7 @@ export class ValueTemplate {
             max: 90,
             step: 0.000001,
             si_conversion: undefined,
-            unit: '°N',
+            unit: '�N',
             resolution: undefined,
         },
     };
@@ -978,7 +1063,7 @@ export class ValueTemplate {
             max: 180,
             step: 0.000001,
             si_conversion: undefined,
-            unit: '°E',
+            unit: '�E',
             resolution: undefined,
         },
     };
