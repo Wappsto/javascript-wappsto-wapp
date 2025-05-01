@@ -27,7 +27,7 @@ export class ValueTemplate {
         type: 'boolean',
         measure_type: undefined,
         number: {
-            mapping: {'0': 'false', '1': 'true'},
+            mapping: { '0': 'false', '1': 'true' },
             ordered_mapping: undefined,
             meaningful_zero: undefined,
             min: 0,
@@ -44,7 +44,7 @@ export class ValueTemplate {
         type: 'boolean',
         measure_type: undefined,
         number: {
-            mapping: {'0': 'off', '1': 'on'},
+            mapping: { '0': 'off', '1': 'on' },
             ordered_mapping: undefined,
             meaningful_zero: undefined,
             min: 0,
@@ -61,7 +61,7 @@ export class ValueTemplate {
         type: 'connection',
         measure_type: undefined,
         number: {
-            mapping: {'0':'offline','1':'online'},
+            mapping: { '0': 'offline', '1': 'online' },
             ordered_mapping: undefined,
             meaningful_zero: undefined,
             min: 0,
