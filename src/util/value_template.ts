@@ -2,7 +2,7 @@ import { ValueType } from './types';
 
 export class ValueTemplate {
     [key: string]: ValueType;
-    static version = '0.0.6';
+    static version = '0.0.7';
 
     static TRIGGER: ValueType = {
         name: '',
@@ -137,6 +137,23 @@ export class ValueTemplate {
             step: 0.1,
             si_conversion: undefined,
             unit: 'V',
+            resolution: undefined,
+        },
+    };
+    static FREQUENCY_HZ: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'frequency',
+        measure_type: 'electricity',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: undefined,
+            min: 0,
+            max: 30000,
+            step: 0.01,
+            si_conversion: undefined,
+            unit: 'Hz',
             resolution: undefined,
         },
     };
@@ -514,20 +531,105 @@ export class ValueTemplate {
             resolution: undefined,
         },
     };
-    static FREQUENCY_HZ: ValueType = {
+    static VOLUME_M3: ValueType = {
         name: '',
         permission: 'r',
-        type: 'frequency',
-        measure_type: 'electricity',
+        type: 'volume',
+        measure_type: undefined,
         number: {
             mapping: undefined,
             ordered_mapping: undefined,
-            meaningful_zero: undefined,
+            meaningful_zero: true,
             min: 0,
-            max: 30000,
-            step: 0.01,
-            si_conversion: undefined,
-            unit: 'Hz',
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m³] = [m³]',
+            unit: 'm³',
+            resolution: undefined,
+        },
+    };
+    static TOTAL_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'total_volume',
+        measure_type: undefined,
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m³] = [m³]',
+            unit: 'm³',
+            resolution: undefined,
+        },
+    };
+    static FLOW_CURVE_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'flow_curve_volume',
+        measure_type: undefined,
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m³] = [m³]',
+            unit: 'm³',
+            resolution: undefined,
+        },
+    };
+    static WATER_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'volume',
+        measure_type: 'water',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m³] = [m³]',
+            unit: 'm³',
+            resolution: undefined,
+        },
+    };
+    static WATER_TOTAL_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'total_volume',
+        measure_type: 'water',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m³] = [m³]',
+            unit: 'm³',
+            resolution: undefined,
+        },
+    };
+    static WATER_FLOW_CURVE_VOLUME_M3: ValueType = {
+        name: '',
+        permission: 'r',
+        type: 'flow_curve_volume',
+        measure_type: 'water',
+        number: {
+            mapping: undefined,
+            ordered_mapping: undefined,
+            meaningful_zero: true,
+            min: 0,
+            max: 1000000000,
+            step: 0.001,
+            si_conversion: '[m³] = [m³]',
+            unit: 'm³',
             resolution: undefined,
         },
     };
@@ -732,23 +834,6 @@ export class ValueTemplate {
             step: 1,
             si_conversion: '[Pa] = [hPa]/100',
             unit: 'hPa',
-            resolution: undefined,
-        },
-    };
-    static VOLUME_M3: ValueType = {
-        name: '',
-        permission: 'r',
-        type: 'volume',
-        measure_type: undefined,
-        number: {
-            mapping: undefined,
-            ordered_mapping: undefined,
-            meaningful_zero: true,
-            min: 0,
-            max: 1000000000,
-            step: 0.001,
-            si_conversion: '[m³] = [m³]',
-            unit: 'm³',
             resolution: undefined,
         },
     };
