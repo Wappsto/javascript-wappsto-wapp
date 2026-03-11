@@ -101,7 +101,7 @@
         "@types/lodash.pick": "^4.4.9",
         "@types/node": "^22.13.9",
         "@types/websocket": "^1.0.10",
-        "@types/ws": "^8.5.14",
+        "@types/ws": "^8.18.1",
         "dts-cli": "^2.0.5",
         "esbuild": "^0.24.2",
         "eslint-plugin-prettier": "^5.2.3",
