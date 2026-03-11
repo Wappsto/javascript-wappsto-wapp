@@ -1,8 +1,5 @@
-import axios from 'axios';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
-import { State, generateHistory, Value } from '../src/index';
+import mockedAxios from './util/mockedAxios';
+import { generateHistory, State, Value } from '../src';
 import { after, before } from './util/stream';
 import { makeResponse } from './util/helpers';
 import { makeLogResponse, makeStateResponse } from './util/response';
@@ -255,5 +252,30 @@ describe('generateHistory', () => {
             },
             {}
         );
+    });
+
+    it('should handle empty input', async () => {
+        const input = new Value();
+        input.meta.id = '331e54a6-fdc0-41a4-9738-71c3ce2ebad3';
+        const inputState = new State('Report');
+        inputState.meta.id = 'f4549a89-b7aa-46f5-b0ac-eaa11a606f7b';
+        input.state.push(inputState);
+
+        const output = new Value();
+        output.meta.id = '999b2c32-aae6-48a5-a066-495ba56fe105';
+        const outputState = new State('Report');
+        outputState.meta.id = 'b98a35e3-85f7-4271-a0b7-879c3267baa3';
+        output.state.push(outputState);
+
+        mockedAxios.get.mockResolvedValue(
+            makeResponse(makeLogResponse({ data: [] })),
+        );
+
+        const oldData = await generateHistory(input, output, {});
+
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
+
+        expect(oldData.data).toEqual([]);
     });
 });

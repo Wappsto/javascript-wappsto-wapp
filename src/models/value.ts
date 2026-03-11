@@ -12,7 +12,6 @@ import {
     convertFilterToString,
     getNextTimestamp,
     getSecondsToNextPeriod,
-    isLogValues,
     isPositiveInteger,
     randomIntFromInterval,
     sortByTimestamp,
@@ -600,17 +599,16 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         }
     }
 
-    report(
-        data: ReportValueInput | LogValues,
-        timestamp?: Timestamp
-    ): Promise<boolean> {
+    report(data: ReportValueInput, timestamp?: Timestamp): Promise<boolean> {
         this.validate('report', arguments);
 
-        if (isLogValues<ReportValueInput>(data)) {
-            return this.#sendLogReport(data);
-        }
-
         return this.#sendReport(data, timestamp || 0, false);
+    }
+
+    reportMany(data: LogValues): Promise<boolean> {
+        this.validate('reportMany', arguments);
+
+        return this.#sendLogReport(data);
     }
 
     forceReport(

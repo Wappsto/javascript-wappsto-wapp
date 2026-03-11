@@ -7,7 +7,6 @@ import {
     JSONValue,
     LogGroupBy,
     LogValue,
-    LogValues,
     Timestamp,
 } from './types';
 
@@ -286,13 +285,4 @@ export function sortByTimestamp(a: LogValue, b: LogValue): number {
     const dateA = new Date(a.timestamp);
     const dateB = new Date(b.timestamp);
     return dateA.getTime() - dateB.getTime();
-}
-
-export function isLogValues<T>(data: LogValues | T): data is LogValues {
-    if (Array.isArray(data)) {
-        return data.some((value) => {
-            return value.data !== undefined && value.timestamp !== undefined;
-        });
-    }
-    return false;
 }

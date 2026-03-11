@@ -66,7 +66,7 @@ export function unifyData(
                             outputTimestamp.getTime()
                     );
                     if (reportData.length > 0) {
-                        output.report(reportData);
+                        output.reportMany(reportData);
                     }
                 } else {
                     printError(

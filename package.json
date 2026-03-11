@@ -1,6 +1,6 @@
 {
     "name": "wappsto-wapp",
-    "version": "1.16.7",
+    "version": "2.0.0",
     "license": "MIT",
     "author": "Seluxit A/S",
     "main": "dist/wappsto-wapp.cjs.production.min.js",
@@ -56,7 +56,10 @@
         "trailingComma": "es5"
     },
     "jest": {
-        "testEnvironment": "node"
+        "testEnvironment": "node",
+        "transform": {
+            "^.+\\.tsx?$": "ts-jest"
+        }
     },
     "peerDependencies": {},
     "engines": {
@@ -77,7 +80,7 @@
         }
     ],
     "dependencies": {
-        "axios": "1.8.2",
+        "axios": "1.13.6",
         "class-transformer": "^0.5.1",
         "isomorphic-ws": "^5.0.0",
         "lodash.isequal": "^4.5.0",
@@ -95,7 +98,7 @@
         "@babel/plugin-transform-private-methods": "^7.25.9",
         "@babel/plugin-transform-react-jsx": "^7.25.9",
         "@size-limit/preset-small-lib": "^11.1.6",
-        "@tsconfig/recommended": "^1.0.8",
+        "@tsconfig/recommended": "^1.0.13",
         "@types/lodash.isequal": "^4.5.8",
         "@types/lodash.omit": "^4.5.9",
         "@types/lodash.pick": "^4.4.9",

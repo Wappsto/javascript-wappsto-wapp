@@ -36,7 +36,7 @@ export async function generateHistory(
             timestamp: val.timestamp,
         });
     });
-    await output.report(reportData);
+    await output.reportMany(reportData);
 
     return logData;
 }

@@ -353,7 +353,8 @@ export const ReportValueInput = t.union(
     'string',
     'number',
     'boolean',
-    'JSONObject'
+    'JSONObject',
+    'any'
 );
 
 export const IValueFunc = t.iface([], {
@@ -361,9 +362,10 @@ export const IValueFunc = t.iface([], {
     deleteState: t.func('void', t.param('type', 'StateType')),
     report: t.func(
         'boolean',
-        t.param('data', t.union('ReportValueInput', 'LogValues')),
+        t.param('data', 'ReportValueInput'),
         t.param('timestamp', 'Timestamp', true)
     ),
+    reportMany: t.func('boolean', t.param('data', 'LogValues')),
     forceReport: t.func(
         'boolean',
         t.param('data', 'ReportValueInput'),

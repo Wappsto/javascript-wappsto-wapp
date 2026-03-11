@@ -288,15 +288,18 @@ export interface IValueBlob extends IValueBase, IValueStringBlobBase {}
 
 export interface IValueXml extends IValueBase, IValueXmlBase {}
 
-export type ReportValueInput = string | number | boolean | JSONObject;
+export type ReportValueInput =
+    | string
+    | number
+    | boolean
+    | JSONObject
+    | Exclude<JSONValue, undefined>;
 
 export interface IValueFunc {
     createState(parameters: IState): Promise<IState>;
     deleteState(type: StateType): Promise<void>;
-    report(
-        data: ReportValueInput | LogValues,
-        timestamp?: Timestamp
-    ): Promise<boolean>;
+    report(data: ReportValueInput, timestamp?: Timestamp): Promise<boolean>;
+    reportMany(data: LogValues): Promise<boolean>;
     forceReport(
         data: ReportValueInput,
         timestamp?: Timestamp
