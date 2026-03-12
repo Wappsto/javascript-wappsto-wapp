@@ -1,10 +1,7 @@
-import axios from 'axios';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
 import 'reflect-metadata';
-import { Value, State, LogValues } from '../src/index';
-import { before, after } from './util/stream';
+import mockedAxios from './util/mockedAxios';
+import { LogValues, State, Value } from '../src';
+import { after, before } from './util/stream';
 import { makeErrorResponse, makeResponse } from './util/helpers';
 import { makeLogResponse } from './util/response';
 
@@ -246,7 +243,7 @@ describe('historical', () => {
             { timestamp: '2022-02-02T02:02:02Z', data: 2 },
             { timestamp: new Date('2022-02-02T02:02:03Z'), data: 3 },
         ];
-        await value.report(data);
+        await value.reportMany(data);
 
         expect(data.length).toBe(4);
         expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
@@ -308,19 +305,12 @@ describe('historical', () => {
             {},
             { timestamp: 1 },
         ];
-        await value.report(data as unknown as LogValues);
 
-        expect(mockedAxios.patch).toHaveBeenCalledTimes(1);
+        await expect(
+            async () => await value.reportMany(data as unknown as LogValues),
+        ).rejects.toThrow();
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(0);
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
-
-        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
-            1,
-            '/2.1/state/6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7',
-            expect.objectContaining({
-                data: JSON.stringify(data),
-                type: 'Report',
-            }),
-            {}
-        );
     });
 });

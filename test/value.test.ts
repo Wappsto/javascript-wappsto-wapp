@@ -1,10 +1,7 @@
 import WS from 'jest-websocket-mock';
-import axios from 'axios';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
+import mockedAxios from './util/mockedAxios';
 import 'reflect-metadata';
-import { Device, Value, State, config, ValueTemplate } from '../src/index';
+import { Device, Value, State, config, ValueTemplate } from '../src';
 import { before, after, newWServer, sendRpcResponse } from './util/stream';
 import {
     responses,
@@ -459,6 +456,56 @@ describe('value', () => {
         );
         expect(value.getControlTimestamp()).toBe('timestamp');
         expect(value.getReportTimestamp()).toBe(undefined);
+    });
+
+    it('can send a report many', async () => {
+        mockedAxios.patch
+            .mockResolvedValueOnce(makeResponse([]))
+            .mockResolvedValueOnce(makeResponse([]));
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const state = new State('Report');
+        state.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(state);
+
+        const orgWarn = console.warn;
+        console.warn = jest.fn();
+
+        await value.reportMany([{data: 10, timestamp: "2026-03-11T10:00:01.000Z"}]);
+        await value.reportMany([
+            {data: 20, timestamp: "2026-03-11T10:00:02.000Z"},
+            {data: "30", timestamp: "2026-03-11T10:00:03.000Z"},
+            {data: 40, timestamp: "2026-03-11T10:00:04.000Z"},
+        ]);
+        console.warn = orgWarn;
+
+        expect(mockedAxios.patch).toHaveBeenCalledTimes(2);
+        expect(value.getReportData()).toBe('40');
+
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            1,
+            `/2.1/state/${state.meta.id}`,
+            {type: 'Report',  data: '10', timestamp: "2026-03-11T10:00:01.000Z"},
+            {}
+        );
+        expect(mockedAxios.patch).toHaveBeenNthCalledWith(
+            2,
+            `/2.1/state/${state.meta.id}`,
+            {type: 'Report', data: '40', timestamp: "2026-03-11T10:00:04.000Z"},
+            {}
+        );
+        expect(mockedAxios.post).toHaveBeenNthCalledWith(
+          1,
+            "/log_zip",
+            "state_id,data,timestamp\n" +
+            `${state.meta.id},20,2026-03-11T10:00:02.000Z\n` +
+            `${state.meta.id},30,2026-03-11T10:00:03.000Z\n`,
+            {headers: { 'Content-type': 'text/csv' }},
+        );
+
+        expect(value.getReportTimestamp()).toBe('2026-03-11T10:00:04.000Z');
+        expect(value.getControlTimestamp()).toBe(undefined);
     });
 
     it('can send a controlWithAck', async () => {
