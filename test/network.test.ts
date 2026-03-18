@@ -1,9 +1,6 @@
-import axios from 'axios';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
+import mockedAxios from './util/mockedAxios';
 import WS from 'jest-websocket-mock';
-import { Device, Network, Value, config, createNetwork } from '../src/index';
+import { Device, Network, Value, config, createNetwork } from '../src';
 import { delay, makeErrorResponse, makeResponse } from './util/helpers';
 import {
     fullNetworkResponse,
@@ -1566,5 +1563,51 @@ describe('network', () => {
         );
         expect(network2).toBeUndefined();
         expect(network1).toEqual(network3);
+    });
+
+    it('should throw on server error when creating a network', async () => {
+        mockedAxios.get.mockRejectedValueOnce(
+            makeErrorResponse(
+                {},
+                'Internal Server Error',
+                'server error test',
+                500
+            )
+        );
+
+        const orgError = console.error;
+        console.error = jest.fn();
+
+        await expect(
+            createNetwork({ name: 'Network Name' })
+        ).rejects.toBeDefined();
+
+        console.error = orgError;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.post).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return empty on 404 when fetching network by id', async () => {
+        mockedAxios.get.mockRejectedValueOnce(
+            makeErrorResponse(
+                {},
+                'Not Found',
+                'not found test',
+                404
+            )
+        );
+
+        const orgError = console.error;
+        console.error = jest.fn();
+
+        const network = await Network.fetchById(
+            'aabbccdd-0000-1111-2222-333344445555'
+        );
+
+        console.error = orgError;
+
+        expect(network).toBeUndefined();
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
     });
 });

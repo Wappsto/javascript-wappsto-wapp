@@ -31,7 +31,7 @@ export class OAuth extends Model {
             try {
                 const data = await Model.fetch({
                     endpoint: `/2.1/oauth_connect/${this.name}`,
-                    throw_error: true,
+                    throw_for_not_found: true,
                 });
 
                 const oauth = data[0] as OAuthConnect;

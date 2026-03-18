@@ -20,13 +20,14 @@ export function makeResponse(
 export function makeErrorResponse(
     data: JSONObject | JSONValue | [],
     status?: string,
-    uri?: string
+    uri?: string,
+    httpStatus?: number
 ) {
-    const statusText = status || 'HTTP JEST ERROR';
-    const url = uri || 'JEST URL';
+    const statusText = status ?? 'HTTP JEST ERROR';
+    const url = uri ?? 'JEST URL';
     return {
         isAxiosError: true,
-        response: makeResponse(data, 500, statusText),
+        response: makeResponse(data, httpStatus ?? 500, statusText),
         config: {
             url,
         },

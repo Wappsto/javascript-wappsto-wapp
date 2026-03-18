@@ -140,7 +140,7 @@ export type FetchRequest = {
     endpoint: string;
     params?: JSONObject;
     body?: JSONObject;
-    throw_error?: boolean;
+    throw_for_not_found?: boolean;
     go_internal?: boolean;
 };
 
