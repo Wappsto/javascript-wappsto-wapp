@@ -1,9 +1,6 @@
 import WS from 'jest-websocket-mock';
-import axios from 'axios';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
-import { OAuth, stopLogging } from '../src/index';
+import mockedAxios from './util/mockedAxios';
+import { OAuth, stopLogging } from '../src';
 import { openStream } from '../src/stream_helpers';
 import { after } from './util/stream';
 import { delay, makeErrorResponse, makeResponse } from './util/helpers';

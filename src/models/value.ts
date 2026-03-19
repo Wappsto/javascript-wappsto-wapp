@@ -875,7 +875,7 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
             endpoint: `/2.1/log/${state.id()}/state`,
             params: params as JSONObject,
             go_internal: false,
-            throw_error: true,
+            throw_for_not_found: true,
         });
         if (
             response[0] &&

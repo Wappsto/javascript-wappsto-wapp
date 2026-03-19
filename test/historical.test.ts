@@ -290,6 +290,34 @@ describe('historical', () => {
         expect(mockedAxios.post).toHaveBeenCalledTimes(0);
     });
 
+    it('should throw on 404 when fetching log data', async () => {
+        mockedAxios.get.mockRejectedValueOnce(
+            makeErrorResponse(
+                {},
+                'Not Found',
+                'not found test',
+                404
+            )
+        );
+
+        const value = new Value();
+        value.meta.id = '1b969edb-da8b-46ba-9ed3-59edadcc24b1';
+        const stateR = new State('Report');
+        stateR.meta.id = '6481d2e1-1ff3-41ef-a26c-27bc8d0b07e7';
+        value.state.push(stateR);
+
+        const orgError = console.error;
+        console.error = jest.fn();
+
+        await expect(
+            value.getReportLog({ limit: 1 }),
+        ).rejects.toBeDefined();
+
+        console.error = orgError;
+
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+    });
+
     it('can not send invalid log values for Report', async () => {
         mockedAxios.patch.mockResolvedValueOnce(makeResponse([]));
 

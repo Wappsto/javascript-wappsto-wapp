@@ -1,7 +1,4 @@
-import axios from 'axios';
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.create = jest.fn(() => mockedAxios);
+import mockedAxios from './util/mockedAxios';
 import { getWappVersion } from '../src/index';
 import { makeErrorResponse, makeResponse } from './util/helpers';
 import { after } from './util/stream';
@@ -23,9 +20,9 @@ describe('wappVersion', () => {
         });
     });
 
-    it('can get default version when user is messing', async () => {
+    it('can get default version when user is not found', async () => {
         mockedAxios.get.mockRejectedValueOnce(
-            makeErrorResponse({}, 'error', 'url')
+            makeErrorResponse({}, 'Not Found', 'url', 404)
         );
         console.error = jest.fn();
 
@@ -36,11 +33,6 @@ describe('wappVersion', () => {
         expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/user/me', {
             params: { expand: 1, go_internal: true, method: ['retrieve'] },
         });
-        expect(console.error).toHaveBeenCalledTimes(1);
-        expect(console.error).toHaveBeenNthCalledWith(
-            1,
-            'WAPPSTO ERROR: Model.fetch: error for url'
-        );
     });
 
     it('can get default version when installation is missing', async () => {

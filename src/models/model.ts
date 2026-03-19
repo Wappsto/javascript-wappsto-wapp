@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { plainToInstance } from 'class-transformer';
 import isEqual from 'lodash.isequal';
 import omit from 'lodash.omit';
@@ -326,9 +327,8 @@ export class Model implements IModel {
             }
         } catch (e) {
             const msg = printHttpError('Model.fetch', e);
-            if (params.throw_error) {
-                throw msg;
-            }
+            const is404 = axios.isAxiosError(e) && e.response?.status === 404;
+            if (!is404 || params.throw_for_not_found) throw msg;
         }
         return res;
     };

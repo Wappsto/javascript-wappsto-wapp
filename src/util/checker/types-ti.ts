@@ -184,7 +184,7 @@ export const FetchRequest = t.iface([], {
     endpoint: 'string',
     params: t.opt('JSONObject'),
     body: t.opt('JSONObject'),
-    throw_error: t.opt('boolean'),
+    throw_for_not_found: t.opt('boolean'),
     go_internal: t.opt('boolean'),
 });
 
