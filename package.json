@@ -95,7 +95,7 @@
     "devDependencies": {
         "@babel/core": "^7.26.0",
         "@babel/plugin-syntax-flow": "^7.26.0",
-        "@babel/plugin-transform-private-methods": "^7.25.9",
+        "@babel/plugin-transform-private-methods": "^7.28.6",
         "@babel/plugin-transform-react-jsx": "^7.25.9",
         "@size-limit/preset-small-lib": "^11.2.0",
         "@tsconfig/recommended": "^1.0.13",
