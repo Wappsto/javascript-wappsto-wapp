@@ -61,7 +61,6 @@
             "^.+\\.tsx?$": "ts-jest"
         }
     },
-    "peerDependencies": {},
     "engines": {
         "node": ">=16"
     },
@@ -115,6 +114,7 @@
         "ts-interface-builder": "^0.3.3",
         "ts-jest": "^29.4.9",
         "typedoc": "^0.27.9",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "yarn": "^1.22.22"
     }
 }
