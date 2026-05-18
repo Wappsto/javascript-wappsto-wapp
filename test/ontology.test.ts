@@ -9,6 +9,7 @@ import {
     State,
     createNode,
     IOntologyEdge,
+    OntologyEdge,
 } from '../src/index';
 import { addModel } from '../src/util/modelStore';
 import { before, after, newWServer } from './util/stream';
@@ -24,6 +25,9 @@ import {
     responses,
 } from './util/response';
 import { makeErrorResponse, makeResponse } from './util/helpers';
+
+import { getAllEdges } from '../src/models/ontology.edge';
+
 
 describe('Ontology', () => {
     beforeAll(() => {
@@ -1957,4 +1961,40 @@ describe('Ontology', () => {
             {}
         );
     });
+
+    it('Can load the missing edges', async () => {
+      const inline_uuid = '68962543-bc1a-4351-9dad-6cce19b75b6e';
+      const string_uuid = '1577344f-9a26-4645-9246-8b0a1a316eb8';
+
+      const emptyEdge = (id: string) => ({
+          meta: { id, type: 'ontology', version: '2.1' },
+          relationship: 'child',
+          to: {},
+          from: {},
+      });
+
+      mockedAxios.get
+          // 1st GET: /2.1/ontology — list with one inlined edge + one bare uuid
+          .mockResolvedValueOnce(makeResponse([emptyEdge(inline_uuid), string_uuid]))
+          // 2nd GET: /2.1/ontology/<uuid> — the un-expanded edge, fetched by id
+          .mockResolvedValueOnce(makeResponse(emptyEdge(string_uuid)));
+
+      const edges = await getAllEdges();
+
+      expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+      expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/ontology', {
+          params: { expand: 1, go_internal: true, method: ['retrieve'] },
+      });
+      expect(mockedAxios.get).toHaveBeenNthCalledWith(
+          2,
+          `/2.1/ontology/${string_uuid}`,
+          { params: { go_internal: true, method: ['retrieve'] } },
+      );
+
+      expect(edges).toHaveLength(2);
+      expect(edges[0]).toBeInstanceOf(OntologyEdge);
+      expect(edges[1]).toBeInstanceOf(OntologyEdge);
+      expect(edges[0].meta.id).toEqual(inline_uuid);
+      expect(edges[1].meta.id).toEqual(string_uuid);
+  });
 });
