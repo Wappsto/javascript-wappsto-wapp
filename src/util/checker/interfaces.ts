@@ -682,9 +682,7 @@ export interface IOntologyEdge extends IModel {
 }
 export interface IOntologyEdgeFunc {
     constructor(): void;
-    removeTo(to: IModel): boolean;
-    deleteEdges(): Promise<void>;
-    getAllEdges(): Promise<IOntologyEdge[]>;
+    fetchById(id: string): Promise<IOntologyEdge | undefined>;
     fetch(parameters: FetchRequest): Promise<IOntologyEdge[]>;
 }
 export type IOntologyNode = IOntologyModel;
