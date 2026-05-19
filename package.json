@@ -52,7 +52,7 @@
         "postbuild": "yarn esbuild dist/wappsto-wapp.cjs.production.min.js --format=iife --global-name=Wappsto --minify --bundle --outfile=dist/wappsto-wapp.js",
         "prepack": "yarn build && yarn documentation",
         "prepublishOnly": "yarn test",
-        "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git ci docs package.json src/util/version.ts -m'Updated to v'$PACKAGE_VERSION'' && git push && git tag v$PACKAGE_VERSION && git push --tags"
+        "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git commit docs package.json src/util/version.ts -m'Updated to v'$PACKAGE_VERSION'' && git push && git tag v$PACKAGE_VERSION && git push --tags"
     },
     "prettier": {
         "printWidth": 80,
