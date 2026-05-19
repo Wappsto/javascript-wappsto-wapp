@@ -1,6 +1,6 @@
 {
     "name": "wappsto-wapp",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "license": "MIT",
     "author": "Seluxit A/S",
     "main": "dist/wappsto-wapp.cjs.production.min.js",
@@ -85,7 +85,6 @@
         }
     ],
     "dependencies": {
-        "@size-limit/esbuild-why": "^12.1.0",
         "axios": "1.15.0",
         "class-transformer": "^0.5.1",
         "isomorphic-ws": "^5.0.0",
@@ -103,6 +102,7 @@
         "@babel/plugin-syntax-flow": "^7.26.0",
         "@babel/plugin-transform-private-methods": "^7.28.6",
         "@babel/plugin-transform-react-jsx": "^7.25.9",
+        "@size-limit/esbuild-why": "^12.1.0",
         "@size-limit/preset-small-lib": "^11.2.0",
         "@tsconfig/recommended": "^1.0.13",
         "@types/lodash.isequal": "^4.5.8",
