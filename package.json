@@ -30,6 +30,12 @@
         "type": "git",
         "url": "git+https://github.com/Wappsto/javascript-wappsto-wapp"
     },
+    "overrides": {
+        "@types/minimatch": "5.1.2"
+    },
+    "resolutions": {
+        "@types/minimatch": "5.1.2"
+    },
     "scripts": {
         "analyze": "size-limit --why",
         "lint": "dts lint src",
@@ -79,6 +85,7 @@
         }
     ],
     "dependencies": {
+        "@size-limit/esbuild-why": "^12.1.0",
         "axios": "1.15.0",
         "class-transformer": "^0.5.1",
         "isomorphic-ws": "^5.0.0",
