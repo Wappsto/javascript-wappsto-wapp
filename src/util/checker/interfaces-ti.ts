@@ -914,6 +914,10 @@ export const IOntologyEdgeFunc = t.iface([], {
     removeTo: t.func('boolean', t.param('to', 'IModel')),
     deleteEdges: t.func('void'),
     getAllEdges: t.func(t.array('IOntologyEdge')),
+    fetchById: t.func(
+        t.union('IOntologyEdge', 'undefined'),
+        t.param('id', 'string')
+    ),
     fetch: t.func(
         t.array('IOntologyEdge'),
         t.param('parameters', 'FetchRequest')
