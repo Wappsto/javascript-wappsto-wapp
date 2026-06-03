@@ -27,6 +27,7 @@ import {
 import { makeErrorResponse, makeResponse } from './util/helpers';
 
 import { getAllEdges } from '../src/models/ontology.edge';
+import { getAllNodes, OntologyNode } from '../src/models/ontology.node';
 
 
 describe('Ontology', () => {
@@ -1996,5 +1997,54 @@ describe('Ontology', () => {
       expect(edges[1]).toBeInstanceOf(OntologyEdge);
       expect(edges[0].meta.id).toEqual(inline_uuid);
       expect(edges[1].meta.id).toEqual(string_uuid);
+  });
+
+    it('Can load the missing nodes', async () => {
+      const inline_uuid = 'b07f8a06-fbd1-4e23-9eca-7a2d447e1f99';
+      const string_uuid = '06c43e0c-3a4c-4ee2-9302-d59172b563d0';
+
+      mockedAxios.get
+          // 1st GET: /2.1/data — list with one inlined node + one bare uuid
+          .mockResolvedValueOnce(
+              makeResponse([
+                  makeOntologyNodeResponse({
+                      id: inline_uuid,
+                      name: 'inline node',
+                  }),
+                  string_uuid,
+              ])
+          )
+          // 2nd GET: /2.1/data/<uuid> — the un-expanded node, fetched by id
+          .mockResolvedValueOnce(
+              makeResponse(
+                  makeOntologyNodeResponse({
+                      id: string_uuid,
+                      name: 'string node',
+                  })
+              )
+          );
+
+      const nodes = await getAllNodes();
+
+      expect(mockedAxios.get).toHaveBeenNthCalledWith(1, '/2.1/data', {
+          params: {
+              expand: 1,
+              go_internal: true,
+              method: ['retrieve'],
+              'this_data_meta.type': 'ontology_node',
+            },
+      });
+      expect(mockedAxios.get).toHaveBeenNthCalledWith(
+          2,
+          `/2.1/data/${string_uuid}`,
+          { params: { go_internal: true, method: ['retrieve'] } },
+        );
+      expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+
+      expect(nodes).toHaveLength(2);
+      expect(nodes[0]).toBeInstanceOf(OntologyNode);
+      expect(nodes[1]).toBeInstanceOf(OntologyNode);
+      expect(nodes[0].meta.id).toEqual(inline_uuid);
+      expect(nodes[1].meta.id).toEqual(string_uuid);
   });
 });
