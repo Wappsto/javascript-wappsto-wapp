@@ -1,4 +1,3 @@
-import pick from 'lodash.pick';
 import {
     AnalyticsParameters,
     AnalyticsResponse,
@@ -7,7 +6,7 @@ import {
     Timestamp,
 } from '../../util/types';
 import { PermissionModel } from '../model.permission';
-import { toISOString } from '../../util/helpers';
+import { pick, toISOString } from '../../util/helpers';
 
 export class AnalyticsModel extends PermissionModel {
     static endpoint = '/2.1/analytics';
