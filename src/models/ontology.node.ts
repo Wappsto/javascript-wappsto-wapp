@@ -58,7 +58,7 @@ export async function getAllNodes<
     }
     _allNodesLoaded = true;
 
-    const json: JSONObject[] = await Model.fetch({
+    const json: (JSONObject | string)[] = await Model.fetch({
         endpoint: Data.endpoint,
         params: {
             'this_data_meta.type': 'ontology_node',
@@ -66,7 +66,24 @@ export async function getAllNodes<
         },
     });
 
+    const proms: Promise<void>[] = [];
     json.forEach((item) => {
+        if (typeof item === 'string') {
+            proms.push(
+                new Promise(async (resolve) => {
+                    const data = await Model.fetch({
+                        endpoint: `${Data.endpoint}/${item}`,
+                    });
+                    const nodes = OntologyNode.fromArray(data);
+                    if (nodes[0] && typeof nodes[0] !== 'string') {
+                        _allNodes.push(nodes[0] as OntologyNode<T>);
+                    }
+                    resolve();
+                })
+            );
+            return;
+        }
+
         let model = findModel(
             'data',
             (item?.data_meta as JSONObject)?.id as string
@@ -79,6 +96,7 @@ export async function getAllNodes<
         }
         _allNodes.push(model as OntologyNode<T>);
     });
+    await Promise.all(proms);
 
     return _allNodes as OntologyNode<T>[];
 }
