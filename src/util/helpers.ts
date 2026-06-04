@@ -111,6 +111,50 @@ export function replaceAll(str: string, find: string, replace: string): string {
     return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 }
 
+export function omit<T extends object, K extends keyof T>(
+    obj: T,
+    keys: K | readonly K[]
+): Omit<T, K>;
+export function omit<T extends object>(
+    obj: T,
+    keys: string | readonly string[]
+): Partial<T>;
+export function omit<T extends object>(
+    obj: T,
+    keys: string | readonly string[]
+): Partial<T> {
+    const out = { ...obj } as Record<string, unknown>;
+    const list = Array.isArray(keys) ? keys : [keys];
+    for (const key of list) {
+        delete out[key];
+    }
+    return out as Partial<T>;
+}
+
+export function pick<T extends object, K extends keyof T>(
+    obj: T,
+    keys: readonly K[]
+): Pick<T, K>;
+export function pick<T extends object>(
+    obj: T,
+    keys: readonly string[]
+): Partial<T>;
+export function pick<T extends object>(
+    obj: T,
+    keys: readonly string[]
+): Partial<T> {
+    const out = {} as Record<string, unknown>;
+    if (obj == null) {
+        return out as Partial<T>;
+    }
+    for (const key of keys) {
+        if (key in obj) {
+            out[key] = (obj as Record<string, unknown>)[key];
+        }
+    }
+    return out as Partial<T>;
+}
+
 export function compareModels(m1: IModel, m2: IModel) {
     return m1.id() === m2.id();
 }

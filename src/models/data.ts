@@ -1,7 +1,5 @@
-import isEqual from 'lodash.isequal';
-import omit from 'lodash.omit';
-import pick from 'lodash.pick';
-import { isBrowser, toSafeObject } from '../util/helpers';
+import isEqual from 'fast-deep-equal';
+import { isBrowser, omit, pick, toSafeObject } from '../util/helpers';
 import { Model } from './model';
 import { StreamModel } from './model.stream';
 import { DataMeta, IData, JSONObject } from '../util/types';
