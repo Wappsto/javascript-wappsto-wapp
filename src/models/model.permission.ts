@@ -1,7 +1,6 @@
-import omit from 'lodash.omit';
 import { openStream } from '../stream_helpers';
 import { printDebug, printError } from '../util/debug';
-import { toSafeString } from '../util/helpers';
+import { omit, toSafeString } from '../util/helpers';
 import { getErrorResponse, printHttpError } from '../util/http_wrapper';
 import { JSONObject, MetaItem, StreamData } from '../util/types';
 import { Model } from './model';

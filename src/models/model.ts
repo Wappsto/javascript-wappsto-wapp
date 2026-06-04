@@ -1,11 +1,9 @@
 import axios from 'axios';
 import { plainToInstance } from 'class-transformer';
-import isEqual from 'lodash.isequal';
-import omit from 'lodash.omit';
-import pick from 'lodash.pick';
+import isEqual from 'fast-deep-equal';
 import { _config } from '../util/config';
 import { printDebug, printError } from '../util/debug';
-import { isUUID, replaceAll } from '../util/helpers';
+import { isUUID, omit, pick, replaceAll } from '../util/helpers';
 import wappsto, { printHttpError } from '../util/http_wrapper';
 import {
     FetchRequest,

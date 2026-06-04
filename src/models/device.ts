@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import isEqual from 'lodash.isequal';
+import isEqual from 'fast-deep-equal';
 import { printDebug, printWarning } from '../util/debug';
 import { generateFilterRequest } from '../util/filter';
 import { convertFilterToJson, convertFilterToString } from '../util/helpers';

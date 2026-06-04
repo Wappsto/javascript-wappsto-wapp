@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import isEqual from 'lodash.isequal';
+import isEqual from 'fast-deep-equal';
 import { Newable, runAnalyticModel } from '../util/analytics_helpers';
 import { _config } from '../util/config';
 import { printDebug, printWarning } from '../util/debug';
