@@ -242,6 +242,7 @@ export async function getAllEdges() {
         if (typeof o === 'string') {
             proms.push(
                 new Promise(async (resolve) => {
+                    // This could have been done better. https://corebuild.atlassian.net/browse/SLX-684
                     const onto = await OntologyEdge.fetchById(o);
                     const promises: Promise<void>[] = [];
                     if (onto) {
