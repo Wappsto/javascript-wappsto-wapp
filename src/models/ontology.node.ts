@@ -71,6 +71,7 @@ export async function getAllNodes<
         if (typeof item === 'string') {
             proms.push(
                 new Promise(async (resolve) => {
+                    // This could have been done better. https://corebuild.atlassian.net/browse/SLX-684
                     const data = await Model.fetch({
                         endpoint: `${Data.endpoint}/${item}`,
                     });
