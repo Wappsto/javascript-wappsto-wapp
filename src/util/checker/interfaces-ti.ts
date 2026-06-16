@@ -552,6 +552,12 @@ export const IFileFunc = t.iface([], {
     fetchById: t.func('IFile', t.param('id', 'string')),
 });
 
+export const IIconFunc = t.iface([], {
+    constructor: t.func('void'),
+    fetchById: t.func(t.union('IModel', 'undefined'), t.param('id', 'string')),
+    fetch: t.func(t.array('IModel')),
+});
+
 export const IEventLog = t.iface([], {
     message: 'string',
     level: 'EventLogLevel',
@@ -911,9 +917,6 @@ export const IOntologyEdge = t.iface(['IModel'], {
 
 export const IOntologyEdgeFunc = t.iface([], {
     constructor: t.func('void'),
-    removeTo: t.func('boolean', t.param('to', 'IModel')),
-    deleteEdges: t.func('void'),
-    getAllEdges: t.func(t.array('IOntologyEdge')),
     fetchById: t.func(
         t.union('IOntologyEdge', 'undefined'),
         t.param('id', 'string')
@@ -1136,6 +1139,7 @@ const exportedTypeSuite: t.ITypeSuite = {
     IStateFunc,
     IFile,
     IFileFunc,
+    IIconFunc,
     IEventLog,
     IEventLogFunc,
     INotificationFunc,
