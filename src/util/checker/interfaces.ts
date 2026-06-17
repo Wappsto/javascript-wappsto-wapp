@@ -432,6 +432,12 @@ export interface IFileFunc {
     fetchById(id: string): IFile;
 }
 
+export interface IIconFunc {
+    constructor(): void;
+    fetchById(id: string): Promise<IModel | undefined>;
+    fetch(): Promise<IModel[]>;
+}
+
 export interface IEventLog {
     message: string;
     level: EventLogLevel;
