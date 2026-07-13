@@ -87,11 +87,15 @@ export class Network extends ConnectionModel implements INetwork {
         )}}`;
     }
 
-    addChildrenToStore(): void {
+    addChildrenToStore(visited: Set<IModel> = new Set<IModel>()): void {
+        if (visited.has(this)) {
+            return;
+        }
+        visited.add(this);
         super.addChildrenToStore();
         this.device.forEach((dev: IModel) => {
             if (dev?.addChildrenToStore) {
-                dev.addChildrenToStore();
+                dev.addChildrenToStore(visited);
             }
         });
     }

@@ -88,11 +88,15 @@ export class Device extends ConnectionModel implements IDevice {
         )} ${Value.getFilterResult(filter, omit_filter)}}`;
     }
 
-    addChildrenToStore(): void {
+    addChildrenToStore(visited: Set<IModel> = new Set<IModel>()): void {
+        if (visited.has(this)) {
+            return;
+        }
+        visited.add(this);
         super.addChildrenToStore();
         this.value.forEach((val: IModel) => {
             if (val?.addChildrenToStore) {
-                val.addChildrenToStore();
+                val.addChildrenToStore(visited);
             }
         });
     }

@@ -194,11 +194,15 @@ export class Value extends StreamModel implements IValueBase, IValueFunc {
         this.permission = this.tmp_permission;
     }
 
-    addChildrenToStore(): void {
+    addChildrenToStore(visited: Set<IModel> = new Set<IModel>()): void {
+        if (visited.has(this)) {
+            return;
+        }
+        visited.add(this);
         super.addChildrenToStore();
         this.state.forEach((state: IModel) => {
             if (state?.addChildrenToStore) {
-                state.addChildrenToStore();
+                state.addChildrenToStore(visited);
             }
         });
     }
