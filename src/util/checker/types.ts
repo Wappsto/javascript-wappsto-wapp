@@ -108,6 +108,9 @@ export type Meta = {
     version?: string;
     redirect?: string;
     manufacturer?: string;
+    application?: string;
+    installation?: string;
+    read_only?: boolean;
     iot?: boolean;
     upgradable?: boolean;
     connection?: Connection;
