@@ -90,7 +90,7 @@ export class Model implements IModel {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     static getMetaFilterResult(_filter?: Filter): string {
-        return 'meta{id type version connection name_by_user}';
+        return 'meta{id type version application connection name_by_user}';
     }
 
     protected validate(name: string, params: ValidateParams): void {
