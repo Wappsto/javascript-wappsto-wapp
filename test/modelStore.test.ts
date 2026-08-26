@@ -3,7 +3,7 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.create = jest.fn(() => mockedAxios);
 import { after, before } from './util/stream';
-import { Device, Network } from '../src';
+import { Device, Network, State, Value } from '../src';
 import { makeResponse } from './util/helpers';
 
 describe('modelStore', () => {
@@ -50,5 +50,23 @@ describe('modelStore', () => {
         expect(mockedAxios.get).toHaveBeenCalledTimes(2);
         expect(networks[0].device[0].meta.id).toEqual(devices[0].meta.id);
         expect(devices[0].parent).toEqual(networks[0]);
+    });
+
+    it('does not overflow the stack on a cyclic model graph', () => {
+        const network = new Network('cycle');
+        network.meta.id = 'cycle-network';
+        const device = new Device('cycle');
+        device.meta.id = 'cycle-device';
+        const a = new Value('A');
+        a.meta.id = 'cycle-a';
+        const b = new Value('B');
+        b.meta.id = 'cycle-b';
+
+        network.device = [device];
+        device.value = [a, b];
+        a.state = [a, b] as unknown as State[];
+        b.state = [a] as unknown as State[];
+
+        expect(() => network.addChildrenToStore()).not.toThrow();
     });
 });

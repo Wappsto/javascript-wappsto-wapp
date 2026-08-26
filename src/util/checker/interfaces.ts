@@ -49,7 +49,7 @@ export interface IModel {
     getClass(): string;
     reload(reloadAll?: boolean): Promise<boolean>;
     removeChild(child: IModel): void;
-    addChildrenToStore(): void;
+    addChildrenToStore(visited?: Set<IModel>): void;
     setParent(parent?: IModel): void;
     getParent(): IModel | undefined;
     parse(json: Record<string, unknown>): boolean;
